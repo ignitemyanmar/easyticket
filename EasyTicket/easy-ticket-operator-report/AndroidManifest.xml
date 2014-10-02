@@ -1,0 +1,64 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.ignite.busoperator"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="8"
+        android:targetSdkVersion="15" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"/>
+
+    <application
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/title_activity_main" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name="MenuActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="LoginActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name=".SalesbyTripActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="OperatorReportByDateActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name=".OperatorReportByBusNo"  android:screenOrientation="landscape" ></activity>
+        <activity android:name="BranchReportByDateActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name=".SalesbyAgentActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="BranchReportByVouncherActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name=".SalesbyInvoiceActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="TripsReportByDateActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="TripsReportByBranchActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name=".SeatDetailsbyBusnoActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="InvoiceReportByDate" android:screenOrientation="landscape" ></activity>
+        <activity android:name="SeatDetailsbyInvoiceActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="SalesbyCarActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="AgentReportByBusNo" android:screenOrientation="landscape" ></activity>
+        <activity android:name="SeatDetailsbyAgentActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="SalesbyDailyActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="TodayBusActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="SeatDetailsbyTodayBusActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="AdvanceBusActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="SalesbyOccupencySeatPlanActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="SeatPlanwithCustomerInfoActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="CustomerUpdateActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="CreditListActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="AgentListActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="AgentDepositActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="PayCreditActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="PayHistoryActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="AgentDetailActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="AgentInitCreditActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="ReportsActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="AgentCommissionActivity" android:screenOrientation="landscape" ></activity>
+   </application>
+
+</manifest>

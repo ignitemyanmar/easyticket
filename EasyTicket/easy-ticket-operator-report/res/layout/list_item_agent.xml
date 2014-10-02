@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="5dp" >
+
+    <com.smk.custom.view.CustomTextView
+        android:id="@+id/txt_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Medium Text"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="14dp" />
+    <com.smk.custom.view.CustomTextView
+        android:id="@+id/txt_deposit_amount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Medium Text"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="14dp" />
+
+    <com.smk.custom.view.CustomTextView
+        android:id="@+id/txt_credit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="14dp" />
+
+    <com.smk.custom.view.CustomTextView
+        android:id="@+id/txt_percent_amount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Medium Text"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="14dp" />
+
+    <com.smk.custom.view.CustomTextView
+        android:id="@+id/txt_percented_amount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Medium Text"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="14dp" />
+
+    <com.smk.custom.view.CustomButton
+        android:id="@+id/btn_view"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="80dp"
+        android:layout_height="38dp"
+        android:background="@color/forest_green"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:text="View"
+        android:textColor="@color/white" />
+
+    <com.smk.custom.view.CustomButton
+        android:id="@+id/btn_deposit_amount"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="38dp"
+        android:background="@color/forest_green"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:text="Add Deposit"
+        android:textColor="@color/white"
+        android:visibility="gone" />
+
+    <com.smk.custom.view.CustomButton
+        android:id="@+id/btn_credit_amount"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="38dp"
+        android:layout_marginLeft="5dp"
+        android:background="@color/golden_brown"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:text="View Credit"
+        android:textColor="@color/white"
+        android:visibility="gone" />
+    
+    <com.smk.custom.view.CustomButton
+        android:id="@+id/btn_pay_history"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="38dp"
+        android:layout_marginLeft="5dp"
+        android:background="@color/dark_blue"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:text="Payment History"
+        android:textColor="@color/white"
+        android:visibility="gone" />
+
+</LinearLayout>

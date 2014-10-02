@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/RelativeLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffffff"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#000"
+        android:gravity="center_vertical" >
+
+        <com.smk.custom.view.CustomTextView
+            android:id="@+id/txt_seat_no"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:singleLine="false"
+            android:text="ခံုနံပါတ္"
+            android:textColor="#ffffff" />
+
+        <com.smk.custom.view.CustomTextView
+            android:id="@+id/txt_buyer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:singleLine="false"
+            android:text="ဝယ္သူ အမည္"
+            android:textColor="#ffffff" />
+
+        <com.smk.custom.view.CustomTextView
+            android:id="@+id/txt_seller"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:singleLine="false"
+            android:text="အ ေရာင္းကိုယ္စားလွယ္"
+            android:textColor="#ffffff" />
+
+        <com.smk.custom.view.CustomTextView
+            android:id="@+id/txt_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:singleLine="false"
+            android:text="ေစ်းႏႈန္း"
+            android:textColor="#ffffff" />
+
+        <com.smk.custom.view.CustomTextView
+            android:id="@+id/txt_commission"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="false"
+            android:text="ရွင္း - ႏႈန္း"
+            android:textColor="#ffffff" />
+
+        <com.smk.custom.view.CustomTextView
+            android:id="@+id/txt_vouncher_no"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:singleLine="false"
+            android:text="လက္ မွတ္ နံပါတ္"
+            android:textColor="#ffffff"
+            android:visibility="visible" />
+
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/lvseat_details_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="50dp"
+        android:background="#ffffff"
+        android:dividerHeight="0dp" >
+        
+    </ListView>
+
+    <Button
+        android:id="@+id/btnPrint"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginRight="5dp"
+        android:background="@drawable/selector_btn_print" />
+
+</RelativeLayout>

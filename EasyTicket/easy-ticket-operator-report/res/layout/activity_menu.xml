@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#d5f1e9"
+    android:gravity="center_vertical|center_horizontal"
+    android:orientation="vertical" >
+
+    <ScrollView
+        android:id="@+id/scrollView1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingLeft="50dp" >
+
+            <TextView
+                android:id="@+id/textView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:layout_marginLeft="10dp"
+                android:text="Easy Ticket Report"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textSize="50dp"
+                android:typeface="serif" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal" >
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" >
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp" >
+
+                        <View
+                            android:id="@+id/view1"
+                            android:layout_width="3dp"
+                            android:layout_height="match_parent"
+                            android:background="#203670" />
+
+                        <com.smk.custom.view.CustomButton
+                            android:id="@+id/btn_daily_report"
+                            android:layout_width="365dp"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/button_border"
+                            android:gravity="left|center_vertical"
+                            android:maxWidth="200dp"
+                            android:paddingLeft="10dp"
+                            android:text="ေန႕စဥ္ အ ေရာင္း စာရင္း မ်ား" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp" >
+
+                        <View
+                            android:id="@+id/View01"
+                            android:layout_width="3dp"
+                            android:layout_height="match_parent"
+                            android:background="#203670" />
+
+                        <com.smk.custom.view.CustomButton
+                            android:id="@+id/btn_report_car"
+                            android:layout_width="365dp"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/button_border"
+                            android:gravity="left|center_vertical"
+                            android:maxWidth="200dp"
+                            android:paddingLeft="10dp"
+                            android:text="ကားခ်ဳပ္ စာရင္းမ်ား" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp" >
+
+                        <View
+                            android:id="@+id/View02"
+                            android:layout_width="3dp"
+                            android:layout_height="match_parent"
+                            android:background="#203670" />
+
+                        <com.smk.custom.view.CustomButton
+                            android:id="@+id/btnOperator"
+                            android:layout_width="365dp"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/button_border"
+                            android:gravity="left|center_vertical"
+                            android:maxWidth="200dp"
+                            android:paddingLeft="10dp"
+                            android:text="ခရီးစဥ္ အလိုက္ အ ေရာင္း စာရင္းမ်ား" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_margin="10dp" >
+
+                        <View
+                            android:id="@+id/View03"
+                            android:layout_width="3dp"
+                            android:layout_height="match_parent"
+                            android:background="#203670" />
+
+                        <com.smk.custom.view.CustomButton
+                            android:id="@+id/btnBranch"
+                            android:layout_width="365dp"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/button_border"
+                            android:gravity="left|center_vertical"
+                            android:maxWidth="200dp"
+                            android:paddingLeft="10dp"
+                            android:text="အ ေရာင္း ကိုယ္စားလွယ္ ႏွင့္ အ ေရာင္းစာရင္းမ်ား" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp" >
+
+                        <View
+                            android:id="@+id/View04"
+                            android:layout_width="3dp"
+                            android:layout_height="match_parent"
+                            android:background="#203670" />
+
+                        <com.smk.custom.view.CustomButton
+                            android:id="@+id/btn_seat_plan"
+                            android:layout_width="365dp"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/button_border"
+                            android:gravity="left|center_vertical"
+                            android:maxWidth="200dp"
+                            android:paddingLeft="10dp"
+                            android:text="ထိုင္ ခံု ႏွင့္ လူစာရင္းမ်ား" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp" >
+
+                        <View
+                            android:id="@+id/View05"
+                            android:layout_width="3dp"
+                            android:layout_height="match_parent"
+                            android:background="#203670" />
+
+                        <com.smk.custom.view.CustomButton
+                            android:id="@+id/btn_credit"
+                            android:layout_width="365dp"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/button_border"
+                            android:gravity="left|center_vertical"
+                            android:maxWidth="200dp"
+                            android:paddingLeft="10dp"
+                            android:text="အ ေရာင္း ကိုယ္စားလွယ္ ႏွင့္ အ ေႂကြး စာရင္း" />
+
+                    </LinearLayout>
+
+                    <com.smk.custom.view.CustomButton
+                        android:id="@+id/btnTrip"
+                        android:layout_width="365dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:background="@drawable/button_border"
+                        android:maxWidth="200dp"
+                        android:text="Report by Invoice"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical" >
+
+                    <ImageView
+                        android:id="@+id/imageView1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ticket" />
+
+                    <TextView
+                        android:id="@+id/textView2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Power by Ignite Software Solution"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textSize="22dp"
+                        android:typeface="serif" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

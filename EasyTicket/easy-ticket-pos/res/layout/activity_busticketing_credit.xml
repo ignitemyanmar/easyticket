@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/RelativeLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="38dp"
+            android:background="@color/golden_brown"
+            android:orientation="vertical" >
+
+            <com.smk.custom.view.CustomTextView
+                android:id="@+id/CustomTextView1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="ရရန္ က်န္ရိွေနေသာ စာရင္းမ်ား"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/white" />
+
+        </LinearLayout>
+
+        <ListView
+            android:id="@+id/lst_credit"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+
+        </ListView>
+    </LinearLayout>
+
+</RelativeLayout>

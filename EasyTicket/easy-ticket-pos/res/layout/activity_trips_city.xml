@@ -1,0 +1,19 @@
+<LinearLayout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/LinearLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:background="#fff"
+    android:gravity="center_horizontal|center_vertical"
+    android:orientation="vertical" >
+
+    <GridView
+        android:id="@+id/grd_trips_city"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:numColumns="2" >
+
+    </GridView>
+
+</LinearLayout>

@@ -1,0 +1,163 @@
+/*Top Bar Style*/
+  .top-bar {
+    background: #FF8004;
+      overflow: visible;
+      font-family:  Georgia,"Times New Roman",Times,serif;
+      /*border-radius: 6px;*/
+  }
+    .top-bar .name {
+        height: 25px;
+        /*margin-left: 30px;*/
+        margin-right: 15px;
+        font-size: 18px;
+        text-transform: uppercase;
+        z-index: 999;
+    }
+    .top-bar .name a{
+        width: auto;
+        margin-top: 0px;
+        font-family: "Perpetua";
+        font-weight: bold;
+        color: white;
+        font-family: Georgia;
+    }
+    .top-bar .name img{margin-top: 1.5rem;}
+    .top-bar-section{ width: 100%;}
+    
+    .top-bar-section ul{background: none; width: auto;}
+    /*.top-bar-section .right li{float: right;}*/
+    .top-bar-section ul li{
+    min-width: 12.67%;}
+    .hdtitle,.logotitle, .title, .top-bar .name, .top-bar .top-bar-section ul li a, .top-bar .top-bar-section ul li ul li a{
+      font-family:  Georgia,"Times New Roman",Times,serif;
+        font-weight: 600;
+        font-size: 1.1rem;
+        text-transform: capitalize;
+    }
+
+    .hdtitle{margin-bottom: 14px; font-size: 1.2rem}
+    .top-bar-section ul li a{text-align: center;}
+    .top-bar-section ul li ul{width: auto;}
+    .top-bar-section ul li ul li a{text-align: left;}
+    .slidetitle{color:#ff8004; font-size: 16px;}
+    h3{margin:0;}
+z    h3.title{font-size:24px; width: 100%;padding: 0;}
+    h3.logotitle{font-size:48px;}
+    h4.title{font-size: 11px;}
+
+  .top-bar-section li a:not(.button) {
+      padding: 0px 8px;
+      line-height: 45px;
+     background:#004564;
+     color:#ccc;
+   }
+   .top-bar-section .has-dropdown > a:after {
+      margin-right: 8px;
+      border-color: rgba(255, 255, 255, .8) transparent transparent;
+    }
+    .top-bar-section li a:hover:not(.button) {
+        background:rgba(0, 69, 100, .9);
+        z-index: 9999;
+    }
+    
+    .top-bar-section ul li:hover > a{
+        background: none repeat scroll 0% 0% rgba(0, 69, 100, .9); //for parent bgcolor
+    }
+
+    .top-bar-section ul li.active > a:hover {
+        background: none repeat scroll 0% 0% rgb(255, 149, 29);
+    }
+    .top-bar-section ul li.active > a {
+        background: none repeat scroll 0% 0% rgb(255, 144, 24);
+    }
+
+  nav.tab-bar{
+    background:url('../../images/office.png');
+      font-family: "BauerBodoni", Georgia,"Times New Roman",Times,serif;
+      font-weight: 600;
+      font-size: 1.3rem;
+      z-index: 99999999;
+      color: #F8941C;
+      position: fixed;
+      width: 100%;
+    }
+    a.menu-icon{color:#F8941C;}
+  .top-bar-section .has-dropdown .dropdown li.has-dropdown > a:after {
+    border: medium none;
+    content: "»";
+    top: 1rem;
+    margin-top: -15px;
+    right: 5px;
+  }
+
+
+/*for sub menu style*/
+  .top-bar-section li ul{background: #fff; border:1px solid #ccc; border-radius: 9px;}
+  .top-bar-section li ul li a:not(.button) {
+      padding: 0px 8px;background: #fff; color:#333; line-height: 35px;}
+  .top-bar-section li ul li a:hover:not(.button) {
+          background:rgba(0,129,194, 1);
+          color:white;
+  }
+  .top-bar-section li > .dropdown:after {
+      position: absolute;
+      top: -6px;
+      right: 10px;
+      display: inline-block;
+      border-right: 1px solid transparent;
+      border-bottom: 1px solid #FFF;
+      border-left: 1px solid transparent;
+      content: "";
+  }
+  .top-bar-section li > .dropdown:before {
+      position: absolute;
+      top: -7px;
+      right: 9px;
+      display: inline-block;
+      border-right: 1px solid transparent;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+      border-left: 1px solid transparent;
+      content: "";
+  }
+  .dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0px;
+      z-index: 1000;
+      display: none;
+      float: left;
+      min-width: 160px;
+      padding: 5px 0px;
+      margin: 2px 0px 0px;
+      list-style: none outside none;
+      background-color: #FFF;
+      border: 1px solid rgba(0, 0, 0, 0.2);
+      border-radius: 0px;
+      box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
+      background-clip: padding-box;
+      background: #fff;
+  }
+
+  [class^="icon-"], [class*=" icon-"] {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      margin-top: 1px;
+      line-height: 14px;
+      vertical-align: text-top;
+      background-image: url('../img/glyphicons-halflings.png');
+      background-position: 14px 14px;
+      background-repeat: no-repeat;
+  }
+  .icon-arrow-right {
+      background-position: -456px -72px;
+  }
+  .dropdown > li > a:hover > [class^="icon-"],
+  .dropdown > li > a:focus > [class^="icon-"],
+  .dropdown > li > a:hover > [class*=" icon-"],
+  .dropdown > li > a:focus > [class*=" icon-"],
+  .dropdown > .active > a > [class^="icon-"],
+  .dropdown > .active > a > [class*=" icon-"]{
+      background-image: url('../img/glyphicons-halflings-white.png');
+  }
+/*end for submenu style*/

@@ -1,0 +1,5 @@
+.loader {
+    width: 32px;
+    height: 32px;
+    background: url('../../img/loader.gif') no-repeat scroll 0% 0% transparent;
+}

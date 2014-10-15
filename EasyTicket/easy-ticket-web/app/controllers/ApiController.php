@@ -2641,6 +2641,7 @@ class ApiController extends BaseController
     		$can_buy=true;
     			$objsaleorder=new SaleOrder();
 	    		$objsaleorder->orderdate=date('Y-m-d');
+	    		$objsaleorder->departure_date = $departure_date;
 	    		$objsaleorder->agent_id=$agent_id ? $agent_id : 0;
 	    		$objsaleorder->operator_id=$operator_id;
 	    		$objsaleorder->expired_at=$expired_date;
@@ -2653,19 +2654,23 @@ class ApiController extends BaseController
 	    				//already exit skip;
 	    			}else{
 	    				$available_orderid=$max_order_id;
-						$objsaleitems					=new SaleItem();
-		    			$objsaleitems->order_id 		=$max_order_id;
-		    			$objsaleitems->busoccurance_id 	=$rows['busoccurance_id'];
-		    			$objsaleitems->trip_id 		 	=$trip_id;
-		    			$price 							=BusOccurance::whereid($rows['busoccurance_id'])->pluck('price');
-		    			$foreign_price					=BusOccurance::whereid($rows['busoccurance_id'])->pluck('foreign_price');
-		    			$objsaleitems->seat_no			=$rows['seat_no'];
-		    			$objsaleitems->device_id		=$device_id;
-		    			$objsaleitems->operator			=$operator_id;
-		    			$objsaleitems->price			=$price;
-		    			$objsaleitems->foreign_price	=$foreign_price;
-		    			$objsaleitems->departure_date	=$departure_date;
-		    			$objsaleitems->save();
+	    				$busoccuranceinfo 				= BusOccurance::whereid($rows['busoccurance_id'])->first();
+	    				if($busoccuranceinfo){
+							$objsaleitems					=new SaleItem();
+			    			$objsaleitems->order_id 		=$max_order_id;
+			    			$objsaleitems->busoccurance_id 	=$busoccuranceinfo->id;
+			    			$objsaleitems->class_id			=$busoccuranceinfo->classes;
+			    			$objsaleitems->trip_id 		 	=$busoccuranceinfo->trip_id;
+			    			$objsaleitems->from 		 	=$busoccuranceinfo->from;
+			    			$objsaleitems->to 	 		 	=$busoccuranceinfo->to;
+			    			$objsaleitems->seat_no			=$rows['seat_no'];
+			    			$objsaleitems->device_id		=$device_id;
+			    			$objsaleitems->operator			=$operator_id;
+			    			$objsaleitems->price			=$busoccuranceinfo->price;
+			    			$objsaleitems->foreign_price	=$busoccuranceinfo->foreign_price;
+			    			$objsaleitems->departure_date	=$departure_date;
+			    			$objsaleitems->save();
+	    				}
 	    			}
 	    		}
     	}else{
@@ -2773,6 +2778,10 @@ class ApiController extends BaseController
     			$objsaleitems->name				=$rows->name;
     			$objsaleitems->nrc_no			=$rows->nrc_no;
     			$objsaleitems->ticket_no		=$rows->ticket_no;
+    			if($rows->free_ticket == "true"){
+    				$objsaleitems->free_ticket		= 1;
+    			}
+				$objsaleitems->agent_id 		=$agent_id;  			
     			$objsaleitems->update();
 
     			$seat_plan_id=BusOccurance::whereid($rows->busoccurance_id)->pluck('seat_plan_id');
@@ -2794,7 +2803,9 @@ class ApiController extends BaseController
     		$objsaleorder->name=$buyer_name;
     		$objsaleorder->nrc_no=$nrc_no;
     		$objsaleorder->phone=$phone;
-    		$objsaleorder->cash_credit=$cash_credit;
+    		if($total_amount > 0){
+	    		$objsaleorder->cash_credit=$cash_credit;
+    		}
     		$objsaleorder->total_amount=$total_amount;
     		$objsaleorder->nationality=$nationality == null ? 'local' : $nationality;
     		// $objagent=Agent::whereid($agent_id)->first();
@@ -6491,7 +6502,9 @@ class ApiController extends BaseController
     							->where('operator_id','=',$operator_id)
     							->where('agent_id','=',$agent_id)
     							->wherecash_credit(2)
-    							->with(array('saleitems'))
+    							->with(array('saleitems'=> function($query) {
+																$query->wherefree_ticket(0);
+							 								}))
     							->orderBy('orderdate','asc')
     							->take($limit)->skip($offset)
 								->get(array('id', 'orderdate', 'agent_id', 'operator_id'));
@@ -6500,7 +6513,9 @@ class ApiController extends BaseController
     							->where('operator_id','=',$operator_id)
     							->where('agent_id','=',$agent_id)
     							->wherecash_credit(2)
-    							->with(array('saleitems'))
+    							->with(array('saleitems'=> function($query) {
+																$query->wherefree_ticket(0);
+							 								}))
     							->orderBy('orderdate','asc')
     							->take($limit)->skip($offset)
 								->get(array('id', 'orderdate', 'agent_id', 'operator_id'));
@@ -6509,21 +6524,27 @@ class ApiController extends BaseController
     		$response =SaleOrder::where('operator_id','=',$operator_id)
     							->where('agent_id','=',$agent_id)
     							->wherecash_credit(2)
-    							->with(array('saleitems'))
+    							->with(array('saleitems'=> function($query) {
+																$query->wherefree_ticket(0);
+							 								}))
     							->orderBy('orderdate','asc')
     							->take($limit)->skip($offset)
 								->get(array('id', 'orderdate', 'agent_id', 'operator_id'));
     	}elseif($operator_id && !$agent_id && $start_date && $end_date){
     		$response =SaleOrder::where('operator_id','=',$operator_id)
     							->wherecash_credit(2)
-    							->with(array('saleitems'))
+    							->with(array('saleitems'=> function($query) {
+																$query->wherefree_ticket(0);
+							 								}))
     							->orderBy('orderdate','asc')
     							->take($limit)->skip($offset)
 								->get(array('id', 'orderdate', 'agent_id', 'operator_id'));
     	}elseif($operator_id && !$agent_id && !$start_date && $end_date){
     		$response =SaleOrder::where('operator_id','=',$operator_id)
     							->wherecash_credit(2)
-    							->with(array('saleitems'))
+    							->with(array('saleitems'=> function($query) {
+																$query->wherefree_ticket(0);
+							 								}))
     							->orderBy('orderdate','asc')
     							->take($limit)->skip($offset)
 								->get(array('id', 'orderdate', 'agent_id', 'operator_id'));
@@ -6743,13 +6764,17 @@ class ApiController extends BaseController
     			$grand_total=0;
     			$agent_commission=0;
     			if($objorders){
-    				// $credit=SaleItem::wherein('order_id',$objorders)->sum('price');
-    				$grand_total=SaleOrder::wherein('id',$objorders)->sum('total_amount');
+    				$nationality = SaleOrder::whereid($objorders[0])->pluck('nationality');
+    				if($nationality == "local")
+    					$grand_total=SaleItem::wherein('order_id',$objorders)->wherefree_ticket(0)->sum('price');
+    				else
+    					$grand_total=SaleItem::wherein('order_id',$objorders)->wherefree_ticket(0)->sum('foreign_price');
+
     				$agent_commission=SaleOrder::wherein('id',$objorders)->sum('agent_commission');
     				$credit=$grand_total-$agent_commission;
     			}
     			$objagentdeposit=AgentDeposit::whereagent_id($row->id)->orderBy('id','desc')->first();
-    			$objagentlist[$i]['credit']=$grand_total;
+    			$objagentlist[$i]['credit']=$credit;
     			$objagentlist[$i]['agent_commission']=$agent_commission;
     			$objagentlist[$i]['to_pay_credit']=$credit;
     			$objagentlist[$i]['deposit_balance']=0;
@@ -6831,8 +6856,16 @@ class ApiController extends BaseController
     		$response=array();
     		$response=$order_ids;
     	}
+    	$grand_total = 0;
+    	foreach ($response as $id) {
+    		$nationality = SaleOrder::whereid($id)->pluck('nationality');
+    		if($nationality == "local")
+    			$grand_total += SaleItem::whereorder_id($id)->wherefree_ticket(0)->pluck('price');
+    		else
+    			$grand_total += SaleItem::whereorder_id($id)->wherefree_ticket(0)->pluck('foreign_price');
+    	}
+    	
 
-    	$grand_total=SaleOrder::wherein('id', $response)->sum('total_amount');
 		$agent_commission=SaleOrder::wherein('id', $response)->sum('agent_commission');
 		$total_amount=$grand_total-$agent_commission;
 
@@ -7267,6 +7300,247 @@ class ApiController extends BaseController
 												}))->wheretrip_id($trip_id)->get();
     	
     	return Response::json($commission_list);
+    }
+	
+	public function populartrip(){
+    	$operator_id 	= Input::get('operator_id');
+    	$agent_id 		= Input::get('agent_id');
+    	$s_date 		= Input::get('start_date');
+    	$e_date 		= Input::get('end_date');
+    	
+    	$datetime1 = new DateTime($s_date);
+		$datetime2 = new DateTime($e_date);
+		$interval = $datetime1->diff($datetime2);
+		$days = $interval->format('%a');
+
+    	if(!$operator_id || !$s_date || !$e_date){
+    		$message['status'] 	= 0;
+    		$message['message']	= "Required for any parameter.";
+    		return Response::json($message, 400);
+    	}
+    	$trip_id = array();
+    	if($s_date && $e_date && !$agent_id){
+    		$trip_id = SaleItem::whereoperator($operator_id)
+    								->where('departure_date','>=',$s_date)
+    								->where('departure_date','<=',$e_date)
+    								->selectRaw('trip_id, count(*) as count, SUM(price) as total')
+    								->groupBy('to')
+    								->orderBy('count','desc')
+    								->get();
+    	}
+    	if($s_date && $e_date && $agent_id){
+    		$trip_id = SaleItem::whereoperator($operator_id)
+    								->where('departure_date','>=',$s_date)
+    								->where('departure_date','<=',$e_date)
+    								->whereagent_id($agent_id)
+    								->selectRaw('trip_id, count(*) as count, SUM(price) as total')
+    								->groupBy('to')
+    								->orderBy('count','desc')
+    								->get();
+    	}
+    	if($trip_id){
+    		$lists = array();
+    		foreach ($trip_id as $rows) {
+    			$trips 			= Trip::whereid($rows->trip_id)->first();
+
+    			if($trips){
+    				$list['id'] 				= $trips->id;
+    				$list['from']				= $trips->from;
+    				$list['to']					= $trips->to;
+	    			$list['trip'] 				= City::whereid($trips->from)->pluck('name') .' - '.City::whereid($trips->to)->pluck('name');
+	    			$list['classes']			= Classes::whereid($trips->class_id)->pluck('name');
+	    			$total_seat 				= SeatInfo::whereseat_plan_id($trips->seat_plan_id)->wherestatus(1)->count();
+	    			$list['percentage'] 		= round(($rows->count / ($total_seat * $days)) * 100) ;
+	    			$list['sold_total_seat'] 	= $rows->count;
+	    			$list['total_seat']			= $total_seat * $days;
+	    			$list['total_amount']		= $rows->total;
+	    			$lists[] 					= $list;
+    			}
+    		}
+    		return Response::json($lists);
+    	}else{
+    		return Response::json(array());
+    	}
+    }
+
+    public function populartriptime(){
+    	$operator_id 	= Input::get('operator_id');
+    	$agent_id 		= Input::get('agent_id');
+    	$s_date 		= Input::get('start_date');
+    	$e_date 		= Input::get('end_date');
+    	$from 			= Input::get('from');
+    	$to 			= Input::get('to');
+    	
+    	$datetime1 = new DateTime($s_date);
+		$datetime2 = new DateTime($e_date);
+		$interval = $datetime1->diff($datetime2);
+		$days = $interval->format('%a');
+
+    	if(!$operator_id || !$s_date || !$e_date){
+    		$message['status'] 	= 0;
+    		$message['message']	= "Required for any parameter.";
+    		return Response::json($message, 400);
+    	}
+    	$trip_id = array();
+    	if($s_date && $e_date && !$agent_id){
+    		$trip_id = SaleItem::whereoperator($operator_id)
+    								->where('departure_date','>=',$s_date)
+    								->where('departure_date','<=',$e_date)
+    								->wherefrom($from)
+    								->whereto($to)
+    								->selectRaw('trip_id, count(*) as count, SUM(price) as total')
+    								->groupBy('trip_id')
+    								->orderBy('count','desc')
+    								->orderBy('total','desc')
+    								->get();
+    	}
+    	if($s_date && $e_date && $agent_id){
+    		$trip_id = SaleItem::whereoperator($operator_id)
+    								->where('departure_date','>=',$s_date)
+    								->where('departure_date','<=',$e_date)
+    								->wherefrom($from)
+    								->whereto($to)
+    								->whereagent_id($agent_id)
+    								->selectRaw('trip_id, count(*) as count, SUM(price) as total')
+    								->groupBy('trip_id')
+    								->orderBy('count','desc')
+    								->orderBy('total','desc')
+    								->get();
+    	}
+    	if($trip_id){
+    		$lists = array();
+    		foreach ($trip_id as $rows) {
+    			$trips 			= Trip::whereid($rows->trip_id)->first();
+
+    			if($trips){
+    				$list['id'] 				= $trips->id;
+	    			$list['trip'] 				= City::whereid($trips->from)->pluck('name') .' - '.City::whereid($trips->to)->pluck('name');
+	    			$list['time'] 				= $trips->time;
+	    			$list['classes']			= Classes::whereid($trips->class_id)->pluck('name');
+	    			$total_seat 				= SeatInfo::whereseat_plan_id($trips->seat_plan_id)->wherestatus(1)->count();
+	    			$list['percentage'] 		= round(($rows->count / ($total_seat * $days)) * 100) ;
+	    			$list['sold_total_seat'] 	= $rows->count;
+	    			$list['total_seat']			= $total_seat * $days;
+	    			$list['total_amount']       = $rows->total;
+	    			$lists[] 					= $list;
+    			}
+    		}
+    		return Response::json($lists);
+    	}else{
+    		return Response::json(array());
+    	}
+    }
+
+    public function popularagent(){
+    	$operator_id 	= Input::get('operator_id');
+    	$s_date 		= Input::get('start_date');
+    	$e_date 		= Input::get('end_date');
+    	
+    	$datetime1 = new DateTime($s_date);
+		$datetime2 = new DateTime($e_date);
+		$interval = $datetime1->diff($datetime2);
+		$days = $interval->format('%a');
+
+    	if(!$operator_id || !$s_date || !$e_date){
+    		$message['status'] 	= 0;
+    		$message['message']	= "Required for any parameter.";
+    		return Response::json($message, 400);
+    	}
+    	$trip_id = array();
+    	if($s_date && $e_date){
+    		$agent_id = SaleOrder::whereoperator_id($operator_id)
+    								->where('departure_date','>=',$s_date)
+    								->where('departure_date','<=',$e_date)
+    								->selectRaw('agent_id, count(*) as count, SUM(total_amount) as total')->groupBy('agent_id')
+    								->orderBy('count','desc')
+    								->orderBy('total','desc')
+    								->get();
+    	}
+
+    	if($agent_id){
+    		$lists = array();
+    		foreach ($agent_id as $rows) {
+    			$agent 			= Agent::whereid($rows->agent_id)->first();
+
+    			if($agent){
+    				$list['id'] 					= $agent->id;
+	    			$list['name'] 					= $agent->name;
+	    			$list['total_amount'] 			= $rows->total;
+	    			$list['count']					= $rows->count;
+	    			$list['purchased_total_seat']	= SaleItem::whereagent_id($agent->id)
+	    															->where('departure_date','>=',$s_date)
+	    															->where('departure_date','<=',$e_date)
+	    															->count();
+	    			$lists[] 						= $list;
+    			}
+    		}
+    		return Response::json($lists);
+    	}else{
+    		return Response::json(array());
+    	}
+    }
+
+    public function analytisclasses(){
+    	$operator_id 	= Input::get('operator_id');
+    	$s_date 		= Input::get('start_date');
+    	$e_date 		= Input::get('end_date');
+    	$agent_id 		= Input::get('agent_id');
+    	
+    	$datetime1 = new DateTime($s_date);
+		$datetime2 = new DateTime($e_date);
+		$interval = $datetime1->diff($datetime2);
+		$days = $interval->format('%a');
+
+    	if(!$operator_id || !$s_date || !$e_date){
+    		$message['status'] 	= 0;
+    		$message['message']	= "Required for any parameter.";
+    		return Response::json($message, 400);
+    	}
+    	$trip_id = array();
+    	if($s_date && $e_date && !$agent_id){
+    		$class_id = SaleItem::whereoperator($operator_id)
+    								->where('departure_date','>=',$s_date)
+    								->where('departure_date','<=',$e_date)
+    								->selectRaw('class_id, count(*) as count, SUM(price) as total')
+    								->groupBy('class_id')
+    								->orderBy('count','desc')
+    								->orderBy('total','desc')
+    								->get();
+    	}
+
+    	if($s_date && $e_date && $agent_id){
+    		$class_id = SaleItem::whereoperator($operator_id)
+    								->where('departure_date','>=',$s_date)
+    								->where('departure_date','<=',$e_date)
+    								->whereagent_id($agent_id)
+    								->selectRaw('class_id, count(*) as count, SUM(price) as total')
+    								->groupBy('class_id')
+    								->orderBy('count','desc')
+    								->orderBy('total','desc')
+    								->get();
+    	}
+
+    	if($class_id){
+    		$lists = array();
+    		foreach ($class_id as $rows) {
+    			$classes 			= Classes::whereid($rows->class_id)->first();
+
+    			if($classes){
+    				$list['id'] 					= $classes->id;
+	    			$list['name'] 					= $classes->name;
+	    			$list['total_amount'] 			= $rows->total;
+	    			$list['count']					= $rows->count;
+	    			$list['purchased_total_seat']	= SaleItem::whereclass_id($classes->id)
+	    															->where('departure_date','>=',$s_date)
+	    															->where('departure_date','<=',$e_date)
+	    															->count();
+	    			$lists[] 						= $list;
+    			}
+    		}
+    		return Response::json($lists);
+    	}else{
+    		return Response::json(array());
+    	}
     }
 
 

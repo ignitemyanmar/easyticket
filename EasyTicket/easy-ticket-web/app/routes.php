@@ -48,10 +48,12 @@
 
 		//seatoccupiedbybus
 		// Route::get('report/seatoccupiedbybus',			'SeatOccupiedByBusController@index');
-		Route::get('report/seatoccupiedbytrip',			'ReportController@getSeatOccupancyBytrip');
+		Route::get('report/seatoccupiedbytrip',				'ReportController@getSeatOccupancyBytrip');
 
-		Route::get('triplist/agentreport/{id}/dateragne','ReportController@getTripslistreport');
+		Route::get('triplist/agentreport/{id}/dateragne',	'ReportController@getTripslistreport');
 	
+
+
 
 		///////////////Admin Route Begin//////////////////////////////////////
 		Route::get('agents/create',			'AgentController@getAddagent');
@@ -430,6 +432,14 @@
 		Route::get('subcinema',								'MovieApiController@getSubCinema');
 		Route::get('subcinema/{id}',						'MovieApiController@getSubCinemaInfo');
 		Route::post('subcinema/update/{id}',				'MovieApiController@updateSubCinema');
+
+		//Popularity
+		Route::get('report/popular/trip'					,'ApiController@populartrip');
+		Route::get('report/popular/triptime'				,'ApiController@populartriptime');
+		Route::get('report/popular/agent'					,'ApiController@popularagent');
+
+		//Analytis
+		Route::get('report/analytis/classes'				,'ApiController@analytisclasses');
 
 	});
 

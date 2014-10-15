@@ -23,7 +23,7 @@ class CityController extends BaseController
 
   	public function showCityList()
   	{
-      $objcity = City::paginate(12);
+      $objcity = City::all();
       $response = $objcity;
       $totalcount = City::count();
       return View::make('city.list',array('response'=>$response,'totalcount'=>$totalcount));

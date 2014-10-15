@@ -17,7 +17,9 @@ import android.widget.TextView;
 public class TimeAdapter extends BaseAdapter {
 	private LayoutInflater mInflater;
 	private List<Time> listItem;
+	private Activity aty;
 	public TimeAdapter(Activity aty, List<Time> _list){
+		this.aty = aty;
 		mInflater = LayoutInflater.from(aty);
 		listItem = _list;
 	}
@@ -50,23 +52,29 @@ public class TimeAdapter extends BaseAdapter {
 			holder = (ViewHolder) convertView.getTag();
 		}
 		holder.Classes.setText(getItem(position).getBus_class());
-		/*String timeStr = getItem(position).getTime().replaceAll(" ", "").toLowerCase();
+		String timeStr = getItem(position).getTime().replaceAll(" ", "").toLowerCase();
 		String timeTypeStr = timeStr.substring(timeStr.length() - 2, timeStr.length());
 		if(timeTypeStr.equals("am")){
 			holder.Time.setTextColor(Color.parseColor("#FF9408"));
 			holder.Line.setBackgroundColor(Color.parseColor("#FF9408"));
+			convertView.setBackgroundColor(aty.getResources().getColor(R.color.transparent_orange));
 		}else{
 			holder.Time.setTextColor(Color.parseColor("#32bf3b"));
 			holder.Line.setBackgroundColor(Color.parseColor("#32bf3b"));
-		}*/
+			convertView.setBackgroundColor(aty.getResources().getColor(R.color.transparent_forest_green));
+		}
 		holder.Time.setText(getItem(position).getTime());
 		holder.TotalSeat.setText(getItem(position).getTotal_sold_seat().toString() +"/"+ getItem(position).getTotal_seat().toString());
-		if((getItem(position).getTotal_seat() - getItem(position).getTotal_sold_seat()) <= 5){
+		int left_total_seat = getItem(position).getTotal_seat() - getItem(position).getTotal_sold_seat();
+		if(left_total_seat > 0 && left_total_seat <= 5){
+			holder.Time.setBackgroundResource(R.drawable.ovel_time_orange);
+			holder.Line.setBackgroundColor(aty.getResources().getColor(R.color.orange));
+		}else if(left_total_seat == 0){
 			holder.Time.setBackgroundResource(R.drawable.ovel_time_red);
-			holder.Line.setBackgroundColor(Color.parseColor("#F01D09"));
+			holder.Line.setBackgroundColor(aty.getResources().getColor(R.color.red));
 		}else{
 			holder.Time.setBackgroundResource(R.drawable.ovel_time_green);
-			holder.Line.setBackgroundColor(Color.parseColor("#349A10"));
+			holder.Line.setBackgroundColor(aty.getResources().getColor(R.color.forest_green));
 		}
 		
 		return convertView;

@@ -8,6 +8,7 @@
     <color name="black">#000000</color>
     <color name="dark_blue">#105B9A</color>
     <color name="red">#F01D09</color>
-    
-    
+    <color name="orange">#FF9408</color>
+    <color name="transparent_orange">#7FFF9408</color>
+    <color name="transparent_forest_green">#7F349A10</color>
 </resources>

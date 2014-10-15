@@ -308,7 +308,7 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
 				}
 			}
 		};
-		HttpConnection lt = new HttpConnection(handler,"POST", "http://192.168.1.125/sale",params);
+		HttpConnection lt = new HttpConnection(handler,"POST", "http://192.168.1.202/sale",params);
 		lt.execute();
 		
 	}

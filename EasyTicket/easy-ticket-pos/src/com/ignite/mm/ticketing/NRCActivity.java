@@ -30,6 +30,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -165,9 +166,14 @@ public class NRCActivity extends BaseSherlockActivity {
 			label.setText("လက္မွတ္ နံပါတ္ "+(i+1));
 			label.setTextSize(18f);
 			layout_ticket_no_container.addView(label,lps);
+			
+			CheckBox chk_free = new CheckBox(this);
+			chk_free.setText("Free Ticket");
+			chk_free.setId(i+1 * 100);
+			layout_ticket_no_container.addView(chk_free,lps);
+			
 			EditText ticket_no = new EditText(this);
 			ticket_no.setInputType(InputType.TYPE_CLASS_TEXT);
-			//ticket_no.setKeyListener(DigitsKeyListener.getInstance());
 			ticket_no.setId(i+1);
 			ticket_no.setSingleLine(true);
 			layout_ticket_no_container.addView(ticket_no,lps);
@@ -182,6 +188,7 @@ public class NRCActivity extends BaseSherlockActivity {
 		
 		for (int i = 0; i < selectedSeat.length; i++) {
 			EditText ticket_no = (EditText)findViewById(i+1);
+			CheckBox free_ticket = (CheckBox) findViewById(i+1 * 100);
 			seats.add(
 					new ConfirmSeat(BusSelectSeatActivity.BusSeats.get(0)
 							.getSeat_plan().get(0).getId(),
@@ -190,7 +197,7 @@ public class NRCActivity extends BaseSherlockActivity {
 									.get(Integer.valueOf(selectedSeat[i]))
 									.getSeat_no().toString(), edt_buyer
 							.getText().toString(), edt_nrc_no.getText()
-							.toString(),ticket_no.getText().toString()));
+							.toString(),ticket_no.getText().toString(),free_ticket.isChecked()));
 		}
 		
 		SharedPreferences pref_old_sale = this.getApplicationContext().getSharedPreferences("old_sale", Activity.MODE_PRIVATE);
@@ -243,7 +250,7 @@ public class NRCActivity extends BaseSherlockActivity {
 			}
 		};
 		HttpConnection lt = new HttpConnection(handler, "POST",
-				"http://192.168.1.125/sale/comfirm", params);
+				"http://192.168.1.202/sale/comfirm", params);
 		lt.execute();
 	}
 	

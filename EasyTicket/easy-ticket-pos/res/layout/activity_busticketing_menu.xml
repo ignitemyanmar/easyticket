@@ -63,14 +63,15 @@
                         android:layout_height="80dp"
                         android:layout_margin="10dp"
                         android:src="@drawable/sale_ticket" />
-
+
                     <com.smk.custom.view.CustomTextView
                         android:id="@+id/CustomTextView01"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:text="စာရင္း ေဟာင္းသြင္းရန္"
+                        android:text="ေရာင္းၿပီး စာရင္း မ်ား သြင္းရန္"
                         android:textAppearance="?android:attr/textAppearanceMedium" />
+
                 </LinearLayout>
             </LinearLayout>
 

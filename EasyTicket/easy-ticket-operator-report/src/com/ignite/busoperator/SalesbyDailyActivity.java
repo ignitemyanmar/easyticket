@@ -76,7 +76,7 @@ public class SalesbyDailyActivity extends BaseSherlockActivity{
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		getSupportActionBar().hide();
+		getSupportActionBar().setTitle("ေန႕စဥ္ အ ေရာင္း စာရင္း မ်ား");
 		setContentView(R.layout.activity_report_daily_bydate);
 		
 		myDevice = new MyDevice(this);

@@ -44,29 +44,27 @@ public class AgentListActivity extends SherlockActivity {
 	private TextView txt_deposit_amount;
 	private SKConnectionDetector skDetector;
 	private TextView txt_credit_amount;
-	private TextView txt_percent_amount;
-	private TextView txt_percented_amount;
+	private TextView txt_latest_deposit;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		
+	    getSupportActionBar().setTitle("အ ေရာင္း ကိုယ္စားလွယ္ ႏွင့္ အ ေႂကြး စာရင္း");
 	    
 		setContentView(R.layout.activity_agent);
 		txt_name = (TextView) findViewById(R.id.txt_name);
     	txt_deposit_amount = (TextView) findViewById(R.id.txt_deposit_amount);
     	txt_credit_amount = (TextView) findViewById(R.id.txt_credit);
-    	txt_percent_amount = (TextView) findViewById(R.id.txt_percent_amount);
-    	txt_percented_amount = (TextView) findViewById(R.id.txt_percented_amount);
+    	txt_latest_deposit = (TextView) findViewById(R.id.txt_latest_deposit);
 		lst_agent = (ListView) findViewById(R.id.lst_agent);
 		
-		txt_name.getLayoutParams().width = (int) (DeviceUtil.getInstance(this).getWidth()) / 6;
-		txt_deposit_amount.getLayoutParams().width = (int) (DeviceUtil.getInstance(this).getWidth()) / 6;
-		txt_credit_amount.getLayoutParams().width = (int) (DeviceUtil.getInstance(this).getWidth()) / 6;
-		txt_percent_amount.getLayoutParams().width = (int) (DeviceUtil.getInstance(this).getWidth()) / 6;
-		txt_percented_amount.getLayoutParams().width = (int) (DeviceUtil.getInstance(this).getWidth()) / 6;
-		
+		txt_name.getLayoutParams().width = (int) (DeviceUtil.getInstance(this).getWidth()) / 5;
+		txt_deposit_amount.getLayoutParams().width = (int) (DeviceUtil.getInstance(this).getWidth()) / 5;
+		txt_credit_amount.getLayoutParams().width = (int) (DeviceUtil.getInstance(this).getWidth()) / 5;
+		txt_latest_deposit.getLayoutParams().width = (int) (DeviceUtil.getInstance(this).getWidth()) / 5;
+				
 		agentList = new ArrayList<Agents>();
 		
 	}
@@ -112,6 +110,7 @@ public class AgentListActivity extends SherlockActivity {
 			startActivity(new Intent(getApplicationContext(), AgentDetailActivity.class).putExtra("agent", new Gson().toJson(agentList.get(position))));
 		}
 	};
+	
 	private ProgressDialog dialog;
 	private String selectedOperatorId;
 	private EditText editsearch;

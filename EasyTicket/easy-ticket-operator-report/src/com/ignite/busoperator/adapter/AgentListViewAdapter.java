@@ -15,6 +15,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class AgentListViewAdapter extends BaseAdapter {
@@ -52,67 +53,30 @@ public class AgentListViewAdapter extends BaseAdapter {
         	holder.txt_name = (TextView) convertView.findViewById(R.id.txt_name);
         	holder.txt_deposit_amount = (TextView) convertView.findViewById(R.id.txt_deposit_amount);
         	holder.txt_credit_amount = (TextView) convertView.findViewById(R.id.txt_credit);
-        	holder.txt_percent_amount = (TextView) convertView.findViewById(R.id.txt_percent_amount);
-        	holder.txt_percented_amount = (TextView) convertView.findViewById(R.id.txt_percented_amount);
-        	holder.btn_deposit_amount = (Button) convertView.findViewById(R.id.btn_deposit_amount);
-        	holder.btn_credit_amount = (Button) convertView.findViewById(R.id.btn_credit_amount);
-        	holder.btn_pay_history = (Button) convertView.findViewById(R.id.btn_pay_history);
+        	holder.txt_latest_deposit = (TextView) convertView.findViewById(R.id.txt_latest_deposit);
+        	holder.view_detail = (LinearLayout) convertView.findViewById(R.id.view_detail);
         	holder.btn_view = (Button) convertView.findViewById(R.id.btn_view);
         	convertView.setTag(holder);
 		}else{
 			holder = (ViewHolder) convertView.getTag();
 		}
 		
-		holder.txt_name.getLayoutParams().width = (int) (DeviceUtil.getInstance(aty).getWidth()) / 6;
-		holder.txt_deposit_amount.getLayoutParams().width = (int) (DeviceUtil.getInstance(aty).getWidth()) / 6;
-		holder.txt_credit_amount.getLayoutParams().width = (int) (DeviceUtil.getInstance(aty).getWidth()) / 6;
-		holder.txt_percent_amount.getLayoutParams().width = (int) (DeviceUtil.getInstance(aty).getWidth()) / 6;
-		holder.txt_percented_amount.getLayoutParams().width = (int) (DeviceUtil.getInstance(aty).getWidth()) / 6;
-		holder.btn_deposit_amount.getLayoutParams().width = (int) (DeviceUtil.getInstance(aty).getWidth()) / 6;
-		holder.btn_credit_amount.getLayoutParams().width = (int) (DeviceUtil.getInstance(aty).getWidth()) / 6;
-		holder.btn_pay_history.getLayoutParams().width = (int) (DeviceUtil.getInstance(aty).getWidth()) / 6;
-		holder.btn_view.getLayoutParams().width = (int) (DeviceUtil.getInstance(aty).getWidth()) / 6;
+		holder.txt_name.getLayoutParams().width = (int) (DeviceUtil.getInstance(aty).getWidth()) / 5;
+		holder.txt_deposit_amount.getLayoutParams().width = (int) (DeviceUtil.getInstance(aty).getWidth()) / 5;
+		holder.txt_credit_amount.getLayoutParams().width = (int) (DeviceUtil.getInstance(aty).getWidth()) / 5;
+		holder.txt_latest_deposit.getLayoutParams().width = (int) (DeviceUtil.getInstance(aty).getWidth()) / 5;
+		holder.view_detail.getLayoutParams().width = (int) (DeviceUtil.getInstance(aty).getWidth()) / 5;
 		
 		holder.txt_name.setText(getItem(position).getName().toString());
-		holder.txt_deposit_amount.setText(getItem(position).getDepositBalance().toString());
+		if(getItem(position).getDepositBalance().toString().contains("-")){
+			holder.txt_latest_deposit.setText(getItem(position).getDepositBalance().toString().replace("-", ""));
+			holder.txt_deposit_amount.setText("0");
+		}else{
+			holder.txt_deposit_amount.setText(getItem(position).getDepositBalance().toString());
+			holder.txt_latest_deposit.setText("0");
+		}
+		
 		holder.txt_credit_amount.setText(getItem(position).getCredit().toString());
-		holder.txt_percent_amount.setText(getItem(position).getAgentCommission().toString());
-		holder.txt_percented_amount.setText(getItem(position).getToPayCredit().toString());
-		holder.btn_deposit_amount.setTag(position);
-		holder.btn_deposit_amount.setOnClickListener(new OnClickListener() {
-			
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				int pos = (Integer) v.getTag();
-				if(mCallback != null){
-					mCallback.setDepositAmout(pos);
-				}
-			}
-		});
-		
-		holder.btn_credit_amount.setTag(position);
-		holder.btn_credit_amount.setOnClickListener(new OnClickListener() {
-			
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				int pos = (Integer) v.getTag();
-				if(mCallback != null){
-					mCallback.setViewCredit(pos);
-				}
-			}
-		});
-		
-		holder.btn_pay_history.setTag(position);
-		holder.btn_pay_history.setOnClickListener(new OnClickListener() {
-			
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				int pos = (Integer) v.getTag();
-				if(mCallback != null){
-					mCallback.setPaymentHistory(pos);
-				}
-			}
-		});
 		
 		holder.btn_view.setTag(position);
 		holder.btn_view.setOnClickListener(new OnClickListener() {
@@ -160,8 +124,9 @@ public class AgentListViewAdapter extends BaseAdapter {
 	    }
 	
 	static class ViewHolder {
-		TextView txt_name, txt_deposit_amount, txt_credit_amount, txt_percent_amount, txt_percented_amount;
-		Button btn_deposit_amount, btn_credit_amount, btn_pay_history, btn_view;
+		TextView txt_name, txt_deposit_amount, txt_credit_amount, txt_latest_deposit;
+		Button btn_view;
+		LinearLayout view_detail;
 		
 	}
 }

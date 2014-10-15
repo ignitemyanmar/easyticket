@@ -21,6 +21,10 @@ import com.ignite.busoperator.model.OccupancySeatPlan;
 import com.ignite.busoperator.model.OccupancySeatPlanwithCustomer;
 import com.ignite.busoperator.model.OperatorsbyAgent;
 import com.ignite.busoperator.model.PayHistory;
+import com.ignite.busoperator.model.PopularAgent;
+import com.ignite.busoperator.model.PopularClasses;
+import com.ignite.busoperator.model.PopularTrip;
+import com.ignite.busoperator.model.PopularTriptime;
 import com.ignite.busoperator.model.SaleDetail;
 import com.ignite.busoperator.model.SeatReport;
 import com.ignite.busoperator.model.SeatbyBus;
@@ -303,5 +307,37 @@ public interface INetworkEngine {
 	@GET("/operator/agentcommission")
 	void getAgentCommission(@Query("access_token")String access_token,
 			@Query("agent_id") String agent_id, Callback<List<AgentCommission>> callback);
+	
+	@GET("/report/popular/agent")
+	void getPopularAgent(@Query("access_token")String access_token,
+			@Query("operator_id") String operator_id,
+			@Query("start_date") String start_date, 
+			@Query("end_date") String end_date,
+			Callback<List<PopularAgent>> callback);
+	
+	@GET("/report/popular/trip")
+	void getPopularTrip(@Query("access_token")String access_token,
+			@Query("operator_id") String operator_id,
+			@Query("start_date") String start_date, 
+			@Query("end_date") String end_date,
+			@Query("agent_id") String agent_id, Callback<List<PopularTrip>> callback);
+	
+	@GET("/report/popular/triptime")
+	void getPopularTriptime(@Query("access_token")String access_token,
+			@Query("operator_id") String operator_id,
+			@Query("start_date") String start_date, 
+			@Query("end_date") String end_date,
+			@Query("agent_id") String agent_id,
+			@Query("from") String from,
+			@Query("to") String to,
+			Callback<List<PopularTriptime>> callback);
+	
+	@GET("/report/analytis/classes")
+	void getPopularClasses(@Query("access_token")String access_token,
+			@Query("operator_id") String operator_id,
+			@Query("start_date") String start_date,
+			@Query("end_date") String end_date,
+			@Query("agent_id") String agent_id,
+			Callback<List<PopularClasses>> callback);
 	
 }

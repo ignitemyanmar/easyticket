@@ -54,7 +54,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp" >
-
+
             <Button
                 android:id="@+id/btn_cancel"
                 style="?android:attr/buttonStyleSmall"
@@ -63,7 +63,7 @@
                 android:layout_margin="5dp"
                 android:layout_weight="50"
                 android:background="@drawable/btn_gray"
-                android:text="ပယ္ဖ်တ္"
+                android:text="ထြက္မည္"
                 android:textColor="@color/black" />
 
             <Button

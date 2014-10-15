@@ -74,7 +74,7 @@ public class SalesbyOccupencySeatPlanActivity extends BaseSherlockActivity{
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		getSupportActionBar().hide();
+		getSupportActionBar().setTitle("ထိုင္ ခံု ႏွင့္ လူစာရင္းမ်ား");
 		setContentView(R.layout.activity_occupancy_seat);
 		
 		seat_plan = (GridView) findViewById(R.id.grid_seat_plan);

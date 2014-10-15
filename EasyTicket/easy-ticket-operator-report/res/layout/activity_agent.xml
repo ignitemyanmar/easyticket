@@ -19,39 +19,30 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@color/white"
             android:textSize="14dp" />
-
+
         <com.smk.custom.view.CustomTextView
             android:id="@+id/txt_deposit_amount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="ၾကိဳတင္ ေပးေငြ"
+            android:text="ၾကိဳတင္ - ေငြ"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@color/white"
             android:textSize="14dp" />
-
+
         <com.smk.custom.view.CustomTextView
             android:id="@+id/txt_credit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="ေပး ရန္ေငြ"
+            android:text="ယခု - အ ေႂကြး"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@color/white"
             android:textSize="14dp" />
-
+
         <com.smk.custom.view.CustomTextView
-            android:id="@+id/txt_percent_amount"
+            android:id="@+id/txt_latest_deposit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="% ရရန္ ေငြ"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@color/white"
-            android:textSize="14dp" />
-
-        <com.smk.custom.view.CustomTextView
-            android:id="@+id/txt_percented_amount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="% ႏုတ္ၿပီး ေပး ရန္ေငြ"
+            android:text="လက္ က်န္ - အ ေႂကြး"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@color/white"
             android:textSize="14dp" />

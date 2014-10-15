@@ -81,6 +81,9 @@ public class SalesbyAgentActivity extends BaseSherlockActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
+		
+		getSupportActionBar().setTitle("အ ေရာင္း ကိုယ္စားလွယ္ ႏွင့္ အ ေရာင္းစာရင္းမ်ား");
+
 		setContentView(R.layout.activity_brand);
 
 		lySearch = (LinearLayout) findViewById(R.id.lySearch);

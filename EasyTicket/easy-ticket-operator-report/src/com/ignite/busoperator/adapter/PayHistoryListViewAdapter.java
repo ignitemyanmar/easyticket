@@ -56,12 +56,12 @@ public class PayHistoryListViewAdapter extends BaseAdapter {
 			holder = (ViewHolder) convertView.getTag();
 		}
 		
-		holder.deposit_pay_date.getLayoutParams().width = (int) (DeviceUtil.getInstance(aty).getWidth()) / 6;
-		holder.deposit.getLayoutParams().width = (int) (DeviceUtil.getInstance(aty).getWidth()) / 6;
-		holder.pay_amount.getLayoutParams().width = (int) (DeviceUtil.getInstance(aty).getWidth()) / 6;
-		holder.ticket_amount.getLayoutParams().width = (int) (DeviceUtil.getInstance(aty).getWidth()) / 6;
-		holder.credit_pay_date.getLayoutParams().width = (int) (DeviceUtil.getInstance(aty).getWidth()) / 6;
-		holder.remaining_deposit.getLayoutParams().width = (int) (DeviceUtil.getInstance(aty).getWidth()) / 6;
+		holder.deposit_pay_date.getLayoutParams().width = (int) (DeviceUtil.getInstance(aty).getWidth()) / 5;
+		//holder.deposit.getLayoutParams().width = (int) (DeviceUtil.getInstance(aty).getWidth()) / 5;
+		holder.pay_amount.getLayoutParams().width = (int) (DeviceUtil.getInstance(aty).getWidth()) / 5;
+		holder.ticket_amount.getLayoutParams().width = (int) (DeviceUtil.getInstance(aty).getWidth()) / 5;
+		holder.credit_pay_date.getLayoutParams().width = (int) (DeviceUtil.getInstance(aty).getWidth()) / 5;
+		holder.remaining_deposit.getLayoutParams().width = (int) (DeviceUtil.getInstance(aty).getWidth()) / 5;
 		
 		holder.deposit_pay_date.setText(getItem(position).getDepositDate().toString());
 		holder.deposit.setText(getItem(position).getDeposit().toString());

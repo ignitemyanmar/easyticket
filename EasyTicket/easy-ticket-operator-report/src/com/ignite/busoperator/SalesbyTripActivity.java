@@ -74,7 +74,7 @@ public class SalesbyTripActivity extends BaseSherlockActivity{
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		getSupportActionBar().hide();
+		getSupportActionBar().setTitle("ခရီးစဥ္ အလိုက္ အ ေရာင္း စာရင္းမ်ား");
 		setContentView(R.layout.activity_operator);
 		
 		lySearch = (LinearLayout)findViewById(R.id.lySearch);

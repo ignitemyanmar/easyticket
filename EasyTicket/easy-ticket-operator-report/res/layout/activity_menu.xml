@@ -113,6 +113,29 @@
                         android:layout_margin="10dp" >
 
                         <View
+                            android:id="@+id/View07"
+                            android:layout_width="3dp"
+                            android:layout_height="match_parent"
+                            android:background="#203670" />
+
+                        <com.smk.custom.view.CustomButton
+                            android:id="@+id/btn_popular_trip"
+                            android:layout_width="365dp"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/button_border"
+                            android:gravity="left|center_vertical"
+                            android:maxWidth="200dp"
+                            android:paddingLeft="10dp"
+                            android:text="အ ေရာင္း ရဆံုး ခရီးစဥ္ စာရင္းမ်ား" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_margin="10dp" >
+
+                        <View
                             android:id="@+id/View03"
                             android:layout_width="3dp"
                             android:layout_height="match_parent"
@@ -127,6 +150,52 @@
                             android:maxWidth="200dp"
                             android:paddingLeft="10dp"
                             android:text="အ ေရာင္း ကိုယ္စားလွယ္ ႏွင့္ အ ေရာင္းစာရင္းမ်ား" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_margin="10dp" >
+
+                        <View
+                            android:id="@+id/View06"
+                            android:layout_width="3dp"
+                            android:layout_height="match_parent"
+                            android:background="#203670" />
+
+                        <com.smk.custom.view.CustomButton
+                            android:id="@+id/btn_popular_agent"
+                            android:layout_width="365dp"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/button_border"
+                            android:gravity="left|center_vertical"
+                            android:maxWidth="200dp"
+                            android:paddingLeft="10dp"
+                            android:text="အ ေရာင္း ရဆံုး အ ေရာင္း ကိုယ္စားလွယ္ စာရင္းမ်ား" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp" >
+
+                        <View
+                            android:id="@+id/View08"
+                            android:layout_width="3dp"
+                            android:layout_height="match_parent"
+                            android:background="#203670" />
+
+                        <com.smk.custom.view.CustomButton
+                            android:id="@+id/btn_popular_classes"
+                            android:layout_width="365dp"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/button_border"
+                            android:gravity="left|center_vertical"
+                            android:maxWidth="200dp"
+                            android:paddingLeft="10dp"
+                            android:text="အ ေရာင္း ရဆံုး ကား အမ်ိဳးအစား စာရင္းမ်ား" />
 
                     </LinearLayout>
 
@@ -175,16 +244,6 @@
                             android:text="အ ေရာင္း ကိုယ္စားလွယ္ ႏွင့္ အ ေႂကြး စာရင္း" />
 
                     </LinearLayout>
-
-                    <com.smk.custom.view.CustomButton
-                        android:id="@+id/btnTrip"
-                        android:layout_width="365dp"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
-                        android:background="@drawable/button_border"
-                        android:maxWidth="200dp"
-                        android:text="Report by Invoice"
-                        android:visibility="gone" />
                 </LinearLayout>
 
                 <LinearLayout

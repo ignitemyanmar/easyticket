@@ -54,19 +54,19 @@ public class PayHistoryActivity extends BaseSherlockActivity {
 		getSupportActionBar().setTitle(selectedAgentName);
 		
 		txt_deposit_pay_date = (TextView) findViewById(R.id.txt_deposit_pay_date);
-    	txt_deposit = (TextView) findViewById(R.id.txt_deposit);
+    	//txt_deposit = (TextView) findViewById(R.id.txt_deposit);
     	txt_pay_amount = (TextView) findViewById(R.id.txt_pay_amount);
     	txt_ticket_amount = (TextView) findViewById(R.id.txt_ticket_amount);
     	txt_credit_pay_date = (TextView) findViewById(R.id.txt_credit_pay_date);
     	txt_remaining_deposit = (TextView) findViewById(R.id.txt_remaining_deposit);
 		lst_pay_history = (ListView) findViewById(R.id.lst_pay_history);
 		
-		txt_deposit_pay_date.getLayoutParams().width = (int) (DeviceUtil.getInstance(this).getWidth()) / 6;
-		txt_deposit.getLayoutParams().width = (int) (DeviceUtil.getInstance(this).getWidth()) / 6;
-		txt_pay_amount.getLayoutParams().width = (int) (DeviceUtil.getInstance(this).getWidth()) / 6;
-		txt_ticket_amount.getLayoutParams().width = (int) (DeviceUtil.getInstance(this).getWidth()) / 6;
-		txt_credit_pay_date.getLayoutParams().width = (int) (DeviceUtil.getInstance(this).getWidth()) / 6;
-		txt_remaining_deposit.getLayoutParams().width = (int) (DeviceUtil.getInstance(this).getWidth()) / 6;
+		txt_deposit_pay_date.getLayoutParams().width = (int) (DeviceUtil.getInstance(this).getWidth()) / 5;
+		//txt_deposit.getLayoutParams().width = (int) (DeviceUtil.getInstance(this).getWidth()) / 5;
+		txt_pay_amount.getLayoutParams().width = (int) (DeviceUtil.getInstance(this).getWidth()) / 5;
+		txt_ticket_amount.getLayoutParams().width = (int) (DeviceUtil.getInstance(this).getWidth()) / 5;
+		txt_credit_pay_date.getLayoutParams().width = (int) (DeviceUtil.getInstance(this).getWidth()) / 5;
+		txt_remaining_deposit.getLayoutParams().width = (int) (DeviceUtil.getInstance(this).getWidth()) / 5;
 		
 		SKConnectionDetector skDetector = SKConnectionDetector.getInstance(this);
 		skDetector.setMessageStyle(SKConnectionDetector.VERTICAL_TOASH);

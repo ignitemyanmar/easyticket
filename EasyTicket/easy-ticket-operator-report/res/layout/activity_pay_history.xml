@@ -10,57 +10,58 @@
         android:background="@color/pussian_blue"
         android:gravity="center_vertical"
         android:orientation="horizontal" >
-
+
         <com.smk.custom.view.CustomTextView
             android:id="@+id/txt_deposit_pay_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="စရံေငြ သြင္းသည့္ ေန႕"
+            android:text="ၾကိဳ - ေငြ သြင္းသည့္ ေန႕"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@color/white"
             android:textSize="14dp" />
-
-        <com.smk.custom.view.CustomTextView
-            android:id="@+id/txt_deposit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="စရံေငြ ပမာဏ"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@color/white"
-            android:textSize="14dp" />
-
-        <com.smk.custom.view.CustomTextView
-            android:id="@+id/txt_pay_amount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="ေပးသြင္းသည့္ ေငြပမာဏ"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@color/white"
-            android:textSize="14dp" />
-
-        <com.smk.custom.view.CustomTextView
-            android:id="@+id/txt_ticket_amount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="ေပးရန္ လက္မွတ္ဖိုး"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@color/white"
-            android:textSize="14dp" />
-
+
         <com.smk.custom.view.CustomTextView
             android:id="@+id/txt_credit_pay_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="အ ေႂကြးေပးသည့္ ေန႕"
+            android:text="အ ေႂကြး - ေပးသည့္ ေန႕"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@color/white"
             android:textSize="14dp" />
-
+
+        <com.smk.custom.view.CustomTextView
+            android:id="@+id/txt_deposit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="လက္ က်န္ - ႀကိဳတင္ေငြ"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/white"
+            android:textSize="14dp"
+            android:visibility="gone" />
+
+        <com.smk.custom.view.CustomTextView
+            android:id="@+id/txt_pay_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ေပး - ေငြ"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/white"
+            android:textSize="14dp" />
+
+        <com.smk.custom.view.CustomTextView
+            android:id="@+id/txt_ticket_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="အ ေႂကြး"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/white"
+            android:textSize="14dp" />
+
         <com.smk.custom.view.CustomTextView
             android:id="@+id/txt_remaining_deposit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="လက္က်န္ စရံေငြ"
+            android:text="လက္က်န္ - ေငြ"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@color/white"
             android:textSize="14dp" />

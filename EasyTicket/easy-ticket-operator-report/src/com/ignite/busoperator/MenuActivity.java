@@ -12,11 +12,13 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 
 public class MenuActivity extends BaseSherlockActivity{
-	private Button btn_operator, btn_branch, btn_trip;
+	private Button btn_operator, btn_branch, btn_popular_agent;
 	private Button btn_report_car;
 	private Button btn_daily_report;
 	private Button btn_seat_plan;
 	private Button btn_credit;
+	private Button btn_popular_trip;
+	private Button btn_popular_classes;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -28,32 +30,19 @@ public class MenuActivity extends BaseSherlockActivity{
 		btn_report_car = (Button) findViewById(R.id.btn_report_car);
 		btn_branch = (Button)findViewById(R.id.btnBranch);
 		btn_operator = (Button)findViewById(R.id.btnOperator);
-		btn_trip = (Button)findViewById(R.id.btnTrip);
+		btn_popular_agent = (Button)findViewById(R.id.btn_popular_agent);
+		btn_popular_trip = (Button)findViewById(R.id.btn_popular_trip);
+		btn_popular_classes = (Button)findViewById(R.id.btn_popular_classes);
 		btn_seat_plan = (Button)findViewById(R.id.btn_seat_plan);
 		btn_credit = (Button)findViewById(R.id.btn_credit);
-		
-		/*FontsTypeface tf = new FontsTypeface(this);
-		tf.setTypeface(btn_daily_report, tf.Ayarwagaung);
-		tf.setTypeface(btn_report_car, tf.Ayarwagaung);
-		tf.setTypeface(btn_branch, tf.Ayarwagaung);
-		tf.setTypeface(btn_operator, tf.Ayarwagaung);
-		tf.setTypeface(btn_trip, tf.Ayarwagaung);
-		tf.setTypeface(btn_seat_plan, tf.Ayarwagaung);
-		tf.setTypeface(btn_credit, tf.Ayarwagaung);
-		
-		btn_daily_report.setTextSize(18);
-		btn_report_car.setTextSize(18);
-		btn_branch.setTextSize(18);
-		btn_operator.setTextSize(18);
-		btn_trip.setTextSize(18);
-		btn_seat_plan.setTextSize(18);
-		btn_credit.setTextSize(18);*/
 		
 		btn_daily_report.setOnClickListener(clickListener);
 		btn_report_car.setOnClickListener(clickListener);
 		btn_branch.setOnClickListener(clickListener);
+		btn_popular_trip.setOnClickListener(clickListener);
 		btn_operator.setOnClickListener(clickListener);
-		btn_trip.setOnClickListener(clickListener);
+		btn_popular_agent.setOnClickListener(clickListener);
+		btn_popular_classes.setOnClickListener(clickListener);
 		btn_seat_plan.setOnClickListener(clickListener);
 		btn_credit.setOnClickListener(clickListener);
 		
@@ -77,9 +66,21 @@ public class MenuActivity extends BaseSherlockActivity{
 			{
 				startActivity(new Intent(MenuActivity.this,SalesbyAgentActivity.class));
 			}
+			if(v == btn_popular_trip)
+			{
+				startActivity(new Intent(MenuActivity.this,PopularTripActivity.class));
+			}
 			if(v == btn_operator)
 			{
 				startActivity(new Intent(MenuActivity.this,SalesbyTripActivity.class));
+			}
+			if(v == btn_popular_agent)
+			{
+				startActivity(new Intent(MenuActivity.this,PopularAgentActivity.class));
+			}
+			if(v == btn_popular_classes)
+			{
+				startActivity(new Intent(MenuActivity.this,PopularClassesActivity.class));
 			}
 			if(v == btn_seat_plan){
 				startActivity(new Intent(MenuActivity.this, SalesbyOccupencySeatPlanActivity.class));

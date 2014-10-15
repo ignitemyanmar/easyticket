@@ -1,0 +1,102 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:id="@+id/lySearch"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#d5f1e9"
+        android:gravity="center"
+        android:orientation="vertical" >
+
+        <ScrollView
+            android:id="@+id/scrollView1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+
+            <LinearLayout
+                android:id="@+id/lySearch112"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:paddingBottom="25dp"
+                android:paddingLeft="25dp"
+                android:paddingRight="25dp" >
+
+                <com.smk.custom.view.CustomTextView
+                    android:id="@+id/TextView03"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="ေန႕ရက္ မွ"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textSize="14dp" />
+
+                <Button
+                    android:id="@+id/btn_from_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:background="@drawable/button_border"
+                    android:text="Choose from Date"
+                    android:textSize="14dp"
+                    android:textStyle="bold" />
+
+                <com.smk.custom.view.CustomTextView
+                    android:id="@+id/TextView04"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="ေန႕ရက္ သို႕"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textSize="14dp" />
+
+                <Button
+                    android:id="@+id/btn_to_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:background="@drawable/button_border"
+                    android:text="Choose to Date"
+                    android:textSize="14dp"
+                    android:textStyle="bold" />
+
+                <com.smk.custom.view.CustomTextView
+                    android:id="@+id/textView1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="ကားဂိတ္ ေရႊးရန္"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textSize="14dp" />
+
+                <Spinner
+                    android:id="@+id/sp_agent"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:background="@drawable/button_border" />
+
+                <Button
+                    android:id="@+id/btn_search"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_weight="1"
+                    android:background="#000"
+                    android:text="Search"
+                    android:textColor="#ffffff"
+                    android:textSize="14dp" />
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/chart"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:background="#d5f1e9" >
+
+    </LinearLayout>
+
+</RelativeLayout>

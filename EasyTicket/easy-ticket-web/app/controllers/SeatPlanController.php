@@ -143,7 +143,7 @@ class SeatPlanController extends BaseController
        return View::make('seatplan.edit',array('tickettype'=>$tickettype,'response'=>$response));
     }
 
-     public function postEditSeatPlan($id)
+    public function postEditSeatPlan($id)
     {
 		$operator_id   = Input::get('operator');
         $ticketype_id  = Input::get('tickettype');
@@ -171,26 +171,17 @@ class SeatPlanController extends BaseController
 		$string = json_encode($seatno);
 
 
-      $affectedRow = SeatingPlan::where('id','=',$id)->update(array(
-      							  'operator_id'=>$operator_id,
-                                  'ticket_type_id'=>$ticketype_id,
-                                  'seat_layout_id'=>$seatlayout_id,
-                                  'row'=>$row,
-                                  'column'=> $col,
+      	$affectedRow = SeatingPlan::where('id','=',$id)->update(array(
                                   'seat_list'=>$string));
 
-      	$Seat_list = json_decode($string);
-		$seatplanid=SeatingPlan::max('id');
-		foreach ($Seat_list as $seat) {
-			$objseatinfo = new SeatInfo();
-			$objseatinfo->seat_plan_id=$seatplanid;
-			$objseatinfo->seat_no=$seat->seat_no;
-			$objseatinfo->status=$seat->status;
+		$objseatinfo=SeatInfo::whereseat_plan_id($id)->lists('seat_no');
+		$j=0;
+		foreach ($seatno as $seat) {
+			$toupdate=SeatInfo::whereseat_plan_id($id)->whereseat_no($objseatinfo[$j])->first();
+			$toupdate->seat_no=$seat['seat_no'];
+			$toupdate->update();
+			$j++;
 		}
-
-      $affectedRows1 = SeatInfo::where('id','=',$id)->update(array(
-      									'seat_no'=>$seat->seat_no,
-      									'status'=>$seat->status));
 
       return Redirect::to('/seatplanlist');
     }
@@ -299,6 +290,7 @@ class SeatPlanController extends BaseController
     	$seatlayout_id 	= SeatingPlan::whereid($id)->pluck('seat_layout_id');
 		$seatlist 		= SeatingLayout::whereid($seatlayout_id)->first();
 		$seatplan = array();
+		$seatplan['id'] = $id;
 		$seatplan['ticket_type_id'] = $seatlist->ticket_type_id;
 		$seatplan['seat_layout_id'] = $seatlist->id;
 		$seatplan['row'] 			= $seatlist->row;

@@ -6,7 +6,7 @@ public class NetworkEngine {
 	static INetworkEngine instance;
 	public static INetworkEngine getInstance() {
 		if (instance==null) {
-			RestAdapter adapter = new RestAdapter.Builder().setEndpoint("http://192.168.1.202").build();
+			RestAdapter adapter = new RestAdapter.Builder().setEndpoint("http://192.168.1.116").build();
 			instance = adapter.create(INetworkEngine.class);
 		}
 		return instance;

@@ -10,6 +10,8 @@ public class Seat_list {
 	private String seat_no;
 	@Expose
 	private Integer status;
+	@Expose
+	private Integer operatorgroup_id;
 	
 	public Seat_list(Integer id, String seat_no, Integer status) {
 		super();
@@ -42,4 +44,11 @@ public class Seat_list {
 	this.status = status;
 	}
 
+	public Integer getOperatorgroup_id() {
+		return operatorgroup_id;
+	}
+
+	public void setOperatorgroup_id(Integer operatorgroup_id) {
+		this.operatorgroup_id = operatorgroup_id;
+	}
 }

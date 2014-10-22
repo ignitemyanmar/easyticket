@@ -101,7 +101,11 @@ public class SeatbyAgentExcelUtility {
     	addLabel(sheet, 0, i, seat.getSeat_no());
     	addLabel(sheet, 1, i, seat.getTrip());
     	addLabel(sheet, 2, i, seat.getCustomer_name());
-    	addLabel(sheet, 3, i, seat.getPrice());
+    	if(seat.getFree_ticket() == 0){
+    		addLabel(sheet, 3, i, "Free Ticket");
+    	}else{
+    		addLabel(sheet, 3, i, seat.getPrice());
+    	}
     	addLabel(sheet, 4, i, seat.getTicket_no());
     	i++;
     }

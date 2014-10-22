@@ -51,7 +51,7 @@
             <!-- END PAGE HEADER-->
 
             <!-- BEGIN PAGE CONTENT-->
-              <form action="/updateseatlayout/" method="post" class="horizontal-form" enctype="multipart/form-data">
+              <form action="/updateseatplan/{{$seatplan['id']}}" method="post" class="horizontal-form" enctype="multipart/form-data">
 
                <div class="row-fluid">
                   <div class="responsive span8" data-tablet="span8" data-desktop="span8">
@@ -88,10 +88,10 @@
                                                       <?php
                                                         $seat_no=$seat_no_list[$k]['seat_no']; 
                                                       ?>
-                                                    @else
-                                                      <?php $seat_no=''; ?>
-                                                    @endif
-                                                    <input  type="text"  value="{{$seat_no}}" name="seats[]"  style="width:65px;">
+                                                      @else
+                                                        <?php $seat_no=''; ?>
+                                                      @endif
+                                                      <input  type="text"  value="{{$seat_no}}" name="seats[]"  style="width:65px;">
                                                     @endif
                                                   <input type="hidden" value="" class="price">
                                                   <input type="hidden" value="{{$seatno}}" class="seatno{{$seatno}}">

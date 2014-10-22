@@ -67,7 +67,7 @@
                                           <td>{{$tripbydaily['total_seats']}}</td>
                                           <td>{{$tripbydaily['total_amount']}}</td>
                                           <td>
-                                             <a class="btn mini green-stripe imagechange" id="" href="/report/dailybydeparturedate/busid?bus_id={{$tripbydaily['id']}}">အေသးစိတ်ြကည့်ရန်</a>
+                                             <a class="btn mini green-stripe imagechange" id="" href="/report/dailybydeparturedate/busid?bus_id={{$tripbydaily['id']}}">အေသးစိတ္ၾကည့္ရန္</a>
                                           </td>
                                        </tr>
                                     @endforeach
@@ -143,7 +143,7 @@
                         </div>
 
                         <div class="form-actions clearfix">
-                           <button type="submit" class="btn green button-submit">ၡာရန်</button>
+                           <button type="submit" class="btn green button-submit">ရွာရန္</button>
                         </div>
 
                      </form>

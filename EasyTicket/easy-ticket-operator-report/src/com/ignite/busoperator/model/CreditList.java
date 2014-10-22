@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class CreditList {
 	@Expose
-	private Integer id;
+	private String id;
 	@Expose
 	private String orderdate;
 	@SerializedName("agent_id")
@@ -47,11 +47,11 @@ public class CreditList {
 	@Expose
 	private List<Saleitem> saleitems = new ArrayList<Saleitem>();
 	
-	public Integer getId() {
+	public String getId() {
 	return id;
 	}
 	
-	public void setId(Integer id) {
+	public void setId(String id) {
 	this.id = id;
 	}
 	

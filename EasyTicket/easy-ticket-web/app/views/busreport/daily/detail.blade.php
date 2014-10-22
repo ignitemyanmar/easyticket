@@ -14,21 +14,21 @@
                      ?>
 
                      <h3 class="page-title">
-                        ကားအလုိက် ေရာင်းရေသာလက်မှတ်စာရင်း
+                        ကားအလုိက္ေရာင္းရေသာ လက္မွတ္စာရင္း
                         <!-- <small>form wizard sample</small> -->
                      </h3>
                      <ul class="breadcrumb">
                         <li>
                            <i class="icon-home"></i>
-                           <a href="/report/dailycarandadvancesale?operator_id={{Session::get('operator_id')}}">ပင်မ စာမျက်နှာ</a> 
+                           <a href="/report/dailycarandadvancesale?operator_id={{Session::get('operator_id')}}">ပင္မစာမ်က္ႏွာ</a> 
                            <span class="icon-angle-right"></span>
                         </li>
                         <li>
-                           <a href="/report/dailycarandadvancesale/search?date={{$orderdate}}&operator_id={{$V_operator_id}}">ေန့စဥ် အေရာင်းစာရင်း</a>
+                           <a href="/report/dailycarandadvancesale/search?date={{$orderdate}}&operator_id={{$V_operator_id}}">ေန႔စဥ္ အေရာင္းစာရင္း</a>
                            <span class="icon-angle-right"></span>
                         </li>
                         <li>
-                           <a href="#">ကားအလုိက် ေရာင်းရေသာလက်မှတ်စာရင်း</a>
+                           <a href="#">ကားအလုိက္ေရာင္းရေသာ လက္မွတ္စာရင္း</a>
                         </li>
                      </ul>
                   </div>
@@ -40,7 +40,7 @@
                   <div class="responsive span12" data-tablet="span12" data-desktop="span12">
                      <div class="portlet box light-grey">
                         <div class="portlet-title">
-                           <h4><i class="icon-th-list"></i>ကားအလုိက် ေရာင်းရေသာလက်မှတ်စာရင်း</h4>
+                           <h4><i class="icon-th-list"></i>ကားအလုိက္ေရာင္းရေသာ လက္မွတ္စာရင္း</h4>
                            <div class="actions">
                            </div>
                         </div>
@@ -62,18 +62,17 @@
                               <table class="table table-striped table-bordered table-advance table-hover" id="tblExport">
                                  <thead>
                                     <tr>
-                                       <th>ကားနံပါတ်</th>
-                                       <th>ခရီးစဥ်</th>
-                                       <th>ကားဂိတ်</th>
-                                       <th>အေရာင်း ကုိယ်စားလှယ်</th>
-                                       <th>ဝယ်သူအမည်</th>
-                                       <th>ကားအမျိုးအစား</th>
-                                       <th>ထွက်ခွာမည့် ေန့ရက်</th>
-                                       <th>အချိန်</th>
-                                       <th>ခုံနံပါတ်</th>
-                                       <th>လက်မှတ်နံပါတ်</th>
-                                       <th>ဝယ်သည့်ေန့</th>
-                                       <th>ေစျးနုန်း</th>
+                                       <th>ကားနံပါတ္</th>
+                                       <th>ခရီးစဥ္</th>
+                                       <th>အေရာင္း ကုိယ္စားလွယ္</th>
+                                       <th>ဝယ္သူ</th>
+                                       <th>ကားအမ်ုိဳးအစား</th>
+                                       <th>ထြက္ခြာမည့္ေန႕</th>
+                                       <th>အခ်ိန္</th>
+                                       <th>ခုံနံပါတ္</th>
+                                       <th>လက္မွတ္ နံပါတ္</th>
+                                       <th>ဝယ္သည့္ေန႕</th>
+                                       <th>ေစ်းႏုန္း</th>
                                     </tr>
                                  </thead>
                                  <tbody>
@@ -82,7 +81,6 @@
                                           <tr>
                                              <td>{{$result['bus_no']}}</td>
                                              <td>{{$result['Trip']}}</td>
-                                             <td>{{$result['operator']}}</td>
                                              <td>{{$result['agent']}}</td>
                                              <td>{{$result['name']}}</td>
                                              <td>{{$result['class']}}</td>

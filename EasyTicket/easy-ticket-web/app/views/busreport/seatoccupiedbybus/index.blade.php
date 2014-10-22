@@ -125,7 +125,7 @@
                         </div>
 
                         <div class="form-actions clearfix">
-                           <button type="submit" class="btn green button-submit">ၡာရန်</button>
+                           <button type="submit" class="btn green button-submit">ရွာရန္</button>
                         </div>
 
                      </form>

@@ -18,6 +18,7 @@ import com.ignite.mm.ticketing.sqlite.database.model.AgentList;
 import com.ignite.mm.ticketing.sqlite.database.model.BusSeat;
 import com.ignite.mm.ticketing.sqlite.database.model.CityList;
 import com.ignite.mm.ticketing.sqlite.database.model.CreditOrder;
+import com.ignite.mm.ticketing.sqlite.database.model.OperatorGroupUser;
 import com.ignite.mm.ticketing.sqlite.database.model.Operators;
 import com.ignite.mm.ticketing.sqlite.database.model.ReturnComfrim;
 import com.ignite.mm.ticketing.sqlite.database.model.SelectSeat;
@@ -85,4 +86,7 @@ public interface INetworkEngine {
 	@FormUrlEncoded
 	@POST("/sale/credit/cancelticket")
 	void deleteOrderItem(@Field("access_token")String access_token, @Field("saleitem_id_list") String sale_item,Callback<JSONObject> callback);
+
+	@GET("/operatorgroup")
+	void getOperatorGroupUser(@Query("access_token")String access_token,@Query("operator_id")String operator_id, Callback<List<OperatorGroupUser>> callback);
 }

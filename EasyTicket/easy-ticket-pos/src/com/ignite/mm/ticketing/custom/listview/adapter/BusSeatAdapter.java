@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.ignite.mm.ticketing.R;
 import com.ignite.mm.ticketing.BusSelectSeatActivity;
+import com.ignite.mm.ticketing.sqlite.database.model.OperatorGroupUser;
 import com.ignite.mm.ticketing.sqlite.database.model.Seat_list;
 
 public class BusSeatAdapter extends BaseAdapter{
@@ -54,6 +55,27 @@ public class BusSeatAdapter extends BaseAdapter{
 	            convertView.setTag(holder);
 			} else {
 				holder = (ViewHolder) convertView.getTag();
+			}
+			
+			//To Check Who's Seat
+			if(list.get(position).getOperatorgroup_id() != 0){
+				switch(getColor(list.get(position).getOperatorgroup_id())){
+					case 1:
+						holder.seat.setButtonDrawable(R.drawable.rdo_shape_1);
+						break;
+					case 2:
+						holder.seat.setButtonDrawable(R.drawable.rdo_shape_2);
+						break;
+					case 3:
+						holder.seat.setButtonDrawable(R.drawable.rdo_shape_3);
+						break;
+					case 4:
+						holder.seat.setButtonDrawable(R.drawable.rdo_shape_4);
+						break;
+					default:
+						
+				}
+				
 			}
 			
 			
@@ -123,6 +145,17 @@ public class BusSeatAdapter extends BaseAdapter{
             }*/
     
 	        return convertView;
+		}
+		
+		private int getColor(int Id){
+			int color = 0;
+			for(OperatorGroupUser groupUser: BusSelectSeatActivity.groupUser){
+				if(groupUser.getId() == Id){
+					color = groupUser.getColor();
+					break;
+				}
+			}
+			return color;
 		}
 		
 		 static class ViewHolder {

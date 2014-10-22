@@ -50,13 +50,13 @@
             <div class="container-fluid">
                 <!-- BEGIN LOGO -->
                 <a class="brand" href="index.html">
-                <img src="assets/img/logo1.png" alt="logo" />
+                <!-- <img src="assets/img/logo1.png" alt="logo" /> -->
                 <!-- <img src="assets/img/logo.png" alt="logo" /> -->
                 </a>
                 <!-- END LOGO -->
                 <!-- BEGIN RESPONSIVE MENU TOGGLER -->
                 <a href="javascript:;" class="btn-navbar collapsed" data-toggle="collapse" data-target=".nav-collapse">
-                <img src="assets/img/menu-toggler.png" alt="" />
+                <!-- <img src="assets/img/menu-toggler.png" alt="" /> -->
                 </a>          
                 <!-- END RESPONSIVE MENU TOGGLER -->                
                 <!-- BEGIN TOP NAVIGATION MENU -->                  
@@ -275,6 +275,26 @@
                     <ul class="sub">
                         <li ><a href="/seatlayout/create">ခုံအေနအထား အသစ်ထည့်သွင်းြခင်း</a></li>
                         <li ><a href="/seatlayoutlist">ခုံအေနအထားများ</a></li>
+                    </ul>
+                </li>
+
+                <li @if($currentroute=='ord') class="active" @endif>
+                    <a href="/orderlist">
+                    <i class="icon-user"></i> 
+                    <span class="title">ေအာ်ဒါလက်မှတ်များ</span>
+                    </a>
+                    
+                </li>
+
+                <li @if($currentroute=='tri') class="has-sub " @else class="has-sub" @endif>
+                    <a href="javascript:;">
+                    <i class="icon-user"></i> 
+                    <span class="title">ခရီးစဥ် အသစ်ထည့်မည်။</span>
+                    <span class="arrow "></span>
+                    </a>
+                    <ul class="sub">
+                        <li ><a href="/trip/create">ခရီးစဥ် အသစ်ထည့်မည်။</a></li>
+                        <li ><a href="/trip-list">ခရီးစဥ်များ</a></li>
                     </ul>
                 </li>
 

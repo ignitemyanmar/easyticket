@@ -294,7 +294,8 @@ public interface INetworkEngine {
 	
 	@GET("/trip")
 	void getTrip(@Query("access_token")String access_token,
-			@Query("operator_id") String operator_id, Callback<Trips> callback);
+			@Query("operator_id") String operator_id,
+			@Query("group_by") String group_by, Callback<Trips> callback);
 	
 	@FormUrlEncoded
 	@POST("/operator/agentcommission")

@@ -4,7 +4,8 @@ import java.util.List;
 
 import com.ignite.busoperator.R;
 import com.ignite.busoperator.application.DeviceUtil;
-import com.ignite.busoperator.model.SaleDetail;
+import com.ignite.busoperator.model.SaleTicket;
+import com.ignite.busoperator.model.SaleTicket;
 import com.ignite.busoperator.model.Saleitem;
 
 import android.app.Activity;
@@ -22,9 +23,9 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 
 public class ReportDetailListViewAdapter extends BaseAdapter {
 	private LayoutInflater mInflater;
-	private List<SaleDetail> listItem;
+	private List<SaleTicket> listItem;
 	private Activity aty;
-	public ReportDetailListViewAdapter(Activity aty, List<SaleDetail> _list){
+	public ReportDetailListViewAdapter(Activity aty, List<SaleTicket> _list){
 		mInflater = LayoutInflater.from(aty);
 		listItem = _list;
 		this.aty = aty;
@@ -34,7 +35,7 @@ public class ReportDetailListViewAdapter extends BaseAdapter {
 		return listItem.size();
 	}
 
-	public SaleDetail getItem(int position) {
+	public SaleTicket getItem(int position) {
 		return listItem.get(position);
 	}
 
@@ -74,19 +75,15 @@ public class ReportDetailListViewAdapter extends BaseAdapter {
 		holder.txt_qty.getLayoutParams().width = DeviceUtil.getInstance(aty).getWidth()/ 9;
 		holder.txt_amount.getLayoutParams().width = DeviceUtil.getInstance(aty).getWidth()/ 9;
 		
-		holder.txt_invoice_no.setText(getItem(position).getId().toString());
-		holder.txt_customer.setText(getItem(position).getCustomer().toString());
-		String seatNo = "";
-		for(Saleitem saleitem:getItem(position).getSaleitems()){
-			seatNo += saleitem.getSeatNo()+", ";
-		}
-		holder.txt_seat_no.setText(seatNo.toString());
-		holder.txt_time.setText(getItem(position).getDepartureTime().toString());
-		holder.txt_trip_date.setText(getItem(position).getDepartureDate().toString());
-		holder.txt_trip.setText(getItem(position).getTrip().toString());
+		holder.txt_invoice_no.setText(getItem(position).getTicketNo());
+		holder.txt_customer.setText(getItem(position).getCustomerName());
+		holder.txt_seat_no.setText(getItem(position).getSeatNo());
+		holder.txt_time.setText(getItem(position).getTime());
+		holder.txt_trip_date.setText(getItem(position).getTripDate());
+		holder.txt_trip.setText(getItem(position).getTrip());
 		holder.txt_price.setText(getItem(position).getPrice().toString()+"("+ getItem(position).getCommission()+")");
-		holder.txt_qty.setText(getItem(position).getSaleitems().size()+"");
-		holder.txt_amount.setText(getItem(position).getAmount().toString());
+		holder.txt_qty.setText(getItem(position).getQty().toString());
+		holder.txt_amount.setText(getItem(position).getTotalAmount().toString());
 		
 				
 		return convertView;

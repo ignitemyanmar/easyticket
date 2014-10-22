@@ -19,15 +19,15 @@
                         $V_operator_id=Session::get('operator_id');
                      ?> 
                      <h3 class="page-title">
-                        ကားချုပ် အေရာင်းစာရင်း
+                        ကားခ်ဳပ္အေရာင္းစာရင္း
                      </h3>
                      <ul class="breadcrumb">
                         <li>
                            <i class="icon-home"></i>
-                           <a href="/report/dailycarandadvancesale?operator_id={{Session::get('operator_id')}}">ပင်မ စာမျက်နှာ</a> 
+                           <a href="/report/dailycarandadvancesale?operator_id={{Session::get('operator_id')}}">ပင္မစာမ်က္ႏွာ</a> 
                            <span class="icon-angle-right"></span>
                         </li>
-                        <li><a href="#">ကားချုပ် အေရာင်းစာရင်း</a></li>
+                        <li><a href="#">ကားခ်ဳပ္အေရာင္းစာရင္း</a></li>
                      </ul>
                   </div>
                </div>
@@ -38,7 +38,7 @@
                   <div class="responsive span9" data-tablet="span9" data-desktop="span9">
                      <div class="portlet box light-grey">
                         <div class="portlet-title">
-                           <h4><i class="icon-user"></i>ကားချုပ် အေရာင်းစာရင်း</h4>
+                           <h4><i class="icon-user"></i>ကားခ်ဳပ္အေရာင္းစာရင္း</h4>
                            <div class="actions">
                            </div>
                         </div>
@@ -47,12 +47,12 @@
                            <table class="table table-striped table-bordered table-advance table-hover">
                               <thead>
                                  <tr>
-                                    <th>ကားနံပါတ်</th>
-                                    <th> ခရီးစဥ်</th>
-                                    <th>ကားအမျိုးအစား</th>
-                                    <th>အချိန်</th>
-                                    <th>ေရာင်းြပီး/စုစုေပါင်း လက်မှတ်များ</th>
-                                    <th>စုစုေပါင်း ေရာင်းရေငွ</th>
+                                    <th>ကားနံပါတ္</th>
+                                    <th> ခရီးစဥ္</th>
+                                    <th>ကား အမ်ုိဳးအစား</th>
+                                    <th>အခ်ိန္</th>
+                                    <th>ေရာင္းျပီး/ စုစုေပါင္း လက္မွတ္</th>
+                                    <th>ေရာင္းရေငြစုစုေပါင္း</th>
                                     <th>-</th>
                                  </tr>
                               </thead>
@@ -67,7 +67,7 @@
                                           <td>{{$tripbydaily['sold_seats']}}/{{$tripbydaily['total_seats']}}</td>
                                           <td>{{$tripbydaily['total_amount']}}</td>
                                           <td>
-                                             <a class="btn mini green-stripe imagechange" id="" href="/report/dailybydeparturedate/busid?bus_id={{$tripbydaily['id']}}">အေသးစိတ်ြကည့်ရန်</a>
+                                             <a class="btn mini green-stripe imagechange" id="" href="/report/dailybydeparturedate/busid?bus_id={{$tripbydaily['id']}}">အေသးစိတ္ၾကည့္ရန္</a>
                                           </td>
                                        </tr>
                                     @endforeach
@@ -80,7 +80,7 @@
                   </div>
                   <div class="responsive span3 border padding-10" data-tablet="span3" data-desktop="span3">
                      <form action="/report/dailybydeparturedate/search" method="get" class="horizontal-form">
-                        <h3 class="form-section">ကားချုပ် အေရာင်းစာရင်း ၡာရန်</h3>
+                        <h3 class="form-section">ကားခ်ဳပ္အေရာင္းစာရင္း ရွာရန္</h3>
                         <div class="row-fluid">
                            <div class="span11">
                                  <input type="hidden" value="{{$search['operator_id']}}" name="operator_id">
@@ -131,7 +131,7 @@
                         <div class="row-fluid">
                            <div class="span11">
                               <div class="control-group">
-                                 <label class="control-label" for="departure_time">ထွက်ခွာသည့် အချိန် ေရွးရန်</label>
+                                 <label class="control-label" for="departure_time">ထွက်ခွာသည့် အချိန်ေရွးရန်</label>
                                  <div class="controls">
                                     <select id="departure_time" name="departure_time" class="m-wrap span10">
                                        @if($search['times'])
@@ -147,7 +147,7 @@
                         </div>
 
                         <div class="form-actions clearfix">
-                           <button type="submit" class="btn green button-submit">ၡာရန်</button>
+                           <button type="submit" class="btn green button-submit">ရွာရန္</button>
                         </div>
 
                      </form>

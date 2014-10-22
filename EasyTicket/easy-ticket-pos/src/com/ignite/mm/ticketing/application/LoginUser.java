@@ -20,6 +20,7 @@ public class LoginUser {
 	private long ExpiresIn;
 	private String RefreshToken;
 	private String UserID;
+	private String UserGroupID;
 	private String UserName;
 	private String UserType;
 	private String TodayString;
@@ -38,6 +39,7 @@ public class LoginUser {
 		ExpiresIn = pref.getLong("expires_in", 0);
 		RefreshToken = pref.getString("refresh_token", null);
 		UserID = pref.getString("user_id", null);
+		UserGroupID = pref.getString("usergroup_id", null);
 		UserName = pref.getString("user_name", null);
 		UserType = pref.getString("user_type", null);
         
@@ -74,6 +76,7 @@ public class LoginUser {
 		editor.putLong("expires_in", getExpiresIn());
 		editor.putString("refresh_token", getRefreshToken());
 		editor.putString("user_id", getUserID());
+		editor.putString("usergroup_id", getUserGroupID());
 		editor.putString("user_name", getUserName());
 		editor.putString("user_type", getUserType());
 		
@@ -172,6 +175,14 @@ public class LoginUser {
 
 	public void setUserID(String userID) {
 		UserID = userID;
+	}
+	
+	public String getUserGroupID() {
+		return UserGroupID;
+	}
+
+	public void setUserGroupID(String userGroupID) {
+		UserGroupID = userGroupID;
 	}
 
 	public String getUserName() {

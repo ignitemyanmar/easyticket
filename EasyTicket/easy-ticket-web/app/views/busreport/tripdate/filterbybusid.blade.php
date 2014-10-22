@@ -12,15 +12,15 @@
                         $V_operator_id=Session::get('operator_id');
                      ?>
                      <h3 class="page-title">
-                        ကားအလုိက် ေရာင်းရေသာလက်မှတ်စာရင်း
+                        ကားအလုိက္ေရာင္းရေသာ လက္မွတ္စာရင္း
                      </h3>
                      <ul class="breadcrumb">
                         <li>
                            <i class="icon-home"></i>
-                           <a href="/report/dailycarandadvancesale?operator_id={{Session::get('operator_id')}}">ပင်မ စာမျက်နှာ</a> 
+                           <a href="/report/dailycarandadvancesale?operator_id={{Session::get('operator_id')}}">ပင္မစာမ်က္ႏွာ</a> 
                            <span class="icon-angle-right"></span>
                         </li>
-                        <li><a href="#">ကားအလုိက် ေရာင်းရေသာလက်မှတ်စာရင်း</a></li>
+                        <li><a href="#">ကားအလုိက္ေရာင္းရေသာ လက္မွတ္စာရင္း</a></li>
                      </ul>
                   </div>
                </div>
@@ -31,7 +31,7 @@
                   <div class="responsive span12" data-tablet="span12" data-desktop="span12">
                      <div class="portlet box light-grey">
                         <div class="portlet-title">
-                           <h4><i class="icon-user"></i>ကားအလုိက် ေရာင်းရေသာလက်မှတ်စာရင်း</h4>
+                           <h4><i class="icon-user"></i>ကားအလုိက္ေရာင္းရေသာ လက္မွတ္စာရင္း</h4>
                            <div class="actions">
                            </div>
                         </div>
@@ -40,13 +40,13 @@
                            <table class="table table-striped table-bordered table-advance table-hover">
                               <thead>
                                  <tr>
-                                    <th>ကားနံပါတ်</th>
-                                    <th>ခရီးစဥ်</th>
-                                    <th>ကားအမျိုးအစား</th>
-                                    <th>အချိန်</th>
-                                    <th>အေရာင်း ကုိယ်စားလှယ်</th>
-                                    <th>ေရာင်းြပီး/စုစုေပါင်း လက်မှတ်များ </th>
-                                    <th>စုစုေပါင်း ေရာင်းရေငွ</th>
+                                    <th>ကားနံပါတ္</th>
+                                    <th>ခရီးစဥ္</th>
+                                    <th>ကားအမ်ုိဳးအစား</th>
+                                    <th>အခ်ိန္</th>
+                                    <th>အေရာင္းကုိယ္စားလွယ္</th>
+                                    <th>ေရာင္းျပီး/ စုစုေပါင္းလက္မွတ္ </th>
+                                    <th>ေရာင္းရေငြစုစုေပါင္း</th>
                                     <th>-</th>
                                  </tr>
                               </thead>
@@ -62,8 +62,8 @@
                                           <td>{{$result['sold_tickets']}}/{{$result['total_seats']}}</td>
                                           <td>{{$result['total_amount']}}</td>
                                           <td>
-                                             <a class="btn mini green-stripe imagechange" id="" href="/report/seatoccupiedbybus/detail?bus_id={{$result['bus_id']}}">ခုံနံပါတ်နှင့်ဝယ်သူ တွဲြကည့်ရန်</a>
-                                             <a class="btn mini green-stripe imagechange" id="" href="/report/dailybydeparturedate/detail?bus_id={{$result['bus_id']}}&agent_id={{$result['agent_id']}}">အေသးစိတ်ြကည့်ရန်</a>
+                                             <a class="btn mini green-stripe imagechange" id="" href="/report/seatoccupiedbybus/detail?bus_id={{$result['bus_id']}}">ခုံနံပါတ္ႏွင့္ဝယ္သူတြဲၾကည့္ရန္</a>
+                                             <a class="btn mini green-stripe imagechange" id="" href="/report/dailybydeparturedate/detail?bus_id={{$result['bus_id']}}&agent_id={{$result['agent_id']}}">အေသးစိတ္ၾကည့္ရန္</a>
                                           </td>
                                        </tr>
                                     @endforeach

@@ -20,7 +20,9 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -118,20 +120,19 @@ public class NRCActivity extends BaseSherlockActivity {
 		rdo_credit = (RadioButton) findViewById(R.id.rdo_credit);
 		rdo_local = (RadioButton) findViewById(R.id.rdo_local);
 		nrcFormat = new ArrayList<String>();
-		nrcFormat.add("1/MaAhaPa(N) 000000");
-		nrcFormat.add("2/MaAhaPa(N) 000000");
-		nrcFormat.add("3/MaAhaPa(N) 000000");
-		nrcFormat.add("4/MaAhaPa(N) 000000");
-		nrcFormat.add("5/MaAhaPa(N) 000000");
-		nrcFormat.add("6/MaAhaPa(N) 000000");
-		nrcFormat.add("7/MaAhaPa(N) 000000");
-		nrcFormat.add("8/MaAhaPa(N) 000000");
-		nrcFormat.add("9/MaAhaPa(N) 000000");
-		nrcFormat.add("10/MaAhaPa(N) 000000");
-		nrcFormat.add("11/MaAhaPa(N) 000000");
-		nrcFormat.add("12/MaAhaPa(N) 000000");
-		nrcFormat.add("13/MaAhaPa(N) 000000");
-		nrcFormat.add("14/MaAhaPa(N) 000000");
+		nrcFormat.add("1/MaAhaPa(N) ");
+		nrcFormat.add("2/MaAhaPa(N) ");
+		nrcFormat.add("3/MaAhaPa(N) ");
+		nrcFormat.add("4/MaAhaPa(N) ");
+		nrcFormat.add("5/MaAhaPa(N) ");
+		nrcFormat.add("6/MaAhaPa(N) ");
+		nrcFormat.add("7/MaAhaPa(N) ");
+		nrcFormat.add("8/MaAhaPa(N) ");
+		nrcFormat.add("9/MaAhaPa(N) ");
+		nrcFormat.add("11/MaAhaPa(N) ");
+		nrcFormat.add("12/MaAhaPa(N) ");
+		nrcFormat.add("13/MaAhaPa(N) ");
+		nrcFormat.add("14/MaAhaPa(N) ");
 		
 		nrcListAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, nrcFormat);
 		edt_nrc_no.setAdapter(nrcListAdapter);
@@ -177,6 +178,31 @@ public class NRCActivity extends BaseSherlockActivity {
 			ticket_no.setId(i+1);
 			ticket_no.setSingleLine(true);
 			layout_ticket_no_container.addView(ticket_no,lps);
+		}
+		
+		if(selectedSeat.length > 1){
+			EditText ticket_no_1 = (EditText) findViewById(1);
+			ticket_no_1.addTextChangedListener(new TextWatcher() {
+				
+				public void onTextChanged(CharSequence s, int start, int before, int count) {
+					// TODO Auto-generated method stub
+					for (int i = 1; i < selectedSeat.length; i++) {
+						EditText ticket_no = (EditText)findViewById(i+1);
+						ticket_no.setText(s.toString());
+					}
+				}
+				
+				public void beforeTextChanged(CharSequence s, int start, int count,
+						int after) {
+					// TODO Auto-generated method stub
+					
+				}
+				
+				public void afterTextChanged(Editable s) {
+					// TODO Auto-generated method stub
+					
+				}
+			});
 		}
 		
 	}
@@ -250,7 +276,7 @@ public class NRCActivity extends BaseSherlockActivity {
 			}
 		};
 		HttpConnection lt = new HttpConnection(handler, "POST",
-				"http://192.168.1.202/sale/comfirm", params);
+				"http://192.168.1.116/sale/comfirm", params);
 		lt.execute();
 	}
 	

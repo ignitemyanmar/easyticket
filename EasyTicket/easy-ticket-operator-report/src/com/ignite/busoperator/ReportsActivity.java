@@ -1,5 +1,6 @@
 package com.ignite.busoperator;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit.Callback;
@@ -28,6 +29,8 @@ import com.ignite.busoperator.application.DeviceUtil;
 import com.ignite.busoperator.clientapi.NetworkEngine;
 import com.ignite.busoperator.model.CreditList;
 import com.ignite.busoperator.model.SaleDetail;
+import com.ignite.busoperator.model.SaleTicket;
+import com.ignite.busoperator.model.Saleitem;
 import com.ignite.busoperator.model.TripsbyOperator;
 import com.smk.skalertmessage.SKToastMessage;
 
@@ -161,12 +164,36 @@ public class ReportsActivity extends BaseSherlockActivity {
 					public void success(List<SaleDetail> arg0, Response arg1) {
 						// TODO Auto-generated method stub
 						saleDetail = arg0;
-						lst_report.setAdapter(new ReportDetailListViewAdapter(
-								ReportsActivity.this, arg0));
+						
 						for (SaleDetail saleDetail : arg0) {
 							totalAmout += saleDetail.getAmount();
 						}
 						txt_total_amount.setText(totalAmout + " Kyats");
+						List<SaleTicket> saleTickets = new ArrayList<SaleTicket>();
+						for (int i = 0; i < arg0.size(); i++) {
+							
+							for (Saleitem saleitem : arg0.get(i).getSaleitems()) {
+								Integer found_position = checkTicketNo(saleTickets, saleitem);
+								if(found_position != null){
+									saleTickets.get(found_position).setSeatNo(saleTickets.get(found_position).getSeatNo()+", "+saleitem.getSeatNo());
+									saleTickets.get(found_position).setQty(saleTickets.get(found_position).getQty() + 1);
+									saleTickets.get(found_position).setTotalAmount(saleTickets.get(found_position).getTotalAmount() + arg0.get(i).getPrice());
+								}else{
+									saleTickets.add(new SaleTicket(saleitem.getOrderId(),saleitem
+											.getTicketNo(), saleitem.getName(),
+											saleitem.getSeatNo(), arg0.get(i)
+													.getDepartureTime(), arg0
+													.get(i).getDepartureDate(),
+											arg0.get(i).getTrip(),
+											arg0.get(i).getPrice(),arg0.get(i).getCommission(), 1,
+											arg0.get(i).getPrice()));
+								}
+							}
+						}
+						
+						lst_report.setAdapter(new ReportDetailListViewAdapter(
+								ReportsActivity.this, saleTickets));
+
 						dialog.dismiss();
 						if (arg0.size() == 0) {
 							SKToastMessage.showMessage(ReportsActivity.this,
@@ -182,4 +209,17 @@ public class ReportsActivity extends BaseSherlockActivity {
 				});
 
 	}
+	
+	private Integer checkTicketNo(List<SaleTicket> list, Saleitem saleitem){
+		Integer found = null;
+		for(int i=0; i<list.size();i++){
+			if(list.get(i).getTicketNo().equals(saleitem.getTicketNo())){
+				found = i;
+				break;
+			}
+		}
+		
+		return found;
+	}
 }
+

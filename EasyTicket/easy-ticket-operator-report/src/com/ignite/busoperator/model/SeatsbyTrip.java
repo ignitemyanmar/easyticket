@@ -17,6 +17,8 @@ public class SeatsbyTrip {
 	@Expose
 	private String ticket_no;
 	@Expose
+	private Integer free_ticket;
+	@Expose
 	private Integer commission;
 	
 	public String getSeat_no() {
@@ -54,6 +56,12 @@ public class SeatsbyTrip {
 	}
 	public void setTicket_no(String ticket_no) {
 		this.ticket_no = ticket_no;
+	}
+	public Integer getFree_ticket() {
+		return free_ticket;
+	}
+	public void setFree_ticket(Integer free_ticket) {
+		this.free_ticket = free_ticket;
 	}
 	public Integer getCommission() {
 		return commission;

@@ -24,21 +24,21 @@
                         if($Vdeparture_time)
                            $time="(".$Vdeparture_time.")";
                      ?>
-                        {{$orderdate.$time}}&nbsp;ေန့တွင် ေရာင်းရေသာ စာရင်း
+                        {{$orderdate.$time}}&nbsp;ေန႕တြင္ေရာင္းရေသာစာရင္း
 
                         <!-- <small>form wizard sample</small> -->
                      </h3>
                      <ul class="breadcrumb">
                         <li>
                            <i class="icon-home"></i>
-                           <a href="/report/dailycarandadvancesale?operator_id={{Session::get('operator_id')}}">ပင်မ စာမျက်နှာ</a> 
+                           <a href="/report/dailycarandadvancesale?operator_id={{Session::get('operator_id')}}">ပင္မစာမ်က္ႏွာ</a> 
                            <span class="icon-angle-right"></span>
                         </li>
                         <li>
-                           <a href="/report/dailycarandadvancesale/search?date={{$orderdate}}&operator_id={{$V_operator_id}}">ေန့စဥ် အေရာင်းစာရင်း</a>
+                           <a href="/report/dailycarandadvancesale/search?date={{$orderdate}}&operator_id={{$V_operator_id}}">ေန႔စဥ္ အေရာင္းစာရင္း</a>
                            <span class="icon-angle-right"></span>
                         </li>
-                        <li><a href="#">{{$time}}&nbsp;အတွက် ေရာင်းရေသာ စာရင်း</a></li>
+                        <li><a href="#">{{$time}}&nbsp;ေန႕တြင္ေရာင္းရေသာစာရင္း</a></li>
                      </ul>
                   </div>
                </div>
@@ -49,7 +49,7 @@
                   <div class="responsive span12" data-tablet="span12" data-desktop="span12">
                      <div class="portlet box light-grey">
                         <div class="portlet-title">
-                           <h4><i class="icon-user"></i>{{$orderdate.$time}}&nbsp;အတွက် ေရာင်းရေသာ စာရင်း</h4>
+                           <h4><i class="icon-user"></i>{{$orderdate.$time}}&nbsp;ေန႕တြင္ေရာင္းရေသာစာရင္း</h4>
                            <div class="actions">
                            </div>
                         </div>
@@ -58,13 +58,13 @@
                            <table class="table table-striped table-bordered table-advance table-hover">
                               <thead>
                                  <tr>
-                                    <th class="span1">ကားနံပါတ်</th>
-                                    <th class="span2">ခရီးစဥ်</th>
-                                    <th class="span1">&nbsp;&nbsp;&nbsp;&nbsp;အချိန်&nbsp;&nbsp;&nbsp;&nbsp;</th>
-                                    <th class="span1">ကားအမျိုးအစား</th>
-                                    <th class="span1">ေရာင်းြပီး/စုစုေပါင်း လက်မှတ်များ</th>
-                                    <th class="span1">ေစျးနုန်း</th>
-                                    <th class="span1">စုစုေပါင်းေရာင်းရေငွ</th>
+                                    <th class="span1">ကားနံပါတ္</th>
+                                    <th class="span2">ခရီးစဥ္</th>
+                                    <th class="span1">&nbsp;&nbsp;&nbsp;&nbsp;အခ်ိန္&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                                    <th class="span1">ကားအမ်ုိဳးအစား</th>
+                                    <th class="span1">ေရာင္းျပီး/ စုစုေပါင္းလက္မွတ္</th>
+                                    <th class="span1">ေစ်းႏုန္း</th>
+                                    <th class="span1">ေရာင္းရေငြစုစုေပါင္း</th>
                                     <th class="span4">-</th>
                                  </tr>
                               </thead>
@@ -80,8 +80,8 @@
                                        <td>{{$result['price']}}</td>
                                        <td>{{$result['sold_amount']}}</td>
                                        <td>
-                                          <a class="btn mini green-stripe imagechange" id="" href="/report/seatoccupiedbybus/detail?bus_id={{$result['bus_id']}}">ခုံနံပါတ်နှင့်ဝယ်သူ တွဲြကည့်ရန်</a>
-                                          <a class="btn mini green-stripe imagechange" id="" href="/report/dailycarandadvancesale/detail?bus_id={{$result['bus_id']}}">အေသးစိတ်ြကည့်ရန်</a>
+                                          <a class="btn mini green-stripe imagechange" id="" href="/report/seatoccupiedbybus/detail?bus_id={{$result['bus_id']}}">ခုံနံပါတ္ႏွင့္ဝယ္သူတြဲၾကည့္ရန္</a>
+                                          <a class="btn mini green-stripe imagechange" id="" href="/report/dailycarandadvancesale/detail?bus_id={{$result['bus_id']}}">အေသးစိတ္ၾကည့္ရန္</a>
                                        </td>
                                     </tr>
                                     @endforeach

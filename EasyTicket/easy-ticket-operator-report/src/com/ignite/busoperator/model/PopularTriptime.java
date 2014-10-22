@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 public class PopularTriptime {
 	
 	@Expose
-	private Integer id;
+	private String id;
 	@Expose
 	private String trip;
 	@Expose
@@ -25,11 +25,11 @@ public class PopularTriptime {
 	@Expose
 	private Integer totalAmount;
 	
-	public Integer getId() {
+	public String getId() {
 	return id;
 	}
 	
-	public void setId(Integer id) {
+	public void setId(String id) {
 	this.id = id;
 	}
 	

@@ -30,20 +30,20 @@
                         $V_operator_id=Session::get('operator_id');
                      ?>
                      <h3 class="page-title">
-                        ခုံနံပါတ်နှင့်ဝယ်သူ စာရင်း
+                        ခုံနံပါတ္ႏွင့္ဝယ္သူ စာရင္း
                         <!-- <small>form wizard sample</small> -->
                      </h3>
                      <ul class="breadcrumb">
                         <li>
                            <i class="icon-home"></i>
-                           <a href="/report/dailycarandadvancesale?operator_id={{Session::get('operator_id')}}">ပင်မ စာမျက်နှာ</a> 
+                           <a href="/report/dailycarandadvancesale?operator_id={{Session::get('operator_id')}}">ပင္မစာမ်က္ႏွာ</a> 
                            <span class="icon-angle-right"></span>
                         </li>
                         <li>
-                           <a href="/report/dailycarandadvancesale/search?date={{$orderdate}}&operator_id={{$V_operator_id}}">ေန့စဥ် အေရာင်းစာရင်း</a>
+                           <a href="/report/dailycarandadvancesale/search?date={{$orderdate}}&operator_id={{$V_operator_id}}">ေန႔စဥ္ အေရာင္းစာရင္း</a>
                            <span class="icon-angle-right"></span>
                         </li>
-                        <li><a href="#">ခုံနံပါတ်နှင့်ဝယ်သူ စာရင်း</a></li>
+                        <li><a href="#">ခုံနံပါတ္ႏွင့္ဝယ္သူ စာရင္း</a></li>
                      </ul>
                   </div>
                </div>
@@ -98,7 +98,7 @@
                   <div class="responsive span12" data-tablet="span12" data-desktop="span12">
                      <div class="portlet box light-grey">
                         <div class="portlet-title">
-                           <h4><i class="icon-th-list"></i>ခုံနံပါတ်နှင့်ဝယ်သူ စာရင်း</h4>
+                           <h4><i class="icon-th-list"></i>ခုံနံပါတ္ႏွင့္ဝယ္သူ စာရင္း</h4>
                            <div class="actions">
                            </div>
                         </div>
@@ -120,14 +120,14 @@
 
                               @if($response['seat_plan']['seat_list'])
                               <ul class="trip_info">
-                                 <h3>ခရီးစဥ် အချက်အလက်များ</h3>
-                                 <li><span>ကားနံပါတ်</span>: {{$response['seat_plan']['bus_no']}}</li>
-                                 <li><span>ခရီးစဥ် </span>: {{$response['seat_plan']['from'].'-'. $response['seat_plan']['to']}}</li>
-                                 <li><span>ကားအမျိုးအစား </span>: {{$response['seat_plan']['class']}}</li>
+                                 <h3>ခရီးစဥ္ အခ်က္အလက္မ်ား</h3>
+                                 <li><span>ကားနံပါတ္</span>: {{$response['seat_plan']['bus_no']}}</li>
+                                 <li><span>ခရီးစဥ္ </span>: {{$response['seat_plan']['from'].'-'. $response['seat_plan']['to']}}</li>
+                                 <li><span>ကားအမ်ုိဳးအစား </span>: {{$response['seat_plan']['class']}}</li>
                                  <li><span>ထွက်ခွာမည့် ေန့ရက်</span>: {{$response['seat_plan']['date']}}</li>
-                                 <li><span>အချိန် </span>: {{$response['seat_plan']['time']}}</li>
-                                 <li><span>ေရာင်းြပီး/စုစုေပါင်း လက်မှတ်များ </span>: {{$response['seat_plan']['total_sold_seats'].'/'.$response['seat_plan']['total_seats']}}</li>
-                                 <li><span>စုစုေပါင်း ေရာင်းရေငွ </span>: {{$response['seat_plan']['total_amount']}} MMK</li>
+                                 <li><span>အခ်ိန္ </span>: {{$response['seat_plan']['time']}}</li>
+                                 <li><span>ေရာင္းျပီး/ စုစုေပါင္းလက္မွတ္ </span>: {{$response['seat_plan']['total_sold_seats'].'/'.$response['seat_plan']['total_seats']}}</li>
+                                 <li><span>ေရာင္းရေငြစုစုေပါင္း </span>: {{$response['seat_plan']['total_amount']}} MMK</li>
                                  <hr>
                               </ul>
                                  <div id="seating-map-wrapper">

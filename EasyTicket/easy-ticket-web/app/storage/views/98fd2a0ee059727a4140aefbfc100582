@@ -1,0 +1,51 @@
+
+<?php echo HTML::script('../../js/chooseseats.js'); ?>
+<?php echo HTML::style('../../css/Tixato_files/seating_builder.css'); ?>
+<style type="text/css">
+  .padding-5{padding: 5px;}
+  body .ui-tooltip, .arrow:after {
+      background: transparent;
+      border: 0px solid #FF8004;
+  }
+  .arrow{position: relative;
+			left: 64%;
+			margin-left: 0px;
+			box-shadow: transparent;
+		}
+</style>
+<?php if($seatplan): ?>
+	<?php 
+		$column   =$seatplan['column'];
+		$row      =$seatplan['row'];
+		$seatlist =$seatplan['seat_list'];
+		$width    =(100%$column);
+		$seatno   =1;
+	?>
+	<table style="width:100%">
+		<?php $k=0; ?>
+		<?php for($i=1;$i<=$seatplan['row'];$i++): ?>
+		<tr>
+			<?php for($j=1;$j<=$seatplan['column'];$j++): ?>
+			<td>
+				<div class="checkboxframe">
+		            <label>
+		                <span></span>
+		                	<?php if($seatlist[$k]==0): ?>
+		                	<input  type="text"  value="No Seat" name="seats[]"  style="width:65px;" readonly>
+		                	<?php else: ?>
+		                	<input  type="text"  value="" name="seats[]"  style="width:65px;">
+		                	<?php endif; ?>
+		            		<input type="hidden" value="" class="price">
+		            		<input type="hidden" value="<?php echo $seatno; ?>" class="seatno<?php echo $seatno; ?>">
+		                
+			                
+		            </label>
+		        </div>
+			</td>
+				<?php $seatno++; $k++; ?>
+
+			<?php endfor; ?>
+		</tr>
+		<?php endfor; ?>
+	</table>
+<?php endif; ?>

@@ -36,19 +36,19 @@
                         $V_operator_id=Session::get('operator_id');
                      ?> 
                      <h3 class="page-title">
-                        ကားအလုိက် ေရာင်းရေသာလက်မှတ်စာရင်း 
+                        ကားအလုိက္ေရာင္းရေသာ လက္မွတ္စာရင္း
                      </h3>
                      <ul class="breadcrumb">
                         <li>
                            <i class="icon-home"></i>
-                           <a href="/report/dailycarandadvancesale?operator_id={{Session::get('operator_id')}}">ပင်မ စာမျက်နှာ</a> 
+                           <a href="/report/dailycarandadvancesale?operator_id={{Session::get('operator_id')}}">ပင္မစာမ်က္ႏွာ</a> 
                            <span class="icon-angle-right"></span>
                         </li>
                         <li>
-                           <a href="#">ေန့ရက်အလိုက် အေရာင်းစာရင်းများ</a>
+                           <a href="#">ေန႕ရက္အလုိက္အေရာင္းစာရင္းမ်ား</a>
                            <span class="icon-angle-right"></span>
                         </li>
-                        <li><a href="#">ကားအလုိက် ေရာင်းရေသာလက်မှတ်စာရင်း</a></li>
+                        <li><a href="#">ကားအလုိက္ေရာင္းရေသာ လက္မွတ္စာရင္း</a></li>
                      </ul>
                   </div>
                </div>
@@ -60,7 +60,7 @@
                   <div class="responsive span12" data-tablet="span12" data-desktop="span12">
                      <div class="portlet box light-grey">
                         <div class="portlet-title">
-                           <h4><i class="icon-th-list"></i>ကားအလုိက် ေရာင်းရေသာလက်မှတ်စာရင်း </h4>
+                           <h4><i class="icon-th-list"></i>ကားအလုိက္ေရာင္းရေသာ လက္မွတ္စာရင္း</h4>
                            <div class="actions">
                               
                            </div>
@@ -84,13 +84,13 @@
                               <table class="table table-striped table-bordered table-advance table-hover" id="tblExport">
                                  <thead>
                                     <tr>
-                                       <th>ခုံနံပါတ်</th>
-                                       <th>ဝယ်သူအမည်</th>
-                                       <th>အေရာင်း ကုိယ်စားလှယ်</th>
-                                       <th>ထွက်ခွာမည့်ေန့ရက်</th>
-                                       <th>အချိန်</th>
-                                       <th>ေဘာက်ချာ နံပါတ်</th>
-                                       <th>စုစုေပါင်း ေရာင်းရေငွ</th>
+                                       <th>ခုံနံပါတ္</th>
+                                       <th>ဝယ္သူ</th>
+                                       <th>အေရာင္းကုိယ္စားလွယ္</th>
+                                       <th>ထြက္ခြာမည့္ေန႕</th>
+                                       <th>အခ်ိန္</th>
+                                       <th>ေဘာက္ခ်ာနံပါတ္</th>
+                                       <th>ေရာင္းရေငြစုစုေပါင္း</th>
                                        <!-- <th></th> -->
                                     </tr>
                                  </thead>

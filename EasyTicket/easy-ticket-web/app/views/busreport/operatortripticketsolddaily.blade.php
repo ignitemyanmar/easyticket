@@ -15,19 +15,19 @@
                         $V_operator_id=Session::get('operator_id');
                      ?>
                      <h3 class="page-title">
-                        &nbsp;ေန့ရက်အလိုက် အေရာင်းစာရင်းများ
+                        &nbsp;ေန႕ရက္အလုိက္အေရာင္းစာရင္းမ်ား
                      </h3>
                      <ul class="breadcrumb">
                         <li>
                            <i class="icon-home"></i>
-                           <a href="/report/dailycarandadvancesale?operator_id={{Session::get('operator_id')}}">ပင်မ စာမျက်နှာ</a> 
+                           <a href="/report/dailycarandadvancesale?operator_id={{Session::get('operator_id')}}">ပင္မစာမ်က္ႏွာ</a> 
                            <span class="icon-angle-right"></span>
                         </li>
                         <li>
-                           <a href="#">အစေန့မှ အဆုံးေန့အတွင်းအေရာင်းစာရင်း </a>
+                           <a href="#">အစေန႕မွအဆုံးေန႕အတြင္းအေရာင္းစာရင္း</a>
                            <span class="icon-angle-right"></span>
                         </li>
-                        <li><a href="#">ေန့ရက်အလိုက် အေရာင်းစာရင်းများ</a></li>
+                        <li><a href="#">ေန႕ရက္အလုိက္အေရာင္းစာရင္းမ်ား</a></li>
                      </ul>
                   </div>
                </div>
@@ -38,7 +38,7 @@
                   <div class="responsive span12" data-tablet="span12" data-desktop="span12">
                      <div class="portlet box light-grey">
                         <div class="portlet-title">
-                           <h4><i class="icon-user"></i>ေန့ရက်အလိုက် အေရာင်းစာရင်းများ</h4>
+                           <h4><i class="icon-user"></i>ေန႕ရက္အလုိက္အေရာင္းစာရင္းမ်ား</h4>
                            <div class="actions">
                               
                            </div>
@@ -48,11 +48,11 @@
                            <table class="table table-striped table-bordered table-advance table-hover">
                               <thead>
                                  <tr>
-                                    <th>ကားနံပါတ်</th>
-                                    <th>ေရာင်းြပီး/စုစုေပါင်း လက်မှတ်များ</th>
-                                    <th>ထွက်ခွာမည့်ေန့ရက်</th>
-                                    <th>အချိန်</th>
-                                    <th>စုစုေပါင်း ေရာင်းရေငွ</th>
+                                    <th>ကားနံပါတ္</th>
+                                    <th>ေရာင္းျပီး/ စုစုေပါင္းလက္မွတ္</th>
+                                    <th>ထြက္ခြာမည့္ေန႕</th>
+                                    <th>အခ်ိန္</th>
+                                    <th>ေရာင္းရေငြစုစုေပါင္း</th>
                                     <th>-</th>
                                  </tr>
                               </thead>
@@ -66,8 +66,8 @@
                                           <td>{{ $tripbydaily['time']}}</td>
                                           <td>{{ $tripbydaily['total_amout']}}</td>
                                           <td>
-                                             <a class="btn mini green-stripe imagechange" id="" href="/report/seatoccupiedbybus/detail?bus_id={{$tripbydaily['bus_id']}}">ခုံနံပါတ်နှင့်ဝယ်သူ တွဲြကည့်ရန်</a>
-                                             <a class="btn mini green-stripe imagechange" id="" href="/triplist/{{$tripbydaily['bus_id']}}/busid?operator_id={{$parameter['operator_id']}}&agent_id={{$parameter['agent_id']}}&date={{$parameter['date']}}&time={{$tripbydaily['time']}}">အေသးစိတ်ြကည့်ရန်</a>
+                                             <a class="btn mini green-stripe imagechange" id="" href="/report/seatoccupiedbybus/detail?bus_id={{$tripbydaily['bus_id']}}">ခုံနံပါတ္ႏွင့္ဝယ္သူတြဲၾကည့္ရန္</a>
+                                             <a class="btn mini green-stripe imagechange" id="" href="/triplist/{{$tripbydaily['bus_id']}}/busid?operator_id={{$parameter['operator_id']}}&agent_id={{$parameter['agent_id']}}&date={{$parameter['date']}}&time={{$tripbydaily['time']}}">အေသးစိတ္ၾကည့္ရန္</a>
                                           </td>
                                        </tr>
                                     @endforeach

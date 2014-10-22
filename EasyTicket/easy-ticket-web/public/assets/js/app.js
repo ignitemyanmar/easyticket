@@ -2356,7 +2356,7 @@ var App = function () {
         });
 
         $('#sample_editable_1 a.delete').live('click', function (e) {
-            e.preventDefault();
+            // e.preventDefault();
 
             if (confirm("Are you sure to delete this row ?") == false) {
                 return;
@@ -2364,7 +2364,7 @@ var App = function () {
 
             var nRow = $(this).parents('tr')[0];
             oTable.fnDeleteRow(nRow);
-            alert("Deleted! Do not forget to do some ajax to sync with backend :)");
+            // alert("Deleted! Do not forget to do some ajax to sync with backend :)");
         });
 
         $('#sample_editable_1 a.cancel').live('click', function (e) {
@@ -3262,6 +3262,7 @@ var App = function () {
         $('.chosen, .chosen-with-diselect', form2).change(function () {
             form2.validate().element($(this)); //revalidate the chosen dropdown value and show error or success message for the input
         });
+        
     }
 
     var handleTree = function () {
@@ -3383,6 +3384,7 @@ var App = function () {
             if (App.isPage("form_validation")) {
                 handleFormValidation(); // handles form validation samples
             }
+
 
             if (App.isPage("ui_tree")) {
                 handleTree();

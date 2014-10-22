@@ -150,7 +150,11 @@ public class SeatbyAgentPDFUtility {
 	        	table.addCell(seatBus.getSeat_no());
 	        	table.addCell(seatBus.getTrip());
 	            table.addCell(seatBus.getCustomer_name());
-	            table.addCell(seatBus.getPrice());
+	            if(seatBus.getFree_ticket() == 1){
+	            	table.addCell("Free Ticket");
+	            }else{
+	            	table.addCell(seatBus.getPrice());
+	            }
 	            table.addCell(seatBus.getTicket_no());
 	        }
 	        document.add(table);

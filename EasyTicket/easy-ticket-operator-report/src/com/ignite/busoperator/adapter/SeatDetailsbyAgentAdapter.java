@@ -63,7 +63,11 @@ public class SeatDetailsbyAgentAdapter extends BaseAdapter {
 		
 		holder.seatno.setText(seat_list.get(position).getSeat_no());
 		holder.buyer.setText(seat_list.get(position).getCustomer_name());
-		holder.prices.setText(seat_list.get(position).getPrice());
+		if(seat_list.get(position).getFree_ticket() == 1){
+			holder.prices.setText("Free Ticket");
+		}else{
+			holder.prices.setText(seat_list.get(position).getPrice());
+		}
 		holder.ticketNo.setText(seat_list.get(position).getTicket_no());
 		return convertView;
 	}

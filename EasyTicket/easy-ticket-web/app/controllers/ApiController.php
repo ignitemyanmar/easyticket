@@ -1496,8 +1496,13 @@ class ApiController extends BaseController
 
 	public function getAllTrip(){
 		$operator_id=Input::get('operator_id');
+		$group_by=Input::get('group_by');
 		if($operator_id){
-			$objtrips=Trip::whereoperator_id($operator_id)->get();
+			if($group_by){
+				$objtrips=Trip::whereoperator_id($operator_id)->groupby('to')->get();
+			}else{
+				$objtrips=Trip::whereoperator_id($operator_id)->get();
+			}
 		}else{
 			$objtrips=Trip::all();
 		}
@@ -1505,49 +1510,21 @@ class ApiController extends BaseController
 		$i=0;
 		if($objtrips){
 			foreach ($objtrips as $trip) {
-				if($i==0){
-					$tmp['id']=$trip->id;
-					$tmp['operator_id']=$trip->operator_id;
-					$tmp['from']=$trip->from;
-					$tmp['to']=$trip->to;
-					$tmp['operator']=Operator::whereid($trip->operator_id)->pluck('name');
-					$tmp['from_city']=City::whereid($trip->from)->pluck('name');
-					$tmp['to_city']=City::whereid($trip->to)->pluck('name');
-					$tmp['class_id']=$trip->class_id;
-					$tmp['classes']=Classes::whereid($trip->class_id)->pluck('name');
-					$tmp['available_day']=$trip->available_day;
-					$tmp['time']=$trip->time;
-					$tmp['price']=$trip->price;
-					$tmp['foreign_price']=$trip->foreign_price;
-				
-					$trips[]=$tmp;
-				}else{
-					$sametrip=0;
-
-					$tmp['id']=$trip->id;
-					$tmp['operator_id']=$trip->operator_id;
-					$tmp['from']=$trip->from;
-					$tmp['to']=$trip->to;
-					foreach($trips as $row){
-						if($row['from'] == $trip->from && $row['to'] == $trip->to){
-							$sametrip +=1;
-						}
-					}
-
-					$tmp['operator']=Operator::whereid($trip->operator_id)->pluck('name');
-					$tmp['from_city']=City::whereid($trip->from)->pluck('name');
-					$tmp['to_city']=City::whereid($trip->to)->pluck('name');
-					$tmp['class_id']=$trip->class_id;
-					$tmp['classes']=Classes::whereid($trip->class_id)->pluck('name');
-					$tmp['available_day']=$trip->available_day;
-					$tmp['time']=$trip->time;
-					$tmp['price']=$trip->price;
-					$tmp['foreign_price']=$trip->foreign_price;
-					if($sametrip ==0){
-						$trips[]=$tmp;
-					}
-				}
-				$i++;
+				$tmp['id']=$trip->id;
+				$tmp['operator_id']=$trip->operator_id;
+				$tmp['from']=$trip->from;
+				$tmp['to']=$trip->to;
+				$tmp['operator']=Operator::whereid($trip->operator_id)->pluck('name');
+				$tmp['from_city']=City::whereid($trip->from)->pluck('name');
+				$tmp['to_city']=City::whereid($trip->to)->pluck('name');
+				$tmp['class_id']=$trip->class_id;
+				$tmp['classes']=Classes::whereid($trip->class_id)->pluck('name');
+				$tmp['available_day']=$trip->available_day;
+				$tmp['time']=$trip->time;
+				$tmp['price']=$trip->price;
+				$tmp['foreign_price']=$trip->foreign_price;
+			
+				$trips[]=$tmp;
 			}
 		}
 		
@@ -2509,19 +2486,38 @@ class ApiController extends BaseController
 				
 				// $seatplan['seatlist']		 =$objseat->seat_list;
 
-				$objseatinfo 				 =SeatInfo::whereseat_plan_id($objseat->id)->get();
+				
+				$objcloseseatinfo 				 =CloseSeatInfo::wheretrip_id($row->trip_id)->whereseat_plan_id($objseat->id)->first();
 				$seatinfo 	=array();
-				if($objseatinfo){
+				if($objcloseseatinfo){
+					$seat_lists = $objcloseseatinfo->seat_lists;
+					$objseatinfo = json_decode($seat_lists);
 					foreach ($objseatinfo as $rows) {
 						$temp['id']			=$rows->id;
 						$temp['seat_no']	=$rows->seat_no;
 						$busoccurance_id 	=$row->id;
 						$checkoccupied_seat =SaleItem::wherebusoccurance_id($busoccurance_id)->whereseat_no($rows->seat_no)->first();
 						if($checkoccupied_seat){
-							$temp['status']		=2;
+							$temp['status']			=2;
 						}else{
-							$temp['status']		=$rows->status;
+							$temp['status']			=$rows->status;
 						}
+						$temp['operatorgroup_id']	=$rows->operatorgroup_id;
+						$seatinfo[] 		=$temp;
+					}
+				}else{
+					$objseatinfo 				 =SeatInfo::whereseat_plan_id($objseat->id)->get();
+					foreach ($objseatinfo as $rows) {
+						$temp['id']			=$rows->id;
+						$temp['seat_no']	=$rows->seat_no;
+						$busoccurance_id 	=$row->id;
+						$checkoccupied_seat =SaleItem::wherebusoccurance_id($busoccurance_id)->whereseat_no($rows->seat_no)->first();
+						if($checkoccupied_seat){
+							$temp['status']			=2;
+						}else{
+							$temp['status']			=$rows->status;
+						}
+						$temp['operatorgroup_id']	= 0;
 						$seatinfo[] 		=$temp;
 					}
 				}
@@ -2548,22 +2544,25 @@ class ApiController extends BaseController
 		$trip_date 			=Input::get('trip_date');
 
 		if($operator_id && $from_city && $to_city && $trip_date){
-			$objtrip=BusOccurance::whereoperator_id($operator_id)->wherefrom($from_city)->whereto($to_city)->groupBy('departure_time')->get();
+			$objtrip=Trip::whereoperator_id($operator_id)
+						->wherefrom($from_city)
+						->whereto($to_city)
+						->orderBy('time','asc')->get();
 		}elseif($operator_id && !$from_city && !$to_city){
-			$objtrip=BusOccurance::whereoperator_id($operator_id)->groupBy('departure_time')->get();
+			$objtrip=Trip::whereoperator_id($operator_id)->orderBy('time','asc')->get();
 		}else{
-			$objtrip=BusOccurance::groupBy('departure_time')->get();
+			$objtrip=Trip::orderBy('time','asc')->get();
 		}
 		$times=array();
 		//return Response::json($objtrip);
 		if($objtrip){
 			foreach ($objtrip as $row) {
 				$temp['tripid']				= $row->id;
-				$temp['bus_class']			= Classes::whereid($row->classes)->pluck('name');
+				$temp['bus_class']			= Classes::whereid($row->class_id)->pluck('name');
 				$temp['total_seat']			= SeatInfo::whereseat_plan_id($row->seat_plan_id)->wherestatus(1)->count();
 
-				$temp['total_sold_seat']	= SaleItem::wheretrip_id($row->trip_id)->wheredeparture_date($trip_date)->count();
-				$temp['time']				= $row->departure_time;
+				$temp['total_sold_seat']	= SaleItem::wheretrip_id($row->id)->wheredeparture_date($trip_date)->count();
+				$temp['time']				= $row->time;
 				$times[]					= $temp;
 			}
 		}
@@ -2585,6 +2584,7 @@ class ApiController extends BaseController
     	$to_city=Input::get('to_city');
     	$seat_liststring=Input::get('seat_list');
     	$order_type=Input::get('order_type');
+    	$group_operator_id = Input::get('group_operator_id') ? Input::get('group_operator_id') : 0;
 
     	if(!$operator_id || !$from_city || !$to_city || !$seat_liststring){
     		$response['message']='Required fields are operator_id, from_city, to_city and seat_lsit';
@@ -2637,15 +2637,16 @@ class ApiController extends BaseController
     	$max_order_id=null;
     	$available_orderid=0;
     	if(count($available_seats) == count($seat_list)){
-	    	$response['message']="Successfully your purchase or booking tickets.";
-    		$can_buy=true;
+	    		$response['message']="Successfully your purchase or booking tickets.";
+    			$can_buy=true;
     			$objsaleorder=new SaleOrder();
-	    		$objsaleorder->orderdate=date('Y-m-d');
-	    		$objsaleorder->departure_date = $departure_date;
-	    		$objsaleorder->agent_id=$agent_id ? $agent_id : 0;
-	    		$objsaleorder->operator_id=$operator_id;
-	    		$objsaleorder->expired_at=$expired_date;
-	    		$objsaleorder->device_id=$device_id;
+    			$objsaleorder->id 				= $this->generateAutoID($group_operator_id);
+	    		$objsaleorder->orderdate 		= date('Y-m-d');
+	    		$objsaleorder->departure_date 	= $departure_date;
+	    		$objsaleorder->agent_id 		= $agent_id ? $agent_id : 0;
+	    		$objsaleorder->operator_id 		= $operator_id;
+	    		$objsaleorder->expired_at 		= $expired_date;
+	    		$objsaleorder->device_id 		= $device_id;
 	    		$objsaleorder->save();
 	    		$max_order_id=SaleOrder::max('id');
 	    		foreach ($available_seats as $rows) {
@@ -2694,6 +2695,43 @@ class ApiController extends BaseController
     		return Response::json($response);
 
     	}
+    }
+
+    public function generateAutoID($prefix){
+
+    	$autoid 			= 0;
+    	$last_order_id 		= SaleOrder::orderBy('created_at','desc')->limit('1')->pluck('id');
+    	if($last_order_id){
+    		$last_order_value 	= (int) substr($last_order_id, count($prefix));
+    	}else{
+    		return $prefix."0000001";
+    	}
+    	
+
+    	if($last_order_value > 0 && $last_order_value <9){
+    		$inc_value = ++$last_order_value;
+    		$autoid = "000000".$inc_value;
+    	}elseif($last_order_value > 9 && $last_order_value <99){
+    		$inc_value = ++$last_order_value;
+    		$autoid = "00000".$inc_value;
+    	}elseif($last_order_value > 99 && $last_order_value <999){
+    		$inc_value = ++$last_order_value;
+    		$autoid = "0000".$inc_value;
+    	}elseif($last_order_value > 999 && $last_order_value <9999){
+    		$inc_value = ++$last_order_value;
+    		$autoid = "000".$inc_value;
+    	}elseif($last_order_value > 9999 && $last_order_value <99999){
+    		$inc_value = ++$last_order_value;
+    		$autoid = "00".$inc_value;
+    	}elseif($last_order_value > 99999 && $last_order_value <999999){
+    		$inc_value = ++$last_order_value;
+    		$autoid = "0".$inc_value;
+    	}elseif($last_order_value > 999999 && $last_order_value <9999999){
+    		$inc_value = ++$last_order_value;
+    		$autoid = $inc_value;
+    	}
+
+    	return $prefix.$autoid;
     }
 
     public function deleteSaleOrder($id){
@@ -4356,6 +4394,7 @@ class ApiController extends BaseController
 						$temp['agent_name']=$agent_name;
 						$temp['order_id']=$seat_list->order_id;
 						$temp['ticket_no']=$seat_list->ticket_no;
+						$temp['free_ticket']=$seat_list->free_ticket;
 						$temp['commission']=Busoccurance::whereid($seat_list->busoccurance_id)->pluck('commission');
 						$response[]=$temp;
 					}
@@ -4389,6 +4428,7 @@ class ApiController extends BaseController
 							$temp['agent_name']=$agent_name;
 							$temp['order_id']=$seat_list['order_id'];
 							$temp['ticket_no']=$seat_list['ticket_no'];
+							$temp['free_ticket']=$seat_list->free_ticket;
 							$temp['commission']=Busoccurance::whereid($seat_list['busoccurance_id'])->pluck('commission');
 							$response[]=$temp;
 						}
@@ -5601,6 +5641,7 @@ class ApiController extends BaseController
 					$obj_saleitem 			=SaleItem::whereid($key)->first();
 					$temp['seat_no'] 		=$obj_saleitem->seat_no;
 					$temp['ticket_no']		=$obj_saleitem->ticket_no !=null ? $obj_saleitem->ticket_no : '-';
+					$temp['free_ticket'] 	=$obj_saleitem->free_ticket;
 					$temp['name']			=$objorderinfo->name !=null ? $objorderinfo->name : '-';
 					$agent_name 			=Agent::whereid($objorderinfo->agent_id)->pluck('name');
 					$temp['agent'] 			=$agent_name !=null ? $agent_name : '-';
@@ -6286,36 +6327,31 @@ class ApiController extends BaseController
     	$bus_id 	=Input::get('bus_id');
 
     	$objbus=BusOccurance::whereid($bus_id)->first();
-    	$objorderids=SaleItem::wherebusoccurance_id($bus_id)->groupBy('order_id')->lists('order_id');
     	$response=array();
-    	if($objorderids){
-    		foreach ($objorderids as $key => $id) {
-    			$objorderinfo=SaleOrder::whereid($id)->whereagent_id($agent_id)->first();
-    			if($objorderinfo){
-    				$objsaleitems=SaleItem::wherebusoccurance_id($bus_id)->whereorder_id($id)->get();
-    				if($objsaleitems){
-    					foreach ($objsaleitems as $rows) {
-    						$temp['bus_no'] 	=$objbus->bus_no;
-    						$from 				=City::whereid($objbus->from)->pluck('name');
-    						$to 				=City::whereid($objbus->to)->pluck('name');
-    						$temp['trip']=$from.'-'.$to;
-    						$temp['class']=Classes::whereid($objbus->classes)->pluck('name');
-    						$temp['departure_date'] 	=$objbus->departure_date;
-    						$temp['departure_time'] 	=$objbus->departure_time;
-    						$temp['seat_no'] 	=$rows['seat_no'];
-    						$temp['ticket_no'] 	=$rows['ticket_no'];
-    						$temp['orderdate']=$objorderinfo->orderdate;
-			    			$agent_name=Agent::whereid($objorderinfo->agent_id)->pluck('name');
-			    			$temp['agent']=$agent_name != null ? $agent_name : '-';
-			    			$temp['customer_name']=$objorderinfo->name;
-			    			$temp['operator']=Operator::whereid($objorderinfo->operator_id)->pluck('name');
-			    			$temp['price'] 	 =$objbus->price;
-			    			$response[] 	 =$temp;
-    					}
-    				}
-    			}
-    		}
-    	}
+
+    	$objsaleitems=SaleItem::wherebusoccurance_id($bus_id)->whereagent_id($agent_id)->get();
+		if($objsaleitems){
+			foreach ($objsaleitems as $rows) {
+				$objorderinfo 				= SaleOrder::whereid($rows->order_id)->whereagent_id($agent_id)->first();
+				$temp['bus_no'] 			=$objbus->bus_no;
+				$from 						=City::whereid($objbus->from)->pluck('name');
+				$to 						=City::whereid($objbus->to)->pluck('name');
+				$temp['trip']				=$from.'-'.$to;
+				$temp['class']				=Classes::whereid($objbus->classes)->pluck('name');
+				$temp['departure_date'] 	=$objbus->departure_date;
+				$temp['departure_time'] 	=$objbus->departure_time;
+				$temp['seat_no'] 			=$rows['seat_no'];
+				$temp['ticket_no'] 			=$rows['ticket_no'];
+				$temp['orderdate']			=$objorderinfo->orderdate;
+    			$agent_name					=Agent::whereid($objorderinfo->agent_id)->pluck('name');
+    			$temp['agent']				=$agent_name != null ? $agent_name : '-';
+    			$temp['customer_name']		=$objorderinfo->name;
+    			$temp['operator']			=Operator::whereid($objorderinfo->operator_id)->pluck('name');
+    			$temp['price'] 	 			=$objbus->price;
+    			$temp['free_ticket'] 		= $rows['free_ticket'];
+    			$response[] 	 			=$temp;
+			}
+		}
     	return Response::json($response);
     }
 
@@ -7543,5 +7579,63 @@ class ApiController extends BaseController
     	}
     }
 
+    public function postCloseSeatList(){
+    	$trip_id 		= Input::get('trip_id');
+    	$operatorgroup_id 	= Input::get('operatorgroup_id');
+    	$seat_plan_id 		= Input::get('seat_plan_id');
+    	$seat_lists 		= Input::get('seat_lists');
+    	if(!$trip_id || !$operatorgroup_id || !$seat_plan_id || !$seat_lists){
+    		$message['status'] 	= 0;
+    		$message['message']	= "Required for any parameter.";
+    		return Response::json($message, 400);
+    	}
+
+    	$close_seatinfo = CloseSeatInfo::wheretrip_id($trip_id)
+    								->whereoperatorgroup_id($operatorgroup_id)
+    								->whereseat_plan_id($seat_plan_id)
+    								->first();
+
+    	if($close_seatinfo){
+    		$close_seatinfo->seat_lists = $seat_lists;
+    		$close_seatinfo->update();
+    	}else{
+    		$close_seatinfo 					= new CloseSeatInfo();
+    		$close_seatinfo->trip_id 			= $trip_id;
+    		$close_seatinfo->operatorgroup_id 	= $operatorgroup_id;
+    		$close_seatinfo->seat_plan_id		= $seat_plan_id;
+    		$close_seatinfo->seat_lists 		= $seat_lists;
+    		$close_seatinfo->save();
+    	}
+
+    	$message['status'] 	= 1;
+    	$message['message']	= "Successfully saved!.";
+    	return Response::json($message);
+    }
+
+    public function getOperatorGroup(){
+    	$operator_id = Input::get('operator_id');
+    	if($operator_id)
+    		$operatorgroup = OperatorGroup::whereoperator_id($operator_id)->get();
+    	else
+    		$operatorgroup = OperatorGroup::all();
+    	if($operatorgroup){
+
+    		$i = 0;
+    		foreach ($operatorgroup as $rows) {
+    			$operatorgroup[$i]['username'] = User::whereid($rows->user_id)->pluck('name');
+    			$operatorgroup[$i]['operatorname'] = Operator::whereid($rows->operator_id)->pluck('name');
+    			$i++;
+    		}
+    		return Response::json($operatorgroup);
+    	}else{
+    		return Response::json(array());
+    	}
+
+    }
+
+    public function getSeatListbyTrip($id){
+    	$seatinfo = SeatInfo::whereseat_plan_id($id)->get();
+    	return Response::json($seatinfo);
+    }
 
 }

@@ -30,26 +30,9 @@ public class SeatReport {
 	private String operator;
 	@Expose
 	private String price;
+	@Expose
+	private Integer free_ticket;
 	
-	public SeatReport(String bus_no, String trip, String _class,
-			String departure_date, String departure_time, String seat_no,
-			String ticket_no, String orderdate, String agent,
-			String customer_name, String operator, String price) {
-		super();
-		this.bus_no = bus_no;
-		this.trip = trip;
-		this._class = _class;
-		this.departure_date = departure_date;
-		this.departure_time = departure_time;
-		this.seat_no = seat_no;
-		this.ticket_no = ticket_no;
-		this.orderdate = orderdate;
-		this.agent = agent;
-		this.customer_name = customer_name;
-		this.operator = operator;
-		this.price = price;
-	}
-
 	public String getBus_no() {
 	return bus_no;
 	}
@@ -145,5 +128,14 @@ public class SeatReport {
 	public void setPrice(String price) {
 	this.price = price;
 	}
+
+	public Integer getFree_ticket() {
+		return free_ticket;
+	}
+
+	public void setFree_ticket(Integer free_ticket) {
+		this.free_ticket = free_ticket;
+	}
+	
 
 }

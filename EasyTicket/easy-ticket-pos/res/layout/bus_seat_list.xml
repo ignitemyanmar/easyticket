@@ -243,6 +243,15 @@
                     </LinearLayout>
 
                 </LinearLayout>
+
+            	<ListView
+            	    android:id="@+id/lst_group_user"
+            	    android:layout_width="match_parent"
+            	    android:layout_height="wrap_content"
+            	    android:layout_margin="10dp"
+            	    android:divider="#FFF" >
+
+                </ListView>
             </LinearLayout>
         </ScrollView>
     </RelativeLayout>

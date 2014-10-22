@@ -47,8 +47,10 @@ import com.ignite.mm.ticketing.clientapi.NetworkEngine;
 import com.ignite.mm.ticketing.connection.detector.ConnectionDetector;
 import com.ignite.mm.ticketing.custom.listview.adapter.BusClassAdapter;
 import com.ignite.mm.ticketing.custom.listview.adapter.BusSeatAdapter;
+import com.ignite.mm.ticketing.custom.listview.adapter.GroupUserListAdapter;
 import com.ignite.mm.ticketing.http.connection.HttpConnection;
 import com.ignite.mm.ticketing.sqlite.database.model.BusSeat;
+import com.ignite.mm.ticketing.sqlite.database.model.OperatorGroupUser;
 import com.ignite.mm.ticketing.sqlite.database.model.ReturnComfrim;
 import com.ignite.mm.ticketing.sqlite.database.model.Seat;
 import com.ignite.mm.ticketing.sqlite.database.model.Seat_list;
@@ -84,8 +86,9 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
 	private TextView txt_price;
 	private TextView txt_dept_date;
 	private TextView txt_dept_time;
+	private ListView lst_group_user;
 	public static List<BusSeat> BusSeats;
-	
+	public static List<OperatorGroupUser> groupUser = new ArrayList<OperatorGroupUser>();
 	public static String CheckOut;
 	
 	@Override
@@ -100,6 +103,7 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
 				R.id.action_bar_title);
 		actionBarBack = (ImageButton) actionBar.getCustomView().findViewById(
 				R.id.action_bar_back);
+		
 		actionBarProceed = (ImageButton) actionBar.getCustomView().findViewById(R.id.action_bar_proceed);
 		actionBarTitle.setText("BUS");
 		actionBarProceed.setVisibility(View.VISIBLE);
@@ -107,6 +111,7 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
 		actionBarBack.setOnClickListener(clickListener);
 		actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
 		mSeat = (GridView) findViewById(R.id.grid_seat);
+		lst_group_user = (ListView) findViewById(R.id.lst_group_user);
 		connectionDetector = new ConnectionDetector(this);
 		
 		Bundle bundle = getIntent().getExtras();	
@@ -139,6 +144,7 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
 		if(connectionDetector.isConnectingToInternet())
 		{ 	mLoadingView.setVisibility(View.VISIBLE);
 			mLoadingView.startAnimation(topInAnimaiton());
+			getOperatorGroupUser();
 			getSeatPlan();
 		}else {
 			mNoConnection.setVisibility(View.VISIBLE);
@@ -201,6 +207,23 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
 			lvClass.setAdapter(new BusClassAdapter(this, BusSeats.get(0).getSeat_plan()));
 			lvClass.setOnItemClickListener(itemClickListener);
 		}
+	}
+	
+	private void getOperatorGroupUser(){
+		NetworkEngine.getInstance().getOperatorGroupUser(AppLoginUser.getAccessToken(), AppLoginUser.getUserID(), new Callback<List<OperatorGroupUser>>() {
+
+			public void failure(RetrofitError arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			public void success(List<OperatorGroupUser> arg0, Response arg1) {
+				// TODO Auto-generated method stub
+				groupUser = arg0;
+				lst_group_user.setAdapter(new GroupUserListAdapter(BusSelectSeatActivity.this, groupUser));
+				setListViewHeightBasedOnChildren(lst_group_user);
+			}
+		});
 	}
 	
 	private Animation topInAnimaiton() {
@@ -270,6 +293,7 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
         params.add(new BasicNameValuePair("agent_id", AgentID));
         params.add(new BasicNameValuePair("from_city", FromCity));
         params.add(new BasicNameValuePair("to_city", ToCity));
+        params.add(new BasicNameValuePair("group_operator_id", AppLoginUser.getUserGroupID()));
         params.add(new BasicNameValuePair("seat_list", seats.toString()));
         params.add(new BasicNameValuePair("access_token", accessToken));
         Log.i("","Hello Param: " + params.toString());
@@ -281,9 +305,6 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
 				Log.i("ans:","Server Response: "+jsonData);
 				try {
 					JSONObject jsonObject = new JSONObject(jsonData);
-					Log.i("","Hello Canbuy ="+jsonObject.getBoolean("can_buy"));
-					Log.i("","Hello D 1"+ DeviceUtil.getInstance(BusSelectSeatActivity.this).getID());
-					Log.i("","Hello D 2"+ jsonObject.getString("device_id"));
 					if(jsonObject.getBoolean("can_buy") && jsonObject.getString("device_id").equals(DeviceUtil.getInstance(BusSelectSeatActivity.this).getID())){
 	        			Intent nextScreen = new Intent(BusSelectSeatActivity.this,NRCActivity.class);
 	    				Bundle bundle = new Bundle();
@@ -308,7 +329,7 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
 				}
 			}
 		};
-		HttpConnection lt = new HttpConnection(handler,"POST", "http://192.168.1.202/sale",params);
+		HttpConnection lt = new HttpConnection(handler,"POST", "http://192.168.1.116/sale",params);
 		lt.execute();
 		
 	}
@@ -446,6 +467,24 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
 		gridView.setLayoutParams(params);
 
 	}
-	
+	public static void setListViewHeightBasedOnChildren(ListView listView) {
+        ListAdapter listAdapter = listView.getAdapter(); 
+        if (listAdapter == null) {
+            // pre-condition
+            return;
+        }
+
+        int totalHeight = 0;
+        for (int i = 0; i < listAdapter.getCount(); i++) {
+            View listItem = listAdapter.getView(i, null, listView);
+            listItem.measure(0, 0);
+            totalHeight += listItem.getMeasuredHeight();
+        }
+
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+        listView.setLayoutParams(params);
+        listView.requestLayout();
+    }
 }
 

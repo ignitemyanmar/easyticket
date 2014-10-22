@@ -6,6 +6,10 @@ public class User {
 	
 	@Expose
 	private String id;
+	
+	@Expose
+	private String operatorgroup_id;
+		
 	@Expose
 	private String name;
 	
@@ -20,6 +24,14 @@ public class User {
 	this.id = id;
 	}
 	
+	public String getOperatorgroup_id() {
+		return operatorgroup_id;
+	}
+
+	public void setOperatorgroup_id(String operatorgroup_id) {
+		this.operatorgroup_id = operatorgroup_id;
+	}
+
 	public String getName() {
 	return name;
 	}

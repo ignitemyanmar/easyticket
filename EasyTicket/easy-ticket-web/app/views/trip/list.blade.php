@@ -1,13 +1,12 @@
 @extends('../admin')
 @section('content')
-<style type="text/css">
-   .padding-5{padding: 5px;}
-</style>
-<!-- BEGIN PAGE -->  
-   <div class="page-content">
-      <!-- BEGIN PAGE CONTAINER-->
+   <link rel="stylesheet" href="assets/data-tables/DT_bootstrap.css" />
+   <link rel="shortcut icon" href="favicon.ico" />
+   <!-- BEGIN PAGE -->
+      <div class="page-content">
+         <!-- BEGIN PAGE CONTAINER-->
          <div class="container-fluid">
-            <!-- BEGIN PAGE HEADER-->   
+            <!-- BEGIN PAGE HEADER-->
                <div class="row-fluid">
                   <div class="span12">
                      <!-- BEGIN STYLE CUSTOMIZER -->
@@ -26,109 +25,117 @@
                            <label class="hidden-phone">
                            <input type="checkbox" class="header" checked value="" />
                            <span class="color-mode-label">Fixed Header</span>
-                           </label>                    
+                           </label>                   
                         </div>
                      </div>
-                     <!-- END BEGIN STYLE CUSTOMIZER -->   
+                     <!-- END BEGIN STYLE CUSTOMIZER -->    
+                     <!-- BEGIN PAGE TITLE & BREADCRUMB-->        
                      <h3 class="page-title">
-                        Trip List
-                        <!-- <small>form wizard sample</small> -->
+                        Dashboard            
+                        <small></small>
                      </h3>
                      <ul class="breadcrumb">
                         <li>
                            <i class="icon-home"></i>
                            <a href="/">Home</a> 
-                           <span class="icon-angle-right"></span>
+                           <i class="icon-angle-right"></i>
                         </li>
-                        <li>
-                           <a href="/itemlist">Trip list</a>
-                           <span class="icon-angle-right"></span>
-                        </li>
-                        <li><a href="#">Trip list reports</a></li>
+                        <li><a href="/dashboard">Dashboard</a></li>
+                        
                      </ul>
+                     <!-- END PAGE TITLE & BREADCRUMB-->
                   </div>
                </div>
             <!-- END PAGE HEADER-->
-
-            <!-- BEGIN PAGE CONTENT-->
-               <div class="row-fluid">
-                  <div class="responsive span12" data-tablet="span12" data-desktop="span12">
-                     <div class="portlet box light-grey">
-                        <div class="portlet-title">
-                           <h4><i class="icon-user"></i>Trip list </h4>
-                           <div class="actions">
-                              
+            <div id="dashboard">
+               <!-- BEGIN PAGE -->
+                  <div class="row-fluid">
+                     <div class="span12">
+                        <!-- BEGIN EXAMPLE TABLE PORTLET-->
+                        <div class="portlet box blue">
+                           <div class="portlet-title">
+                              <h4><i class="icon-edit"></i>Trip List</h4>
+                           </div>
+                           <div class="portlet-body">
+                              <div class="clearfix">
+                                 <div class="btn-group">
+                                    <a href="/trip/create">
+                                    <button id="" class="btn green">
+                                    Add New <i class="icon-plus"></i>
+                                    </button>
+                                    </a>
+                                 </div>
+                                 
+                              </div>
+                              @if(Session::has('message'))
+                                 <?php $message=Session::get('message'); ?>
+                                 @if($message)
+                                 <div class="alert alert-success">
+                                    <button class="close" data-dismiss="alert"></button>
+                                    {{$message}}
+                                 </div>
+                                 @endif
+                              @endif
+                              <table class="table table-striped table-hover table-bordered" id="sample_editable_1">
+                                 <thead>
+                                    <tr>
+                                       <th></th>
+                                       <th class="hidden-phone">ထြက္ခြာမည့္ျမိဳ႕</th>
+                                       <th class="span2">ေရာက္မည့္ျမိဳ႕</th>
+                                       <th class="span2">ခုံအစီအစဥ္</th>
+                                       <th class="span2">ကားအမ်ိဳးအစား</th>
+                                       <th class="span2">ကားထြက္သည့္ ေန႕ အခ်ိန္<!-- ႕မ်ား --></th>
+                                       <!-- <th class="span2">အခ်ိန္</th> -->
+                                       <th class="span1">ႏုိင္ငံသားေစ်းႏုန္း</th>
+                                       <th class="span2">ႏုိင္ငံျခားသား ေစ်းႏုန္း</th>
+                                       <th class="span2">Action</th>
+                                    </tr>
+                                 </thead>
+                                 <tbody>
+                                    @foreach($response as $trip)
+                                          <tr>
+                                             <th><b style="opacity:.1;">{{$trip->id}}</b></th>
+                                             <td class="hidden-phone">{{$trip['from_city']->name}}</td>
+                                             <td>{{$trip['to_city']->name}}</td>
+                                             <td>{{$trip['seat_plan']->name}}</td>
+                                             <td>{{$trip['busclass']->name}}</td>
+                                             <td>
+                                                <p>ကားထြက္သည့္ ေန႕မ်ား :{{$trip['available_day']}}</p>
+                                            အခ်ိန္ :   {{$trip['time']}}</td>
+                                             <td>
+                                                {{$trip['price']}}
+                                             </td>
+                                             <td class="span1">{{$trip['foreign_price']}}</td>
+                                             <td>
+                                                <a class="btn large green-stripe" href="#">ျပင္မည္</a>
+                                                <a class="btn large red-stripe delete" href="deletetrip/{{ $trip['id'] }}">ဖ်က္မည္</a>
+                                                <a class="btn large blue-stripe" href="define-ownseat/{{ $trip['id'] }}">ခုံပုိင္သတ္မွတ္ရန္</a>
+                                             </td>
+                                          </tr>
+                                    @endforeach
+                                    
+                                 </tbody>
+                              </table>
                            </div>
                         </div>
-
-                        <div class="portlet-body">
-                           <table class="table table-striped table-bordered table-advance table-hover">
-                              <thead>
-                                 <tr>
-                                    <th></th>
-                                    <th>Operator</th>
-                                    <th class="hidden-phone">From</th>
-                                    <th>To</th>
-                                    <th>Class</th>
-                                    <th>Available Day</th>
-                                    <th>Time</th>
-                                    <th>Price</th>
-                                    <th>SeatPlan</th>
-                                    <th>Action</th>
-                                    <!-- <th></th> -->
-                                 </tr>
-                              </thead>
-                              <tbody>
-                              <form action = "/searchtrip" method= "post" class="row">
-                                 <div class="row-fluid">
-                                    <input name="keyword" type="text" class="m-wrap span6" placeholder = " Search Trip" data-required="true">
-                                 </div>
-                                 <div class="portlet-body">
-                                    <input type = "submit" value = "Search" class="btn green button-submit" required>
-                                 </div>
-                                 <div class="row-fluid">
-                                    <a href="/tripcreate" class="btn green button-submit">Add New Trip </a>
-                                 </div>
-                           </form>
-                           <br><br>
-                @if(count($response)==0)
-                  There is no record in database.
-               @else
-                  Total Record : {{$totalCount}}
-               @endif
-                  
-                  @foreach($response as $trip)
-                              <tr>
-                                 <td><input type="checkbox" name="recordstoDelete[]" value="{{$trip['id']}}" /> </td>
-                                 <td>{{$trip['operator_id']}}</td>
-                                 <td class="hidden-phone">{{$trip['from']}}</td>
-                                 <td>{{$trip['to']}}</td>
-                                 <td>{{$trip['class_id']}}</td>
-                                 <td>{{$trip['available_day']}}</td>
-                                 <td>{{$trip['time']}}</td>
-                                 <td>{{$trip['price']}}</td>
-                                 <td>{{$trip['seat_plan_id']}}</td>
-                                 <td style="text-align:center;">
-                                       <a href="/trip-update/{{ $trip['id'] }}"  class="btn green button-submit">Edit</a><br><br>
-                                       <a href="deletetrip/{{ $trip['id'] }}"   class="btn green button-submit">Delete</a>
-                                 </td>
-                              </tr>
-                  @endforeach
-                     <tr><td colspan="8"><ul class="pagination">{{ $response->links() }}</ul></td></tr>        
-
-                              </tbody>
-                           </table>
-                        </div>
+                        <!-- END EXAMPLE TABLE PORTLET-->
                      </div>
                   </div>
-                  <div class="responsive span3 padding-5" data-tablet="span4" data-desktop="span4">
-                   
-                  </div>
-               </div>
-            <!-- END PAGE CONTENT-->         
+                  
+               <!-- END PAGE -->
+               
+            </div>
          </div>
-      <!-- END PAGE CONTAINER-->
-   </div>
-<!-- END PAGE -->  
-   <script type="text/javascript" src="../../assets/data-tables/jquery.dataTables.js"></script>
+         <!-- END PAGE CONTAINER-->    
+      </div>
+      <!-- END PAGE --> 
+   <script type="text/javascript" src="assets/data-tables/jquery.dataTables.js"></script>
+   <script type="text/javascript" src="assets/data-tables/DT_bootstrap.js"></script>
+   <script>
+      jQuery(document).ready(function() {       
+         // initiate layout and plugins
+         App.setPage("table_editable");
+         // App.init();
+      });
+   </script>
 @stop

@@ -2,7 +2,35 @@
 @section('content')
 <style type="text/css">
    .padding-5{padding: 5px;}
+   select.m-wrap, textarea.m-wrap, select {
+       font-family: "Ayar Wagaung";
+   }
+
+   .fit-a{color:white;text-align:center; padding-top: 19px;}
+   .checkboxframe input[type="checkbox"]{
+     margin:9px;
+     position: absolute;
+     z-index: -1;
+   }
+   .radios{opacity: 1;}
+   .check-a .span1{height: 21px; margin-top: 15px;}
+   .check-a .spanhalf{margin-top: 65px;}
+   .check-a label > .fit-a {
+         display: block;
+         position: relative;
+         z-index: 1;
+         min-width: 21px;
+         min-height: 21px;
+         cursor: pointer;
+     }
+   .check-a label{height: 21px;}
+   .taken{background: url("../../img/rdored.png") repeat scroll transparent;}
+   .choose{background: url("../../img/rdoyellow.png") repeat scroll transparent;}
+   .available{background: url("../../img/rdogreen.png") repeat scroll transparent;}
+
 </style>
+<link rel="stylesheet" type="text/css" href="../../assets/chosen-bootstrap/chosen/chosen.css" />
+   <link rel="stylesheet" type="text/css" href="../../assets/bootstrap-timepicker/compiled/timepicker.css" />
 <!-- BEGIN PAGE -->  
    <div class="page-content">
       <!-- BEGIN PAGE CONTAINER-->
@@ -52,8 +80,8 @@
 
             <!-- BEGIN PAGE CONTENT-->
                <div class="row-fluid">
-                  <div class="responsive span8" data-tablet="span8" data-desktop="span8">
-                     <form id="addnew-form" class="horizontal-form" action = "/addtrip" method= "post" enctype="multipart/form-data">    
+                  <div class="responsive span12" data-tablet="span12" data-desktop="span12">
+                     <form id="tripcreate" class="form-horizontal" action = "/trip-create" method= "post" enctype="multipart/form-data">    
                         <div class="portlet box light-grey">
                            <div class="portlet-title">
                               <h4><i class="icon-user"></i> Trip Information</h4>
@@ -64,107 +92,110 @@
                               <div class="row-fluid">
                                  <div class="span6">
                                     <div class="control-group">
-                                       <label class="control-label" for="operator">Operator</label>
+                                       <label class="control-label" for="from">ထွက်ခွာမည့်ြမို့</label>
                                        <div class="controls">
-                                             <select name="operator" id='operator' class="m-wrap span12">
-                                                @foreach($operator as $rows)
+                                             <select name="from" id='from' class="m-wrap span12 chosen">
+                                                @foreach($response['cities'] as $rows)
+                                                   <option value="{{$rows->id}}">{{$rows->name}}</option>
+                                                @endforeach   
+                                             </select> 
+                                       </div>
+                                    </div><br>
+
+                                    <div class="control-group">
+                                       <label class="control-label" for="to">ေရာက်ရှိမည့်ြမို့</label>
+                                       <div class="controls">
+                                             <select name="to" id='to' class="m-wrap span12 chosen">
+                                                @foreach($response['cities'] as $rows)
+                                                   <option value="{{$rows->id}}">{{$rows->name}}</option>
+                                                @endforeach   
+                                             </select> 
+                                       </div>
+                                    </div><br>
+
+                                    <div class="control-group">
+                                       <label class="control-label" for="class">ကားအတန်းအစား(အမျိုးအစား)</label>
+                                       <div class="controls">
+                                             <select name="class_id" id='class' class="m-wrap span12 chosen">
+                                                @foreach($response['busclasses'] as $rows)
+                                                   <option value="{{$rows->id}}">{{$rows->name}}</option>
+                                                @endforeach   
+                                             </select> 
+                                       </div>
+                                    </div><br>
+
+                                    <div class="control-group">
+                                       <label class="control-label">ကားထွက်ခွာသည့်ေန့များ</label>
+                                       <div class="controls">
+                                          <label class="radio">
+                                          <div id="uniform-undefined" class="radio"><span class="">
+                                             <input style="opacity: 0;" name="day" class="departuredays" value="daily" checked="" type="radio"></span></div>
+                                             ေန့စဥ်
+                                          </label>
+                                          <label class="radio">
+                                          <div id="uniform-undefined" class="radio"><span class="checked">
+                                             <input style="opacity: 0;" name="day" class="departuredays" value="custom" type="radio"></span></div>
+                                             အြခား
+                                          </label>  
+                                       </div>
+
+                                       <div class="controls" id="customdays">
+                                          @foreach($response['days'] as $day)
+                                             <label class="checkbox" style="min-width:50px;">
+                                                <div id="uniform-undefined" class="checker"><span>
+                                                   <input style="opacity: 0;" name="available_day[]" value="{{$day}}" type="checkbox"></span>
+                                                </div> 
+                                                   {{$day}}
+                                             </label>
+                                          @endforeach
+                                       </div>
+                                    </div><br>
+                                    
+                                    <div class="control-group">
+                                       <label class="control-label">ကားထွက်ခွာမည့်အချိန်</label>
+                                       <div class="controls">
+                                          <div class="input-append bootstrap-timepicker-component">
+                                             <input class="m-wrap m-ctrl-small timepicker-default" type="text" name="time">
+                                             <span class="add-on"><i class="icon-time"></i></span>
+                                          </div>
+                                       </div>
+                                    </div><br>
+
+                                    <div class="control-group">
+                                       <label class="control-label" for="price">နုိင်ငံသား ေစျးနုန်း</label>
+                                       <div class="controls">
+                                          <input  name="price" class="m-wrap span12" placeholder="" type="text" required>
+                                       </div>
+                                    </div>
+                                      
+                                    <div class="control-group">
+                                       <label class="control-label" for="price">နုိင်ငံြခားသား ေစျးနုန်း</label>
+                                       <div class="controls">
+                                          <input  name="foreign_price" class="m-wrap span12" placeholder="" type="text" required>
+                                       </div>
+                                    </div>
+
+                                    <div class="control-group">
+                                       <label class="control-label" for="seatplan">ခုံအစီအစဥ်</label>
+                                       <div class="controls">
+                                             <select name="seat_plan_id" id='seatplan' class="m-wrap span12 chosen ayar-wagaung seatplan" required="">
+                                                   <option value="">ခုံအစီအစဥ္ ေရြးရန္</option>
+                                                @foreach($response['seatplan'] as $rows)
                                                    <option value="{{$rows->id}}">{{$rows->name}}</option>
                                                 @endforeach   
                                              </select> 
                                        </div>
                                     </div>
                                  </div>
-                              </div>
-                              <div class="row-fluid">
-                                 <div class="span6">
-                                    <div class="control-group">
-                                       <label class="control-label" for="from">From</label>
-                                       <div class="controls">
-                                             <select name="from" id='from' class="m-wrap span12">
-                                                @foreach($city as $rows)
-                                                   <option value="{{$rows->id}}">{{$rows->name}}</option>
-                                                @endforeach   
-                                             </select> 
-                                       </div>
-                                    </div>
-                                 </div>
-                              </div>
-                              <div class="row-fluid">
-                                 <div class="span6">
-                                    <div class="control-group">
-                                       <label class="control-label" for="to">To</label>
-                                       <div class="controls">
-                                             <select name="to" id='to' class="m-wrap span12">
-                                                @foreach($city as $rows)
-                                                   <option value="{{$rows->id}}">{{$rows->name}}</option>
-                                                @endforeach   
-                                             </select> 
-                                       </div>
-                                    </div>
-                                 </div>
-                              </div>
-                              <div class="row-fluid">
-                                 <div class="span6">
-                                    <div class="control-group">
-                                       <label class="control-label" for="class">Class</label>
-                                       <div class="controls">
-                                             <select name="class" id='class' class="m-wrap span12">
-                                                @foreach($class as $rows)
-                                                   <option value="{{$rows->id}}">{{$rows->name}}</option>
-                                                @endforeach   
-                                             </select> 
-                                       </div>
-                                    </div>
-                                 </div>
-                              </div>
-                              <div class="row-fluid">
-                                 <div class="span6">
-                                    <div class="control-group">
-                                       <label class="control-label" for="day">Available Day</label>
-                                       <div class="controls">
-                                          <input  name="day" class="m-wrap span12" placeholder="Yangon" type="text">
-                                       </div>
-                                    </div>
-                                 </div>
-                              </div>
-                              <div class="row-fluid">
-                                 <div class="span6">
-                                    <div class="control-group">
-                                       <label class="control-label" for="time">Time</label>
-                                       <div class="controls">
-                                          <input  name="time" class="m-wrap span12" placeholder="Yangon" type="text">
-                                       </div>
-                                    </div>
-                                 </div>
-                              </div>
-                              <div class="row-fluid">
-                                 <div class="span6">
-                                    <div class="control-group">
-                                       <label class="control-label" for="price">Price</label>
-                                       <div class="controls">
-                                          <input  name="price" class="m-wrap span12" placeholder="Yangon" type="text">
-                                       </div>
-                                    </div>
-                                 </div>
-                              </div>
-                              <div class="row-fluid">
-                                 <div class="span6">
-                                    <div class="control-group">
-                                       <label class="control-label" for="seatplan">Seat Plan</label>
-                                       <div class="controls">
-                                             <select name="seatplan" id='seatplan' class="m-wrap span12">
-                                                @foreach($seatplan as $rows)
-                                                   <option value="{{$rows->id}}">{{$rows->name}}</option>
-                                                @endforeach   
-                                             </select> 
-                                       </div>
-                                    </div>
+                                 <input type="hidden" value="{{$operator_id}}" name="operator_id" id="operator_id">
+                                 <div class="span6" style="min-height:550px;border:1px solid #eee;">
+                                    <br><div id="seatplanview"></div>
                                  </div>
                               </div>
                               
                               <div class="cleardiv">&nbsp;</div>
                               <div class="controls">
-                                    <input type = "submit" value = "Save" class="btn green button-submit" id="btn_create" />
+                                    <input type = "submit" value ="Save" class="btn green"/>
                               </div>
                            </div>
                         </div>
@@ -176,6 +207,13 @@
          </div>
       <!-- END PAGE CONTAINER-->
    </div>
-<!-- END PAGE -->  
+<!-- END PAGE --> 
+
+   
+   
+   
+   <script type="text/javascript" src="../../assets/chosen-bootstrap/chosen/chosen.jquery.min.js"></script>
    <script type="text/javascript" src="../../assets/data-tables/jquery.dataTables.js"></script>
+   <script type="text/javascript" src="../../assets/bootstrap-timepicker/js/bootstrap-timepicker.js"></script>
+   <script type="text/javascript" src="../../js/apps.js"></script>
 @stop

@@ -17,17 +17,17 @@
                         $V_operator_id=Session::get('operator_id');
                      ?>
                      <h3 class="page-title">
-                        အစေန့မှ အဆုံးေန့အတွင်းအေရာင်းစာရင်း
+                        အစေန႕မွအဆုံးေန႕အတြင္းအေရာင္းစာရင္း
                         <!-- <small>form wizard sample</small> -->
                      </h3>
                      <ul class="breadcrumb">
                         <li>
                            <i class="icon-home"></i>
-                           <a href="/report/dailycarandadvancesale?operator_id={{Session::get('operator_id')}}">ပင်မ စာမျက်နှာ</a> 
+                           <a href="/report/dailycarandadvancesale?operator_id={{Session::get('operator_id')}}">ပင္မစာမ်က္ႏွာ</a> 
                            <span class="icon-angle-right"></span>
                         </li>
                         <li>
-                           <a href="#">အေရာင်းစာရင်း များ</a>
+                           <a href="#">အစေန႕မွအဆုံးေန႕အတြင္းအေရာင္းစာရင္း</a>
                         </li>
                      </ul>
                   </div>
@@ -39,7 +39,7 @@
                   <div class="responsive span8" data-tablet="span8" data-desktop="span8">
                      <div class="portlet box light-grey">
                         <div class="portlet-title">
-                           <h4><i class="icon-user"></i>အစေန့မှ အဆုံးေန့အတွင်းအေရာင်းစာရင်း </h4>
+                           <h4><i class="icon-user"></i>အစေန႕မွအဆုံးေန႕အတြင္းအေရာင္းစာရင္း</h4>
                            <div class="actions">
                            </div>
                         </div>
@@ -48,9 +48,9 @@
                            <table class="table table-striped table-bordered table-advance table-hover">
                               <thead>
                                  <tr>
-                                    <th>ေရာင်းသည့်ေန့ရက်</th>
-                                    <th>ေရာင်းြပီး/စုစုေပါင်း လက်မှတ်များ </th>
-                                    <th>စုစုေပါင်း ေရာင်းရေငွ</th>
+                                    <th>ေရာင္းသည့္ေန႕</th>
+                                    <th>ေရာင္းျပီး/ စုစုေပါင္းလက္မွတ္</th>
+                                    <th>ေရာင္းရေငြစုစုေပါင္း</th>
                                     <th>-</th>
                                  </tr>
                               </thead>
@@ -62,7 +62,7 @@
                                           <td>{{ $tripbydaily['purchased_total_seat']}}/{{ $tripbydaily['total_seat']}}</td>
                                           <td>{{ $tripbydaily['total_amout']}}</td>
                                           <td>
-                                             <a class="btn mini green-stripe imagechange" id="" href="/triplist/{{$tripbydaily['order_date']}}/daily?operator_id={{$search['operator_id']}}&agent_id={{$search['agent_id']}}&from_city={{$search['from']}}&to_city={{$search['to']}}&date={{$tripbydaily['order_date']}}&time={{$search['time']}}">အေသးစိတ်ြကည့်ရန်</a>
+                                             <a class="btn mini green-stripe imagechange" id="" href="/triplist/{{$tripbydaily['order_date']}}/daily?operator_id={{$search['operator_id']}}&agent_id={{$search['agent_id']}}&from_city={{$search['from']}}&to_city={{$search['to']}}&date={{$tripbydaily['order_date']}}&time={{$search['time']}}">အေသးစိတ္ၾကည့္ရန္</a>
                                           </td>
                                        </tr>
                                     @endforeach
@@ -75,7 +75,7 @@
                   </div>
                   <div class="responsive span4 border padding-10" data-tablet="span4" data-desktop="span4">
                      <form action="/report/operator/trip/dateranges" method="get" class="horizontal-form">
-                        <h3 class="form-section">အစေန့မှ အဆုံးေန့အတွင်း အေရာင်း စာရင်း ၡာရန်</h3>
+                        <h3 class="form-section">အစေန႕မွအဆုံးေန႕အတြင္း အေရာင္းစာရင္း</h3>
                         <div class="row-fluid">
                            <div class="span11">
                               <input type="hidden" value="{{$search['operator_id']}}" name="operator_id">
@@ -155,7 +155,7 @@
                         <div class="row-fluid">
                            <div class="span11">
                               <div class="control-group">
-                                 <label class="control-label" for="departure_time">အချိန် ေရွးရန်</label>
+                                 <label class="control-label" for="departure_time">အချိန်ေရွးရန်</label>
                                  <div class="controls">
                                     <select id="departure_time" name="departure_time" class="m-wrap span10">
                                        @if($search['times'])
@@ -171,7 +171,7 @@
                         </div>
 
                         <div class="form-actions clearfix">
-                           <button type="submit" class="btn green button-submit">ၡာရန်</button>
+                           <button type="submit" class="btn green button-submit">ရွာရန္</button>
                         </div>
 
                      </form>

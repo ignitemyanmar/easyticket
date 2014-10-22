@@ -111,6 +111,7 @@ public class UserLogin extends SherlockActivity {
 								user.setExpiresIn(arg0.getExpires_in());
 								user.setRefreshToken(arg0.getRefresh_token());
 								user.setUserID(arg0.getUser().getId());
+								user.setUserGroupID(arg0.getUser().getOperatorgroup_id());
 								user.setUserName(arg0.getUser().getName());
 								user.setUserType(arg0.getUser().getType());
 								user.login();
@@ -181,7 +182,7 @@ public class UserLogin extends SherlockActivity {
 
 		}
 	};
-
+	
 	public boolean checkFields() {
 		if (txtEmail.getText().toString().length() == 0) {
 			txtEmail.setError("Enter The User Email");

@@ -68,8 +68,13 @@ public class SeatDetailsbyBusIDListAdapter extends BaseAdapter {
 		holder.seatno.setText(seat_list.get(position).getSeat_no());
 		holder.buyer.setText(seat_list.get(position).getName());
 		holder.seller.setText(seat_list.get(position).getAgent());
-		holder.prices.setText(seat_list.get(position).getPrice().toString());
-		holder.commission.setText((seat_list.get(position).getPrice() - seat_list.get(position).getCommission())+"("+seat_list.get(position).getCommission()+")" );
+		if(seat_list.get(position).getFree_ticket() == 1){
+			holder.prices.setText("Free Ticket");
+			holder.commission.setText("Free Ticket");
+		}else{
+			holder.prices.setText(seat_list.get(position).getPrice().toString());
+			holder.commission.setText((seat_list.get(position).getPrice() - seat_list.get(position).getCommission())+"("+seat_list.get(position).getCommission()+")" );
+		}
 		holder.vouncherNo.setText(seat_list.get(position).getTicket_no());
 		return convertView;
 	}

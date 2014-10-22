@@ -50,6 +50,7 @@ public class MenuActivity extends BaseSherlockActivity{
 		skDetector.setMessageStyle(SKConnectionDetector.VERTICAL_TOASH);
 		if(!skDetector.isConnectingToInternet())
 			skDetector.showErrorMessage();
+		
 	}
 	
 	private OnClickListener clickListener = new OnClickListener() {

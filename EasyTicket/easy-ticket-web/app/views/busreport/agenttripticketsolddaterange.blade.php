@@ -64,7 +64,7 @@
                                           <td>{{ $tripbydaily['total_seat']}}</td>
                                           <td>{{ $tripbydaily['total_amout']}}</td>
                                           <td>
-                                             <a class="btn mini green-stripe imagechange" id="" href="/agent/triplist/{{$tripbydaily['order_date']}}/daily?operator_id={{$search['operator_id']}}&from_city={{$search['from']}}&to_city={{$search['to']}}&date={{$tripbydaily['order_date']}}&time={{$search['time']}}&agent_id={{$search['agent_id']}}">အေသးစိတ်ြကည့်ရန်</a>
+                                             <a class="btn mini green-stripe imagechange" id="" href="/agent/triplist/{{$tripbydaily['order_date']}}/daily?operator_id={{$search['operator_id']}}&from_city={{$search['from']}}&to_city={{$search['to']}}&date={{$tripbydaily['order_date']}}&time={{$search['time']}}&agent_id={{$search['agent_id']}}">အေသးစိတ္ၾကည့္ရန္</a>
                                           </td>
                                        </tr>
                                     @endforeach
@@ -149,7 +149,7 @@
                         </div>
 
                         <div class="form-actions clearfix">
-                           <button type="submit" class="btn green button-submit">ၡာရန်</button>
+                           <button type="submit" class="btn green button-submit">ရွာရန္</button>
                         </div>
 
                      </form>

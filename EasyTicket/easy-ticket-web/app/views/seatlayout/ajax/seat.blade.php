@@ -16,8 +16,7 @@
 		                <span></span>
 		                <input class="radios" type="checkbox" multiple="multiple" value="{{$seatno}}" name="seats[]" >
 		                <div class="fit-a available" title="" id="{{$seatno}}"><p>&nbsp;</p></div>
-		            	<input type="hidden" value="" class="price">
-		            	<input type="hidden" value="{{$seatno}}" class="seatno{{$seatno}}">
+		                <div style="background:#ccc;">
 		            </label>
 		        </div>
 			</td>

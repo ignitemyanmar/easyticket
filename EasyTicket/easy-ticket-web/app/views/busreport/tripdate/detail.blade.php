@@ -12,15 +12,15 @@
                         $V_operator_id=Session::get('operator_id');
                      ?>  
                      <h3 class="page-title">
-                        ကားချုပ် အေရာင်းစာရင်း အေသးစိတ်
+                        ကားခ်ဳပ္အေရာင္းစာရင္း အေသးစိတ္
                      </h3>
                      <ul class="breadcrumb">
                         <li>
                            <i class="icon-home"></i>
-                           <a href="/report/dailycarandadvancesale?operator_id={{Session::get('operator_id')}}">ပင်မ စာမျက်နှာ</a> 
+                           <a href="/report/dailycarandadvancesale?operator_id={{Session::get('operator_id')}}">ပင္မစာမ်က္ႏွာ</a> 
                            <span class="icon-angle-right"></span>
                         </li>
-                        <li><a href="#">ကားချုပ် အေရာင်းစာရင်း အေသးစိတ်</a></li>
+                        <li><a href="#">ကားခ်ဳပ္အေရာင္းစာရင္း အေသးစိတ္</a></li>
                      </ul>
                   </div>
                </div>
@@ -31,8 +31,7 @@
                   <div class="responsive span12" data-tablet="span12" data-desktop="span12">
                      <div class="portlet box light-grey">
                         <div class="portlet-title">
-                           <h4><i class="icon-th-list"></i>ကားချုပ် အေရာင်းစာရင်း အေသးစိတ်
-</h4>
+                           <h4><i class="icon-th-list"></i>ကားခ်ဳပ္အေရာင္းစာရင္း အေသးစိတ္</h4>
                            <div class="actions">
                            </div>
                         </div>
@@ -53,18 +52,17 @@
                               <table class="table table-striped table-bordered table-advance table-hover">
                                  <thead>
                                     <tr>
-                                       <th>ကားနံပါတ်</th>
-                                       <th>ခရီးစဥ်</th>
-                                       <th>ကားဂိတ်</th>
-                                       <th>အေရာင်း ကုိယ်စားလှယ်</th>
-                                       <th>ဝယ်သူအမည်</th>
-                                       <th>ကားအမျိုးအစား</th>
-                                       <th>ထွက်ခွာမည့် ေန့ရက်</th>
-                                       <th>အချိန်</th>
-                                       <th>ခုံနံပါတ်</th>
-                                       <th>လက်မှတ်နံပါတ်</th>
-                                       <th>ဝယ်သည့်ေန့</th>
-                                       <th>ေစျးနုန်း</th>
+                                       <th>ကားနံပါတ္</th>
+                                       <th>ခရီးစဥ္</th>
+                                       <th>အေရာင္း ကုိယ္စားလွယ္</th>
+                                       <th>ဝယ္သူ</th>
+                                       <th>ကားအမ်ုိဳးအစား</th>
+                                       <th>ထြက္ခြာ မည့္ေန႕</th>
+                                       <th>အခ်ိန္</th>
+                                       <th>ခုံနံပါတ္</th>
+                                       <th>လက္မွတ္နံပါတ္</th>
+                                       <th>ဝယ္သည့္ေန႕</th>
+                                       <th>ေစ်းႏုန္း</th>
                                     </tr>
                                  </thead>
                                  <tbody>
@@ -73,7 +71,6 @@
                                           <tr>
                                              <td>{{$result['bus_no']}}</td>
                                              <td>{{$result['trip']}}</td>
-                                             <td>{{$result['operator']}}</td>
                                              <td>{{$result['agent']}}</td>
                                              <td>{{$result['customer_name']}}</td>
                                              <td>{{$result['class']}}</td>

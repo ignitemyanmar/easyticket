@@ -1,5 +1,5 @@
 <?php
-	Route::get('tripautocreate',       'ApiController@tripautocreate');
+	Route::get('tripautocreate',       				'ApiController@tripautocreate');
 	Route::get('/', 								'HomeController@index');
 	Route::get('bus', 								'HomeController@index');
 	Route::get('triplist',							'HomeController@searchTrip');
@@ -115,6 +115,21 @@
 		Route::post('searchseatlayout',       	'SeatLayoutController@postSearchSeatLayout');
 		Route::get('seatlayoutframe',			'SeatLayoutController@postSeatLayout');
 
+		//    16.10.2014
+		Route::get('trip/create',				'TripController@create');
+		Route::get('trip-list',					'TripController@triplists');
+		Route::post('trip-create',				'TripController@store');
+		Route::get('trip/seatplan/{id}',		'TripController@showSeatPlan');
+
+		Route::get('define-ownseat/{id}',		'TripController@ownseat');
+		Route::post('define-ownseat',			'TripController@postownseat');
+		
+
+		Route::get('orderlist',					'OrderController@orderlist');
+		Route::get('order-delete/{id}',			'OrderController@destroy');
+		Route::get('order-tickets/{id}',		'OrderController@ticketlist');
+		Route::get('order-tickets/delete/{id}',	'OrderController@ticketdelete');
+
 		Route::get('commissiontypecreate',		'CommissionTypeController@getAddcommissiontype');
 		Route::post('addcommissiontype',		'CommissionTypeController@postAddCommissiontype');
 		Route::get('commissiontypelist',	    'CommissionTypeController@showCommissiontypeList');
@@ -190,36 +205,44 @@
 	      	if(Auth::attempt($user)) {
 	          	$response = json_decode($response->getContent());
 	          	if(Auth::user()->type == "operator"){
-	          		$operator = Operator::whereuser_id(Auth::user()->id)->first();
-					if($operator){
-						$operator_id=$operator->id;
-						$response->user['id'] = $operator->id;
-						$response->user['name'] = $operator->name;
-						$response->user['type'] = Auth::user()->type;
-						$response->user['role'] = Auth::user()->role;
+	          		$operatorgroup = OperatorGroup::whereuser_id(Auth::user()->id)->first();
+					if($operatorgroup){
+						$operator_id=$operatorgroup->operator_id;
+						$response->user['id'] 				= $operator_id;
+						$response->user['operatorgroup_id'] = $operatorgroup->id;
+						$response->user['name'] 			= Auth::user()->name;
+						$response->user['type'] 			= Auth::user()->type;
+						$response->user['role'] 			= Auth::user()->role;
 						ApiController::tripautocreate($operator_id);	
 						return Response::json($response);
 					}else{
-						$message['error']="invalid_client.";
-						$message['error_description']="Client authentication failed.";
-						return Response::json($message);
+						$operator =	Operator::whereuser_id(Auth::user()->id)->first();
+						$response->user['id'] 				= $operator->id;
+						$response->user['operatorgroup_id'] = 0;
+						$response->user['name'] 			= Auth::user()->name;
+						$response->user['type'] 			= Auth::user()->type;
+						$response->user['role'] 			= Auth::user()->role;
+						ApiController::tripautocreate($operator->id);	
+						return Response::json($response);
 					}
 	          	}
 	          	if(Auth::user()->type == "admin"){
 	          		$admin = User::whereid(Auth::user()->id)->first();
-					$response->user['id'] = $admin->id;
-					$response->user['name'] = $admin->name;
-					$response->user['type'] = Auth::user()->type;
-					$response->user['role'] = Auth::user()->role;
+					$response->user['id'] 				= $admin->id;
+					$response->user['operatorgroup_id'] = 0;
+					$response->user['name'] 			= $admin->name;
+					$response->user['type'] 			= Auth::user()->type;
+					$response->user['role'] 			= Auth::user()->role;
 					return Response::json($response);
 	          	}
 	          	if(Auth::user()->type == "agent"){
 	          		$agent = Agent::whereuser_id(Auth::user()->id)->first();
 					if($agent){
-						$response->user['id'] = $agent->id;
-						$response->user['name'] = $agent->name;
-						$response->user['type'] = Auth::user()->type;	
-						$response->user['role'] = Auth::user()->role;
+						$response->user['id'] 				= $agent->id;
+						$response->user['operatorgroup_id'] = 0;
+						$response->user['name'] 			= $agent->name;
+						$response->user['type'] 			= Auth::user()->type;	
+						$response->user['role'] 			= Auth::user()->role;
 						return Response::json($response);
 					}else{
 						$message['error']="invalid_client.";
@@ -388,17 +411,17 @@
 		Route::get('report/soldtrips/advance/daily',  		'ApiController@getDailyAdvancedTrips');
 		Route::get('report/soldtrips/advance/daily/date',  	'ApiController@getDailyAdvancedByFilterDate');
 		
-		Route::get('report/bus/daily/agent',             	 'ApiController@getDailyReportforTripByAgent');
+		Route::get('report/bus/daily/agent',             	'ApiController@getDailyReportforTripByAgent');
 
-		Route::get('report/tripdate/operator/daily',          'ApiController@getDailyReportbydeparturedate');
-		Route::get('report/tripdate/operator/busid',          'ApiController@getDailyReportbydepartdateandbusid');
-		Route::get('report/tripdate/operator/detail',         'ApiController@getDailyReportbydepartdatedetail');
+		Route::get('report/tripdate/operator/daily',        'ApiController@getDailyReportbydeparturedate');
+		Route::get('report/tripdate/operator/busid',        'ApiController@getDailyReportbydepartdateandbusid');
+		Route::get('report/tripdate/operator/detail',       'ApiController@getDailyReportbydepartdatedetail');
 
-		Route::get('tripreportbydaily',               			'ApiController@getTripsReportByDailyMod');
-		Route::get('citiesbyagent',       			  			'ApiController@getCitiesByagentId');
-		Route::get('citiesbyoperator',       		  			'ApiController@getCitiesByoperatorId');
-		Route::get('timesbyagent',       			  			'ApiController@getTimesByagentId');
-		Route::get('timesbyoperator',       		  			'ApiController@getTimesByOperatorId');
+		Route::get('tripreportbydaily',               		'ApiController@getTripsReportByDailyMod');
+		Route::get('citiesbyagent',       			  		'ApiController@getCitiesByagentId');
+		Route::get('citiesbyoperator',       		  		'ApiController@getCitiesByoperatorId');
+		Route::get('timesbyagent',       			  		'ApiController@getTimesByagentId');
+		Route::get('timesbyoperator',       		  		'ApiController@getTimesByOperatorId');
 
 
 		Route::post('showtimes',						'MovieApiController@postShowTime');
@@ -423,10 +446,10 @@
 		Route::get('movies/{id}',						'MovieApiController@getMovieInfo');
 		Route::post('movies/update/{id}',				'MovieApiController@updateMovie');
 
-		Route::post('ticketclass',							'MovieApiController@postTicketClass');
-		Route::get('ticketclass',							'MovieApiController@getticketclass');
-		Route::get('ticketclass/{id}',						'MovieApiController@getTicketClassInfo');
-		Route::post('ticketclass/update/{id}',				'MovieApiController@updateTicketClass');
+		Route::post('ticketclass',						'MovieApiController@postTicketClass');
+		Route::get('ticketclass',						'MovieApiController@getticketclass');
+		Route::get('ticketclass/{id}',					'MovieApiController@getTicketClassInfo');
+		Route::post('ticketclass/update/{id}',			'MovieApiController@updateTicketClass');
 
 		Route::post('subcinema',							'MovieApiController@postSubCinema');
 		Route::get('subcinema',								'MovieApiController@getSubCinema');
@@ -441,7 +464,18 @@
 		//Analytis
 		Route::get('report/analytis/classes'				,'ApiController@analytisclasses');
 
+		Route::get('operatorgroup',							'ApiController@getOperatorGroup');
+		Route::get('seatlistbytrip/{id}',					'ApiController@getSeatListbyTrip');
+
+		Route::post('closeseatlist',						'ApiController@postCloseSeatList');
+
 	});
+
+	Route::get('exportjson', 				'SyncDatabaseController@exportJson');
+	Route::get('uploadjson', 				'SyncDatabaseController@pushJsonToServer');
+	Route::get('downloadjson', 				'SyncDatabaseController@downloadJsonFromServer');
+	Route::get('readjson', 					'SyncDatabaseController@readJson');
+	Route::get('generateautoid/{prefix}', 	'ApiController@generateAutoID');
 
 	Route::get('404', function()
 	{

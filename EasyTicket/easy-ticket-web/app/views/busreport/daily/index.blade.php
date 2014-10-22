@@ -14,16 +14,16 @@
                   <div class="span12">
                         
                      <h3 class="page-title">
-                        &nbsp;ေန့စဥ် အေရာင်းစာရင်း
+                        &nbsp;ေန႔စဥ္ အေရာင္းစာရင္း
                         <!-- <small>form wizard sample</small> -->
                      </h3>
                      <ul class="breadcrumb">
                         <li>
                            <i class="icon-home"></i>
-                           <a href="/report/dailycarandadvancesale?operator_id={{Session::get('operator_id')}}">ပင်မ စာမျက်နှာ</a> 
+                           <a href="/report/dailycarandadvancesale?operator_id={{Session::get('operator_id')}}">ပင္မစာမ်က္ႏွာ</a> 
                            <span class="icon-angle-right"></span>
                         </li>
-                        <li><a href="#">ေန့စဥ် အေရာင်းစာရင်း</a></li>
+                        <li><a href="#">ေန႔စဥ္ အေရာင္းစာရင္း</a></li>
                      </ul>
                   </div>
                </div>
@@ -35,7 +35,7 @@
                      <?php $dailyforbustotal=0; $dailyforadvancetotal=0;?>
                      <div class="portlet box light-grey">
                         <div class="portlet-title">
-                           <h4><i class="icon-th-list"></i>ေန့စဥ် အေရာင်းစာရင်း</h4>
+                           <h4><i class="icon-th-list"></i>ေန႔စဥ္ အေရာင္းစာရင္း</h4>
                            <div class="actions">
                            </div>
                         </div>
@@ -44,11 +44,11 @@
                            <table class="table table-striped table-bordered table-advance table-hover">
                               <thead>
                                  <tr>
-                                    <th>ခရီးစဥ်</th>
-                                    <th>အချိန်</th>
-                                    <th>ေရာင်းြပီး/စုစုေပါင်း လက်မှတ်များ</th>
-                                    <th>ေစျးနုန်း</th>
-                                    <th>ေရာင်းရေငွ စုစုေပါင်း</th>
+                                    <th>ခရီးစဥ္</th>
+                                    <th>အခ်ိန္</th>
+                                    <th>ေရာင္းျပီး/ စုစုေပါင္းလက္မွတ္</th>
+                                    <th>ေစ်းႏုန္း</th>
+                                    <th>ေရာင္းရေငြစုစုေပါင္း</th>
                                     <th>-</th>
                                  </tr>
                               </thead>
@@ -62,14 +62,14 @@
                                           <td>{{$result['price']}}</td>
                                           <td>{{$result['sold_amount']}}</td>
                                           <td>
-                                             <a class="btn mini green-stripe imagechange" id="" href="/report/dailycarandadvancesale/time?operator_id={{$search['operator_id']}}&date={{$search['date']}}&departure_time={{$result['time']}}">အေသးစိတ်ြကည့်ရန်</a>
+                                             <a class="btn mini green-stripe imagechange" id="" href="/report/dailycarandadvancesale/time?operator_id={{$search['operator_id']}}&date={{$search['date']}}&departure_time={{$result['time']}}">အေသးစိတ္ၾကည့္ရန္</a>
                                           </td>
                                        </tr>
                                        <?php $dailyforbustotal +=$result['sold_amount']; ?>
                                     @endforeach
                                        <tr>
                                           <td colspan="2">&nbsp;</td>
-                                          <td colspan="2" class="total" align="right">ယေန့အတွက် ေရာင်းရေငွ စုစုေပါင်း</td>
+                                          <td colspan="2" class="total" align="right">ယေန့အတွက် ေရာင်းရေငွစုစုေပါင်း</td>
                                           <td >{{$dailyforbustotal}}</td>
                                           <td >&nbsp;</td>
                                        </tr>
@@ -81,7 +81,7 @@
 
                      <div class="portlet box light-grey">
                         <div class="portlet-title">
-                           <h4><i class="icon-th-list"></i>ယေန့ ြကိုေရာင်းစားရင်း</h4>
+                           <h4><i class="icon-th-list"></i>ယေန႕ၾကိဳေရာင္းစာရင္း</h4>
                            <div class="actions">
                            </div>
                         </div>
@@ -90,10 +90,10 @@
                            <table class="table table-striped table-bordered table-advance table-hover">
                               <thead>
                                  <tr>
-                                    <!-- <th>ခရီးစဥ်</th> -->
-                                    <th>ထွက်ခွာမည့် ေန့ရက်</th>
-                                    <th>ေရာင်းြပီး/စုစုေပါင်း လက်မှတ်များ</th>
-                                    <th>ေရာင်းရေငွ စုစုေပါင်း</th>
+                                    <!-- <th>ခရီးစဥ္</th> -->
+                                    <th>ထြက္ခြာမည့္ေန႕</th>
+                                    <th>ေရာင္းျပီး/ စုစုေပါင္းလက္မွတ္</th>
+                                    <th>ေရာင္းရေငြစုစုေပါင္း</th>
                                     <th>-</th>
                                  </tr>
                               </thead>
@@ -106,7 +106,7 @@
                                           <td>{{$advance['purchased_total_seat']}}/{{$advance['total_seat']}}</td>
                                           <td>{{$advance['total_amout']}}</td>
                                           <td>
-                                             <a class="btn mini green-stripe imagechange" id="" href="/report/dailycarandadvancesale/date?operator_id={{$search['operator_id']}}&order_date={{$search['date']}}&departure_date={{$advance['departure_date']}}">အေသးစိတ်ြကည့်ရန်</a>
+                                             <a class="btn mini green-stripe imagechange" id="" href="/report/dailycarandadvancesale/date?operator_id={{$search['operator_id']}}&order_date={{$search['date']}}&departure_date={{$advance['departure_date']}}">အေသးစိတ္ၾကည့္ရန္</a>
                                           </td>
                                        </tr>
                                        <?php $dailyforadvancetotal +=$advance['total_amout']; ?>
@@ -130,7 +130,7 @@
                   </div>
                   <div class="responsive span3 border padding-10" data-tablet="span3" data-desktop="span3">
                      <form action="/report/dailycarandadvancesale/search" method="get" class="horizontal-form">
-                        <h3 class="form-section">ေန့ရက်အလုိက် ၡာေဖွရန်</h3>
+                        <h3 class="form-section">ေန႕ရက္အလုိက္ရွာရန္</h3>
                         
                         <div class="row-fluid">
                            <div class="span6">
@@ -148,7 +148,7 @@
                         @endif
 
                         <div class="form-actions clearfix">
-                           <button type="submit" class="btn green button-submit">ၡာရန်</button>
+                           <button type="submit" class="btn green button-submit">ရွာရန္</button>
                         </div>
 
                      </form>

@@ -74,7 +74,7 @@ public class AgentDetailActivity extends BaseSherlockActivity {
 	}
 	
 	private void getTrip(){
-		NetworkEngine.getInstance().getTrip(AppLoginUser.getAccessToken(), AppLoginUser.getUserID(), new Callback<Trips>() {
+		NetworkEngine.getInstance().getTrip(AppLoginUser.getAccessToken(), AppLoginUser.getUserID(),"trip", new Callback<Trips>() {
 
 			public void failure(RetrofitError arg0) {
 				// TODO Auto-generated method stub

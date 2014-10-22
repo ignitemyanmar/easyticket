@@ -3,20 +3,22 @@
 .HelveticaLight{font-family: 'Helvetica Light';}
 a{color:#4C9ED9;}
 h4 a{color: #77f;}
-body, input.m-wrap, button.m-wrap, select.m-wrap, textarea.m-wrap, select{font-family: "Zawgyi-One";}
+body, input.m-wrap, button.m-wrap, select.m-wrap, textarea.m-wrap, select{font-family: "Zawgyi-One"; font-size: 15px;}
 a:hover, a:focus{text-decoration: none; color:#222;}
 .dashboard-stat .description {
     width: 150px;
     padding-top: 15px;
     color: #eee;
 }
-.table-bordered thead:first-child tr:first-child th,.breadcrumb, .page-title,.portlet-title, .page-sidebar, span i, label, .total, .btn:hover, .btn:focus, .btn:active, .btn.active, .btn[disabled], .btn.disabled, .form-section,.trip_info h3, .trip_info span{font-family: "Ayar Wagaung";}
+.table-bordered thead:first-child tr:first-child th,.breadcrumb, .page-title,.portlet-title, .page-sidebar, .btn:hover, .btn:focus, .btn:active, .btn.active, .btn[disabled], .btn.disabled, .form-section,.trip_info h3, .trip_info span, .btn{font-family: "Zawgyi-One";}
 .trip_info li {
     background: none repeat scroll 0% 0% transparent;
     margin: 0px;
     position: relative;
     list-style: none;
 }
+.page-sidebar > ul > li a, .page-sidebar,span i, label, .total{font-family: "Ayar Wagaung";}
+
 #contents .trip_info li {
     min-height: 30px;
     padding: 0px 0px 0px 230px;

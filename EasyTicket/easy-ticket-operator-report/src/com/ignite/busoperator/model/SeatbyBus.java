@@ -11,7 +11,7 @@ public class SeatbyBus {
 	@Expose
 	private String trip;
 	@Expose
-	private Integer sale_id;
+	private String sale_id;
 	@Expose
 	private String order_id;
 	@Expose
@@ -20,6 +20,8 @@ public class SeatbyBus {
 	private String seat_no;
 	@Expose
 	private String ticket_no;
+	@Expose
+	private Integer free_ticket;
 	@Expose
 	private String name;
 	@Expose
@@ -49,11 +51,11 @@ public class SeatbyBus {
 	this.trip = trip;
 	}
 	
-	public Integer getSale_id() {
+	public String getSale_id() {
 	return sale_id;
 	}
 	
-	public void setSale_id(Integer sale_id) {
+	public void setSale_id(String sale_id) {
 	this.sale_id = sale_id;
 	}
 	
@@ -87,6 +89,14 @@ public class SeatbyBus {
 
 	public void setTicket_no(String ticket_no) {
 		this.ticket_no = ticket_no;
+	}
+	
+	public Integer getFree_ticket() {
+		return free_ticket;
+	}
+
+	public void setFree_ticket(Integer free_ticket) {
+		this.free_ticket = free_ticket;
 	}
 
 	public String getName() {

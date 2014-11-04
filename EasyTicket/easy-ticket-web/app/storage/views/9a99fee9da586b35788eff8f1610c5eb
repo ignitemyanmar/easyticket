@@ -75,21 +75,21 @@
                   </div>
                  <div class="responsive span4 border padding-5" data-tablet="span4" data-desktop="span4">
                     <h3 class="form-section">Seat Plan Information</h3>
-                        <div class="row-fluid">
+                        <div class="row-fluid" style="display:none;">
                                  <div class="span6">
                                     <div class="control-group">
                                        <label class="control-label" for="operator">Operator</label>
                                        <div class="controls">
                                           <select name="operator" id='operator' class="m-wrap span12">
                                           <?php foreach($operator as $rows): ?>
-                                                <option value="<?php echo $rows->id; ?>"><?php echo $rows->name; ?></option>
+                                                <option value="<?php echo $rows->id; ?>" <?php if(strtolower($rows->name)=="elite"): ?> selected <?php endif; ?>><?php echo $rows->name; ?></option>
                                           <?php endforeach; ?>      
                                           </select>    
                                        </div>
                                     </div>
                                  </div>
                         </div>
-                        <div class="row-fluid">
+                        <div class="row-fluid"  style="display:none;">
                                  <div class="span6">
                                     <div class="control-group">
                                        <label class="control-label" for="tickettype">Ticket Type</label>

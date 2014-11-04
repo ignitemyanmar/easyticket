@@ -29,7 +29,7 @@ light grey: #fafafa;
 /***
 Import fonts
 ***/
-@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700);
+/*@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700);*/
 
 /***
 Reset and overrides  
@@ -561,7 +561,7 @@ Sidebar toggler(show/hide)
   opacity: 0.5;
   filter: alpha(opacity=50);
   margin-top: 15px;
-  margin-left: 175px;
+  margin-left: 225px;
   width: 29px;
   height: 29px;
   background-repeat: no-repeat;

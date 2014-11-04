@@ -195,6 +195,27 @@
                                 android:padding="3dp"
                                 android:text="၀ယ္ျပီး ခံုမ်ား" />
                         </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="20dp"
+                            android:orientation="horizontal" >
+
+                            <View
+                                android:id="@+id/View02"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:background="#470203" />
+
+                            <com.smk.custom.view.CustomTextView
+                                android:id="@+id/CustomTextView01"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:padding="3dp"
+                                android:text="Booking ခံုမ်ား" />
+
+                        </LinearLayout>
                     </LinearLayout>
 
                     <LinearLayout
@@ -228,7 +249,7 @@
                             android:layout_weight="59.64"
                             android:text="Price: 8000 Kyats"
                             android:textAppearance="?android:attr/textAppearanceMedium" />
-
+
                         <ListView
                             android:id="@+id/lvBusClass"
                             android:layout_width="match_parent"
@@ -238,8 +259,52 @@
                             android:background="@drawable/bus_border"
                             android:divider="#FFF"
                             android:visibility="gone" >
-
                         </ListView>
+                        
+                         <com.smk.custom.view.CustomTextView
+                             android:id="@+id/CustomTextView02"
+                             android:layout_width="match_parent"
+                             android:layout_height="wrap_content"
+                             android:layout_marginTop="10dp"
+                             android:layout_weight="59.64"
+                             android:text="Please Choose Agent"
+                             android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                        <AutoCompleteTextView
+                            android:id="@+id/edt_agent"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="59.64"
+                            android:ems="10" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="59.64" >
+
+                            <Button
+                                android:id="@+id/btn_now_booking"
+                                style="?android:attr/buttonStyleSmall"
+                                android:layout_width="150dp"
+                                android:layout_height="50dp"
+                                android:layout_marginTop="30dp"
+                                android:background="@drawable/btn_blue"
+                                android:text="Now Booking"
+                                android:textColor="@color/white" />
+
+                            <Button
+                                android:id="@+id/btn_booking"
+                                style="?android:attr/buttonStyleSmall"
+                                android:layout_width="150dp"
+                                android:layout_height="50dp"
+                                android:layout_marginLeft="10dp"
+                                android:layout_marginTop="30dp"
+                                android:background="@drawable/btn_orange"
+                                android:text="Go to Booking List"
+                                android:textColor="@color/white" />
+
+                        </LinearLayout>
+
                     </LinearLayout>
 
                 </LinearLayout>

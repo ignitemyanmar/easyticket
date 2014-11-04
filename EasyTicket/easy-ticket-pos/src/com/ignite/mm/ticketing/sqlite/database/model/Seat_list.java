@@ -11,6 +11,8 @@ public class Seat_list {
 	@Expose
 	private Integer status;
 	@Expose
+	private Integer booking;
+	@Expose
 	private Integer operatorgroup_id;
 	
 	public Seat_list(Integer id, String seat_no, Integer status) {
@@ -42,6 +44,14 @@ public class Seat_list {
 	
 	public void setStatus(Integer status) {
 	this.status = status;
+	}
+	
+	public Integer getBooking() {
+		return booking;
+	}
+
+	public void setBooking(Integer booking) {
+		this.booking = booking;
 	}
 
 	public Integer getOperatorgroup_id() {

@@ -1,5 +1,6 @@
 package com.ignite.mm.ticketing;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import retrofit.Callback;
@@ -84,12 +85,19 @@ public class PayDeleteActivity extends BaseSherlockActivity {
 			}
 			
 			if(v == btn_pay){
-				SKConnectionDetector skDetector = SKConnectionDetector.getInstance(PayDeleteActivity.this);
-				if(skDetector.isConnectingToInternet()){
-					payCredit();
-				}else{
-					skDetector.showErrorMessage();
+				Intent nextScreen = new Intent(PayDeleteActivity.this,NRCActivity.class);
+				String SeatLists = "";
+				for(int i=0; i<creditOrder.getSaleitems().size(); i++){
+					SeatLists += creditOrder.getSaleitems().get(i).getSeatNo()+",";
 				}
+				Bundle bundle = new Bundle();
+				bundle.putString("from_intent", "booking");
+				bundle.putString("agent_id", creditOrder.getAgentId().toString());
+				bundle.putString("selected_seat",  SeatLists);
+				bundle.putString("sale_order_no", creditOrder.getId().toString());
+				bundle.putString("bus_occurence", creditOrder.getSaleitems().get(0).getBusoccuranceId().toString());
+				nextScreen.putExtras(bundle);
+				startActivity(nextScreen);
 			}
 			
 			if(v == btn_cancel_order){
@@ -110,18 +118,18 @@ public class PayDeleteActivity extends BaseSherlockActivity {
         dialog.setCancelable(true);
 		SharedPreferences pref = getSharedPreferences("User", Activity.MODE_PRIVATE);
 		String accessToken = pref.getString("access_token", null);
-		NetworkEngine.getInstance().payCredit(accessToken, creditOrder.getId().toString(), new Callback<JSONObject>() {
+		NetworkEngine.getInstance().confirmBooking(accessToken, creditOrder.getId().toString(), new Callback<JSONObject>() {
 			
 			public void failure(RetrofitError arg0) {
 				// TODO Auto-generated method stub
 				dialog.dismiss();
-				SKToastMessage.showMessage(PayDeleteActivity.this, "Can't payed.", SKToastMessage.ERROR);
+				SKToastMessage.showMessage(PayDeleteActivity.this, "Can't confirmed.", SKToastMessage.ERROR);
 			}
 
 			public void success(JSONObject arg0, Response arg1) {
 				// TODO Auto-generated method stub
 				dialog.dismiss();
-				SKToastMessage.showMessage(PayDeleteActivity.this, "Successfully payed.", SKToastMessage.SUCCESS);
+				SKToastMessage.showMessage(PayDeleteActivity.this, "Successfully confirm.", SKToastMessage.SUCCESS);
 				finish();
 			}
 		});

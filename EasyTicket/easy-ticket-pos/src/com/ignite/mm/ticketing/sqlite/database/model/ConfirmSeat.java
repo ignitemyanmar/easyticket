@@ -1,6 +1,6 @@
 package com.ignite.mm.ticketing.sqlite.database.model;
 public class ConfirmSeat {
-	private Integer busoccurance_id;
+	private String busoccurance_id;
 	private String seat_no;
 	private String name;
 	private String nrc_no;
@@ -9,7 +9,7 @@ public class ConfirmSeat {
 	
 	
 
-	public ConfirmSeat(Integer busoccurance_id, String seat_no, String name,
+	public ConfirmSeat(String busoccurance_id, String seat_no, String name,
 			String nrc_no, String ticket_no, Boolean free_ticket) {
 		super();
 		this.busoccurance_id = busoccurance_id;
@@ -22,13 +22,13 @@ public class ConfirmSeat {
 
 
 
-	public Integer getBusoccurance_id() {
+	public String getBusoccurance_id() {
 		return busoccurance_id;
 	}
 
 
 
-	public void setBusoccurance_id(Integer busoccurance_id) {
+	public void setBusoccurance_id(String busoccurance_id) {
 		this.busoccurance_id = busoccurance_id;
 	}
 

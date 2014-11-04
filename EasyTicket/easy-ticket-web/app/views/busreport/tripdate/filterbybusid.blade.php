@@ -40,12 +40,12 @@
                            <table class="table table-striped table-bordered table-advance table-hover">
                               <thead>
                                  <tr>
-                                    <th>ကားနံပါတ္</th>
+                                   <!--  <th>ကားနံပါတ္</th>
                                     <th>ခရီးစဥ္</th>
                                     <th>ကားအမ်ုိဳးအစား</th>
-                                    <th>အခ်ိန္</th>
+                                    <th>အခ်ိန္</th> -->
                                     <th>အေရာင္းကုိယ္စားလွယ္</th>
-                                    <th>ေရာင္းျပီး/ စုစုေပါင္းလက္မွတ္ </th>
+                                    <th>လက္မွတ္အေရအတြက္</th>
                                     <th>ေရာင္းရေငြစုစုေပါင္း</th>
                                     <th>-</th>
                                  </tr>
@@ -54,12 +54,12 @@
                                  @if($response)
                                     @foreach($response as $result)
                                        <tr>
-                                          <td>{{$result['bus_no']}}</td>
+                                          <!-- <td>{{$result['bus_no']}}</td>
                                           <td>{{$result['trip']}}</td>
-                                          <td>{{$result['class']}}</td>
-                                          <td>{{$result['departure_time']}}</td>
-                                          <td>{{$result['agent']}}</td>
-                                          <td>{{$result['sold_tickets']}}/{{$result['total_seats']}}</td>
+                                          <td>{{$result['class']}}</td> 
+                                          <td>{{$result['departure_time']}}</td>-->
+                                          <td><div style="word-wrap: break-word;width:330px;">{{$result['agent']}}</div></td>
+                                          <td>{{$result['sold_tickets']}}</td>
                                           <td>{{$result['total_amount']}}</td>
                                           <td>
                                              <a class="btn mini green-stripe imagechange" id="" href="/report/seatoccupiedbybus/detail?bus_id={{$result['bus_id']}}">ခုံနံပါတ္ႏွင့္ဝယ္သူတြဲၾကည့္ရန္</a>

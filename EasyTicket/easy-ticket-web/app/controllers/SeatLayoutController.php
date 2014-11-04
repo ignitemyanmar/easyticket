@@ -53,7 +53,8 @@ class SeatLayoutController extends BaseController
 
   	public function showSeatLayoutList()
   	{
-      $response   	= $obj_seatlayout = SeatingLayout::orderBy('id','desc')->paginate(12);
+      // $operator_id=OperatorGroup::whereuser_id(Auth::user()->id)->pluck('operator_id');
+      $response   	= $obj_seatlayout = SeatingLayout::orderBy('id','desc')->get();
   		$allSeatLayout 	= SeatingLayout::all();
       	$totalCount 	= count($allSeatLayout);
   		$i=0;
@@ -180,12 +181,16 @@ class SeatLayoutController extends BaseController
     public function getDeleteSeatLayout($id)
     {
       $seatplan_ids=SeatingPlan::whereseat_layout_id($id)->lists('id');
-      $checktrips=Trip::wherein('seat_plan_id', $seatplan_ids)->lists('id');
+      // Trip::where
+      $checktrips=array();
+      if($seatplan_ids)
+        $checktrips=Trip::wherein('seat_plan_id', $seatplan_ids)->lists('id');
       if($checktrips){
-        return Redirect::to('/seatlayoutlist');
+        return Redirect::to('/seatlayoutlist')->with('message',"Can't delete this seat layout for has links with trips.");
       }
-      $affectedRows1 = SeatingLayout::where('id','=',$id)->delete();
-      return Redirect::to('/seatlayoutlist');
+      SeatingLayout::where('id','=',$id)->delete();
+      SeatingPlan::whereseat_layout_id($id)->delete();
+      return Redirect::to('/seatlayoutlist')->with('message','Successfully delete one record.');
     }
 
     public function postdelSeatLayout()

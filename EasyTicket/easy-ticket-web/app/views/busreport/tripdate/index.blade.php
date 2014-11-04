@@ -47,11 +47,13 @@
                            <table class="table table-striped table-bordered table-advance table-hover">
                               <thead>
                                  <tr>
-                                    <th>ကားနံပါတ္</th>
-                                    <th> ခရီးစဥ္</th>
+                                    <!-- <th>ကားနံပါတ္</th> -->
+                                    <!-- <th> ခရီးစဥ္</th> -->
                                     <th>ကား အမ်ုိဳးအစား</th>
-                                    <th>အခ်ိန္</th>
-                                    <th>ေရာင္းျပီး/ စုစုေပါင္း လက္မွတ္</th>
+                                    <th>ကားထြက္ခ်ိန္</th>
+                                    <th>ကားထြက္မည့္ေန႕</th>
+                                    <th>ခုံအေရအတြက္</th>
+                                    <!-- <th>ေရာင္းျပီး/ စုစုေပါင္း လက္မွတ္</th> -->
                                     <th>ေရာင္းရေငြစုစုေပါင္း</th>
                                     <th>-</th>
                                  </tr>
@@ -60,11 +62,12 @@
                                  @if($response)
                                     @foreach($response as $tripbydaily)
                                        <tr>
-                                          <td>{{$tripbydaily['bus_no']}}</td>
-                                          <td>{{$tripbydaily['trip']}}</td>
+                                          <!-- <td>{{$tripbydaily['bus_no']}}</td> -->
+                                          <!-- <td>{{$tripbydaily['trip']}}</td> -->
                                           <td>{{$tripbydaily['class']}}</td>
                                           <td>{{$tripbydaily['departure_time']}}</td>
-                                          <td>{{$tripbydaily['sold_seats']}}/{{$tripbydaily['total_seats']}}</td>
+                                          <td>{{$tripbydaily['departure_date']}}</td>
+                                          <td>{{$tripbydaily['sold_seats']}}</td>
                                           <td>{{$tripbydaily['total_amount']}}</td>
                                           <td>
                                              <a class="btn mini green-stripe imagechange" id="" href="/report/dailybydeparturedate/busid?bus_id={{$tripbydaily['id']}}">အေသးစိတ္ၾကည့္ရန္</a>

@@ -56,7 +56,10 @@ class OperatorController extends BaseController
 
 	public function showOperatorlist()
 	{
-		$obj_operator = Operator::paginate(12);
+        $user_id    =Auth::user()->id;
+        $operator_id=OperatorGroup::whereuser_id($user_id)->pluck('operator_id');
+
+		$obj_operator = Operator::whereid($operator_id)->get();
         $i=0;
         if($obj_operator){
             foreach ($obj_operator as $row) {
@@ -88,7 +91,6 @@ class OperatorController extends BaseController
         }
 		$response = $obj_operator;
 		$totalcount = Operator::count();
-
 		return View::make('operator.list',array('response'=>$response,'totalcount'=>$totalcount));
 	}
 	

@@ -121,19 +121,20 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal" >
-
+
                     <RadioButton
                         android:id="@+id/rdo_cash_down"
                         android:layout_width="150dp"
                         android:layout_height="wrap_content"
                         android:checked="true"
-                        android:text="ယခု ရွင္း" />
-
+                        android:text="ဂိတ္ႀကီး" />
+
                     <RadioButton
                         android:id="@+id/rdo_credit"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="အ ေၾကြး" />
+                        android:text="ဂိတ္ခြဲ" />
+
                 </RadioGroup>
             </LinearLayout>
 

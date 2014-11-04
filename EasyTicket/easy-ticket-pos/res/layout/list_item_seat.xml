@@ -10,13 +10,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="2dp" >
-
+
         <CheckBox
             android:id="@+id/chk_seat"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:button="@drawable/rdo_shape"
+            android:button="@drawable/rdo_shape_0"
             android:gravity="center_vertical|center_horizontal" />
 
         <TextView

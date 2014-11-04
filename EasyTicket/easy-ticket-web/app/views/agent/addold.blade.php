@@ -106,7 +106,7 @@
                               <div class="row-fluid">
                                  <div class="span6">
                                     <div class="control-group">
-                                       <label class="control-label" for="address">လိပ်စာ</label>
+                                       <label class="control-label" for="address">လိပ္စာ</label>
                                        <div class="controls">
                                           <input  name="address" class="m-wrap span12" placeholder="Address" type="text">
                                        </div>
@@ -116,7 +116,7 @@
                               <div class="row-fluid">
                                  <div class="span6">
                                     <div class="control-group">
-                                       <label class="control-label" for="phone">ဖုန်းနံပါတ်</label>
+                                       <label class="control-label" for="phone">ဖုန္းနံပါတ္</label>
                                        <div class="controls">
                                           <input  name="phone" class="m-wrap span12" placeholder="Phone" type="text">
                                        </div>

@@ -36,16 +36,15 @@
                         $V_operator_id=Session::get('operator_id');
                      ?>
                      <h3 class="page-title">
-                        အေရာင်း ကုိယ်စားလှယ်များ           
-                        
+                        အေရာင္းကုိယ္စားလွယ္မ်ား          
                      </h3>
                      <ul class="breadcrumb">
                         <li>
                            <i class="icon-home"></i>
-                           <a href="/report/dailycarandadvancesale?operator_id={{Session::get('operator_id')}}">ပင်မ စာမျက်နှာ</a> 
+                           <a href="/report/dailycarandadvancesale?operator_id={{Session::get('operator_id')}}">ပင္မစာမ်က္ႏွာ</a> 
                            <i class="icon-angle-right"></i>
                         </li>
-                        <li><a href="#">အေရာင်း ကုိယ်စားလှယ်များ</a></li>
+                        <li><a href="#">အေရာင္းကုိယ္စားလွယ္မ်ား</a></li>
                         
                      </ul>
                      <!-- END PAGE TITLE & BREADCRUMB-->
@@ -59,14 +58,14 @@
                         <!-- BEGIN EXAMPLE TABLE PORTLET-->
                         <div class="portlet box blue">
                            <div class="portlet-title">
-                              <h4><i class="icon-th-list"></i>အေရာင်း ကုိယ်စားလှယ်များ</h4>
+                              <h4><i class="icon-th-list"></i>အေရာင္းကုိယ္စားလွယ္မ်ား</h4>
                            </div>
                            <div class="portlet-body">
                               <div class="clearfix">
                                  <div class="btn-group">
                                     <a href="/agents/create">
                                     <button id="" class="btn green">
-                                    အသစ်ထည့်မည် <i class="icon-plus"></i>
+                                    အသစ္ထည့္မည္ <i class="icon-plus"></i>
                                     </button>
                                     </a>
                                  </div>
@@ -88,11 +87,12 @@
                               @endif
                               <table class="table table-striped table-hover table-bordered" id="sample_editable_1">
                                  <thead>
-                                       <th>အမည်</th>
-                                       <th>ဖုန်းနံပါတ် </th>
-                                       <th>လိပ်စာ</th>
-                                       <th>ြပင်ရန်</th>
-                                       <th>ဖျက်ရန်</th>
+                                       <th>အမည္</th>
+                                       <th>ဖုန္းနံပါတ္</th>
+                                       <th>လိပ္စာ</th>
+                                       <th>Owner</th>
+                                       <th>ျပင္ရန္</th>
+                                       <th>ဖ်က္ရန္</th>
                                  </thead>
                                  <tbody>
                                     @if(count($response)==0)
@@ -105,11 +105,12 @@
                                                    <td>{{$agent['name']}}</td>
                                                    <td>{{$agent['phone']}}</td>
                                                    <td>{{$agent['address']}}</td>
+                                                   <td>@if($agent['owner']==1) Owner @else - @endif</td>
                                                    <td style="text-align:center;">
-                                                         <a href="/agent-update/{{ $agent['id'] }}"  class="btn green button-submit">ြပင်ရန်</a><br><br>
+                                                         <a href="/agent-update/{{ $agent['id'] }}"  class="btn green button-submit">ျပင္ရန္</a><br><br>
                                                    </td>
                                                    <td style="text-align:center;">
-                                                         <a href="deleteagent/{{ $agent['id'] }}"   class="btn green button-submit">ဖျက်ရန်</a>
+                                                         <a href="deleteagent/{{ $agent['id'] }}"   class="btn green button-submit">ဖ်က္ရန္</a>
                                                    </td>
                                                 </tr>
                                     @endforeach

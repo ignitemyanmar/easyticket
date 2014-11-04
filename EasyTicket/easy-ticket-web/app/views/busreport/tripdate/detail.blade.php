@@ -52,34 +52,34 @@
                               <table class="table table-striped table-bordered table-advance table-hover">
                                  <thead>
                                     <tr>
-                                       <th>ကားနံပါတ္</th>
+                                       <!-- <th>ကားနံပါတ္</th>
                                        <th>ခရီးစဥ္</th>
-                                       <th>အေရာင္း ကုိယ္စားလွယ္</th>
-                                       <th>ဝယ္သူ</th>
-                                       <th>ကားအမ်ုိဳးအစား</th>
-                                       <th>ထြက္ခြာ မည့္ေန႕</th>
-                                       <th>အခ်ိန္</th>
+                                       <th>အေရာင္း ကုိယ္စားလွယ္</th> -->
                                        <th>ခုံနံပါတ္</th>
-                                       <th>လက္မွတ္နံပါတ္</th>
-                                       <th>ဝယ္သည့္ေန႕</th>
+                                       <th>ဝယ္သူ အမည္</th>
+                                       <!-- <th>ကားအမ်ုိဳးအစား</th>
+                                       <th>ထြက္ခြာ မည့္ေန႕</th>
+                                       <th>အခ်ိန္</th> -->
                                        <th>ေစ်းႏုန္း</th>
+                                       <th>လက္မွတ္နံပါတ္</th>
+                                       <!-- <th>ဝယ္သည့္ေန႕</th> -->
                                     </tr>
                                  </thead>
                                  <tbody>
                                     @if($response)
                                        @foreach($response as $result)
                                           <tr>
-                                             <td>{{$result['bus_no']}}</td>
-                                             <td>{{$result['trip']}}</td>
-                                             <td>{{$result['agent']}}</td>
-                                             <td>{{$result['customer_name']}}</td>
-                                             <td>{{$result['class']}}</td>
-                                             <td>{{$result['departure_date']}}</td>
-                                             <td>{{$result['departure_time']}}</td>
+                                             <!-- <td>{{$result['bus_no']}}</td> -->
+                                             <!-- <td>{{$result['trip']}}</td> -->
+                                             <!-- <td>{{$result['agent']}}</td> -->
                                              <td>{{$result['seat_no']}}</td>
-                                             <td>{{$result['ticket_no']}}</td>
-                                             <td>{{$result['orderdate']}}</td>
+                                             <td>{{$result['customer_name']}}</td>
+                                             <!-- <td>{{$result['class']}}</td> -->
+                                             <!-- <td>{{$result['departure_date']}}</td> -->
+                                             <!-- <td>{{$result['departure_time']}}</td> -->
                                              <td>{{$result['price']}}</td>
+                                             <td>{{$result['ticket_no']}}</td>
+                                             <!-- <td>{{$result['orderdate']}}</td> -->
                                           </tr>
                                        @endforeach
                                     @endif

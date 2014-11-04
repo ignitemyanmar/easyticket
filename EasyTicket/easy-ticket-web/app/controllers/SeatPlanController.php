@@ -5,14 +5,15 @@ class SeatPlanController extends BaseController
 	{
 		$seatlayout = SeatingLayout::all();
 		$tickettype = TicketType::all();
-		$operator   = operator::all();
+		$operator   = Operator::all();
+		$operator_id=OperatorGroup::whereuser_id(Auth::user()->id)->pluck('operator_id');
 
-		return View::make('seatplan.add',array('seatlayout'=>$seatlayout,'tickettype'=>$tickettype,'operator'=>$operator));
+		return View::make('seatplan.add',array('seatlayout'=>$seatlayout,'tickettype'=>$tickettype,'operator'=>$operator, 'operator_id'=>$operator_id));
 	}
 
 	public function postAddSeatPlan()
 	{
-		$operator_id   = Input::get('operator');
+		$operator_id   = OperatorGroup::whereuser_id(Auth::user()->id)->pluck('operator_id');
 		$ticketype_id  = Input::get('tickettype');
 		$seatlayout_id = Input::get('seat_layout');
 		$row 		   = SeatingLayout::whereid($seatlayout_id)->pluck('row');
@@ -94,12 +95,13 @@ class SeatPlanController extends BaseController
 
 	public function showSeatPlanList()
   	{
-      	$response   	= $obj_seatplan = SeatingPlan::orderBy('id','desc')->paginate(12);
+  		$operator_id=OperatorGroup::whereuser_id(Auth::user()->id)->pluck('operator_id');
+      	$response   	= $obj_seatplan = SeatingPlan::whereoperator_id($operator_id)->orderBy('id','desc')->get();
   		$allSeatPlan	= SeatingPlan::all();
       	$totalCount 	= count($allSeatPlan);
   		$i=0;
-       foreach ($response as $seatplan)
-       {
+        foreach ($response as $seatplan)
+        {
           $tickettypename = TicketType::where('id','=',$seatplan['ticket_type_id'])->pluck('name');
           $operatorname   = Operator::where('id','=',$seatplan['operator_id'])->pluck('name');
             $response[$i]['id']              = $seatplan['id'];

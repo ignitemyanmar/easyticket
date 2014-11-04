@@ -12,23 +12,23 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical" >
-
+
         <com.smk.custom.view.CustomButton
             android:id="@+id/btn_pay"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:background="@drawable/btn_green"
-            android:text="ေငြေပး ေခ်ၿပီး"
+            android:text="Booking Confirm"
             android:textColor="@color/white" />
-
+
         <com.smk.custom.view.CustomButton
             android:id="@+id/btn_cancel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
             android:background="@drawable/btn_orange"
-            android:text="order ဖ်တ္မည္"
+            android:text="Booking ဖ်တ္မည္"
             android:textColor="@color/white" />
 
     </LinearLayout>

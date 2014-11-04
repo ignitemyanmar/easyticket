@@ -30,6 +30,9 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -49,6 +52,8 @@ import com.ignite.mm.ticketing.custom.listview.adapter.BusClassAdapter;
 import com.ignite.mm.ticketing.custom.listview.adapter.BusSeatAdapter;
 import com.ignite.mm.ticketing.custom.listview.adapter.GroupUserListAdapter;
 import com.ignite.mm.ticketing.http.connection.HttpConnection;
+import com.ignite.mm.ticketing.sqlite.database.model.Agent;
+import com.ignite.mm.ticketing.sqlite.database.model.AgentList;
 import com.ignite.mm.ticketing.sqlite.database.model.BusSeat;
 import com.ignite.mm.ticketing.sqlite.database.model.OperatorGroupUser;
 import com.ignite.mm.ticketing.sqlite.database.model.ReturnComfrim;
@@ -87,6 +92,12 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
 	private TextView txt_dept_date;
 	private TextView txt_dept_time;
 	private ListView lst_group_user;
+	private Button btn_booking;
+	private String From;
+	private String To;
+	private Button btn_now_booking;
+	private AutoCompleteTextView edt_agent;
+	private Integer isBooking = 0;
 	public static List<BusSeat> BusSeats;
 	public static List<OperatorGroupUser> groupUser = new ArrayList<OperatorGroupUser>();
 	public static String CheckOut;
@@ -105,7 +116,6 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
 				R.id.action_bar_back);
 		
 		actionBarProceed = (ImageButton) actionBar.getCustomView().findViewById(R.id.action_bar_proceed);
-		actionBarTitle.setText("BUS");
 		actionBarProceed.setVisibility(View.VISIBLE);
 		actionBarProceed.setOnClickListener(clickListener);
 		actionBarBack.setOnClickListener(clickListener);
@@ -119,10 +129,19 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
 		OperatorID = bundle.getString("operator_id");
 		FromCity = bundle.getString("from_city_id");
 		ToCity = bundle.getString("to_city_id");
+		From = bundle.getString("from_city");
+		To = bundle.getString("to_city");
 		Time = bundle.getString("time");
 		Date = bundle.getString("date");
 		
+		actionBarTitle.setText("Choose Seat > "+From+" - "+To);
+		
 		SelectedSeat = "";
+		btn_booking		= (Button) findViewById(R.id.btn_booking);
+		btn_booking.setOnClickListener(clickListener);
+		btn_now_booking = (Button) findViewById(R.id.btn_now_booking);
+		btn_now_booking.setOnClickListener(clickListener);
+		edt_agent	= (AutoCompleteTextView) findViewById(R.id.edt_agent);
 		mLoadingView = (LinearLayout) findViewById(R.id.ly_loading);
 		mNoConnection = (LinearLayout) findViewById(R.id.no_internet);
 		txt_operator = (CustomTextView) findViewById(R.id.txt_operator);
@@ -146,6 +165,7 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
 			mLoadingView.startAnimation(topInAnimaiton());
 			getOperatorGroupUser();
 			getSeatPlan();
+			getAgent();
 		}else {
 			mNoConnection.setVisibility(View.VISIBLE);
 			mNoConnection.startAnimation(topInAnimaiton());
@@ -242,6 +262,37 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
 
 	}
 	
+	private void getAgent(){
+		SharedPreferences pref = this.getApplicationContext().getSharedPreferences("User", Activity.MODE_PRIVATE);
+		String accessToken = pref.getString("access_token", null);
+		String user_id = pref.getString("user_id", null);
+		NetworkEngine.getInstance().getAllAgent(accessToken,user_id, new Callback<AgentList>() {
+
+			private List<Agent> agentList;
+			private ArrayAdapter<Agent> agentListAdapter;
+
+			public void failure(RetrofitError arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			public void success(AgentList arg0, Response arg1) {
+				// TODO Auto-generated method stub
+				agentList = arg0.getAgents();
+				agentListAdapter = new ArrayAdapter<Agent>(BusSelectSeatActivity.this, android.R.layout.simple_dropdown_item_1line, agentList);
+				edt_agent.setAdapter(agentListAdapter);
+				edt_agent.setOnItemClickListener(new OnItemClickListener() {
+
+					public void onItemClick(AdapterView<?> arg0, View arg1,
+							int arg2, long arg3) {
+						// TODO Auto-generated method stub
+			           	AgentID = ((Agent)arg0.getAdapter().getItem(arg2)).getId();
+					}
+				});
+			}
+		});
+	}
+	
 	private void getSeatPlan() {
 		SharedPreferences pref = this.getApplicationContext().getSharedPreferences("User", Activity.MODE_PRIVATE);
 		String accessToken = pref.getString("access_token", null);
@@ -295,6 +346,7 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
         params.add(new BasicNameValuePair("to_city", ToCity));
         params.add(new BasicNameValuePair("group_operator_id", AppLoginUser.getUserGroupID()));
         params.add(new BasicNameValuePair("seat_list", seats.toString()));
+        params.add(new BasicNameValuePair("booking", isBooking.toString()));
         params.add(new BasicNameValuePair("access_token", accessToken));
         Log.i("","Hello Param: " + params.toString());
 		final Handler handler = new Handler() {
@@ -306,17 +358,27 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
 				try {
 					JSONObject jsonObject = new JSONObject(jsonData);
 					if(jsonObject.getBoolean("can_buy") && jsonObject.getString("device_id").equals(DeviceUtil.getInstance(BusSelectSeatActivity.this).getID())){
-	        			Intent nextScreen = new Intent(BusSelectSeatActivity.this,NRCActivity.class);
-	    				Bundle bundle = new Bundle();
-	    				bundle.putString("trip",BusSeats.get(0).getTrip());
-	    				bundle.putString("trip_date", Date);
-	    				bundle.putString("operator_id",OperatorID);
-	    				bundle.putString("operator_name", BusSeats.get(0).getOperator());
-	    				bundle.putString("trip_time",Time);
-	    				bundle.putString("selected_seat",  SelectedSeat);
-	    				bundle.putString("sale_order_no", jsonObject.getString("sale_order_no"));
-	    				nextScreen.putExtras(bundle);
-	    				startActivity(nextScreen);
+	        			if(isBooking == 0){
+	        				Intent nextScreen = new Intent(BusSelectSeatActivity.this,NRCActivity.class);
+	        				JSONArray jsonArray = jsonObject.getJSONArray("tickets");
+	        				String SeatLists = "";
+	        				for(int i=0; i<jsonArray.length(); i++){
+	        					JSONObject obj = jsonArray.getJSONObject(i);
+	        					SeatLists += obj.getString("seat_no")+",";
+	        				}
+		    				Bundle bundle = new Bundle();
+		    				bundle.putString("from_intent", "checkout");
+		    				bundle.putString("selected_seat",  SeatLists);
+		    				bundle.putString("sale_order_no", jsonObject.getString("sale_order_no"));
+		    				bundle.putString("bus_occurence", BusSeats.get(0).getSeat_plan().get(0).getId().toString());
+		    				nextScreen.putExtras(bundle);
+		    				startActivity(nextScreen);
+	        			}else{
+	        				SKToastMessage.showMessage(BusSelectSeatActivity.this, "Booking မွာျပီးျပီး ျဖစ္ပါသည္။", SKToastMessage.SUCCESS);
+	        				isBooking = 0;
+	        				getSeatPlan();
+	        			}
+						
 	    				dialog.dismiss();
 	        		}else{
 	        			dialog.dismiss();
@@ -381,6 +443,29 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
 		public void onClick(View v) {
 			if (v == actionBarBack) {
 				finish();
+			}
+			
+			if(v == btn_booking){
+				SharedPreferences sharedPreferences = getSharedPreferences("order",MODE_PRIVATE);
+				SharedPreferences.Editor editor = sharedPreferences.edit();
+				editor.clear();
+				editor.commit();
+				editor.putString("order_date", Date);
+				editor.commit();
+	        	startActivity(new Intent(getApplicationContext(),	BusTicketingOrderListActivity.class));
+			}
+			
+			if(v == btn_now_booking){
+				if(SelectedSeat.length() != 0){
+					if(connectionDetector.isConnectingToInternet()){
+						isBooking = 1;
+						getServermsg();
+					}else{
+						connectionDetector.showErrorDialog();
+					}
+				}else{
+					SKToastMessage.showMessage(BusSelectSeatActivity.this, "Please choose the seat.", SKToastMessage.ERROR);
+				}
 			}
 			
 			if(v==actionBarProceed){

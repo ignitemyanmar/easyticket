@@ -1,5 +1,11 @@
 package com.ignite.busoperator;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import com.ignite.busoperator.R;
 import com.ignite.busoperator.application.BaseSherlockActivity;
 import com.ignite.busoperator.application.FontsTypeface;
@@ -7,6 +13,7 @@ import com.smk.skconnectiondetector.SKConnectionDetector;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.format.DateFormat;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -51,6 +58,13 @@ public class MenuActivity extends BaseSherlockActivity{
 		if(!skDetector.isConnectingToInternet())
 			skDetector.showErrorMessage();
 		
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		List<Date> dates = calculateBTWDate("2014-10-22", "2014-11-10");
+		for(int i=0;i<dates.size();i++){
+			    Date lDate =(Date)dates.get(i);
+			    String ds = formatter.format(lDate);    
+			    System.out.println(" Date is ..." + ds);
+			}
 	}
 	
 	private OnClickListener clickListener = new OnClickListener() {
@@ -91,4 +105,34 @@ public class MenuActivity extends BaseSherlockActivity{
 			}
 		}
 	};
+	
+	private List<Date> calculateBTWDate(String sDate, String eDate){
+		List<Date> dates = new ArrayList<Date>();
+
+		String str_date = sDate;
+		String end_date = eDate;
+
+		SimpleDateFormat formatter ; 
+
+		formatter = new SimpleDateFormat("yyyy-MM-dd");
+		
+		Date startDate = null;
+		Date  endDate = null;
+		try {
+			startDate = (Date)formatter.parse(str_date);
+			endDate = (Date)formatter.parse(end_date);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		
+		long interval = 24*1000 * 60 * 60; // 1 hour in millis
+		long endTime =endDate.getTime() ; // create your endtime here, possibly using Calendar or Date
+		long curTime = startDate.getTime();
+		while (curTime <= endTime) {
+		    dates.add(new Date(curTime));
+		    curTime += interval;
+		}
+		return dates;
+	}
 }

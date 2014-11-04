@@ -1,4 +1,3 @@
-
 package com.ignite.mm.ticketing;
 
 import java.text.ParseException;
@@ -228,9 +227,9 @@ public class BusTimeActivity extends BaseSherlockActivity {
 				time_morning_list = new ArrayList<Time>();
 				time_evening_list = new ArrayList<Time>();
 				for(Time time: arg0){
-					String timeStr = time.getTime().replaceAll(" ", "").toLowerCase();
-					String timeTypeStr = timeStr.substring(timeStr.length() - 2, timeStr.length());
-					if(timeTypeStr.equals("am")){
+					//String timeStr = time.getTime().replaceAll(" ", "").toLowerCase();
+					//String timeTypeStr = timeStr.substring(timeStr.length() - 2, timeStr.length());
+					if(time.getTime().toLowerCase().contains("am")){
 						time_morning_list.add(time);
 					}else{
 						time_evening_list.add(time);
@@ -280,7 +279,9 @@ public class BusTimeActivity extends BaseSherlockActivity {
 	        bundle.putString("agent_id", selectedAgentId);
 			bundle.putString("operator_id", selectedOperatorId);
 			bundle.putString("from_city_id", selectedFromId);
+			bundle.putString("from_city", selectedFrom);
 			bundle.putString("to_city_id", selectedToId);
+			bundle.putString("to_city", selectedTo);
 			bundle.putString("time", selectedTime);
 			bundle.putString("date", selectedDate);
 			startActivity(new Intent(getApplicationContext(), BusSelectSeatActivity.class).putExtras(bundle));
@@ -298,7 +299,9 @@ public class BusTimeActivity extends BaseSherlockActivity {
 	        bundle.putString("agent_id", selectedAgentId);
 			bundle.putString("operator_id", selectedOperatorId);
 			bundle.putString("from_city_id", selectedFromId);
+			bundle.putString("from_city", selectedFrom);
 			bundle.putString("to_city_id", selectedToId);
+			bundle.putString("to_city", selectedTo);
 			bundle.putString("time", selectedTime);
 			bundle.putString("date", selectedDate);
 			startActivity(new Intent(getApplicationContext(), BusSelectSeatActivity.class).putExtras(bundle));

@@ -161,7 +161,7 @@
                                                                                  <span></span>
                                                                                  
                                                                                   <!-- <input class="radios" type="checkbox" multiple="multiple" value="{{$rows['seat_no']}}" name="tickets" {{ $disabled }}> -->
-                                                                                 <div class="fit-a {{$taken}}" title="{{$rows['seat_no'].'('. $rows['price'].' K)'}}" id="{{$rows['seat_no']}}">Seat No : <b>{{$rows['seat_no']}}</b><span class="zawgyi-one"><br>Price : <b>{{$rows['price']}}</b><br>{{$rows['customer']['name']}}<br>{{$rows['customer']['nrc']}}</span></div>
+                                                                                 <div class="fit-a {{$taken}} zawgyi-one" title="{{$rows['agent_name']}}" id="{{$rows['seat_no']}}">{{$rows['customer']['name']}}<br> {{$rows['customer']['phone']}}<br> &nbsp;{{$rows['agent_name']}}</div>
                                                                                  <input type="hidden" value="{{$rows['price']}}" class="price{{$rows['seat_no']}}">
                                                                                  <input type="hidden" value="{{$rows['seat_no']}}" class="seatno{{$rows['seat_no']}}">
                                                                               </label>

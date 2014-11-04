@@ -37,7 +37,7 @@ import com.actionbarsherlock.app.SherlockActivity;
 import com.google.gson.Gson;
 import com.ignite.mm.ticketing.application.BaseSherlockActivity;
 import com.ignite.mm.ticketing.clientapi.NetworkEngine;
-import com.ignite.mm.ticketing.custom.listview.adapter.CreditListViewAdapter;
+import com.ignite.mm.ticketing.custom.listview.adapter.OrderListViewAdapter;
 import com.ignite.mm.ticketing.custom.listview.adapter.CustomerTicketListViewAdapter;
 import com.ignite.mm.ticketing.sqlite.database.model.CreditOrder;
 import com.ignite.mm.ticketing.sqlite.database.model.Saleitem;

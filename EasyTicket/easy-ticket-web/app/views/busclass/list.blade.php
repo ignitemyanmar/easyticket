@@ -54,7 +54,7 @@
                         <!-- BEGIN EXAMPLE TABLE PORTLET-->
                         <div class="portlet box blue">
                            <div class="portlet-title">
-                              <h4><i class="icon-edit"></i>Agent List</h4>
+                              <h4><i class="icon-edit"></i>Bus Class List</h4>
                            </div>
                            <div class="portlet-body">
                               <div class="clearfix">

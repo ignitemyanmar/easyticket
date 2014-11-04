@@ -54,12 +54,12 @@
                         <!-- BEGIN EXAMPLE TABLE PORTLET-->
                         <div class="portlet box blue">
                            <div class="portlet-title">
-                              <h4><i class="icon-edit"></i>Agent List</h4>
+                              <h4><i class="icon-edit"></i>SeatLayout List</h4>
                            </div>
                            <div class="portlet-body">
                               <div class="clearfix">
                                  <div class="btn-group">
-                                    <a href="/agents/create">
+                                    <a href="/seatlayout/create">
                                     <button id="" class="btn green">
                                     Add New <i class="icon-plus"></i>
                                     </button>
@@ -69,17 +69,13 @@
                               </div>
                               @if(Session::has('message'))
                                  <?php $message=Session::get('message'); ?>
-                                 @if($message['status']='0')
+                                 @if($message)
                                  <div class="alert alert-info">
                                     <button class="close" data-dismiss="alert"></button>
-                                    <strong>Exiting ! </strong>This record is already exit.
-                                 </div>
-                                 @else
-                                 <div class="alert alert-success">
-                                    <button class="close" data-dismiss="alert"></button>
-                                    <strong>Success!</strong> One record have been added.
+                                    {{$message}}
                                  </div>
                                  @endif
+                                 
                               @endif
                               <table class="table table-striped table-hover table-bordered" id="sample_editable_1">
                                  <thead>
@@ -87,7 +83,7 @@
                                        <th class="span8">Name</th>
                                        <th>Rows</th>
                                        <th>Columns</th>
-                                       <th>Edit</th>
+                                       <!-- <th>Edit</th> -->
                                        <th>Delete</th>
                                     </tr>
                                  </thead>
@@ -101,11 +97,11 @@
                                         <td>{{$seatlayout['ticket_type_id']}}</td>
                                         <td>{{$seatlayout['row']}}</td>
                                         <td>{{$seatlayout['column']}}</td>
-                                        <td style="text-align:center;">
+                                        <!-- <td style="text-align:center;">
                                             <a href="/seatlayout-update/{{ $seatlayout['id'] }}"  class="btn green button-submit">Edit</a><br><br>
-                                        </td>
+                                        </td> -->
                                         <td style="text-align:center;">
-                                            <a href="deleteseatlayout/{{ $seatlayout['id'] }}"   class="btn green button-submit">Delete</a>
+                                            <a href="deleteseatlayout/{{ $seatlayout['id'] }}"   class="btn green delete button-submit">Delete</a>
                                         </td>
                                     </tr>
                                   @endforeach

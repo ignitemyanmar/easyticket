@@ -17,7 +17,11 @@
                         $V_operator_id=Session::get('operator_id');
                      ?>
                      <h3 class="page-title">
-                        အစေန႕မွအဆုံးေန႕အတြင္းအေရာင္းစာရင္း
+                        @if($search['trips']==1)
+                           ခရီးစဥ္အလုိက္ အေရာင္းစာရင္းမ်ား
+                        @else
+                        အေရာင္းကုိယ္စားလွယ္ႏွင့္ အေရာင္းစာရင္းမ်ား
+                        @endif
                         <!-- <small>form wizard sample</small> -->
                      </h3>
                      <ul class="breadcrumb">
@@ -27,7 +31,12 @@
                            <span class="icon-angle-right"></span>
                         </li>
                         <li>
-                           <a href="#">အစေန႕မွအဆုံးေန႕အတြင္းအေရာင္းစာရင္း</a>
+                           <a href="#">
+                           @if($search['trips']==1)
+                              ခရီးစဥ္အလုိက္ အေရာင္းစာရင္းမ်ား
+                           @else
+                           အေရာင္းကုိယ္စားလွယ္ႏွင့္ အေရာင္းစာရင္းမ်ား
+                           @endif</a>
                         </li>
                      </ul>
                   </div>
@@ -39,7 +48,13 @@
                   <div class="responsive span8" data-tablet="span8" data-desktop="span8">
                      <div class="portlet box light-grey">
                         <div class="portlet-title">
-                           <h4><i class="icon-user"></i>အစေန႕မွအဆုံးေန႕အတြင္းအေရာင္းစာရင္း</h4>
+                           <h4><i class="icon-user"></i>
+                           @if($search['trips']==1)
+                              ခရီးစဥ္အလုိက္ အေရာင္းစာရင္းမ်ား
+                           @else
+                           အေရာင္းကုိယ္စားလွယ္ႏွင့္ အေရာင္းစာရင္းမ်ား
+                           @endif
+                           </h4>
                            <div class="actions">
                            </div>
                         </div>
@@ -48,8 +63,8 @@
                            <table class="table table-striped table-bordered table-advance table-hover">
                               <thead>
                                  <tr>
-                                    <th>ေရာင္းသည့္ေန႕</th>
-                                    <th>ေရာင္းျပီး/ စုစုေပါင္းလက္မွတ္</th>
+                                    <th>ဝယ္ယူသည့္ေန႕</th>
+                                    <th>လက္မွတ္အေရအတြက္</th>
                                     <th>ေရာင္းရေငြစုစုေပါင္း</th>
                                     <th>-</th>
                                  </tr>
@@ -58,7 +73,7 @@
                                  @if($response)
                                     @foreach($response as $tripbydaily)
                                        <tr>
-                                          <td>{{ $tripbydaily['order_date']}}</td>
+                                          <td>{{date('d/m/Y',strtotime($tripbydaily['order_date']))}}</td>
                                           <td>{{ $tripbydaily['purchased_total_seat']}}/{{ $tripbydaily['total_seat']}}</td>
                                           <td>{{ $tripbydaily['total_amout']}}</td>
                                           <td>
@@ -75,7 +90,8 @@
                   </div>
                   <div class="responsive span4 border padding-10" data-tablet="span4" data-desktop="span4">
                      <form action="/report/operator/trip/dateranges" method="get" class="horizontal-form">
-                        <h3 class="form-section">အစေန႕မွအဆုံးေန႕အတြင္း အေရာင္းစာရင္း</h3>
+                        @if($search['trips']!=1)
+                        <h3 class="form-section">အေရာင္းကုိယ္စားလွယ္ႏွင့္ အေရာင္းစာရင္းမ်ား</h3>
                         <div class="row-fluid">
                            <div class="span11">
                               <input type="hidden" value="{{$search['operator_id']}}" name="operator_id">
@@ -95,9 +111,13 @@
                            </div>
                         </div>
                         <div class="clear-fix">&nbsp;</div>
+                        @else
+                        <h3 class="form-section">ခရီးစဥ္အလုိက္ အေရာင္းစာရင္းမ်ား ရွာရန္</h3>
+                        @endif
 
                         <div class="row-fluid">
                            <div class="span11">
+                              <input type="hidden" value="{{$search['trips']}}" name="trips">
                               <input type="hidden" value="{{$search['operator_id']}}" name="operator_id">
                               <div class="control-group">
                                  <label class="control-label" for="from">ထွက်ခွာသည့်   ြမို့ ေရွးရန်</label>

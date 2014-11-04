@@ -36,20 +36,20 @@
                         $V_operator_id=Session::get('operator_id');
                      ?>  
                      <h3 class="page-title">
-                        ကားဂိတ် အသစ်ထည့်သွင်းြခင်း
+                        ကားဂိတ္အသစ္ထည့္သြင္းျခင္း
                         <!-- <small>form wizard sample</small> -->
                      </h3>
                      <ul class="breadcrumb">
                         <li>
                            <i class="icon-home"></i>
-                           <a href="/report/dailycarandadvancesale?operator_id={{Session::get('operator_id')}}">ပင်မ စာမျက်နှာ</a> 
+                           <a href="/report/dailycarandadvancesale?operator_id={{Session::get('operator_id')}}">ပင္မစာမ်က္ႏွာ</a> 
                            <span class="icon-angle-right"></span>
                         </li>
                         <li>
-                           <a href="#">ကားဂိတ်များ</a>
+                           <a href="#">ကားဂိတ္မ်ား</a>
                            <span class="icon-angle-right"></span>
                         </li>
-                        <li><a href="#">ကားဂိတ် အသစ်ထည့်သွင်းြခင်း</a></li>
+                        <li><a href="#">ကားဂိတ္အသစ္ထည့္သြင္းျခင္း</a></li>
                      </ul>
                   </div>
                </div>

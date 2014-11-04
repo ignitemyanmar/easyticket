@@ -14,18 +14,18 @@ Large notebooks and desktops
  	***/
  	.page-sidebar {
 		position: absolute;
- 		width: 225px;
+ 		width: 275px;
   	}
 
   	.page-sidebar ul{
-  		width: 225px;
+  		width: 275px;
   	}
 
   	/***
   	Page content
   	***/
   	.page-content { 
-  		margin-left: 225px; 
+  		margin-left: 275px; 
 		margin-top: 0px;
 		min-height: 860px; 
 	}

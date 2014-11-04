@@ -1,7 +1,7 @@
 <?php
-class TripController extends BaseController
+class TripController___ extends BaseController
 {
-	public function getAddtrip()
+  public function getAddtrip()
   	{   
 	  	$trip =Trip::all();
 	  	$city = City::all();

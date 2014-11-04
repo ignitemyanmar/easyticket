@@ -1,0 +1,86 @@
+.item-listframe{position:relative; min-height: 180px; border:1px dotted #ccc;}
+.image-wrap{text-align: center; border-bottom: 1px solid #ccc;}
+.item-info{border-top: 1px dashed #ccc;}
+.item-info h4{font-weight: 500; color:#3f3f3f; padding-left: 4px; font-size: 1rem;height: 2.5em;overflow: hidden;}
+.item-info span{padding: 6px 4px 3px 1rem;}
+
+.item .details{position:absolute;bottom: 5px; margin-bottom: -9px; }
+
+.BauerBodoni{font-family: 'Bauer Bodoni';}
+.AyarWagaung{font-family: 'Ayar Wagaung';}
+.HelveticaLight{font-family: 'Helvetica Light';}
+a, .login .content h3, .login .content p{color:white;}
+h4 a{color: #77f;}
+a:hover, a:focus{text-decoration: none; color:#eee;}
+.dashboard-stat .description {
+    width: 150px;
+    padding-top: 15px;
+    color: #eee;
+}
+.breadcrumb, .page-title,.portlet-title, .page-sidebar, span i, label{font-family: "Ayar Wagaung";}
+h3, th{font-family: "Georgia";}
+/*login*/
+	.login {
+	    background-color: rgba(2,2,2,.1) !important;
+	}
+	.login .content {
+	  background-color:#01315A; 
+	  width: 291px;
+	  margin: 0 auto; 
+	  margin-bottom: 50px;
+	  padding: 30px;  
+	  padding-top: 20px;  
+	  padding-bottom: 15px;  
+	}
+	.login .content .create-account a, .controls a{color:#74BDBE;}
+	.login .content .input-icon {
+	    border-left: 2px solid #000 !important;
+	}
+	.checker, .button, .radio, .uploader {
+	    display: inline-block;
+	    vertical-align: middle;
+	}
+	div.checker span {
+	    display: inline-block;
+	    text-align: center;
+	}
+	div.checker span {
+	    background-position: 0px -260px;
+	    height: 19px;
+	    width: 19px;
+	}
+	div.selector, div.selector span, div.checker span, div.radio span, div.uploader, div.uploader span.action, div.button, div.button span {
+	    background-image: url('../images/sprite.png');
+	    background-repeat: no-repeat;
+	}
+	div.checker.focus span.checked, div.checker:hover span.checked {
+	    background-position: -114px -260px;
+	}
+	select, textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input {border-radius: 0;}
+
+	.btn.black{background: rgba(1,49,90,.8);}
+	.btn.black:hover{background: #01315A !important;}
+.dashboard-stat.orange {
+    background-color: #F98303;
+}
+.dashboard-stat.orange .more {
+    background-color: #F94706;
+}
+.dashboard-stat.light-green {
+    background-color: #3EFDD5;
+}
+.dashboard-stat.light-green .more {
+    background-color: #3ECF6C;
+}
+
+.BauerBodoni{font-family: 'Bauer Bodoni';}
+.AyarWagaung{font-family: 'Ayar Wagaung';}
+.HelveticaLight{font-family: 'Helvetica Light';}
+h4 a{color: #77f;}
+a:hover, a:focus{text-decoration: none; color:#eee;}
+.dashboard-stat .description {
+    width: 150px;
+    padding-top: 15px;
+    color: #FF951D;
+}
+.breadcrumb, .page-title,.portlet-title, .page-sidebar, span i{font-family: "Ayar Wagaung";}

@@ -15,19 +15,24 @@ import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.actionbarsherlock.app.ActionBar;
 import com.ignite.busoperator.adapter.PopularAgentListViewAdapter;
-import com.ignite.busoperator.adapter.PopularTripListViewAdapter;
+import com.ignite.busoperator.adapter.TargetLabelAdapter;
 import com.ignite.busoperator.application.BaseSherlockActivity;
 import com.ignite.busoperator.application.DeviceUtil;
 import com.ignite.busoperator.clientapi.NetworkEngine;
 import com.ignite.busoperator.model.PopularAgent;
+import com.ignite.busoperator.model.TargetLabel;
 import com.smk.calender.widget.SKCalender;
 import com.smk.calender.widget.SKCalender.Callbacks;
 import com.smk.skconnectiondetector.SKConnectionDetector;
@@ -49,14 +54,23 @@ public class PopularAgentActivity extends BaseSherlockActivity {
 	private ArrayList<PopularAgent> PopularAgents;
 	private PopularAgentListViewAdapter populoarAgentAdapter;
 	private SKConnectionDetector detector;
+	private ActionBar actionBar;
+	private TextView actionBarTitle;
+	private Spinner actionbarSpinnerLabel;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		
-		getSupportActionBar().setTitle("အ ေရာင္း ရဆံုး အ ေရာင္း ကိုယ္စားလွယ္ စာရင္းမ်ား");
-		
+		actionBar = getSupportActionBar();
+		actionBar.setCustomView(R.layout.actionbar_with_spinner);
+		actionBarTitle = (TextView) actionBar.getCustomView().findViewById(
+				R.id.txt_title);
+		actionBarTitle.setText("အ ေရာင္း ရဆံုး အ ေရာင္း ကိုယ္စားလွယ္ စာရင္းမ်ား");
+		actionbarSpinnerLabel = (Spinner) actionBar.getCustomView().findViewById(R.id.sp_label);
+		actionbarSpinnerLabel.setVisibility(View.INVISIBLE);
+		actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+				
 		setContentView(R.layout.activity_popular_agent);
 		
 		lySearch = (LinearLayout)findViewById(R.id.lySearch);
@@ -82,9 +96,9 @@ public class PopularAgentActivity extends BaseSherlockActivity {
 		lySearch.getLayoutParams().width = (DeviceUtil.getInstance(this).getWidth()/3);
 		lyDetails.getLayoutParams().width = (int) (DeviceUtil.getInstance(this).getWidth()/1.5);
 		
-		txt_name.getLayoutParams().width = (int) (DeviceUtil.getInstance(this).getWidth()/1.5) / 4;
-		txt_total_seat.getLayoutParams().width = (int) (DeviceUtil.getInstance(this).getWidth()/1.5) / 4;
-		txt_total_amount.getLayoutParams().width = (int) (DeviceUtil.getInstance(this).getWidth()/1.5) / 4;
+		txt_name.getLayoutParams().width = (int) (DeviceUtil.getInstance(this).getWidth()/1.5) / 5;
+		txt_total_seat.getLayoutParams().width = (int) (DeviceUtil.getInstance(this).getWidth()/1.5) / 5;
+		txt_total_amount.getLayoutParams().width = (int) (DeviceUtil.getInstance(this).getWidth()/1.5) / 5;
 		
 		PopularAgents = new ArrayList<PopularAgent>();
 		populoarAgentAdapter = new PopularAgentListViewAdapter(this, PopularAgents);
@@ -96,6 +110,7 @@ public class PopularAgentActivity extends BaseSherlockActivity {
 		selectedToDate   = getDate()[1];
 		if(detector.isConnectingToInternet()){
 			getPopularAgent();
+			getTargetLabel();
 		}else{
 			detector.setMessageStyle(SKConnectionDetector.VERTICAL_TOASH);
 			detector.showErrorMessage();
@@ -184,6 +199,45 @@ public class PopularAgentActivity extends BaseSherlockActivity {
 		}
 	};
 	private ProgressDialog dialog;
+	protected List<TargetLabel> targetLabels;
+	
+	private void getTargetLabel(){
+		NetworkEngine.getInstance().getTargetLabel(AppLoginUser.getAccessToken(), new Callback<List<TargetLabel>>() {
+			
+			public void success(List<TargetLabel> arg0, Response arg1) {
+				// TODO Auto-generated method stub
+				targetLabels = new ArrayList<TargetLabel>();
+				targetLabels.add(new TargetLabel(0, "Select Target Level", 0, 0, "#000000"));
+				targetLabels.addAll(arg0);
+				actionbarSpinnerLabel.setAdapter(new TargetLabelAdapter(PopularAgentActivity.this, targetLabels));
+				//actionbarSpinnerLabel.setOnItemSelectedListener(itemSelectedListener);
+			}
+			
+			public void failure(RetrofitError arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+	}
+	
+	private OnItemSelectedListener itemSelectedListener = new OnItemSelectedListener() {
+
+		public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2,
+				long arg3) {
+			// TODO Auto-generated method stub
+			if(arg2 == 0){
+				//populoarAgentAdapter.filter("");
+			}else{
+				Log.i("","Hello : "+ targetLabels.get(arg2).getName());
+				populoarAgentAdapter.filter(targetLabels.get(arg2).getName());
+			}
+		}
+
+		public void onNothingSelected(AdapterView<?> arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+	};
 	
 	private void getPopularAgent(){
 		dialog = ProgressDialog.show(this, "", " Please wait...", true);

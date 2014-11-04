@@ -78,9 +78,15 @@ class TripController extends \BaseController {
 		$foreign_price		=Input::get('foreign_price');
 		$time				=Input::get('time');
 		$seat_plan_id		=Input::get('seat_plan_id');
+		$onlyone_day		=Input::get('onlyone_day');
+		$commission			=Input::get('commission');
+
+		// dd($onlyone_day);
 
 		if($day=='daily'){
 			$available_day='Daily';
+		}if($day=='onlyone'){
+			$available_day=$onlyone_day;
 		}else{
 			if(count($available_days)==0)
 				$available_day='Daily';
@@ -94,10 +100,21 @@ class TripController extends \BaseController {
 		}
 
 		$objtrip			=new Trip();
-		$checkobjtrip		=Trip::whereoperator_id($operator_id)->wherefrom($from)->whereto($to)->whereclass_id($class_id)->whereavailable_day($available_day)->wheretime($time)->first();
+		$checkobjtrip		=Trip::whereoperator_id($operator_id)
+									->wherefrom($from)
+									->whereto($to)
+									->whereclass_id($class_id)
+									->where('time','like',$time.'%')
+									->orderBy('id','desc')->first();
+		$tmp_time='';
 		if($checkobjtrip){
-			$response['message']='This trip is already exit';
-			return Redirect::to('trip-list');
+			$tmp_time=$checkobjtrip->time;
+			$substrs=substr($tmp_time, 8);
+			$stringlen=strlen($tmp_time);
+			$tmp_time=$tmp_time.'I';
+			$time=$tmp_time;
+		}else{
+			$time=$time.' I';
 		}
 
 		$objtrip->operator_id 	=$operator_id;
@@ -109,9 +126,13 @@ class TripController extends \BaseController {
 		$objtrip->foreign_price =$foreign_price;
 		$objtrip->time 		    =$time;
 		$objtrip->seat_plan_id	=$seat_plan_id;
+		$objtrip->commission	=$commission;
 		$objtrip->save();
 		
 		$trip_id=$objtrip->id;
+		if($day=='onlyone'){
+			return $this->postBusOccuranceOnlyOne($operator_id, $trip_id, $onlyone_day, $time);
+		}
 		if($objtrip->available_day=='daily' || $objtrip->available_day=='Daily'){
 			return $this->postBusOccuranceDailyCreate($operator_id, $trip_id);
 			// return Redirect::to('busoccurance/create/daily?access_token='.$access_token.'&trip_id='.$trip_id."&operator_id=".$operator_id);
@@ -163,25 +184,65 @@ class TripController extends \BaseController {
 	 */
 	public function destroy($id)
 	{
-		//
+		Trip::whereid($id)->delete();
+		BusOccurance::wheretrip_id($id)->delete();
+		return Redirect::to('trip-list')->with('message','Successfully delete trip.');
 	}
 
 	public function triplists(){
-		$operator_id=Operator::whereuser_id(Auth::user()->id)->pluck('id');
+		$operator_id=OperatorGroup::whereuser_id(Auth::user()->id)->pluck('operator_id');
 		$response=Trip::whereoperator_id($operator_id)->with(array('operator','from_city','to_city','busclass','seat_plan'))->orderBy('id','desc')->get();
+		
 		return View::make('trip.list', array('response'=>$response));
+	}
+
+	public function postBusOccuranceOnlyOne($operator_id, $trip_id,$departure_date, $time){
+		$bus_no 	=Input::get('bus_no') ? Input::get('bus_no') : "-"; 
+		
+		// $checkoccurances    =BusOccurance::wheretrip_id($trip_id)->where('departure_date','=',$departure_date)->first();
+		//already create trip
+		//First create trip 
+			$objtrip 			=Trip::whereid($trip_id)->first();
+			$tirp_id			=$objtrip->id;
+			$seat_plan_id		=$objtrip->seat_plan_id;
+			$operator_id		=$objtrip->operator_id;
+			$from 				=$objtrip->from;
+			$to 				=$objtrip->to;
+			$class_id			=$objtrip->class_id;
+			$price 				=$objtrip->price;
+			$foreign_price		=$objtrip->foreign_price == 0 ? $objtrip->price : $objtrip->foreign_price;
+			$commission			=$objtrip->commission;
+			$time 				=$objtrip->time;
+			
+			$obj_busoccurance 	=new BusOccurance();
+			$obj_busoccurance->seat_plan_id 	=$seat_plan_id;
+			$obj_busoccurance->bus_no 			=$bus_no;
+			$obj_busoccurance->from 			=$from;
+			$obj_busoccurance->to 				=$to;
+			$obj_busoccurance->classes 			=$class_id;
+			$obj_busoccurance->departure_date 	=$departure_date;
+			$obj_busoccurance->departure_time 	=$time;
+			$obj_busoccurance->price 			=$price;
+			$obj_busoccurance->foreign_price	=$foreign_price;
+			$obj_busoccurance->commission		=$commission;
+			$obj_busoccurance->operator_id 		=$operator_id;
+			$obj_busoccurance->trip_id 			=$trip_id;
+			
+			$obj_busoccurance->save();
+			$response="Successfully has been created for this day.";
+			return Redirect::to('trip-list')->with('message',$response);;	
 	}
 
 	public function postBusOccuranceDailyCreate($operator_id, $trip_id){
 		$bus_no 	=Input::get('bus_no') ? Input::get('bus_no') : "-"; 
 		if(!$trip_id){
 			$response['message'] ="Required parameter is missing.";
-			return Redirect::to('trip-list');
+			return Response::json($response);
 		}
 		
 		if(!$operator_id || !$bus_no){
 			$response['message']="Request parameter is required.";
-			return Redirect::to('trip-list');
+			return Response::json($response);
 		}
 		$today 				=date('Y-m-d');
 		$year 				=date('Y');
@@ -201,6 +262,10 @@ class TripController extends \BaseController {
 		}
 
 		for($i=1; $i<=$days_in_nextMonth; $i++){
+			if($currentMonth>12){
+				$nextMonth='01';
+				$year=$year + 1;
+			}
 			$tocreateoccurance[]=$year.'-'.$nextMonth.'-'.sprintf("%02s", $i);
 		}
 		
@@ -216,7 +281,7 @@ class TripController extends \BaseController {
 					$checkbusoccurances =BusOccurance::wheretrip_id($trip_id)->wheredeparture_date($tocreateoccurance[0])->first();
 					if($checkbusoccurances){
 						$response['message']="This trip has been created for this month!";
-						return Redirect::to('trip-list');
+						return Response::json($response);
 					}
 					$objtrip 			=Trip::whereid($trip_id)->first();
 					$tirp_id			=$objtrip->id;
@@ -254,8 +319,6 @@ class TripController extends \BaseController {
 					}else{
 						$response['message']="Successfully has been created for this month.";
 					}
-					return Redirect::to('trip-list');
-					// return Response::json($response);
 				}
 			}
 		}else{ //First create trip 
@@ -263,7 +326,7 @@ class TripController extends \BaseController {
 				$checkbusoccurances =BusOccurance::wheretrip_id($trip_id)->wheredeparture_date($tocreateoccurance[0])->first();
 					if($checkbusoccurances){
 						$response['message']="This trip has been created for this month!";
-						return Redirect::to('trip-list');
+						return Response::json($response);
 					}else{
 						$bus_no ='-';
 					}
@@ -305,7 +368,7 @@ class TripController extends \BaseController {
 					$checkbusoccurances =BusOccurance::wheretrip_id($trip_id)->wheredeparture_date($tocreateoccurance[0])->first();
 					if($checkbusoccurances){
 						$response['message']="This trip has been created for this month!";
-						return Redirect::to('trip-list');
+						return Response::json($response);
 					}else{
 						$bus_no='-';
 					}
@@ -361,7 +424,7 @@ class TripController extends \BaseController {
 		$jsondays=explode('-', $availableDays);
 		if(!$trip_id){
 			$response['message'] ="Required parameter is missing.";
-			return Redirect::to('trip-list');
+			return Response::json($response);
 		}
 		/** 
 		 *change available days to index
@@ -434,7 +497,7 @@ class TripController extends \BaseController {
 			$checkbusoccurances =BusOccurance::wheretrip_id($trip_id)->wheredeparture_date($customdays[0])->first();
 			if($checkbusoccurances){
 				$response['message']="This trip has been created for this month!";
-				return Redirect::to('trip-list');
+				return Response::json($response);
 			}
 
 			$objtrip=Trip::whereid($trip_id)->first();
@@ -477,7 +540,7 @@ class TripController extends \BaseController {
 					$i++;
 				}
 				$response['message']="Successfully $j record created for this month.";
-				return Redirect::to('trip-list');
+				return Response::json($response);
 			}
 
 		}
@@ -491,11 +554,7 @@ class TripController extends \BaseController {
 		$objtrip=Trip::whereid($id)->first();
 		$seatplan=SeatingPlan::find($objtrip->seat_plan_id);
 		$closeseat=CloseSeatInfo::wheretrip_id($objtrip->id)->whereseat_plan_id($objtrip->seat_plan_id)->pluck('seat_lists');
-		if(!$closeseat){
-			$closeseat=SeatingPlan::find($objtrip->seat_plan_id)->pluck('seat_list');
-		}
 		$jsoncloseseat=json_decode($closeseat,true);
-		
 
 		$from=City::whereid($objtrip->from)->pluck('name');
 		$to=City::whereid($objtrip->to)->pluck('name');
@@ -529,8 +588,23 @@ class TripController extends \BaseController {
 			$templayout['seat_list']=$seat_info;
 			$response=$templayout;
 		}
-		// return Response::json($jsoncloseseat);
-		return View::make('trip.ownseat', array('response'=>$response, 'operator_id'=>$operator_id, 'tripinfo'=>$tripinfo,'jsoncloseseat'=>$jsoncloseseat));
+		$operatorgroup=OperatorGroup::whereoperator_id($operator_id)->with(
+							array('user' => function($query)
+							{
+							    $query->addSelect(array('id','name'));
+							}))
+							->get();
+		if(!$jsoncloseseat){
+			$jsoncloseseat=$seatplan->seat_list;
+			$jsoncloseseat=json_decode($jsoncloseseat,true);
+			$j=0;
+			foreach($jsoncloseseat as $rowseatinfo){
+				$jsoncloseseat[$j]['operatorgroup_id']=0;
+				$j++;
+			}
+		}
+		// return Response::json($operatorgroup);
+		return View::make('trip.ownseat', array('response'=>$response,'operatorgroup'=>$operatorgroup, 'operator_id'=>$operator_id, 'tripinfo'=>$tripinfo,'jsoncloseseat'=>$jsoncloseseat));
 	}
 
 	public function postownseat(){
@@ -540,11 +614,9 @@ class TripController extends \BaseController {
 		$trip_id=Input::get('trip_id');
 		$seat_plan_id=Input::get('seat_plan_id');
 		$chosen_seats=Input::get('seats');
-
-		$operatorgroup_id=OperatorGroup::whereuser_id($user_id)->whereoperator_id($operator_id)->pluck('id');
+		$operatorgroup_id=Input::get('operatorgroup_id');
 
 		$objseatinfo=SeatInfo::whereseat_plan_id($seat_plan_id)->get();
-		// return Response::json($objseatinfo);
 		if($objseatinfo){
 			$i=0;
 			foreach($objseatinfo as $seat){
@@ -560,15 +632,50 @@ class TripController extends \BaseController {
 					$objseatinfo[$i]['operatorgroup_id']=$operatorgroup_id ? $operatorgroup_id : 0;
 				else
 					$objseatinfo[$i]['operatorgroup_id']=0;
-
 				$i++;
 			}
 		}
 		// $stringseatlist = (string)($objseatinfo, true);
 		// dd($stringseatlist);
 		$check_exiting=CloseSeatInfo::wheretrip_id($trip_id)->whereseat_plan_id($seat_plan_id)->first();
+		if(!$chosen_seats){
+			CloseSeatInfo::wheretrip_id($trip_id)->whereseat_plan_id($seat_plan_id)->delete();
+			$message="Successfully Clear Own Seat.";
+			return Redirect::to('trip-list')->with('message',$message);
+		}
 		if($check_exiting){
-			$check_exiting->seat_lists=$objseatinfo;
+			$seat_lists=$check_exiting->seat_lists;
+			$jsonexitingseats=json_decode($seat_lists, true);
+			// return Response::json($chosen_seats);
+			if($chosen_seats){
+				$k=0;
+				foreach ($jsonexitingseats as $rows) {
+					$ownseat=false;
+					$tocancelownseat=true;
+					foreach ($chosen_seats as $chosen_seatno) {
+						if($chosen_seatno==$rows['seat_no'] && $rows['operatorgroup_id']==0){
+							$ownseat=true;
+						}
+						if($chosen_seatno ==$rows['seat_no']){
+							$tocancelownseat=false;
+						}
+					}
+					
+					if($ownseat)
+						$jsonexitingseats[$k]['operatorgroup_id']=$operatorgroup_id ? $operatorgroup_id : 0;
+					else
+						$jsonexitingseats[$k]['operatorgroup_id']=$rows['operatorgroup_id'];	
+
+					if($tocancelownseat){
+						$jsonexitingseats[$k]['operatorgroup_id']=0;
+					}
+					$k++;
+				}
+			}
+			// return Response::json($jsonseats);
+			$jsonexitingseats=json_encode($jsonexitingseats);
+			// dd($jsonexitingseats);
+			$check_exiting->seat_lists=$jsonexitingseats;
 			$check_exiting->update();
 		}else{
 			$objcloseseat=new CloseSeatInfo();

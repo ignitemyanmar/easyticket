@@ -1,19 +1,39 @@
 <?php
+	
+
 	Route::get('tripautocreate',       				'ApiController@tripautocreate');
-	Route::get('/', 								'HomeController@index');
-	Route::get('bus', 								'HomeController@index');
-	Route::get('triplist',							'HomeController@searchTrip');
-	Route::get('bus_seat_choose',					'HomeController@getchoosebusseat');
-	Route::post('ticket/order',						'HomeController@postOrder');
-	Route::get('cartview/{id}',						'HomeController@getcart');
-	Route::resource('checkout', 					'HomeController@checkout');
+
+	Route::group(array('before' => 'fauth'), function()
+	{
+		Route::get('/', 								'HomeController@index');
+		Route::get('/departure-times', 					'HomeController@getTimeList');
+		//14
+		Route::get('bus_seat_choose',					'HomeController@getchoosebusseat');
+		Route::post('saletickets',						'HomeController@postSale');
+		Route::post('sales/{id}/delete',				'HomeController@deleteSaleOrder');
+		Route::post('ticket/order',						'HomeController@postOrder');
+		Route::get('cartview/{id}',						'HomeController@getcart');
+		Route::resource('checkout', 					'HomeController@checkout');
+		
+		Route::get('bookinglist/{id}',					'BookingController@getBookingListByBus');
+	});
+
+	Route::get('signin',      array('as'=>'signin','uses'=>'UserController@getFLogin'))->before('fguest');
+	Route::post('userlogin',       'UserController@postFrontLogin');
+	Route::get('userlogout',       'UserController@getFrontLogout');
+	
+
+
+	
+	Route::get('bus', 								'HomeController1111@index');
+	Route::get('triplist',							'HomeController1111@searchTrip');
+	
 
 	Route::get('operators/agent/{id}',				'ReportController@getOperatorsbyAgent');
 	Route::get('agents/operator/{id}',				'ReportController@getAgentsbyOperator');
 	Route::get('triplist/{id}/agent',				'ReportController@getTripslistreportOperator');
 
-	Route::post('saletickets',						'HomeController@postSale');
-	Route::post('sales/{id}/delete',				'HomeController@deleteSaleOrder');
+	
 	
 	Route::post('saleticket',						'ApiController@postSale');
 	
@@ -45,6 +65,35 @@
 		Route::get('report/seatoccupiedbybus/detail',		'ReportController@getSeatOccupancydetail');
 
 		Route::post('report/customers/update',				'ReportController@postCustomerInfoUpdate');
+		
+		Route::get('report/bestseller/trip',				'BestSellerController@trips');
+		Route::get('report/bestseller/tripdetail',			'BestSellerController@tripdetail');
+
+		Route::get('report/bestseller/agents',				'BestSellerController@agents');
+		Route::get('report/bestseller/agentdetail',			'BestSellerController@agentdetail');
+		
+		Route::get('report/booking',						'BookingController@getBookingList');
+		Route::get('report/booking/{id}',					'BookingController@getBookingDeleteOrComfirm');
+		Route::get('report/booking/delete/{id}',			'BookingController@getBookingDelete');
+		Route::get('report/booking/comfirm/{id}',			'BookingController@getBookingComfirm');
+
+
+		Route::get('report/agentscredit',					'AgentCreditController@getCreditSale');
+		Route::get('report/agentcredit/{id}',				'AgentCreditController@getActionForm');
+		Route::get('report/agentcreditsales/{id}',			'AgentCreditController@getAgentCreditSaleList');
+		
+		Route::post('report/agentdeposit',					'AgentCreditController@postAgentDeposit');
+		Route::post('report/agentoldcredit',				'AgentCreditController@postAgentOldCredit');
+
+		Route::post('report/agentcommission',				'AgentCreditController@postAgentCommission');
+		Route::get('report/agentcommission/{id}',			'AgentCreditController@getAgentCommission');
+		
+		Route::post('report/agentcreditspayment',			'AgentCreditController@postCreditPayment');
+		Route::get('report/paymenttransaction/{id}',		'AgentCreditController@getPaymentTransaction');
+
+
+
+
 
 		//seatoccupiedbybus
 		// Route::get('report/seatoccupiedbybus',			'SeatOccupiedByBusController@index');
@@ -120,6 +169,7 @@
 		Route::get('trip-list',					'TripController@triplists');
 		Route::post('trip-create',				'TripController@store');
 		Route::get('trip/seatplan/{id}',		'TripController@showSeatPlan');
+		Route::get('deletetrip/{id}',				'TripController@destroy');
 
 		Route::get('define-ownseat/{id}',		'TripController@ownseat');
 		Route::post('define-ownseat',			'TripController@postownseat');
@@ -184,7 +234,7 @@
 	Route::filter('guest',              'UserController@filterguest');
 	Route::filter('auth',               'UserController@filterauth');
 	Route::get('register',              'UserController@adduser1');
-	Route::get('user',              'UserController@adduser1');
+	Route::get('user',              	'UserController@adduser1');
 	Route::get('easyticket-admin',      array('as'=>'easyticket-admin','uses'=>'UserController@getLogin'))->before('guest');
 	Route::post('administration',       'UserController@postLogin');
 	Route::get('users-logout',          array('as'=>'logout','uses'=>'UserController@getLogout'))->before('auth');   
@@ -192,7 +242,6 @@
 
 	Route::post('user-login',          			  		'ApiController@postLogin');
 	Route::post('user-register',          		  		'ApiController@postUserRegister');
-
 	
 	Route::post('oauth/access_token', function()
 	{
@@ -361,6 +410,9 @@
 		Route::post('sale/credit/delete/{id}',		  'ApiController@postDeleteCreditSaleOrderNo');
 		Route::post('sale/credit/cancelticket',		  'ApiController@postCancelCreditSaleTicket');
 
+		Route::get('sale/order',					  'ApiController@getSaleOrder');
+		Route::post('sale/order/confirm/{id}',		  'ApiController@postConfirmBookingOrder');
+
 		Route::get('report/operator/salelist',		  'ApiController@getSaleList');
 		
 		Route::post('updateorder', 					  'ApiController@postupdateorderbyadmin');
@@ -468,6 +520,8 @@
 		Route::get('seatlistbytrip/{id}',					'ApiController@getSeatListbyTrip');
 
 		Route::post('closeseatlist',						'ApiController@postCloseSeatList');
+
+		Route::get('targetlabel',							'ApiController@getTargetLabel');
 
 	});
 

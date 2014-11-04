@@ -107,7 +107,7 @@
                                               <a href="/seatplan/update/{{ $seatplan['id'] }}"  class="btn green button-submit">Edit</a><br><br>
                                             </td>
                                             <td>
-                                              <a href="deleteseatplan/{{ $seatplan['id'] }}"   class="btn green button-submit">Delete</a>
+                                              <a href="deleteseatplan/{{ $seatplan['id'] }}"   class="btn green delete button-submit">Delete</a>
                                             </td>
                                             <td>
                                                 <a href="/seatplandetail/{{$seatplan['id']}}/seat_plan_id?seatplan_id={{$seatplan['id']}}&operator_id={{$seatplan['operator_id']}}&name={{$seatplan['name']}}&ticket_type_id={{$seatplan['ticket_type_id']}}"   class="btn green button-submit">Detail</a>

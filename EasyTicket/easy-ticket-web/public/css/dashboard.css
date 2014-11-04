@@ -1,10 +1,12 @@
 .BauerBodoni{font-family: 'Bauer Bodoni';}
 .AyarWagaung{font-family: 'Ayar Wagaung';}
 .HelveticaLight{font-family: 'Helvetica Light';}
+.Zawgyi-One, .Zawgyi-One input[type="text"]{font-family: "Zawgyi-One" !important;}
 a{color:#4C9ED9;}
 h4 a{color: #77f;}
-body, input.m-wrap, button.m-wrap, select.m-wrap, textarea.m-wrap, select{font-family: "Zawgyi-One"; font-size: 15px;}
+body, input.m-wrap, button.m-wrap, select.m-wrap, textarea.m-wrap, select, .table-advance thead tr th{font-family: "Zawgyi-One"; font-size: 13px;}
 a:hover, a:focus{text-decoration: none; color:#222;}
+.wordwrap{width:210px; height:auto; padding:8px 4px;word-wrap:break-word;text-align: left;}
 .dashboard-stat .description {
     width: 150px;
     padding-top: 15px;
@@ -33,4 +35,4 @@ a:hover, a:focus{text-decoration: none; color:#222;}
 .total, .trip_info{font-size: 14px;}
 h3, th{font-family: "Georgia";}
 .table td, .table th{text-align: right;}
-
+.required{color:red;}

@@ -16,6 +16,16 @@ $(function(){
 						// $(this).prev().prop("disabled", false);
 						var rpl_seatid=seatid.replace('.','-');
 						var price=$(".price"+rpl_seatid).val();
+						var price=$(".price"+rpl_seatid).val();
+						if($(this).hasClass('operatorseat_1')){
+							$(this).toggleClass('available operator_1');
+						}
+						if($(this).hasClass('operatorseat_2')){
+							$(this).toggleClass('available operator_2');
+						}
+						if($(this).hasClass('operatorseat_3')){
+							$(this).toggleClass('available operator_3');
+						}
 						$(this).toggleClass('choose available');
 						if(checkchecked==false){
 							total 	=Number(price) +Number(total);

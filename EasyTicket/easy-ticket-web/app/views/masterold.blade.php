@@ -5,161 +5,53 @@
       <meta property="og:image" content="http://www.EazyTicket.com/images/logo01.png"/>
       {{HTML::style('../../images/favicon.ico',array('rel'=>'icon','type'=>'image/ico'))}}
       {{HTML::style('../../css/foundation.min.css')}}
+      {{HTML::style('../../css/font.css')}}
+      {{HTML::style('../../../src/select2.css')}}
       {{HTML::style('../../css/custom.css')}}
       {{HTML::style('../../css/custom_frontnav.css')}}
-      {{HTML::style('../../../src/select2.css')}}
       {{HTML::style('../../../css/jquery-ui.css')}}
       {{HTML::style('../../css/slider.css')}}
+
+      {{HTML::style('../../assets/font-awesome/css/font-awesome.css')}}
 
       {{HTML::script('../../js/jquery.js')}}
       {{HTML::script('../../js/jquery-ui.js')}}
     </head>
-    <body>
-        <nav class="top-bar show-for-large-up top-bars" data-topbar>
-                <ul class="title-area">
-                  <li class="name">
-                    <h1><a href="/">Ticketing System</a></h1>
-                  </li>
-                  <li class="toggle-topbar menu-icon"><a href="#">Menu</a></li>
-                </ul>
+    <body>  
+    <style type="text/css">
+        .title_bar{background: #01315A;height: 45px;}
+        .content_title{color:#fff; font-weight: bold;font-size: 24px; text-align: center;padding-top: 9px; font-family: "Zawgyi-One";}
+        .user{font-size: 14px;float: right; font-weight: 200;padding-right: 10%; padding-top:9px; }
+        .user a{color:white; padding-left: 12px;}
+        #drop > li > a {color: #333;}
+        .f-dropdown {max-width: 110px;}
+      </style>
+      <?php $currentroute=Route::getCurrentRoute()->getPath();?>
+      <div class="large-12 title_bar">
+        <div class="content_title">
+          @if($currentroute=="departure-times")
+          ကားထြက္မည့္အခ်ိန္ေရြးရန္
+          @elseif($currentroute=="/")
+            ခရီးစဥ္ ေရြးရန္
+          @else
+          
+          @endif
 
-                <section class="top-bar-section">
-                  <!-- Right Nav Section -->
-                  <ul class="right">
-                    <li class="active has-dropdown"><a href="/bus">Bus</a>
-                      <ul class="dropdown">
-                        <li><a href="/bus">YGN _ MDL</a></li>
-                      </ul>
-                    </li>
-                    <li class="has-dropdown">
-                      <a href="movie.html">Movie</a>
-                      <ul class="dropdown">
-                        <li><a href="#">First Movie</a></li>
-                      </ul>
-                    </li>
-                    <li class="has-dropdown">
-                      <a href="show.html">Show</a>
-                      <ul class="dropdown">
-                        <li><a href="showlist.html">Rock Show</a></li>
-                        <li><a href="showlist.html">Hip Hop Show</a></li>
-                      </ul>
-                    </li>
-                  </ul>
+          @if(Auth::check())
+            <div class="user"> 
+              <a href="#" data-dropdown="drop" class=""><i class="icon-user"></i>&nbsp; {{Auth::user()->name}}</a>
+              <br> 
+              <ul id="drop" data-dropdown-content class="f-dropdown"> 
+                <li><a href="/userlogout"><i class="icon-key"></i>Logout</a></li> 
+              </ul>
+            </div>
+          @endif
+        </div>
+      </div>
 
-                  <!-- Left Nav Section -->
-                  <ul class="left">
-                    <!-- <li><a href="#">Left Nav Button</a></li> -->
-                  </ul>
-                </section>
-        </nav>
         <div class="contentframe off-canvas-wrap">
+
           <div class="inner-wrap">
-              
-                <!-- <nav class="top-bar show-for-large-up top-bars" data-topbar> 
-                    <ul class="title-area"> 
-                      <li class="name">
-                        <a href="/"></a>
-                      </li>
-                      <br>
-                    </ul> 
-                    <section class="top-bar-section"> 
-                      <div style="clear:both;min-height:5.82rem;z-index:-99;">&nbsp;</div>
-                      <ul class="left"> 
-                      <?php $currentroute=Route::getCurrentRoute()->getPath();
-                        $currentroute=substr($currentroute,0,3);
-                        $currentroute=substr($currentroute,0,3);
-                        ?>
-                        <li @if($currentroute =='/') class="active" @else  @endif> 
-                          <a href="/demo">Home</a> 
-                        </li>
-                        <li @if($currentroute =='buy') class="has-dropdown active" @else class="has-dropdown"  @endif> 
-                          <a href="/buy-car">Bus</a> 
-                          <ul class="dropdown"> 
-                            <li>
-                              <a href="/buy-car/coupe">
-                              <span class="icon-arrow-right"></span>
-                              coupe</a>
-                            </li> 
-                            <li>
-                              <a href="/buy-car/hatchback-and-stationwagon">
-                                <span class="icon-arrow-right"></span>
-                                Hatchback and Stationwagon</a>
-                            </li> 
-                            <li>
-                              <a href="/buy-car/seden">
-                              <span class="icon-arrow-right"></span>
-                              Seden</a>
-                            </li> 
-                            <li>
-                              <a href="/buy-car/sports">
-                              <span class="icon-arrow-right"></span>
-                              sports</a>
-                            </li> 
-                            <li>
-                              <a href="/buy-car/suv">
-                              <span class="icon-arrow-right"></span>
-                              suv</a>
-                            </li> 
-                            <li>
-                              <a href="/buy-car/van">
-                              <span class="icon-arrow-right"></span>
-                              Van</a>
-                            </li>
-                            <li>
-                              <a href="/buy-car/wagon">
-                              <span class="icon-arrow-right"></span>
-                              wagon</a>
-                            </li>  
-
-                          </ul> 
-                        </li> 
-                        
-                        <li @if($currentroute=='con') class="active" @endif> 
-                          <a href="/contact-us">ဆက္သြယ္ရန္</a>
-                        </li>
-                      </ul> 
-                    </section> 
-                </nav> -->
-                <!-- shown on only on a small screen. -->
-                <nav class="tab-bar hide-for-large-up">
-                  <a class="left-off-canvas-toggle menu-icon">
-                    <span>EazyTicket</span>
-                  </a>
-                </nav>
-                <aside class="contentframe-left-off-canvas-menu">
-                  <ul class="off-canvas-list">
-                    <li><label class="first">EazyTicket</label></li>
-                    <li><a href="http://www.EazyTicket.com.mm/demo">Home</a></li>
-                  </ul>
-                  <hr>
-                  <ul class="off-canvas-list">
-                    <li>
-                      <label>
-                        <a href="/buy-car">Bus</a>
-                      </label>
-                    </li>
-                    <hr>
-                    <div class="site-links">
-                      <ul class="top">
-                        <!-- <li class="logo"><a href="http://example.com/"></a></li> -->
-                        <li><a href="/buy-car/coupe">Bus</a></li>
-                        <li><a href="/buy-car/hatchback-and-stationwagon">Movie</a></li>
-                      </ul>
-                    </div>
-
-                    <hr>
-                    <div class="site-links">
-                      <ul class="top">
-                        <!-- <li class="logo"><a href="http://example.com/"></a></li> -->
-                        <li><a href="/sell-car/add-new-vehicle">Bus</a></li>
-                        <li><a href="/sell-car/my-vehicles">Movie</a></li>
-                        <li><a href="/sell-car/my-profile">Show</a></li>
-                      </ul>
-                    </div>
-                    <hr>
-                  </ul>
-                </aside>
-                <a class="exit-off-canvas" href="#"></a>
               <section class="main-section"> 
                 <!-- <div class="row"> -->
                   @yield('content')
@@ -167,36 +59,9 @@
               </section> 
           </div>
         </div>
-      <!-- footer  -->
-      <!-- <div class="large-12 columns footer"> -->
-            <div class="large-12 columns footer">
-                  <div class="large-3 small-6 left columns">
-                    <h3 class="fttitle">Ticketing Site</h3>
-                    <p><a href="">Bus</a></p>
-                    <p><a href="">Movie</a></p>
-                    <p><a href="">Show</a></p>
-                  </div>
-
-                  <div class="large-3 small-6 left columns">
-                    <h3 class="fttitle">Follow Ticketing</h3>
-                    <p><a href="">Facebook</a></p>
-                  </div>
-                  <div class="large-3 small-6 left columns">
-                    <h3 class="fttitle">Other Links</h3>
-                  </div>
-
-                  <div class="large-3 small-6 left columns">
-                    <h3 class="fttitle">About Ticketing</h3>
-                    <p><a href="">About Us</a></p>
-                    <p><a href="">Contact Us</a></p>
-                    <p><a href="">Faq</a></p>
-                  </div>
-
-            </div>
-      <!-- </div> -->
+      
       {{HTML::script('../../../js/foundation.min.js')}}
       {{HTML::script('../../src/select2.min.js')}}
-      {{HTML::script('../../js/responsiveslides.min.js')}}
 
     <script type="text/javascript">
         $(document).foundation();   
@@ -204,7 +69,6 @@
         <script type="text/javascript">
             $(function(){
               var offset = 0;
-
             <!-- //for back to top scroll links    -->
               $(window).scroll(function(){
                 var e=$(window).scrollTop();
@@ -222,19 +86,6 @@
                 $('#container').css("opacity","1");
                   $('#loading').css("opacity","0")
                   },800);
-
-              $("#slider0").responsiveSlides({
-                  auto: true,
-                  pager: false,
-                  nav: true,
-                  timeout: 5000,  
-                  speed: 800,
-                  namespace: "callbacks",
-                  before: function () {
-                  },
-                  after: function () {
-                  }
-              });
           });
         </script>
         

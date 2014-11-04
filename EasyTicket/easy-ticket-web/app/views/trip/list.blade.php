@@ -79,37 +79,37 @@
                               <table class="table table-striped table-hover table-bordered" id="sample_editable_1">
                                  <thead>
                                     <tr>
-                                       <th></th>
-                                       <th class="hidden-phone">ထြက္ခြာမည့္ျမိဳ႕</th>
-                                       <th class="span2">ေရာက္မည့္ျမိဳ႕</th>
+                                       <th class="hidden-phone">ခရီးစဥ္</th>
+                                       <!-- <th class="span2">ေရာက္မည့္ျမိဳ႕</th> -->
                                        <th class="span2">ခုံအစီအစဥ္</th>
                                        <th class="span2">ကားအမ်ိဳးအစား</th>
                                        <th class="span2">ကားထြက္သည့္ ေန႕ အခ်ိန္<!-- ႕မ်ား --></th>
                                        <!-- <th class="span2">အခ်ိန္</th> -->
-                                       <th class="span1">ႏုိင္ငံသားေစ်းႏုန္း</th>
-                                       <th class="span2">ႏုိင္ငံျခားသား ေစ်းႏုန္း</th>
-                                       <th class="span2">Action</th>
+                                       <th class="span1">ႏုိင္ငံသား ေစ်းႏုန္း</th>
+                                       <th class="span1">ႏုိင္ငံျခားသား ေစ်းႏုန္း</th>
+                                       <th class="span2">ေကာ္မစ္ရွင္ႏႈန္း</th>
+                                       <th class="span1">-</th>
                                     </tr>
                                  </thead>
                                  <tbody>
                                     @foreach($response as $trip)
                                           <tr>
-                                             <th><b style="opacity:.1;">{{$trip->id}}</b></th>
-                                             <td class="hidden-phone">{{$trip['from_city']->name}}</td>
-                                             <td>{{$trip['to_city']->name}}</td>
+                                             <td class="hidden-phone">{{$trip['from_city']->name.'-'.$trip['to_city']->name}}</td>
+                                             <!-- <td>{{$trip['to_city']->name}}</td> -->
                                              <td>{{$trip['seat_plan']->name}}</td>
                                              <td>{{$trip['busclass']->name}}</td>
                                              <td>
-                                                <p>ကားထြက္သည့္ ေန႕မ်ား :{{$trip['available_day']}}</p>
+                                                <p>ကားထြက္သည့္ ေန႕မ်ား : {{$trip['available_day']}}</p>
                                             အခ်ိန္ :   {{$trip['time']}}</td>
                                              <td>
                                                 {{$trip['price']}}
                                              </td>
                                              <td class="span1">{{$trip['foreign_price']}}</td>
+                                             <td>{{$trip['commission']}}</td>
                                              <td>
-                                                <a class="btn large green-stripe" href="#">ျပင္မည္</a>
-                                                <a class="btn large red-stripe delete" href="deletetrip/{{ $trip['id'] }}">ဖ်က္မည္</a>
-                                                <a class="btn large blue-stripe" href="define-ownseat/{{ $trip['id'] }}">ခုံပုိင္သတ္မွတ္ရန္</a>
+                                                <!-- <a class="btn mini green-stripe" href="#">ျပင္မည္</a> -->
+                                                <a class="btn mini red-stripe delete" href="deletetrip/{{ $trip['id'] }}">ဖ်က္မည္</a>
+                                                <a class="btn mini blue-stripe" href="define-ownseat/{{ $trip['id'] }}">ခုံပုိင္သတ္မွတ္ရန္</a>
                                              </td>
                                           </tr>
                                     @endforeach

@@ -1,5 +1,8 @@
 package com.ignite.busoperator.adapter;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import com.ignite.busoperator.AgentReportByBusNo;
@@ -11,6 +14,7 @@ import com.ignite.busoperator.model.BusReport;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -74,10 +78,11 @@ public class BusReportListAdapter extends BaseAdapter {
 		
 		holder.bus_class.setText(busReports.get(position).getClasses());
 		holder.trip_time.setText(busReports.get(position).getTime());
-		holder.departure_date.setText(busReports.get(position).getDepartureDate());
+		holder.departure_date.setText(changeDate(busReports.get(position).getDepartureDate()));
 		holder.total_tickets.setText(busReports.get(position).getPurchasedTotalSeat().toString());
 		holder.total.setText(busReports.get(position).getTotalAmout().toString());
 		holder.viewDetails.setTag(busReports.get(position).getBusId());
+		
 		holder.viewDetails.setOnClickListener(new OnClickListener() {
 
 			public void onClick(View v) {
@@ -92,6 +97,18 @@ public class BusReportListAdapter extends BaseAdapter {
 		});
 		
 		return convertView;
+	}
+	
+	public static String changeDate(String date){
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		Date StartDate = null;
+		try {
+			StartDate = df.parse(date);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return DateFormat.format("dd/MM/yyyy",StartDate).toString();
 	}
 
 	static class ViewHolder {

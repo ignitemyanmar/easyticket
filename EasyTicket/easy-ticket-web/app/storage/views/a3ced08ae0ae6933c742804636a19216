@@ -1,4 +1,5 @@
 <?php $__env->startSection('content'); ?>
+
 <!-- BEGIN PAGE -->  
    <div class="page-content">
       <!-- BEGIN PAGE CONTAINER-->
@@ -13,21 +14,21 @@
                      ?>
 
                      <h3 class="page-title">
-                        ကားအလုိက် ေရာင်းရေသာလက်မှတ်စာရင်း
+                        ကားအလုိက္ေရာင္းရေသာ လက္မွတ္စာရင္း
                         <!-- <small>form wizard sample</small> -->
                      </h3>
                      <ul class="breadcrumb">
                         <li>
                            <i class="icon-home"></i>
-                           <a href="/report/dailycarandadvancesale?operator_id=<?php echo Session::get('operator_id'); ?>">ပင်မ စာမျက်နှာ</a> 
+                           <a href="/report/dailycarandadvancesale?operator_id=<?php echo Session::get('operator_id'); ?>">ပင္မစာမ်က္ႏွာ</a> 
                            <span class="icon-angle-right"></span>
                         </li>
                         <li>
-                           <a href="/report/dailycarandadvancesale/search?date=<?php echo $orderdate; ?>&operator_id=<?php echo $V_operator_id; ?>">ေန့စဥ် အေရာင်းစာရင်း</a>
+                           <a href="/report/dailycarandadvancesale/search?date=<?php echo $orderdate; ?>&operator_id=<?php echo $V_operator_id; ?>">ေန႔စဥ္ အေရာင္းစာရင္း</a>
                            <span class="icon-angle-right"></span>
                         </li>
                         <li>
-                           <a href="#">ကားအလုိက် ေရာင်းရေသာလက်မှတ်စာရင်း</a>
+                           <a href="#">ကားအလုိက္ေရာင္းရေသာ လက္မွတ္စာရင္း</a>
                         </li>
                      </ul>
                   </div>
@@ -39,7 +40,7 @@
                   <div class="responsive span12" data-tablet="span12" data-desktop="span12">
                      <div class="portlet box light-grey">
                         <div class="portlet-title">
-                           <h4><i class="icon-th-list"></i>ကားအလုိက် ေရာင်းရေသာလက်မှတ်စာရင်း</h4>
+                           <h4><i class="icon-th-list"></i>ကားအလုိက္ေရာင္းရေသာ လက္မွတ္စာရင္း</h4>
                            <div class="actions">
                            </div>
                         </div>
@@ -61,36 +62,40 @@
                               <table class="table table-striped table-bordered table-advance table-hover" id="tblExport">
                                  <thead>
                                     <tr>
-                                       <th>ကားနံပါတ်</th>
-                                       <th>ခရီးစဥ်</th>
-                                       <th>ကားဂိတ်</th>
-                                       <th>အေရာင်း ကုိယ်စားလှယ်</th>
-                                       <th>ဝယ်သူအမည်</th>
-                                       <th>ကားအမျိုးအစား</th>
-                                       <th>ထွက်ခွာမည့် ေန့ရက်</th>
-                                       <th>အချိန်</th>
-                                       <th>ခုံနံပါတ်</th>
-                                       <th>လက်မှတ်နံပါတ်</th>
-                                       <th>ဝယ်သည့်ေန့</th>
-                                       <th>ေစျးနုန်း</th>
+                                       <th>ခုံနံပါတ္</th>
+                                       <th>ခရီးစဥ္</th>
+                                       <th>ဝယ္သူ အမည္</th>
+                                       <!-- <th>ကားနံပါတ္</th> -->
+                                       <!-- <th>ကားအမ်ုိဳးအစား</th> -->
+                                       <th>အေရာင္း ကုိယ္စားလွယ္</th>
+                                       <th>ေစ်းႏုန္း</th>
+                                       <th>ရွင္းႏႈန္း</th>
+                                       <th>လက္မွတ္ နံပါတ္</th>
+                                       <!-- <th>ထြက္ခြာမည့္ေန႕</th>
+                                       <th>အခ်ိန္</th> -->
+                                       <!-- <th>ဝယ္သည့္ေန႕</th> -->
                                     </tr>
                                  </thead>
                                  <tbody>
                                     <?php if($response): ?>
                                        <?php foreach($response as $result): ?>
                                           <tr>
-                                             <td><?php echo $result['bus_no']; ?></td>
-                                             <td><?php echo $result['Trip']; ?></td>
-                                             <td><?php echo $result['operator']; ?></td>
-                                             <td><?php echo $result['agent']; ?></td>
-                                             <td><?php echo $result['name']; ?></td>
-                                             <td><?php echo $result['class']; ?></td>
-                                             <td><?php echo $result['departure_date']; ?></td>
-                                             <td><?php echo $result['departure_time']; ?></td>
                                              <td><?php echo $result['seat_no']; ?></td>
-                                             <td><?php echo $result['ticket_no']; ?></td>
-                                             <td><?php echo $result['order_date']; ?></td>
+                                             <td><?php echo $result['Trip']; ?></td>
+                                             <td><?php echo $result['name']; ?></td>
+                                             <!-- <td><?php echo $result['bus_no']; ?></td> -->
+                                             <td>
+                                                <div class="wordwrap">
+                                                   &nbsp;<?php echo $result['agent']; ?>
+                                                </div>
+                                             </td>
+                                             <!-- <td><?php echo $result['class']; ?></td>
+                                             <td><?php echo $result['departure_date']; ?></td>
+                                             <td><?php echo $result['departure_time']; ?></td> -->
                                              <td><?php echo $result['price']; ?></td>
+                                             <td><?php echo $result['price']-$result['commission']; ?> (<?php echo $result['commission']; ?>)</td>
+                                             <td><?php echo $result['ticket_no']; ?></td>
+                                             <!-- <td><?php echo $result['order_date']; ?></td> -->
                                           </tr>
                                        <?php endforeach; ?>
                                     <?php endif; ?>

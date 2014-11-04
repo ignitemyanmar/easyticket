@@ -35,17 +35,17 @@
                      ?>
                      <!-- END BEGIN STYLE CUSTOMIZER -->   
                      <h3 class="page-title">
-                        အေရာင်း ကုိယ်စားလှယ် အချက်အလက်များ ြပင်ရန်
+                        အေရာင္းကုိယ္စားလွယ္ အခ်က္အလက္ျပင္ရန္
                         <!-- <small>form wizard sample</small> -->
                      </h3>
                      <ul class="breadcrumb">
                         <li>
                            <i class="icon-home"></i>
-                           <a href="/report/dailycarandadvancesale?operator_id={{Session::get('operator_id')}}">ပင်မ စာမျက်နှာ</a> 
+                           <a href="/report/dailycarandadvancesale?operator_id={{Session::get('operator_id')}}">ပင္မစာမ်က္ႏွာ</a> 
                            <span class="icon-angle-right"></span>
                         </li>
                         
-                        <li><a href="#">အေရာင်း ကုိယ်စားလှယ် အချက်အလက်များ ြပင်ရန်</a></li>
+                        <li><a href="#">အေရာင္းကုိယ္စားလွယ္ အခ်က္အလက္ျပင္ရန္</a></li>
                      </ul>
                   </div>
                </div>
@@ -57,7 +57,7 @@
                      <form id="addnew-form" class="horizontal-form" action = "/updateagent/{{$response['agent']['id']}}" method= "post" enctype="multipart/form-data">    
                         <div class="portlet box light-grey">
                            <div class="portlet-title">
-                              <h4><i class="icon-user"></i>အေရာင်း ကုိယ်စားလှယ် အချက်အလက်များ</h4>
+                              <h4><i class="icon-user"></i>အေရာင္းကုိယ္စားလွယ္ အခ်က္အလက္မ်ား </h4>
                               <div class="actions">
                               </div>
                            </div>
@@ -67,7 +67,8 @@
                                     <div class="control-group">
                                        <label class="control-label" for="name">အမည်</label>
                                        <div class="controls">
-                                          <input name="name" class="m-wrap span12" type="text" required="required" value="{{$response['agent']['name']}}">
+                                          <?php $agent_name=str_replace('"','',$response['agent']['name']); ?>
+                                          <input name="name" class="m-wrap span12" type="text" required="required" value="{{$agent_name}}">
                                        </div>
                                     </div>
                                  </div>
@@ -117,9 +118,22 @@
                                  </div>
                               </div>
                               
+                              <div class="row-fluid">
+                                 <div class="span6">
+                                    <div class="control-group">
+                                       <div class="controls">
+                                       <label>
+                                          <input  name="owner" class="m-wrap span12" value="1" @if($response['agent']['owner']==1) checked="" @endif type="checkbox">Owner
+                                       </label>
+
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+
                               <div class="cleardiv">&nbsp;</div>
                               <div class="controls">
-                                    <input type = "submit" value = "ြပင်မည်" class="btn green button-submit" id="btn_create" />
+                                    <input type = "submit" value = "ျပင္မည္" class="btn green button-submit" id="btn_create" />
                                  <!-- <button style="display: inline-block;" type="submit" class="btn green button-submit">Submit</button> -->
                               </div>
                            </div>

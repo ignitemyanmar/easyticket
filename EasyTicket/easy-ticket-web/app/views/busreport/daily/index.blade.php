@@ -44,10 +44,11 @@
                            <table class="table table-striped table-bordered table-advance table-hover">
                               <thead>
                                  <tr>
-                                    <th>ခရီးစဥ္</th>
                                     <th>အခ်ိန္</th>
-                                    <th>ေရာင္းျပီး/ စုစုေပါင္းလက္မွတ္</th>
-                                    <th>ေစ်းႏုန္း</th>
+                                    <th>ခရီးစဥ္</th>
+                                    <!-- <th>ေရာင္းျပီး/ စုစုေပါင္းလက္မွတ္</th> -->
+                                    <th>ခုံအေရအတြက္</th>
+                                    <!-- <th>ေစ်းႏုန္း</th> -->
                                     <th>ေရာင္းရေငြစုစုေပါင္း</th>
                                     <th>-</th>
                                  </tr>
@@ -56,13 +57,15 @@
                                  @if($dailyforbus)
                                     @foreach($dailyforbus as $result)
                                        <tr>
+                                          <td>{{$result['time'].' ('.$result['class'].')'}}</td>
                                           <td>{{$result['from']. '-'. $result['to']}}</td>
-                                          <td>{{$result['time']}}</td>
-                                          <td>{{$result['sold_seat']}}/{{$result['total_seat']}}</td>
-                                          <td>{{$result['price']}}</td>
+                                          <td>{{$result['sold_seat']}}</td>
+                                          <!-- <td>{{$result['price']}}</td> -->
                                           <td>{{$result['sold_amount']}}</td>
                                           <td>
-                                             <a class="btn mini green-stripe imagechange" id="" href="/report/dailycarandadvancesale/time?operator_id={{$search['operator_id']}}&date={{$search['date']}}&departure_time={{$result['time']}}">အေသးစိတ္ၾကည့္ရန္</a>
+
+                                             <!-- <a class="btn mini green-stripe imagechange" id="" href="/report/dailycarandadvancesale/time?operator_id={{$search['operator_id']}}&date={{$search['date']}}&departure_time={{$result['time']}}">အေသးစိတ္ၾကည့္ရန္</a> -->
+                                             <a class="btn mini green-stripe imagechange" id="" href="/report/dailycarandadvancesale/detail?bus_id={{$result['busid']}}">အေသးစိတ္ၾကည့္ရန္</a>
                                           </td>
                                        </tr>
                                        <?php $dailyforbustotal +=$result['sold_amount']; ?>
@@ -92,7 +95,8 @@
                                  <tr>
                                     <!-- <th>ခရီးစဥ္</th> -->
                                     <th>ထြက္ခြာမည့္ေန႕</th>
-                                    <th>ေရာင္းျပီး/ စုစုေပါင္းလက္မွတ္</th>
+                                    <th>ေရာင္းျပီး</th>
+                                    <th>ခရီးစဥ္</th>
                                     <th>ေရာင္းရေငြစုစုေပါင္း</th>
                                     <th>-</th>
                                  </tr>
@@ -103,7 +107,8 @@
                                        <tr>
                                           <!-- <td>{{$advance['from'].'-'. $advance['to'] }}</td> -->
                                           <td>{{$advance['departure_date']}}</td>
-                                          <td>{{$advance['purchased_total_seat']}}/{{$advance['total_seat']}}</td>
+                                          <td>{{$advance['purchased_total_seat']}}</td>
+                                          <td>{{$advance['from'].'-'.$advance['to']}}</td>
                                           <td>{{$advance['total_amout']}}</td>
                                           <td>
                                              <a class="btn mini green-stripe imagechange" id="" href="/report/dailycarandadvancesale/date?operator_id={{$search['operator_id']}}&order_date={{$search['date']}}&departure_date={{$advance['departure_date']}}">အေသးစိတ္ၾကည့္ရန္</a>

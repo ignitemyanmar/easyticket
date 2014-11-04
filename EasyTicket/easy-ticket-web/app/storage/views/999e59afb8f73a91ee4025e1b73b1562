@@ -1,5 +1,4 @@
 <?php $__env->startSection('content'); ?>
-
     <?php if(Auth::check()): ?>
     <?php else: ?>
     <!-- BEGIN LOGIN -->

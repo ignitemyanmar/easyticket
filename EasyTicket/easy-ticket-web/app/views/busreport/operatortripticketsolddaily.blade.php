@@ -48,10 +48,11 @@
                            <table class="table table-striped table-bordered table-advance table-hover">
                               <thead>
                                  <tr>
-                                    <th>ကားနံပါတ္</th>
-                                    <th>ေရာင္းျပီး/ စုစုေပါင္းလက္မွတ္</th>
+                                    <!-- <th>ကားနံပါတ္</th> -->
+                                    <th>ခရီးစဥ္</th>
+                                    <th>ကားထြက္ခ်ိန္</th>
                                     <th>ထြက္ခြာမည့္ေန႕</th>
-                                    <th>အခ်ိန္</th>
+                                    <th>လက္မွတ္အေရအတြက္</th>
                                     <th>ေရာင္းရေငြစုစုေပါင္း</th>
                                     <th>-</th>
                                  </tr>
@@ -60,10 +61,11 @@
                                  @if($response)
                                     @foreach($response as $tripbydaily)
                                        <tr>
-                                          <td class="hidden-phone">{{ $tripbydaily['bus_no']}}</td>
-                                          <td>{{ $tripbydaily['purchased_total_seat']}}/{{ $tripbydaily['total_seat']}}</td>
-                                          <td>{{ $tripbydaily['departure_date']}}</td>
+                                          <!-- <td class="hidden-phone">{{ $tripbydaily['bus_no']}}</td> -->
+                                          <td>{{ $tripbydaily['from'].'-'.$tripbydaily['to']}}</td>
                                           <td>{{ $tripbydaily['time']}}</td>
+                                          <td>{{ $tripbydaily['departure_date']}}</td>
+                                          <td>{{ $tripbydaily['purchased_total_seat']}}</td>
                                           <td>{{ $tripbydaily['total_amout']}}</td>
                                           <td>
                                              <a class="btn mini green-stripe imagechange" id="" href="/report/seatoccupiedbybus/detail?bus_id={{$tripbydaily['bus_id']}}">ခုံနံပါတ္ႏွင့္ဝယ္သူတြဲၾကည့္ရန္</a>

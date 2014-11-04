@@ -29,6 +29,7 @@
    .available{background: url("../../img/rdogreen.png") repeat scroll transparent;}
 
 </style>
+{{HTML::style('../../css/jquery-ui.css')}}
 <link rel="stylesheet" type="text/css" href="../../assets/chosen-bootstrap/chosen/chosen.css" />
    <link rel="stylesheet" type="text/css" href="../../assets/bootstrap-timepicker/compiled/timepicker.css" />
 <!-- BEGIN PAGE -->  
@@ -81,7 +82,7 @@
             <!-- BEGIN PAGE CONTENT-->
                <div class="row-fluid">
                   <div class="responsive span12" data-tablet="span12" data-desktop="span12">
-                     <form id="tripcreate" class="form-horizontal" action = "/trip-create" method= "post" enctype="multipart/form-data">    
+                     <form id="tripcreate" class="form-horizontal" action = "/trip-create" method= "post">    
                         <div class="portlet box light-grey">
                            <div class="portlet-title">
                               <h4><i class="icon-user"></i> Trip Information</h4>
@@ -133,9 +134,14 @@
                                              ေန့စဥ်
                                           </label>
                                           <label class="radio">
-                                          <div id="uniform-undefined" class="radio"><span class="checked">
+                                             <div id="uniform-undefined" class="radio"><span class="checked">
                                              <input style="opacity: 0;" name="day" class="departuredays" value="custom" type="radio"></span></div>
                                              အြခား
+                                          </label> 
+                                          <label class="radio">
+                                             <div id="uniform-undefined" class="radio"><span class="checked">
+                                             <input style="opacity: 0;" name="day" class="departuredays" value="onlyone" type="radio"></span></div>
+                                             တစ်ရက်တည်းသာ
                                           </label>  
                                        </div>
 
@@ -148,6 +154,10 @@
                                                    {{$day}}
                                              </label>
                                           @endforeach
+                                       </div>
+
+                                       <div class="controls" id="onlyone">
+                                          <input type="text" name="onlyone_day" id="onlyone_day">
                                        </div>
                                     </div><br>
                                     
@@ -186,6 +196,14 @@
                                              </select> 
                                        </div>
                                     </div>
+
+                                    <div class="control-group">
+                                       <label class="control-label" for="price">ေကာ်မစ်ရှင်နုန်း</label>
+                                       <div class="controls">
+                                          <input  name="commission" class="m-wrap span12" placeholder="" type="text" required>
+                                       </div>
+                                    </div>
+
                                  </div>
                                  <input type="hidden" value="{{$operator_id}}" name="operator_id" id="operator_id">
                                  <div class="span6" style="min-height:550px;border:1px solid #eee;">
@@ -215,5 +233,6 @@
    <script type="text/javascript" src="../../assets/chosen-bootstrap/chosen/chosen.jquery.min.js"></script>
    <script type="text/javascript" src="../../assets/data-tables/jquery.dataTables.js"></script>
    <script type="text/javascript" src="../../assets/bootstrap-timepicker/js/bootstrap-timepicker.js"></script>
+   {{HTML::script('../../src/jquery-ui.js')}}
    <script type="text/javascript" src="../../js/apps.js"></script>
 @stop

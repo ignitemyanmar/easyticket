@@ -72,16 +72,16 @@ public interface INetworkEngine {
 	@GET("/agent")
 	void getAllAgent(@Query("access_token")String access_token, @Query("operator_id")String operator_id, Callback<AgentList> callback);
 	
-	@GET("/sale/credit")
-	void getCreditOrder(@Query("access_token")String access_token, @Query("operator_id") String operator_id, @Query("agent_id") String agent_id, Callback<List<CreditOrder>> callback);
+	@GET("/sale/order")
+	void getBookingOrder(@Query("access_token")String access_token, @Query("operator_id") String operator_id, @Query("order_date") String order_date, Callback<List<CreditOrder>> callback);
 	
 	@FormUrlEncoded
 	@POST("/sale/credit/delete/{id}")
 	void deleteAllOrder(@Field("access_token")String access_token, @Path("id") String id,Callback<JSONObject> callback);
 
 	@FormUrlEncoded
-	@POST("/sale/credit/pay/{id}")
-	void payCredit(@Field("access_token")String access_token, @Path("id") String id,Callback<JSONObject> callback);
+	@POST("/sale/order/confirm/{id}")
+	void confirmBooking(@Field("access_token")String access_token, @Path("id") String id,Callback<JSONObject> callback);
 	
 	@FormUrlEncoded
 	@POST("/sale/credit/cancelticket")

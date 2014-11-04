@@ -16,6 +16,12 @@ public class PopularAgent {
 	@SerializedName("purchased_total_seat")
 	@Expose
 	private Integer purchasedTotalSeat;
+	@SerializedName("label_name")
+	@Expose
+	private String labelName;
+	@SerializedName("label_color")
+	@Expose
+	private String labelColor;
 	
 	public Integer getId() {
 	return id;
@@ -56,5 +62,20 @@ public class PopularAgent {
 	public void setPurchasedTotalSeat(Integer purchasedTotalSeat) {
 	this.purchasedTotalSeat = purchasedTotalSeat;
 	}
-	
+
+	public String getLabelName() {
+		return labelName;
 	}
+
+	public void setLabelName(String labelName) {
+		this.labelName = labelName;
+	}
+
+	public String getLabelColor() {
+		return labelColor;
+	}
+
+	public void setLabelColor(String labelColor) {
+		this.labelColor = labelColor;
+	}
+}

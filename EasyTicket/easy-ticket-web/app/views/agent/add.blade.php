@@ -29,7 +29,7 @@
                      </div>
                      <!-- END BEGIN STYLE CUSTOMIZER -->   
                      <h3 class="page-title">
-                        အေရာင်း ကုိယ်စားလှယ် အသစ်ထည့်သွင်းြခင်း
+                        အေရာင္းကုိယ္စားလွယ္မ်ား  အခ်က္အလက္မ်ား
                      </h3>
                      <ul class="breadcrumb">
                         <li>
@@ -38,10 +38,10 @@
                            <span class="icon-angle-right"></span>
                         </li>
                         <li>
-                           <a href="#">အေရာင်း ကုိယ်စားလှယ်များ</a>
+                           <a href="#">အေရာင္းကုိယ္စားလွယ္မ်ား</a>
                            <span class="icon-angle-right"></span>
                         </li>
-                        <li><a href="#">အေရာင်း ကုိယ်စားလှယ် အသစ်ထည့်သွင်းြခင်း</a></li>
+                        <li><a href="#">အေရာင္းကုိယ္စားလွယ္မ်ား အသစ္ထည့္သြင္းျခင္း</a></li>
                      </ul>
                   </div>
                </div>
@@ -54,7 +54,7 @@
                      <form id="addnew-form" class="horizontal-form" action = "/addagent" method= "post" enctype="multipart/form-data">    
                         <div class="portlet box light-grey">
                            <div class="portlet-title">
-                              <h4><i class="icon-user"></i>အေရာင်း ကုိယ်စားလှယ် အချက်အလက်များ </h4>
+                              <h4><i class="icon-user"></i>အေရာင္းကုိယ္စားလွယ္ အခ်က္အလက္မ်ား </h4>
                               <div class="actions">
                               </div>
                            </div>
@@ -63,7 +63,7 @@
                               <div class="row-fluid">
                                  <div class="span6">
                                     <div class="control-group">
-                                       <label class="control-label" for="name">အေရာင်း ကုိယ်စားလှယ် အမည်</label>
+                                       <label class="control-label" for="name">အေရာင်းကုိယ်စားလှယ်အမည်</label>
                                        <div class="controls">
                                           <input name="name" class="m-wrap span12" placeholder="Agent Name" type="text">
                                        </div>
@@ -110,6 +110,19 @@
                                        <label class="control-label" for="commission">ေကာ်မၡင်နုန်း</label>
                                        <div class="controls">
                                           <input  name="commission" class="m-wrap span12" placeholder="eg.100 or 10 percent" type="text">
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+
+                              <div class="row-fluid">
+                                 <div class="span6">
+                                    <div class="control-group">
+                                       <div class="controls">
+                                       <label>
+                                          <input  name="owner" class="m-wrap span12" value="1" type="checkbox">Owner
+                                       </label>
+
                                        </div>
                                     </div>
                                  </div>

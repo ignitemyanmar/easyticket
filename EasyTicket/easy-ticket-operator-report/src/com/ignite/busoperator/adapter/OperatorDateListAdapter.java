@@ -1,5 +1,8 @@
 package com.ignite.busoperator.adapter;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import com.ignite.busoperator.OperatorReportByBusNo;
@@ -10,6 +13,7 @@ import com.ignite.busoperator.model.TripsbyOperator;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,7 +50,17 @@ public class OperatorDateListAdapter extends BaseAdapter {
 		// TODO Auto-generated method stub
 		return position;
 	}
-
+	public static String changeDate(String date){
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		Date StartDate = null;
+		try {
+			StartDate = df.parse(date);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return DateFormat.format("dd/MM/yyyy",StartDate).toString();
+	}
 	public View getView(int position, View convertView, ViewGroup parent) {
 		// TODO Auto-generated method stub
 		ViewHolder holder;
@@ -64,7 +78,7 @@ public class OperatorDateListAdapter extends BaseAdapter {
 		holder.order_date.getLayoutParams().width = (int) (DeviceUtil.getInstance(aty).getWidth() / 1.5) / 4;
 		holder.total_tickets.getLayoutParams().width = (int) (DeviceUtil.getInstance(aty).getWidth() / 1.5) / 4;
 		holder.total.getLayoutParams().width = (int) (DeviceUtil.getInstance(aty).getWidth() / 1.5) / 4;
-		holder.order_date.setText(OperDate.get(position).getOrder_date());
+		holder.order_date.setText(changeDate(OperDate.get(position).getOrder_date()));
 		holder.total_tickets.setText(OperDate.get(position).getPurchased_total_seat().toString());
 		holder.total.setText(OperDate.get(position).getTotal_amout().toString());
 		holder.viewDetails.setTag(OperDate.get(position).getOrder_date());

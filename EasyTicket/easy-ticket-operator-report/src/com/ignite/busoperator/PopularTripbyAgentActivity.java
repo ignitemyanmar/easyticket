@@ -38,7 +38,7 @@ public class PopularTripbyAgentActivity extends BaseSherlockActivity {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		
-		getSupportActionBar().setTitle("အ ေရာင္း ရဆံုး အ ေရာင္း ကိုယ္စားလွယ္ စာရင္းမ်ား");
+		getSupportActionBar().setTitle("အ ေရာင္း ရဆံုး ခရီးစဥ္ စာရင္းမ်ား");
 		
 		setContentView(R.layout.activity_popular_trip_by_agent);
 		

@@ -76,7 +76,7 @@
                                     <tr>
                                        <th ></th>
                                        <th class="hidden-phone">လက္မွတ္မွာယူ သည့္ေန႕</th>
-                                       <th class="span1">အေရာင္း ကုိယ္စားလွယ္</th>
+                                       <th>အေရာင္းကုိယ္စားလွယ္</th>
                                        <th>ကားအခ်က္အလက္မ်ား</th>
                                        <!-- <th>ေရာက္ရွိမည့္ျမိဳ႕</th>
                                        <th>ထြက္ခြာမည့္ေန႕ရက္</th>
@@ -91,13 +91,16 @@
                                  <tbody>
                                     @foreach($response as $order)
                                           <tr>
-                                             <th><div style="opacity:0;width:2px;">{{$order->id}}</div></th>
+                                             <th><b style="opacity:.1;">{{$order->id}}</b></th>
                                              <td>{{$order->orderdate}}</td>
-                                             <td><div style="word-wrap: break-word; width:150px;">. @if($order->agent) {{$order->agent->name}}@else - @endif</div></td>
+                                             <td>
+                                                <div class="wordwrap" style="width:100px;"> @if($order->agent) {{$order->agent->name}}@else - @endif
+                                                </div>
+                                             </td>
                                              <td><div class="text-left">
                                                 {{$order->from_to.' ('.$order->busclass.')'}}<br>
-                                                {{$order->departure_date.'<br> ('.$order->departure_time.')'}}<br><br>
-                                                <span class="price">{{$order->price}} MMK</span>
+                                                Date :{{$order->departure_date.'<br> ('.$order->departure_time.')'}}<br><br>
+                                               
                                                 </div>
                                              </td>
                                              <td>
@@ -105,16 +108,17 @@
                                                 အမည္ : {{$order->name}}<br>
                                                 မွတ္ပုံတင္နံပါတ္ : {{$order->nrc_no}}<br>
                                                 ဖုန္းနံပါတ္ :{{$order->phone}}<br>
-                                                .ႏုိင္ငံသား : @if($order->nationality=='local') ႏုိင္ငံသား @else  ႏုိင္ငံျခားသား@endif<br>
-                                                လက္မွတ္အေရအတြက္ : <span class="ticket">{{$order->total_ticket}}</span>
+                                                &nbsp;ႏုိင္ငံသား : @if($order->nationality=='local') ႏုိင္ငံသား @else  ႏုိင္ငံျခားသား@endif<br>
+                                                လက္မွတ္အေရအတြက္ : <b>{{$order->total_ticket}}</b><br>
+                                                &nbsp;ေစ်းနုန္း :<b>{{$order->price}} MMK</b>
 
                                                 </div>
                                              </td>
                                              <td>{{$order->total_amount}}</td>
                                              <td>
-                                                <a class="btn large green-stripe" href="#">ျပင္မည္</a>
-                                                <a class="btn large red-stripe delete" href="order-delete/{{ $order['id'] }}">ဖ်က္မည္</a>
-                                                <a class="btn large red-stripe" href="order-tickets/{{ $order['id'] }}">လက္မွတ္အခ်က္အလက္မ်ား</a>
+                                                <!-- <a class="btn large green-stripe edit" href="#">ျပင္မည္</a> -->
+                                                <a class="btn large red-stripe delete" href="order-delete/{{ $order['id'] }}">အကုန္ဖ်က္မည္</a>
+                                                <a class="btn large red-stripe" href="order-tickets/{{ $order['id'] }}">တစ္ခုခ်င္းဖ်က္မည္</a>
                                              </td>
                                           </tr>
                                     @endforeach

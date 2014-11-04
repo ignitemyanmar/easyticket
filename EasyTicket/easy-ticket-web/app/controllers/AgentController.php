@@ -70,6 +70,7 @@ class AgentController extends BaseController
       $address      =Input::get('address');
       $commission_id=Input::get('comissiontype');
       $commission   =Input::get('commission');
+      $owner   =Input::get('owner');
       $check_exiting=Agent::whereoperator_id($operator_id)->wherename($name)->wherephone($phone)->first();
       if($check_exiting){
         $message['status']=0;
@@ -83,6 +84,7 @@ class AgentController extends BaseController
       $objagent->address        =$address;
       $objagent->commission_id  =$commission_id;
       $objagent->commission     =$commission;
+      $objagent->owner          =$owner;
       $objagent->user_id        =0;
       $objagent->operator_id    =$operator_id;
       $objagent->save();
@@ -90,11 +92,10 @@ class AgentController extends BaseController
       $message['info']="Successfully insert agent.";
       return Redirect::to('/agentlist')->with('message', $message);
     }
-
   	public function showAgentList()
   	{
       $user_id    =Auth::user()->id;
-      $operator_id=Operator::whereuser_id($user_id)->pluck('id');
+      $operator_id=OperatorGroup::whereuser_id($user_id)->pluck('operator_id');
       $response   = $obj_agent = Agent::whereoperator_id($operator_id)->orderBy('id','desc')->get();
       $allagent   = Agent::all();
       $totalCount = count($allagent);
@@ -135,6 +136,7 @@ class AgentController extends BaseController
         $agent['address']       = $obj_agent->address;
         $agent['commission_id'] = $obj_agent->commission_id;
         $agent['commission']    = $obj_agent->commission;
+        $agent['owner']    = $obj_agent->owner;
 
         $agentgroup        = AgentGroup::all();
         $comissiontype     = CommissionType::all();
@@ -142,7 +144,7 @@ class AgentController extends BaseController
         $response['agent']          = $agent;
         $response['agentgroup']     = $agentgroup;
         $response['comissiontype']  = $comissiontype;
-                
+                // return Response::json($response);
         return View::make('agent.edit')->with('response', $response);
     }
    
@@ -155,6 +157,7 @@ class AgentController extends BaseController
                     'address'=>Input::get('address'),
                     'commission_id'=>Input::get('comissiontype'),
                     'commission' =>Input::get('comission'),
+                    'owner'      =>Input::get('owner'),
                     ));
       return Redirect::to('/agentlist');
     }

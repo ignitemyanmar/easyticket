@@ -15,3 +15,13 @@
   font-weight: normal;
   font-style: normal;
 }
+
+@font-face {
+  font-family: 'Helvetica Light';
+  src: url('../fonts/helvetica/helvetica-light.eot');
+  src: local('helvetica Light'), url('../fonts/helvetica/helvetica-light.woff') format('woff'), 
+      url('../fonts/helvetica/helvetica-light.ttf') format('truetype'), 
+      url('../fonts/helvetica/helvetica-light.svg') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}

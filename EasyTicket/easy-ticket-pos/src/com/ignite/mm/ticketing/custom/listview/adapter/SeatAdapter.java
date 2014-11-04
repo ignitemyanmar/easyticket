@@ -113,7 +113,7 @@ public class SeatAdapter extends BaseAdapter
 				});
         		
         	}else{
-        		holder.seat.setButtonDrawable(R.drawable.rdo_shape);
+        		holder.seat.setButtonDrawable(R.drawable.rdo_shape_0);
         	}
         	
         	if(list.get(position).getStatus().equals("2")){
@@ -216,7 +216,7 @@ public class SeatAdapter extends BaseAdapter
 					}
 				});
         	}else{
-        		holder.seat.setButtonDrawable(R.drawable.rdo_shape);
+        		holder.seat.setButtonDrawable(R.drawable.rdo_shape_0);
         	}
         	
         	// with choose price

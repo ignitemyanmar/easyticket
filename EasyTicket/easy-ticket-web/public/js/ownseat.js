@@ -1,4 +1,6 @@
 $(function(){
+			$("#totalamount").html('0');
+
 			$(".fit-a").each(function(){
 				$(this).click(function(){
 
@@ -10,9 +12,18 @@ $(function(){
 						// $(this).prev().prop("disabled", false);
 						var rpl_seatid=seatid.replace('.','-');
 						var price=$(".price"+rpl_seatid).val();
-						$(this).toggleClass('choose available');
+						if($(this).hasClass('operatorseat_1')){
+							$(this).toggleClass('choose operator_1');
+						}
+						if($(this).hasClass('operatorseat_2')){
+							$(this).toggleClass('choose operator_2');
+						}
+						if($(this).hasClass('operatorseat_3')){
+							$(this).toggleClass('choose operator_3');
+						}
+						
+						$(this).toggleClass('available choose');
 					}
-					
 				});
 			});
 });

@@ -11,6 +11,8 @@ public class AgentReport {
 	@Expose
 	private String agent;
 	@Expose
+	private Integer owner;
+	@Expose
 	private Integer sold_tickets;
 	@Expose
 	private Integer total_amount;
@@ -52,6 +54,14 @@ public class AgentReport {
 	this.agent = agent;
 	}
 	
+	public Integer getOwner() {
+		return owner;
+	}
+
+	public void setOwner(Integer owner) {
+		this.owner = owner;
+	}
+
 	public Integer getSold_tickets() {
 	return sold_tickets;
 	}

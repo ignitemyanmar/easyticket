@@ -38,7 +38,7 @@ public class PopularTriptimeActivity extends BaseSherlockActivity {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		
-		getSupportActionBar().hide();
+		getSupportActionBar().setTitle("အ ေရာင္း ရဆံုး ကား အခ်ိန္ စာရင္းမ်ား");
 		
 		setContentView(R.layout.activity_popular_triptime);
 		

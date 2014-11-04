@@ -98,10 +98,12 @@
                     $operator_id =$agent_id =0;
                     $userid=Auth::user()->id;
                     $usertype=Auth::user()->type;
-                    if($usertype=='operator')
-                    $operator_id=Operator::whereuser_id($userid)->pluck('id');
+                    $operator_id=OperatorGroup::whereuser_id($userid)->pluck('operator_id');
+
+                    /*if($usertype=='operator')
+                    $operator_id=OperatorGroup::whereuser_id($userid)->pluck('operator_id');
                     else
-                    $agent_id=Agent::whereuser_id($userid)->pluck('id');
+                    $agent_id=Agent::whereuser_id($userid)->pluck('id');*/
 
                     Session::put('operator_id', $operator_id);
                 ?>
@@ -113,20 +115,18 @@
                     <!-- BEGIN SIDEBAR TOGGLER BUTTON -->
                 </li>
                 <li>
-                    <!-- BEGIN RESPONSIVE QUICK SEARCH FORM -->
-                    <form class="sidebar-search">
+<!--                     <form class="sidebar-search">
                         <div class="input-box">
                             <a href="javascript:;" class="remove"></a>
                             <input type="text" placeholder="Search..." />               
                             <input type="button" class="submit" value=" " />
                         </div>
-                    </form>
-                    <!-- END RESPONSIVE QUICK SEARCH FORM -->
+                    </form> -->
                 </li>
                 <li @if($currentroute=='das') class="start " @else class="start" @endif>
                     <a href="/report/dailycarandadvancesale?operator_id={{$operator_id}}">
                     <i class="icon-home"></i> 
-                    <span class="title">ပင်မ စာမျက်နှာ</span>
+                    <span class="title">ပင်မစာမျက်နှာ</span>
                     <span class="selected"></span>
                     </a>
                 </li>
@@ -144,58 +144,103 @@
                     </ul>
                 </li>
                 @endif
+                <li @if($currentroute=='daiadv') class="" @endif>
+                    <a href="/report/dailycarandadvancesale?operator_id={{$operator_id}}">
+                    <i class="icon-th-list"></i> 
+                    <span class="title">ေန့စဥ်အေရာင်းစာရင်းများ</span>
+                    </a>
+                </li>
+                <li @if($currentroute=='dai') class="" @endif>
+                    <a href="/report/dailybydeparturedate">
+                    <i class="icon-th-list"></i> 
+                    <span class="title">ကားချုပ် စာရင်းများ</span>
+                    </a>
+                </li>
                 @if($usertype=='operator')
-                <li @if($currentroute=='ope') class="has-sub " @else class="has-sub" @endif>
-                    <a href="javascript:;">
+                <li @if($currentroute=='rep') class="" @endif>
+                    <a href="/report/operator/trip/dateranges?operator_id={{$operator_id}}&trips=1">
                     <i class="icon-th-list"></i> 
-                    <span class="title">ကားဂိတ် အေရာင်းစာရင်း</span>
-                    <span class="arrow "></span>
+                    <span class="title">ခရီးစဥ်အလုိက်အေရာင်း စာရင်းများ</span>
                     </a>
-                    
-                    <ul class="sub">
-                        <li ><a href="/report/operator/trip/dateranges?operator_id={{$operator_id}}">ေန့အလုိက်အေရာင်းစာရင်း</a></li>
-                    </ul>
-
-                </li>
-                @endif
-                <li @if($currentroute=='dai') class="has-sub " @else class="has-sub" @endif>
-                    <a href="javascript:;">
-                    <i class="icon-th-list"></i> 
-                    <span class="title">ကားချုပ် အေရာင်းစာရင်း</span>
-                    <span class="arrow "></span>
-                    </a>
-                    <ul class="sub">
-                        <li ><a href="/report/dailybydeparturedate">ကားထွက်မည့်ေန့ အလုိက် အေရာင်းစာရင်း</a></li>
-                    </ul>
                 </li>
 
-                <li @if($currentroute=='dai') class="has-sub " @else class="has-sub" @endif>
-                    <a href="javascript:;">
+                <li @if($currentroute=='rep') class="" @endif>
+                    <a href="/report/operator/trip/dateranges?operator_id={{$operator_id}}">
                     <i class="icon-th-list"></i> 
-                    <span class="title">ေန့စဥ် အေရာင်းစာရင်း</span>
-                    <span class="arrow "></span>
+                    <span class="title">အေရာင်းကုိယ်စားလှယ်နှင့် အေရာင်းစာရင်းများ</span>
                     </a>
-                    <ul class="sub">
-                        <li ><a href="/report/dailycarandadvancesale?operator_id={{$operator_id}}">ေန့စဥ် နှင့် ြကိုေရာင်းစားရင်း</a></li>
-                    </ul>
                 </li>
+
+                <li @if($currentroute=='rep') class="" @endif>
+                    <a href="/report/booking">
+                    <i class="icon-th-list"></i> 
+                    <span class="title">ြကိုတင်မှာယူေသာ စာရင်းများ</span>
+                    </a>
+                </li>
+
                 
-                <!-- 
-                <li @if($currentroute=='sea') class="has-sub " @else class="has-sub" @endif>
-                    <a href="javascript:;">
-                    <i class="icon-bar-chart"></i> 
-                    <span class="title">Seat Occupied By Bus</span>
-                    <span class="arrow "></span>
+                
+
+                <li @if($currentroute=='') class="" @endif>
+                    <a href="/report/bestseller/trip">
+                    <i class="icon-th-list"></i> 
+                    <span class="title">အေရာင်းရဆုံး ခရီးစဥ် စာရင်းများ</span>
                     </a>
-                    <ul class="sub">
-                        <li ><a href="/report/seatoccupiedbybus">Seat Occupied By Bus Report</a></li>
-                    </ul>
-                </li> 
+                </li>
+
+
+               <!--  <li @if($currentroute=='') class="" @endif>
+                    <a href="/report/bestseller/agents">
+                    <i class="icon-th-list"></i> 
+                    <span class="title">အေရာင်းရဆုံး အေရာင်းကုိယ်စားလှယ် စာရင်းများ</span>
+                    </a>
+                </li> -->
+
+                <li @if($currentroute=='') class="" @endif>
+                    <a href="/report/agentscredit">
+                    <i class="icon-th-list"></i> 
+                    <span class="title">အေရာင်းကုိယ်စားလှယ် နှင့် အေြကွးစာရင်းများ</span>
+                    </a>
+                </li>
+
+                @endif
+                <!-- 
+                    <li @if($currentroute=='dai') class="has-sub " @else class="has-sub" @endif>
+                        <a href="javascript:;">
+                        <i class="icon-th-list"></i> 
+                        <span class="title">ကားချုပ် အေရာင်းစာရင်း</span>
+                        <span class="arrow "></span>
+                        </a>
+                        <ul class="sub">
+                            <li ><a href="/report/dailybydeparturedate">ကားထွက်မည့်ေန့ အလုိက် အေရာင်းစာရင်း</a></li>
+                        </ul>
+                    </li> 
+
+                    <li @if($currentroute=='dai') class="has-sub " @else class="has-sub" @endif>
+                        <a href="javascript:;">
+                        <i class="icon-th-list"></i> 
+                        <span class="title">ေန့စဥ် အေရာင်းစာရင်း</span>
+                        <span class="arrow "></span>
+                        </a>
+                        <ul class="sub">
+                            <li ><a href="/report/dailycarandadvancesale?operator_id={{$operator_id}}">ေန့စဥ် နှင့် ြကိုေရာင်းစားရင်း</a></li>
+                        </ul>
+                    </li>
+                    <li @if($currentroute=='sea') class="has-sub " @else class="has-sub" @endif>
+                        <a href="javascript:;">
+                        <i class="icon-bar-chart"></i> 
+                        <span class="title">Seat Occupied By Bus</span>
+                        <span class="arrow "></span>
+                        </a>
+                        <ul class="sub">
+                            <li ><a href="/report/seatoccupiedbybus">Seat Occupied By Bus Report</a></li>
+                        </ul>
+                    </li> 
                 -->
                 
-                <li @if($currentroute=='ope') class="has-sub " @else class="has-sub" @endif>
+                <!-- <li @if($currentroute=='ope') class="has-sub " @else class="has-sub" @endif>
                     <a href="javascript:;">
-                    <i class="icon-user"></i> 
+                    <i class="icon-th-list"></i> 
                     <span class="title">ကားဂိတ်များ</span>
                     <span class="arrow "></span>
                     </a>
@@ -203,7 +248,90 @@
                         <li ><a href="/operators/create">ကားဂိတ်အသစ်ထည့်သွင်းြခင်း</a></li>
                         <li ><a href="/operatorlist">ကားဂိတ်များ</a></li>
                     </ul>
+                </li> -->
+                <li @if($currentroute=='age') class="has-sub " @else class="has-sub" @endif>
+                    <a href="javascript:;">
+                    <i class="icon-th-list"></i> 
+                    <span class="title">အေရာင်းကုိယ်စားလှယ်များ</span>
+                    <span class="arrow "></span>
+                    </a>
+                    <ul class="sub">
+                        <li ><a href="/agents/create">အေရာင်းကုိယ်စားလှယ် အသစ်ထည့်သွင်းြခင်း</a></li>
+                        <li ><a href="/agentlist">အေရာင်းကုိယ်စားလှယ်များ</a></li>
+                    </ul>
                 </li>
+                <li @if($currentroute=='ord') class="" @endif>
+                    <a href="/orderlist">
+                    <i class="icon-th-list"></i> 
+                    <span class="title">ေရာင်းြပီးလက်မှတ်များ ဖျက်ရန်</span>
+                    </a>
+                </li>
+
+                <li @if($currentroute=='cit') class="has-sub " @else class="has-sub" @endif>
+                    <a href="javascript:;">
+                    <i class="icon-th-list"></i> 
+                    <span class="title">ြမို့များ</span>
+                    <span class="arrow "></span>
+                    </a>
+                    <ul class="sub">
+                        <li ><a href="/city/create">ြမို့ အသစ်ထည့်သွင်းြခင်း</a></li>
+                        <li ><a href="/citylist">ြမို့များ</a></li>
+                    </ul>
+                </li>
+                <li @if($currentroute=='bus') class="has-sub " @else class="has-sub" @endif>
+                    <a href="javascript:;">
+                    <i class="icon-th-list"></i> 
+                    <span class="title">ကားအမျိုးအစား</span>
+                    <span class="arrow "></span>
+                    </a>
+                    <ul class="sub">
+                        <li ><a href="/busclass/create">ကားအမျိုးအစား အသစ်ထည့်သွင်းြခင်း</a></li>
+                        <li ><a href="/busclasslist">ကားအမျိုးအစားများ</a></li>
+                    </ul>
+                </li>
+                <li @if($currentroute=='sea') class="has-sub " @else class="has-sub" @endif>
+                    <a href="javascript:;">
+                    <i class="icon-th-list"></i> 
+                    <span class="title">ခုံအေနအထား အစီအစဥ်</span>
+                    <span class="arrow "></span>
+                    </a>
+                    <ul class="sub">
+                        <li ><a href="/seatlayout/create">ခုံအေနအထား အသစ်ထည့်သွင်းြခင်း</a></li>
+                        <li ><a href="/seatlayoutlist">ခုံအေနအထားများ</a></li>
+                    </ul>
+                </li>
+
+                
+
+                <li @if($currentroute=='tri') class="has-sub " @else class="has-sub" @endif>
+                    <a href="javascript:;">
+                    <i class="icon-th-list"></i> 
+                    <span class="title">ခရီးစဥ် အသစ်ထည့်မည်။</span>
+                    <span class="arrow "></span>
+                    </a>
+                    <ul class="sub">
+                        <li ><a href="/trip/create">ခရီးစဥ် အသစ်ထည့်မည်။</a></li>
+                        <li ><a href="/trip-list">ခရီးစဥ်များ</a></li>
+                    </ul>
+                </li>
+
+                <li @if($currentroute=='sea') class="has-sub " @else class="has-sub" @endif>
+                    <a href="javascript:;">
+                    <i class="icon-th-list"></i> 
+                    <span class="title">ခုံနံပါတ် အစီအစဥ်</span>
+                    <span class="arrow "></span>
+                    </a>
+                    <ul class="sub">
+                        <li ><a href="/seatplans/create">ခုံနံပါတ် သတ်မှတ်ြခင်း</a></li>
+                        <li ><a href="/seatplanlist">ခုံနံပါတ်များ</a></li>
+                    </ul>
+                </li> 
+                <!-- <li @if($currentroute=='sea') class=""@endif>
+                    <a href="javascript:;">
+                    <i class="icon-th-list"></i> 
+                    <span class="title">အေရာင်းကုိယ်စားလှယ် အေြကွးစာရင်း</span>
+                    </a>
+                </li>  -->
                 <!-- 
                 <li @if($currentroute=='age') class="has-sub " @else class="has-sub" @endif>
                     <a href="javascript:;">
@@ -217,40 +345,7 @@
                     </ul>
                 </li>
                  -->
-                <li @if($currentroute=='age') class="has-sub " @else class="has-sub" @endif>
-                    <a href="javascript:;">
-                    <i class="icon-user"></i> 
-                    <span class="title">အေရာင်းကုိယ်စားလှယ်များ</span>
-                    <span class="arrow "></span>
-                    </a>
-                    <ul class="sub">
-                        <li ><a href="/agents/create">အေရာင်းကုိယ်စားလှယ် အသစ်ထည့်သွင်းြခင်း</a></li>
-                        <li ><a href="/agentlist">အေရာင်းကုိယ်စားလှယ်များ</a></li>
-                    </ul>
-                </li>
-
-                <li @if($currentroute=='cit') class="has-sub " @else class="has-sub" @endif>
-                    <a href="javascript:;">
-                    <i class="icon-user"></i> 
-                    <span class="title">ြမို့များ</span>
-                    <span class="arrow "></span>
-                    </a>
-                    <ul class="sub">
-                        <li ><a href="/city/create">ြမို့ အသစ်ထည့်သွင်းြခင်း</a></li>
-                        <li ><a href="/citylist">ြမို့များ</a></li>
-                    </ul>
-                </li>
-                <li @if($currentroute=='bus') class="has-sub " @else class="has-sub" @endif>
-                    <a href="javascript:;">
-                    <i class="icon-user"></i> 
-                    <span class="title">ကားအမျိုးအစား</span>
-                    <span class="arrow "></span>
-                    </a>
-                    <ul class="sub">
-                        <li ><a href="/busclass/create">ကားအမျိုးအစား အသစ်ထည့်သွင်းြခင်း</a></li>
-                        <li ><a href="/busclasslist">ကားအမျိုးအစားများ</a></li>
-                    </ul>
-                </li>
+                
                 <!-- 
                 @if($usertype=='admin')
                     <li @if($currentroute=='tic') class="has-sub " @else class="has-sub" @endif>
@@ -266,49 +361,6 @@
                     </li>
                 @endif
                  -->
-                <li @if($currentroute=='sea') class="has-sub " @else class="has-sub" @endif>
-                    <a href="javascript:;">
-                    <i class="icon-user"></i> 
-                    <span class="title">ခုံအေနအထား အစီအစဥ်</span>
-                    <span class="arrow "></span>
-                    </a>
-                    <ul class="sub">
-                        <li ><a href="/seatlayout/create">ခုံအေနအထား အသစ်ထည့်သွင်းြခင်း</a></li>
-                        <li ><a href="/seatlayoutlist">ခုံအေနအထားများ</a></li>
-                    </ul>
-                </li>
-
-                <li @if($currentroute=='ord') class="active" @endif>
-                    <a href="/orderlist">
-                    <i class="icon-user"></i> 
-                    <span class="title">ေအာ်ဒါလက်မှတ်များ</span>
-                    </a>
-                    
-                </li>
-
-                <li @if($currentroute=='tri') class="has-sub " @else class="has-sub" @endif>
-                    <a href="javascript:;">
-                    <i class="icon-user"></i> 
-                    <span class="title">ခရီးစဥ် အသစ်ထည့်မည်။</span>
-                    <span class="arrow "></span>
-                    </a>
-                    <ul class="sub">
-                        <li ><a href="/trip/create">ခရီးစဥ် အသစ်ထည့်မည်။</a></li>
-                        <li ><a href="/trip-list">ခရီးစဥ်များ</a></li>
-                    </ul>
-                </li>
-
-                <li @if($currentroute=='sea') class="has-sub " @else class="has-sub" @endif>
-                    <a href="javascript:;">
-                    <i class="icon-user"></i> 
-                    <span class="title">ခုံနံပါတ် အစီအစဥ်</span>
-                    <span class="arrow "></span>
-                    </a>
-                    <ul class="sub">
-                        <li ><a href="/seatplans/create">ခုံနံပါတ် သတ်မှတ်ြခင်း</a></li>
-                        <li ><a href="/seatplanlist">ခုံနံပါတ်များ</a></li>
-                    </ul>
-                </li> 
 
                 <!--
                 <li class="has-sub ">
@@ -321,7 +373,6 @@
                         <li ><a href="#">Your Profile</a></li>
                     </ul>
                 </li>
-
                 -->
                 
             </ul>

@@ -161,6 +161,13 @@
                                     </div>
                                  </div>
                               </div>
+
+                              <div class="control-group">
+                                 <label class="control-label" for="price">ေကာ်မစ်ရှင်နုန်း</label>
+                                 <div class="controls">
+                                    <input  name="commission" class="m-wrap span12" placeholder="" type="text" value="{{$response['commission']}}">
+                                 </div>
+                              </div>
                               
                               <div class="cleardiv">&nbsp;</div>
                               <div class="controls">

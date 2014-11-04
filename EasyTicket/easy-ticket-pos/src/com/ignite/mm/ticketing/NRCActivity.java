@@ -33,6 +33,8 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -65,11 +67,6 @@ public class NRCActivity extends BaseSherlockActivity {
 	private EditText edt_phone;
 	private ProgressDialog dialog;
 	private String SaleOrderNo;
-	private String Trip;
-	private String Date;
-	private String OperatorID;
-	private String OperatorName;
-	private String Time;
 	private String SelectedSeatIndex;
 	private String[] selectedSeat;
 	private LinearLayout layout_ticket_no_container;
@@ -85,6 +82,8 @@ public class NRCActivity extends BaseSherlockActivity {
 	private RadioButton rdo_local;
 	private List<String> nrcFormat;
 	private ArrayAdapter<String> nrcListAdapter;
+	private String BusOccurence;
+	private String Intents;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -103,13 +102,13 @@ public class NRCActivity extends BaseSherlockActivity {
 		actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
 
 		Bundle bundle = getIntent().getExtras();
-		Trip = bundle.getString("trip");
-		Date = bundle.getString("trip_date");
-		OperatorID = bundle.getString("operator_id");
-		OperatorName = bundle.getString("operator_name");
-		Time = bundle.getString("trip_time");
+		Intents = bundle.getString("from_intent");
+		if(Intents.equals("booking")){
+			AgentID = bundle.getString("agent_id");
+		}
 		SelectedSeatIndex = bundle.getString("selected_seat");
 		SaleOrderNo = bundle.getString("sale_order_no");
+		BusOccurence = bundle.getString("bus_occurence");
 		
 		edt_buyer = (EditText) findViewById(R.id.edt_buyer);
 		edt_nrc_no = (AutoCompleteTextView) findViewById(R.id.edt_nrc_no);
@@ -119,6 +118,7 @@ public class NRCActivity extends BaseSherlockActivity {
 		rdo_cash_down = (RadioButton) findViewById(R.id.rdo_cash_down);
 		rdo_credit = (RadioButton) findViewById(R.id.rdo_credit);
 		rdo_local = (RadioButton) findViewById(R.id.rdo_local);
+		
 		nrcFormat = new ArrayList<String>();
 		nrcFormat.add("1/MaAhaPa(N) ");
 		nrcFormat.add("2/MaAhaPa(N) ");
@@ -206,6 +206,7 @@ public class NRCActivity extends BaseSherlockActivity {
 		}
 		
 	}
+	
 
 	private void comfirmOrder() {
 		dialog = ProgressDialog.show(this, "", " Please wait...", true);
@@ -216,12 +217,7 @@ public class NRCActivity extends BaseSherlockActivity {
 			EditText ticket_no = (EditText)findViewById(i+1);
 			CheckBox free_ticket = (CheckBox) findViewById(i+1 * 100);
 			seats.add(
-					new ConfirmSeat(BusSelectSeatActivity.BusSeats.get(0)
-							.getSeat_plan().get(0).getId(),
-							BusSelectSeatActivity.BusSeats.get(0)
-									.getSeat_plan().get(0).getSeat_list()
-									.get(Integer.valueOf(selectedSeat[i]))
-									.getSeat_no().toString(), edt_buyer
+					new ConfirmSeat(BusOccurence,selectedSeat[i].toString(), edt_buyer
 							.getText().toString(), edt_nrc_no.getText()
 							.toString(),ticket_no.getText().toString(),free_ticket.isChecked()));
 		}
@@ -249,6 +245,7 @@ public class NRCActivity extends BaseSherlockActivity {
 		params.add(new BasicNameValuePair("nationality", rdo_local.isChecked() == true ? "local" : "foreign"));
 		params.add(new BasicNameValuePair("reference_no", edt_ref_invoice_no.getText().toString()));
 		params.add(new BasicNameValuePair("order_date",working_date));
+		params.add(new BasicNameValuePair("booking","0"));
 		params.add(new BasicNameValuePair("device_id",DeviceUtil.getInstance(this).getID()));
 		params.add(new BasicNameValuePair("access_token", accessToken));
 		Log.i("","Hello Params :"+ params.toString());
@@ -293,6 +290,11 @@ public class NRCActivity extends BaseSherlockActivity {
 			return false;
 		}
     	
+    	if(auto_txt_agent.getText().toString().length() == 0 && Integer.valueOf(AgentID) == 0 ){
+    		auto_txt_agent.setError("Enter The Agent");
+    		return false;
+    	}
+    	
     	return true;
 	   
 	
@@ -308,26 +310,6 @@ public class NRCActivity extends BaseSherlockActivity {
 				if(checkFields()){
 					if(SKConnectionDetector.getInstance(NRCActivity.this).isConnectingToInternet()){
 						comfirmOrder();
-					}else{
-						// FADE DATA
-						SharedPreferences sharedPreferences = getApplication()
-								.getSharedPreferences("CheckOutInfo", MODE_PRIVATE);
-						SharedPreferences.Editor editor = sharedPreferences.edit();
-
-						editor.clear();
-						editor.commit();
-						editor.putString("buyer_name", edt_buyer.getText().toString());
-						editor.putString("trip", Trip);
-						editor.putString("trip_date", Date);
-						editor.putString("operator_id", OperatorID);
-						editor.putString("operator_name", OperatorName);
-						editor.putString("time", Time);
-						editor.putString("selected_seat", SelectedSeatIndex);
-
-						editor.commit();
-
-						finish();
-						startActivity(new Intent(NRCActivity.this, Bus_Info_Activity.class));
 					}
 				}
 			}
@@ -350,6 +332,11 @@ public class NRCActivity extends BaseSherlockActivity {
 				agentList = arg0.getAgents();
 				agentListAdapter = new ArrayAdapter<Agent>(NRCActivity.this, android.R.layout.simple_dropdown_item_1line, agentList);
 			    auto_txt_agent.setAdapter(agentListAdapter);
+			    for(int i=0; i< arg0.getAgents().size(); i++){
+			    	if(arg0.getAgents().get(i).getId().equals(AgentID)){
+			    		auto_txt_agent.setText(arg0.getAgents().get(i).getName().toString());
+			    	}
+			    }
 			    auto_txt_agent.setOnItemClickListener(new OnItemClickListener() {
 
 					public void onItemClick(AdapterView<?> arg0, View arg1,
@@ -359,6 +346,7 @@ public class NRCActivity extends BaseSherlockActivity {
 			           	AgentID = ((Agent)arg0.getAdapter().getItem(arg2)).getId();
 					}
 				});
+			    
 			}
 		});
 	}

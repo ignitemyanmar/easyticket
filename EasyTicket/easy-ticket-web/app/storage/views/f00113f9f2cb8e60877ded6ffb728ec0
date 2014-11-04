@@ -14,8 +14,8 @@
 				<div class="checkboxframe">
 		            <label>
 		                <span></span>
-		                <input class="radios" type="checkbox" multiple="multiple" value="<?php echo $seatno; ?>" name="seats[]" >
-		                <div class="fit-a available" title="" id="<?php echo $seatno; ?>"><p>&nbsp;</p></div>
+		                <input class="radios" type="checkbox" multiple="multiple" value="<?php echo $seatno; ?>" name="seats[]">
+		                <div class="fit-a noseat" title="" id="<?php echo $seatno; ?>"><p>&nbsp;</p></div>
 		                <div style="background:#ccc;">
 		            </label>
 		        </div>
@@ -27,6 +27,16 @@
 		<?php endfor; ?>
 
 	</table>
+
+	<script type="text/javascript">
+		$(function(){
+			$(".fit-a").each(function(){
+				$(this).click(function(){
+					$(this).toggleClass('available noseat');
+				});
+		    });
+		});
+	</script>
 	
 	
 <?php endif; ?>

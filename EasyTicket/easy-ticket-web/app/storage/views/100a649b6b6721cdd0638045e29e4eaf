@@ -1,5 +1,10 @@
 <?php $__env->startSection('content'); ?>
-
+<style type="text/css">
+  .radios{opacity: 0;}
+  .fit-a{width: 90%; height: 60px;}
+  .noseat{background: #ccc;}
+  .available{background: #0f0;}
+</style>
 <!-- BEGIN PAGE -->  
    <div class="page-content">
       <!-- BEGIN PAGE CONTAINER-->
@@ -28,7 +33,7 @@
                      </div>
                      <!-- END BEGIN STYLE CUSTOMIZER -->   
                      <h3 class="page-title">
-                        SeatLayout Design
+                        ခုံအေနအထားပုံစံ
                         <!-- <small>form wizard sample</small> -->
                      </h3>
                      <ul class="breadcrumb">
@@ -38,10 +43,10 @@
                            <span class="icon-angle-right"></span>
                         </li>
                         <li>
-                           <a href="/itemlist">Seat Layout</a>
+                           <a href="/seatlayoutlist">ခုံအေနအထားပုံစံမ်ား</a>
                            <span class="icon-angle-right"></span>
                         </li>
-                        <li><a href="#">Seat Layout list </a></li>
+                        <li><a href="#">ခုံအေနအထားပုံစံ ခုံအေနအထားပုံစံ အသစ္ထည့္မည္</a></li>
                      </ul>
                   </div>
                </div>
@@ -54,7 +59,7 @@
                   <div class="responsive span8" data-tablet="span8" data-desktop="span8">
                      <div class="portlet box light-grey">
                         <div class="portlet-title">
-                           <h4><i class="icon-user"></i>Seat Layout</h4>
+                           <h4><i class="icon-user"></i>ခုံအေနအထားပုံစံ</h4>
                            
                         </div>
 
@@ -65,15 +70,15 @@
 
                             <div class="cleardiv">&nbsp;</div>
                             <div class="controls">
-                                  <input type = "submit" value = "Submit" class="btn green button-submit" id="btn_create" />
+                                  <input type = "submit" value = "ခုံအေနအထားပုံစံ သတ္မွတ္မည္" class="btn green button-submit" id="btn_create" />
                             </div>
                         </div>
                      </div>
                   </div>
                   <div class="responsive padding-10 span4 border" data-tablet="span4" data-desktop="span4">
                       <form action="">
-                        <h3 class="form-section">SeatLayout Information</h3>
-                        <div class="row-fluid">
+                        <h3 class="form-section" style="margin-left:1rem;">ခုံအေနအထားပုံစံ</h3>
+                        <div class="row-fluid" style="display:none;">
                             <div class="span1">&nbsp;</div>
                             <div class="span6">
                               <div class="control-group">
@@ -116,7 +121,7 @@
 
                         </div>
                         <div class="form-actions clearfix">
-                           <div class="btn green button-submit" id="btnseatlayout">Submit</div>
+                           <div class="btn green button-submit" id="btnseatlayout">ခုံ (Rows & Columns) သတ္မွတ္မည္</div>
                         </div>
                       </form>
 

@@ -79,8 +79,9 @@ class OrderController extends \BaseController {
 	}
 
 	public function orderlist(){
-		$operator_id=Operator::whereuser_id(Auth::user()->id)->pluck('id');
+		$operator_id=OperatorGroup::whereuser_id(Auth::user()->id)->pluck('operator_id');
 		$response=SaleOrder::whereoperator_id($operator_id)->with(array('agent','saleitems'))->get();
+		// return Response::json($response);
 		if($response){
 			$i=0;
 			foreach($response as $orders){

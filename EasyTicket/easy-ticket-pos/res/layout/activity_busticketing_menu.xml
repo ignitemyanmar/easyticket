@@ -80,7 +80,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:visibility="visible" >
-
+
                 <LinearLayout
                     android:id="@+id/btn_credit_list"
                     android:layout_width="140dp"
@@ -90,7 +90,7 @@
                     android:gravity="center"
                     android:orientation="vertical"
                     android:padding="10dp"
-                    android:visibility="invisible" >
+                    android:visibility="visible" >
 
                     <ImageView
                         android:id="@+id/credit_list"
@@ -98,14 +98,15 @@
                         android:layout_height="80dp"
                         android:layout_margin="10dp"
                         android:src="@drawable/credit_list" />
-
+
                     <com.smk.custom.view.CustomTextView
                         android:id="@+id/CustomTextView1"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:text="မိမိ အ ေရာင္း အ ေႂကြး စာရင္း"
+                        android:text="Booking စာရင္းမ်ား ၾကည့္ရန္"
                         android:textAppearance="?android:attr/textAppearanceMedium" />
+
                 </LinearLayout>
 
                 <LinearLayout

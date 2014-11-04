@@ -12,6 +12,7 @@
      z-index: -1;
 
    }
+   .colorbox{width:24px; height:24px;float:left;margin-right:8px;}
    .radios{opacity: 1;}
    .check-a .span1{height: 21px; margin-top: 15px;}
    .check-a .spanhalf{margin-top: 65px;}
@@ -22,13 +23,21 @@
          min-width: 21px;
          min-height: 21px;
          cursor: pointer;
-   }
+     }
    .check-a label{height: 21px;}
    .taken{background: url("../../img/rdored.png") repeat scroll transparent;}
    .own{background: url("../../img/rdoyellow.png") repeat scroll transparent;}
-   .choose{background: url("../../img/rdoyellow.png") repeat scroll transparent;}
+   .choose{background: url("../../img/rdoyellow.png") repeat scroll transparent; }
    .available{background: url("../../img/rdogreen.png") repeat scroll transparent;}
    .controls .control-label{text-align: left;}
+
+   .operator_0{background:#00FF00;}
+   .operator_1{background:lightseagreen;}
+   .operator_2{background:#2047CE;}
+   .operator_3{background:#A520CE;}
+   .operator_4{background:#93CE20;}
+   .operator_5{background:#073963;}
+   .operator_6{background:#206307;}
 
 </style>
 <link rel="stylesheet" type="text/css" href="../../assets/chosen-bootstrap/chosen/chosen.css" />
@@ -94,6 +103,18 @@
                               <div class="row-fluid">
                                  <div class="span6">
                                     <div class="control-group">
+                                       <label class="control-label" for="from">ကားဂိတ်ေရွးရန် <b class="required">(*)</b></label>
+                                       <div class="controls">
+                                          <select name="operatorgroup_id" class="chosen">
+                                             @foreach($operatorgroup as $row)
+                                             <option value="{{$row->id}}">{{$row->user->name}}</option>
+                                             @endforeach
+                                          </select>
+                                       </div>
+                                    </div><br>
+
+
+                                    <div class="control-group">
                                        <label class="control-label" for="from">ထွက်ခွာမည့်ြမို့ ==></label>
                                        <div class="controls">
                                             <label class="control-label">{{$tripinfo['from_to']}}</label>
@@ -148,6 +169,19 @@
                                  <input type="hidden" value="{{$tripinfo['trip_id']}}" name="trip_id">
                                  
                                  <div class="span6" style="min-height:550px;border:1px solid #eee;">
+                                    <div style="margin:24px;">
+                                       <h4>ခုံပုိင္သတ္မွတ္ထားေသာေရာင္မ်ား</h4><br>
+                                       @if($operatorgroup)
+                                          @foreach($operatorgroup as $operator)
+                                             <div class="colorbox operator_{{$operator->color}}"></div>{{$operator->user->name}}<br>
+                                             <div class="clear">&nbsp;</div>
+                                          @endforeach
+                                       @endif
+                                          <div class="colorbox choose"></div>ေရြးခ်ယ္ထားေသာ ခုံမ်ား<br>
+                                          <div class="clear">&nbsp;</div>
+                                          <div class="colorbox available"></div>ခုံလြတ္မ်ား<br>
+                                          <div class="clear">&nbsp;</div>
+                                    </div>
                                     <br>
                                            
                                        <div id="seatplanview">
@@ -170,20 +204,20 @@
                                                                         <label>
                                                                             <span class=""></span>
                                                                             <?php 
-                                                                              $operator_group_id=isset($rows['operatorgroup_id']) ? $rows['operatorgroup_id'] : 0;
                                                                               if($rows['status'] != 1){
                                                                                  $disabled="disabled";
                                                                                  $taken="taken";
-                                                                              }elseif($operator_group_id!=0){
-                                                                                    $disabled=''; 
-                                                                                    $taken='choose';
+                                                                              }elseif($rows['operatorgroup_id']!=0){
+                                                                                 $color=OperatorGroup::whereid($rows['operatorgroup_id'])->pluck('color');
+                                                                                 $disabled=''; 
+                                                                                 $taken="operator_".$color.' operatorseat_'.$color;
                                                                               }else{
                                                                                  $disabled=''; 
                                                                                  $taken='available';  
                                                                               }
                                                                              ?>
-                                                                           <div style="opacity:0;">
-                                                                              <input class="radios" type="checkbox" multiple="multiple" value="{{$rows['seat_no']}}" name="seats[]" {{ $disabled }} @if($operator_group_id !=0) checked @endif>
+                                                                           <div style="opacity:.1;">
+                                                                              <input class="radios" type="checkbox" multiple="multiple" value="{{$rows['seat_no']}}" name="seats[]" {{ $disabled }} @if($rows['operatorgroup_id']!=0) checked @endif>
                                                                            </div>
                                                                             <div class="fit-a {{$taken}}" title="{{$rows['seat_no']}}" id="">{{$rows['seat_no']}}</div>
                                                                         </label>
@@ -227,4 +261,6 @@
    <script type="text/javascript" src="../../assets/data-tables/jquery.dataTables.js"></script>
    <script type="text/javascript" src="../../assets/bootstrap-timepicker/js/bootstrap-timepicker.js"></script>
    {{HTML::script('../js/ownseat.js')}}
+  
+   
 @stop

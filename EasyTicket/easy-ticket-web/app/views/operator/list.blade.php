@@ -36,16 +36,16 @@
                      <!-- END BEGIN STYLE CUSTOMIZER -->    
                      <!-- BEGIN PAGE TITLE & BREADCRUMB-->        
                      <h3 class="page-title">
-                        ကားဂိတ်များ            
+                        ကားဂိတ္မ်ား            
                       
                      </h3>
                      <ul class="breadcrumb">
                         <li>
                            <i class="icon-home"></i>
-                           <a href="/report/dailycarandadvancesale?operator_id={{Session::get('operator_id')}}">ပင်မ စာမျက်နှာ</a> 
+                           <a href="/report/dailycarandadvancesale?operator_id={{Session::get('operator_id')}}">ပင္မစာမ်က္ႏွာ</a> 
                            <i class="icon-angle-right"></i>
                         </li>
-                        <li><a href="/#">ကားဂိတ်များ </a></li>
+                        <li><a href="/#">ကားဂိတ္မ်ား </a></li>
                         
                      </ul>
                      <!-- END PAGE TITLE & BREADCRUMB-->
@@ -59,7 +59,7 @@
                         <!-- BEGIN EXAMPLE TABLE PORTLET-->
                         <div class="portlet box blue">
                            <div class="portlet-title">
-                              <h4><i class="icon-edit"></i>ကားဂိတ်များ </h4>
+                              <h4><i class="icon-edit"></i>ကားဂိတ္မ်ား </h4>
                            </div>
                            <div class="portlet-body">
                               <div class="clearfix">
@@ -82,11 +82,11 @@
                               <table class="table table-striped table-hover table-bordered" id="sample_editable_1">
                                  <thead>
                                     <tr>
-                                       <th>ကားဂိတ် အမည်</th>
-                                       <th>ဖုန်းနံပါတ် </th>
-                                       <th>လိပ်စာ</th>
-                                       <th>ြပင်ရန်</th>
-                                       <th>ဖျက်ရန်</th>
+                                       <th>ကားဂိတ္ အမည္</th>
+                                       <th>ဖုန္းနံပါတ္ </th>
+                                       <th>လိပ္စာ</th>
+                                       <th>ျပင္ရန္</th>
+                                       <th>ဖ်က္ရန္</th>
                                     </tr>
                                  </thead>
                                  <tbody>

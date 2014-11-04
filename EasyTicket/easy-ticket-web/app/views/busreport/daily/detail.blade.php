@@ -1,5 +1,6 @@
 @extends('../admin')
 @section('content')
+
 <!-- BEGIN PAGE -->  
    <div class="page-content">
       <!-- BEGIN PAGE CONTAINER-->
@@ -62,34 +63,40 @@
                               <table class="table table-striped table-bordered table-advance table-hover" id="tblExport">
                                  <thead>
                                     <tr>
-                                       <th>ကားနံပါတ္</th>
-                                       <th>ခရီးစဥ္</th>
-                                       <th>အေရာင္း ကုိယ္စားလွယ္</th>
-                                       <th>ဝယ္သူ</th>
-                                       <th>ကားအမ်ုိဳးအစား</th>
-                                       <th>ထြက္ခြာမည့္ေန႕</th>
-                                       <th>အခ်ိန္</th>
                                        <th>ခုံနံပါတ္</th>
-                                       <th>လက္မွတ္ နံပါတ္</th>
-                                       <th>ဝယ္သည့္ေန႕</th>
+                                       <th>ခရီးစဥ္</th>
+                                       <th>ဝယ္သူ အမည္</th>
+                                       <!-- <th>ကားနံပါတ္</th> -->
+                                       <!-- <th>ကားအမ်ုိဳးအစား</th> -->
+                                       <th>အေရာင္း ကုိယ္စားလွယ္</th>
                                        <th>ေစ်းႏုန္း</th>
+                                       <th>ရွင္းႏႈန္း</th>
+                                       <th>လက္မွတ္ နံပါတ္</th>
+                                       <!-- <th>ထြက္ခြာမည့္ေန႕</th>
+                                       <th>အခ်ိန္</th> -->
+                                       <!-- <th>ဝယ္သည့္ေန႕</th> -->
                                     </tr>
                                  </thead>
                                  <tbody>
                                     @if($response)
                                        @foreach($response as $result)
                                           <tr>
-                                             <td>{{$result['bus_no']}}</td>
-                                             <td>{{$result['Trip']}}</td>
-                                             <td>{{$result['agent']}}</td>
-                                             <td>{{$result['name']}}</td>
-                                             <td>{{$result['class']}}</td>
-                                             <td>{{$result['departure_date']}}</td>
-                                             <td>{{$result['departure_time']}}</td>
                                              <td>{{$result['seat_no']}}</td>
-                                             <td>{{$result['ticket_no']}}</td>
-                                             <td>{{$result['order_date']}}</td>
+                                             <td>{{$result['Trip']}}</td>
+                                             <td>{{$result['name']}}</td>
+                                             <!-- <td>{{$result['bus_no']}}</td> -->
+                                             <td>
+                                                <div class="wordwrap">
+                                                   &nbsp;{{$result['agent']}}
+                                                </div>
+                                             </td>
+                                             <!-- <td>{{$result['class']}}</td>
+                                             <td>{{$result['departure_date']}}</td>
+                                             <td>{{$result['departure_time']}}</td> -->
                                              <td>{{$result['price']}}</td>
+                                             <td>{{$result['price']-$result['commission']}} ({{$result['commission']}})</td>
+                                             <td>{{$result['ticket_no']}}</td>
+                                             <!-- <td>{{$result['order_date']}}</td> -->
                                           </tr>
                                        @endforeach
                                     @endif

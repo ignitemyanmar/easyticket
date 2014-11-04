@@ -1733,6 +1733,99 @@ var App = function () {
         });
     }
 
+    var handleFrontLoginForm = function () {
+
+        $('.flogin-form').validate({
+            errorElement: 'label', //default input error message container
+            errorClass: 'help-inline', // default input error message class
+            focusInvalid: false, // do not focus the last invalid input
+            rules: {
+                email: {
+                    required: true,
+                    email: true
+                },
+                password: {
+                    required: true
+                },
+                remember: {
+                    required: false
+                }
+            },
+
+            messages: {
+                email: {
+                    required: "Email is required."
+                },
+                password: {
+                    required: "Password is required."
+                }
+            },
+
+            invalidHandler: function (event, validator) { //display error alert on form submit   
+                $('.alert-error', $('.flogin-form')).show();
+            },
+
+            highlight: function (element) { // hightlight error inputs
+                $(element)
+                    .closest('.control-group').addClass('error'); // set error class to the control group
+            },
+
+            success: function (label) {
+                label.closest('.control-group').removeClass('error');
+                label.remove();
+            },
+
+            errorPlacement: function (error, element) {
+                error.addClass('help-small no-left-padding').insertAfter(element.closest('.input-icon'));
+            },
+
+            submitHandler: function (form) {
+                var email=$('#email').val();
+                var password=$('#password').val();
+                $('.loader').show();
+                $.ajax({
+                  type: "post",
+                  url: "/userlogin",
+                  data: {username:email, password:password}
+                    }).done(function( result ) {
+                        if(result=='Invalid email and password!'){
+                            alert(result);
+                            $('.loader').hide();
+                            return false;
+                        }else{
+                            window.location.href=result;
+                        }
+                });
+            }
+        });
+
+        $('.flogin-form input').keypress(function (e) {
+            if (e.which == 13) {
+                if ($('.flogin-form').validate().form()) {
+                    var email=$('#email').val();
+                    var password=$('#password').val();
+                    $('.loader').show();
+                    $.ajax({
+                      type: "post",
+                      url: "/userlogin",
+                      data: {username:email, password:password}
+                        }).done(function( result ) {
+                          if(result=='Invalid email and password!'){
+                            alert(result);
+                            $('.loader').hide();
+                            return false;
+                          }else{
+                           window.location.href=result;
+                          }
+                    });
+                }
+                return false;
+            }
+        });
+
+       
+    }
+
     var handleFixInputPlaceholderForIE = function () {
         //fix html5 placeholder attribute for ie7 & ie8
         if (jQuery.browser.msie && jQuery.browser.version.substr(0, 1) <= 9) { // ie7&ie8
@@ -3417,6 +3510,7 @@ var App = function () {
         // login page setup
         initLogin: function () {
             handleLoginForm(); // handles login form
+            handleFrontLoginForm(); // handles Front login form
             handleUniform(); // // handles uniform elements
             handleFixInputPlaceholderForIE(); // fixes/enables html5 placeholder attribute for IE9, IE8
         },

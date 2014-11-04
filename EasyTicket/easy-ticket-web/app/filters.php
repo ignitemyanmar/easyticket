@@ -32,6 +32,25 @@ App::after(function($request, $response)
 | integrates HTTP Basic authentication for quick, simple checking.
 |
 */
+Route::filter('fauth', function()
+{
+	if (Auth::fguest()) return Redirect::guest('signin');
+});
+
+Route::filter('fguest', function()
+{
+	$link='/';
+	if (Auth::check()){
+		$userid=Auth::user()->id;
+		$type=Auth::user()->type;
+		$operator_id=OperatorGroup::whereuser_id($userid)->pluck('operator_id');
+		
+		return Redirect::to($link);
+
+	}
+});
+
+
 
 Route::filter('auth', function()
 {
@@ -61,14 +80,17 @@ Route::filter('guest', function()
 	if (Auth::check()){
 		$userid=Auth::user()->id;
 		$type=Auth::user()->type;
+		$operator_id=OperatorGroup::whereuser_id($userid)->pluck('operator_id');
 		if($type=="operator"){
-			$operator_id=Operator::whereuser_id($userid)->pluck('id');
-			$link='agents/operator/'.$operator_id;
+			$link="report/dailycarandadvancesale?operator_id=".$operator_id;
 		}elseif($type=="agent"){
-			$agent_id=Agent::whereuser_id($userid)->pluck('id');
-			$link='operators/agent/'.$agent_id;
+			// $operator_id=OperatorGroup::whereuser_id($userid)->pluck('operator_id');
+			$link="report/dailycarandadvancesale?operator_id=".$operator_id;
+			// $link='agents/operator/'.$operator_id;
 		}else{
-
+			// $operator_id=OperatorGroup::whereuser_id($userid)->pluck('operator_id');
+			$link="report/dailycarandadvancesale?operator_id=".$operator_id;
+			// $link='agents/operator/'.$operator_id;
 		}
 		return Redirect::to($link);
 

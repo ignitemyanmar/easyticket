@@ -1,4 +1,5 @@
-body, html{font-family: Georgia, 'Ties New Roman'; background: url(../../img/background.png); background: #efefef;}
+body, html{font-family:"Zawgyi-One", Georgia, 'Ties New Roman'; background: url(../../img/background.png); background: #efefef;}
+h3, h2, .button, h4 {font-family: "Zawgyi-One" !important;}
 .large-3 .panel{padding: .4rem;}
 .row .row{margin:0;}
 .clear{clear: both; height: 1rem;}

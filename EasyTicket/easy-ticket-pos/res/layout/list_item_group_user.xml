@@ -6,12 +6,12 @@
     android:gravity="center_horizontal|center_vertical"
     android:orientation="horizontal"
     android:padding="5dp" >
-
+
     <View
         android:id="@+id/view_color"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:background="@color/pussian_blue" />
+        android:background="#5586c8" />
 
     <TextView
         android:id="@+id/txt_group_user"

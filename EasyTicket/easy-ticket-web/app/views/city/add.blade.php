@@ -31,7 +31,7 @@
                      </div>
                      <!-- END BEGIN STYLE CUSTOMIZER -->   
                      <h3 class="page-title">
-                       ြမို့အသစ်ထည့်သွင်းြခင်း
+                      &nbsp; ျမိဳ႕ အသစ္ထည့္သြင္းမည္
                         <!-- <small>form wizard sample</small> -->
                      </h3>
                      <?php 
@@ -41,11 +41,11 @@
                      <ul class="breadcrumb">
                         <li>
                            <i class="icon-home"></i>
-                           <a href="/report/dailycarandadvancesale?operator_id={{Session::get('operator_id')}}">ပင်မ စာမျက်နှာ</a> 
+                           <a href="/report/dailycarandadvancesale?operator_id={{Session::get('operator_id')}}">ပင္မစာမ်က္ႏွာ</a> 
                            <span class="icon-angle-right"></span>
                         </li>
                         <li>
-                           <a href="#">ြမို့အသစ်ထည့်သွင်းြခင်း</a>
+                           <a href="#">ျမိဳ႕ အသစ္ထည့္သြင္းမည္</a>
                            <span class="icon-angle-right"></span>
                         </li>
                      </ul>
@@ -59,7 +59,7 @@
                      <form id="addnew-form" class="horizontal-form" action = "/addcity" method= "post" enctype="multipart/form-data">    
                         <div class="portlet box light-grey">
                            <div class="portlet-title">
-                              <h4><i class="icon-user"></i>ြမို့အချက်အလက်များ</h4>
+                              <h4><i class="icon-user"></i>ျမိဳ႕အခ်က္အလက္မ်ား</h4>
                               <div class="actions">
                               </div>
                            </div>
@@ -78,7 +78,7 @@
                               <div class="controls">
                                     <div class="large-2 column">&nbsp;</div>
                                     <div class="large-10 column">
-                                       <input type = "submit" value = "အသစ်ထည့်မည်" class="btn green button-submit" id="btn_create" />
+                                       <input type = "submit" value = "အသစ္ထည့္မည္" class="btn green button-submit" id="btn_create" />
                                        <br>
                                     </div>
                               </div>

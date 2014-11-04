@@ -1,6 +1,5 @@
 @extends('../dashboard')
 @section('content')
-
     @if(Auth::check())
     @else
     <!-- BEGIN LOGIN -->

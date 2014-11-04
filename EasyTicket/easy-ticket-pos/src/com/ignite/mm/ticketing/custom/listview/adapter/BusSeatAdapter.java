@@ -57,30 +57,42 @@ public class BusSeatAdapter extends BaseAdapter{
 				holder = (ViewHolder) convertView.getTag();
 			}
 			
-			//To Check Who's Seat
-			if(list.get(position).getOperatorgroup_id() != 0){
-				switch(getColor(list.get(position).getOperatorgroup_id())){
-					case 1:
+			switch(getColor(list.get(position).getOperatorgroup_id())){
+				case 1:
+					if(list.get(position).getBooking() == 0)
 						holder.seat.setButtonDrawable(R.drawable.rdo_shape_1);
-						break;
-					case 2:
+					else
+						holder.seat.setButtonDrawable(R.drawable.rdo_shape_1_1);
+					break;
+				case 2:
+					if(list.get(position).getBooking() == 0)
 						holder.seat.setButtonDrawable(R.drawable.rdo_shape_2);
-						break;
-					case 3:
+					else
+						holder.seat.setButtonDrawable(R.drawable.rdo_shape_2_1);
+					break;
+				case 3:
+					if(list.get(position).getBooking() == 0)
 						holder.seat.setButtonDrawable(R.drawable.rdo_shape_3);
-						break;
-					case 4:
+					else
+						holder.seat.setButtonDrawable(R.drawable.rdo_shape_3_1);
+					break;
+				case 4:
+					if(list.get(position).getBooking() == 0)
 						holder.seat.setButtonDrawable(R.drawable.rdo_shape_4);
-						break;
-					default:
-						
-				}
-				
+					else
+						holder.seat.setButtonDrawable(R.drawable.rdo_shape_4_1);
+					break;
+				default:
+					if(list.get(position).getBooking() == 0)
+						holder.seat.setButtonDrawable(R.drawable.rdo_shape_0);
+					else
+						holder.seat.setButtonDrawable(R.drawable.rdo_shape_0_1);
+					
 			}
 			
 			
 			if(list.get(position).getStatus() == 2){
-            	holder.seat.setEnabled(false);
+				holder.seat.setEnabled(false);
             	holder.seatNo.setText(list.get(position).getSeat_no());
             }
             

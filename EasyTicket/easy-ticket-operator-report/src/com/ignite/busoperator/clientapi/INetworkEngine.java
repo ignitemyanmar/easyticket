@@ -29,6 +29,7 @@ import com.ignite.busoperator.model.SaleDetail;
 import com.ignite.busoperator.model.SeatReport;
 import com.ignite.busoperator.model.SeatbyBus;
 import com.ignite.busoperator.model.SeatsbyTrip;
+import com.ignite.busoperator.model.TargetLabel;
 import com.ignite.busoperator.model.TimesbyOperator;
 import com.ignite.busoperator.model.TodayBus;
 import com.ignite.busoperator.model.TodayBusbyTime;
@@ -340,5 +341,9 @@ public interface INetworkEngine {
 			@Query("end_date") String end_date,
 			@Query("agent_id") String agent_id,
 			Callback<List<PopularClasses>> callback);
+	
+	@GET("/targetlabel")
+	void getTargetLabel(@Query("access_token")String access_token,
+			Callback<List<TargetLabel>> callback);
 	
 }

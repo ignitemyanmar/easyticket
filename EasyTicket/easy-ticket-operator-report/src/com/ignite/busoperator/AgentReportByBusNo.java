@@ -44,6 +44,8 @@ public class AgentReportByBusNo extends BaseSherlockActivity{
 	private TextView txt_trip_date;
 	private SKConnectionDetector skDetector;
 	private String filter;
+	private TextView txt_main_gate_total;
+	private TextView txt_child_gate_total;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -69,11 +71,14 @@ public class AgentReportByBusNo extends BaseSherlockActivity{
 		txt_total_amount = (TextView) findViewById(R.id.txt_total_amout);
 		txt_total_label = (TextView) findViewById(R.id.txtTotal);
 		txt_total =(TextView)findViewById(R.id.txtSum);
+		txt_main_gate_total = (TextView) findViewById(R.id.txt_main_gate_total);
+		txt_child_gate_total = (TextView) findViewById(R.id.txt_child_gate_total);
 		
 		txt_agent.getLayoutParams().width = (int) (DeviceUtil.getInstance(this).getWidth()) / 4;
 		txt_total_ticket.getLayoutParams().width = (int) (DeviceUtil.getInstance(this).getWidth()) / 4;
 		txt_total_amount.getLayoutParams().width = (int) (DeviceUtil.getInstance(this).getWidth()) / 4;
-		txt_total_label.getLayoutParams().width = (int) ((int) (DeviceUtil.getInstance(this).getWidth()) / 4);
+		
+		
 		
 		
 		bus_occ_id = pref.getString("bus_occ_id", null);
@@ -95,14 +100,24 @@ public class AgentReportByBusNo extends BaseSherlockActivity{
 		NetworkEngine.getInstance().getAgentbyBusID(accessToken, bus_occ_id, new Callback<List<AgentReport>>() {
 			
 			private Integer totalAmout = 0;
+			private Integer mainTotal  = 0;
+			private Integer childTotal = 0;
 
 			public void success(List<AgentReport> arg0, Response arg1) {
 				// TODO Auto-generated method stub
 				lvOperOne.setAdapter(new AgentReportbyBusIDAdapter(AgentReportByBusNo.this, arg0));
 				for(AgentReport report: arg0){
 					totalAmout  += report.getTotal_amount();
+					if(report.getOwner() == 0){
+						childTotal += report.getTotal_amount();
+					}
+					if(report.getOwner() == 1){
+						mainTotal  += report.getTotal_amount();
+					}
 				}
 				txt_total.setText(totalAmout+" Kyats");
+				txt_main_gate_total.setText(mainTotal+" Kyats");
+				txt_child_gate_total.setText(childTotal+" Kyats");
 				dialog.dismiss();
 			}
 			

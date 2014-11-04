@@ -76,21 +76,21 @@
                   </div>
                  <div class="responsive span4 border padding-5" data-tablet="span4" data-desktop="span4">
                     <h3 class="form-section">Seat Plan Information</h3>
-                        <div class="row-fluid">
+                        <div class="row-fluid" style="display:none;">
                                  <div class="span6">
                                     <div class="control-group">
                                        <label class="control-label" for="operator">Operator</label>
                                        <div class="controls">
                                           <select name="operator" id='operator' class="m-wrap span12">
                                           @foreach($operator as $rows)
-                                                <option value="{{$rows->id}}">{{$rows->name}}</option>
+                                                <option value="{{$rows->id}}" @if(strtolower($rows->name)=="elite") selected @endif>{{$rows->name}}</option>
                                           @endforeach      
                                           </select>    
                                        </div>
                                     </div>
                                  </div>
                         </div>
-                        <div class="row-fluid">
+                        <div class="row-fluid"  style="display:none;">
                                  <div class="span6">
                                     <div class="control-group">
                                        <label class="control-label" for="tickettype">Ticket Type</label>

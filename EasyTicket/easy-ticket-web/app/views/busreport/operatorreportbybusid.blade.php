@@ -87,10 +87,11 @@
                                        <th>ခုံနံပါတ္</th>
                                        <th>ဝယ္သူ</th>
                                        <th>အေရာင္းကုိယ္စားလွယ္</th>
-                                       <th>ထြက္ခြာမည့္ေန႕</th>
-                                       <th>အခ်ိန္</th>
-                                       <th>ေဘာက္ခ်ာနံပါတ္</th>
-                                       <th>ေရာင္းရေငြစုစုေပါင္း</th>
+                                       <!-- <th>ထြက္ခြာမည့္ေန႕</th> -->
+                                       <!-- <th>အခ်ိန္</th> -->
+                                       <th>ေစ်းႏႈန္း</th>
+                                       <th>ရွင္း-ႏႈန္း</th>
+                                       <th>လက္မွတ္နံပါတ္</th>
                                        <!-- <th></th> -->
                                     </tr>
                                  </thead>
@@ -101,10 +102,11 @@
                                              <td class="hidden-phone">{{ $tripbydaily['seat_no']}}</td>
                                              <td>{{ $tripbydaily['customer_name']}}</td>
                                              <td>{{ $tripbydaily['agent_name']}}</td>
-                                             <td>{{ $parameter['date']}}</td>
-                                             <td>{{ $parameter['time']}}</td>
-                                             <td>{{ $tripbydaily['invoice_no']}}</td>
+                                             <!-- <td>{{ $parameter['date']}}</td> -->
+                                             <!-- <td>{{ $parameter['time']}}</td> -->
                                              <td>{{ $tripbydaily['price']}}</td>
+                                             <td>{{ $tripbydaily['price']-$tripbydaily['commission']}} ({{$tripbydaily['commission']}})</td>
+                                             <td>{{ $tripbydaily['invoice_no']}}</td>
                                              
                                           </tr>
                                        @endforeach

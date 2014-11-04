@@ -34,15 +34,15 @@
                         $V_operator_id=Session::get('operator_id');
                      ?>
                      <h3 class="page-title">
-                        &nbsp;ြမို့များ           
+                        &nbsp;ျမိဳ႕မ်ား           
                      </h3>
                      <ul class="breadcrumb">
                         <li>
                            <i class="icon-home"></i>
-                           <a href="/report/dailycarandadvancesale?operator_id=<?php echo Session::get('operator_id'); ?>">ပင်မ စာမျက်နှာ</a> 
+                           <a href="/report/dailycarandadvancesale?operator_id=<?php echo Session::get('operator_id'); ?>">ပင္မစာမ်က္ႏွာ</a> 
                            <i class="icon-angle-right"></i>
                         </li>
-                        <li><a href="#">ြမို့များ</a></li>
+                        <li><a href="#">ျမိဳ႕မ်ား</a></li>
                         
                      </ul>
                      <!-- END PAGE TITLE & BREADCRUMB-->
@@ -56,14 +56,14 @@
                         <!-- BEGIN EXAMPLE TABLE PORTLET-->
                         <div class="portlet box blue">
                            <div class="portlet-title">
-                              <h4><i class="icon-th-list"></i>ြမို့များ</h4>
+                              <h4><i class="icon-th-list"></i>ျမိဳ႕မ်ား</h4>
                            </div>
                            <div class="portlet-body">
                               <div class="clearfix">
                                  <div class="btn-group">
                                     <a href="/city/create">
                                     <button id="" class="btn green">
-                                    အသစ်ထည့်မည် <i class="icon-plus"></i>
+                                    အသစ္ထည့္မည္ <i class="icon-plus"></i>
                                     </button>
                                     </a>
                                  </div>
@@ -86,9 +86,9 @@
                               <table class="table table-striped table-hover table-bordered" id="sample_editable_1">
                                  <thead>
                                     <tr>
-                                       <th class="span10">အမည်</th>
-                                       <th>ြပင်ရန်</th>
-                                       <th>ဖျက်ရန်</th>
+                                       <th class="span10">အမည္</th>
+                                       <th>ျပင္ရန္</th>
+                                       <th>ဖ်က္ရန္</th>
                                     </tr>
                                  </thead>
                                  <tbody>
@@ -101,10 +101,10 @@
                                                 <tr>
                                                    <td><?php echo $city['name']; ?></td>
                                                    <td style="text-align:center;">
-                                                         <a href="/city-update/<?php echo $city['id']; ?>"  class="btn green button-submit">ြပင်ရန်</a><br><br>
+                                                         <a href="/city-update/<?php echo $city['id']; ?>"  class="btn green button-submit">ျပင္ရန္</a><br><br>
                                                    </td>
                                                    <td style="text-align:center;">
-                                                         <a href="deletecity/<?php echo $city['id']; ?>"   class="btn green button-submit">ဖျက်ရန်</a>
+                                                         <a href="deletecity/<?php echo $city['id']; ?>"   class="btn green delete button-submit">ဖ်က္ရန္</a>
                                                    </td>
                                                 </tr>
                                     <?php endforeach; ?>

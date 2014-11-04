@@ -52,9 +52,9 @@ public class TimeAdapter extends BaseAdapter {
 			holder = (ViewHolder) convertView.getTag();
 		}
 		holder.Classes.setText(getItem(position).getBus_class());
-		String timeStr = getItem(position).getTime().replaceAll(" ", "").toLowerCase();
-		String timeTypeStr = timeStr.substring(timeStr.length() - 2, timeStr.length());
-		if(timeTypeStr.equals("am")){
+		/*String timeStr = getItem(position).getTime().replaceAll(" ", "").toLowerCase();
+		String timeTypeStr = timeStr.substring(timeStr.length() - 2, timeStr.length());*/
+		if(getItem(position).getTime().toLowerCase().contains("am")){
 			holder.Time.setTextColor(Color.parseColor("#FF9408"));
 			holder.Line.setBackgroundColor(Color.parseColor("#FF9408"));
 			convertView.setBackgroundColor(aty.getResources().getColor(R.color.transparent_orange));

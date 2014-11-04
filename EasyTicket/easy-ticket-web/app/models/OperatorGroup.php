@@ -3,5 +3,9 @@
 	{ 
 		protected $table = 'tbl_operatorgroup';
 		public $timestamps = false;
+
+		public function user(){
+			return $this->belongsTo('User', 'user_id');
+		}
 	}
 ?>

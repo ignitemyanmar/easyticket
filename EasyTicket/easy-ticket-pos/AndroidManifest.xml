@@ -50,7 +50,7 @@
         <activity android:name=".BusTimeActivity" android:screenOrientation="portrait"></activity>
         <activity android:name=".BusTripsCityActivity" android:screenOrientation="portrait"></activity>
         <activity android:name=".BusTicketingMenuActivity" android:screenOrientation="portrait"></activity>
-        <activity android:name=".BusTicketingCreditListActivity" android:screenOrientation="portrait"></activity>
+        <activity android:name=".BusTicketingOrderListActivity" android:screenOrientation="portrait"></activity>
         <activity android:name=".PayDeleteActivity" android:screenOrientation="portrait"></activity>
         <activity android:name=".BusTicketingCustomerTicketActivity" android:screenOrientation="portrait"></activity>
     </application>

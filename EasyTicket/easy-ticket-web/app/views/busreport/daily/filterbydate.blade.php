@@ -18,7 +18,7 @@
                         $orderdate=Session::get('search_daily_date'); 
                         $V_operator_id=Session::get('operator_id');
                      ?>
-                        {{$orderdate}}&nbsp;ေန့တွင် ေရာင်းရေသာ စာရင်း
+                        {{$orderdate}}&nbsp;ေန႔စဥ္ေရာင္းရေသာစာရင္း
 
                         <!-- <small>form wizard sample</small> -->
                      </h3>
@@ -32,7 +32,7 @@
                            <a href="/report/dailycarandadvancesale/search?date={{$orderdate}}&operator_id={{$V_operator_id}}">ေန႔စဥ္ အေရာင္းစာရင္း</a>
                            <span class="icon-angle-right"></span>
                         </li>
-                        <li><a href="#">{{$orderdate}}&nbsp;ေန့တွင် ေရာင်းရေသာ စာရင်း</a></li>
+                        <li><a href="#">{{$orderdate}}&nbsp;ေန႔စဥ္ေရာင္းရေသာစာရင္း</a></li>
                      </ul>
                   </div>
                </div>
@@ -43,7 +43,7 @@
                   <div class="responsive span12" data-tablet="span12" data-desktop="span12">
                      <div class="portlet box light-grey">
                         <div class="portlet-title">
-                           <h4><i class="icon-user"></i>{{$orderdate}}&nbsp;ေန့တွင် ေရာင်းရေသာ စာရင်း</h4>
+                           <h4><i class="icon-user"></i>{{$orderdate}}&nbsp;ေန႔စဥ္ေရာင္းရေသာစာရင္း</h4>
                            <div class="actions">
                            </div>
                         </div>
@@ -53,11 +53,11 @@
                               <thead>
                                  <tr>
                                     <th class="span1">ကားနံပါတ္</th>
-                                    <th class="span2">ခရီးစဥ္</th>
-                                    <th class="span1">&nbsp;&nbsp;&nbsp;&nbsp;အခ်ိန္&nbsp;&nbsp;&nbsp;&nbsp;</th>
-                                    <th class="span1">ထွက်ခွာမည့် ေန့ရက်</th>
+                                    <!-- <th class="span2">ခရီးစဥ္</th> -->
+                                    <!-- <th class="span1">&nbsp;&nbsp;&nbsp;&nbsp;အခ်ိန္&nbsp;&nbsp;&nbsp;&nbsp;</th> -->
+                                    <!-- <th class="span1">ထြက္မည့္ေန႔ရက္</th> -->
                                     <th class="span1">ကားအမ်ုိဳးအစား</th>
-                                    <th class="span1">ေရာင္းျပီး/ စုစုေပါင္းလက္မွတ္</th>
+                                    <th class="span1">ေရာင္းျပီး</th>
                                     <th class="span1">ေရာင္းရေငြစုစုေပါင္း</th>
                                     <th class="span4">-</th>
                                  </tr>
@@ -67,11 +67,11 @@
                                     @foreach($response as $result)
                                        <tr>
                                           <td>{{$result['bus_no']}}</td>
-                                          <td>{{$result['from']. '-'. $result['to']}}</td>
-                                          <td>{{$result['time']}}</td>
-                                          <td>{{$result['departure_date']}}</td>
+                                          <!-- <td>{{$result['from']. '-'. $result['to']}}</td> -->
+                                          <!-- <td>{{$result['time']}}</td> -->
+                                          <!-- <td>{{$result['departure_date']}}</td> -->
                                           <td>{{$result['class']}}</td>
-                                          <td>{{$result['purchased_total_seat']}}/{{$result['total_seat']}}</td>
+                                          <td>{{$result['purchased_total_seat']}}</td>
                                           <td>{{$result['total_amout']}}</td>
                                           <td>
                                              <a class="btn mini green-stripe imagechange" id="" href="/report/seatoccupiedbybus/detail?bus_id={{$result['bus_id']}}">ခုံနံပါတ္ႏွင့္ဝယ္သူတြဲၾကည့္ရန္</a>

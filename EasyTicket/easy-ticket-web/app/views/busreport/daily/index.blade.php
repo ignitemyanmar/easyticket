@@ -106,7 +106,7 @@
                                     @foreach($dailyforadvance as $advance)
                                        <tr>
                                           <!-- <td>{{$advance['from'].'-'. $advance['to'] }}</td> -->
-                                          <td>{{$advance['departure_date']}}</td>
+                                          <td>{{date("d/m/Y", strtotime($advance['departure_date']))}}</td>
                                           <td>{{$advance['purchased_total_seat']}}</td>
                                           <td>{{$advance['from'].'-'.$advance['to']}}</td>
                                           <td>{{$advance['total_amout']}}</td>

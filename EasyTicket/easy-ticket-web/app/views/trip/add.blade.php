@@ -5,7 +5,6 @@
    select.m-wrap, textarea.m-wrap, select {
        font-family: "Ayar Wagaung";
    }
-
    .fit-a{color:white;text-align:center; padding-top: 19px;}
    .checkboxframe input[type="checkbox"]{
      margin:9px;
@@ -113,6 +112,7 @@
                                              </select> 
                                        </div>
                                     </div><br>
+                                                                     
 
                                     <div class="control-group">
                                        <label class="control-label" for="class">ကားအတန်းအစား(အမျိုးအစား)</label>
@@ -204,6 +204,65 @@
                                        </div>
                                     </div>
 
+                                    <div class="control-group">
+                                       <label class="control-label" for="to">ဆက်သွားမည့်ြမို့  ရှိ/ မရှိ ေရွးရန်</label>
+                                       <div class="controls">
+                                          <label class="radio">
+                                             <div id="uniform-undefined" class="radio">
+                                                <span class="">
+                                                   <div id="uniform-undefined" class="radio">
+                                                      <span class="">
+                                                         <input style="opacity: 0;" type="radio" name="chkextendcity" value="1" class="chkextend" checked="">
+                                                         <!-- <input style="opacity: 0;" name="day" class="departuredays" value="daily" checked="" type="radio"> -->
+                                                      </span>
+                                                   </div>
+                                                </span>
+                                             </div>
+                                             ရှိ
+                                          </label>
+                                          <label class="radio">
+                                             <div id="uniform-undefined" class="radio">
+                                                <span class="">
+                                                   <div id="uniform-undefined" class="radio">
+                                                      <span class="checked">
+                                                         <input type="radio" name="chkextendcity" value="0" class="chkextend" >
+                                                      </span>
+                                                   </div>
+                                                </span>
+                                             </div>
+                                             မရှိ
+                                          </label>
+                                       </div>
+                                    </div>
+
+                                    <div id="extend_frame">
+                                       <div class="control-group">
+                                          <label class="control-label" for="to">ဆက်သွားမည့်ြမို့</label>
+                                          <div class="controls">
+                                                <select name="extendcity" id='cboextendcity' class="m-wrap span12 chosen">
+                                                      <option value="0">ဆက္သြားမည့္ျမိဳ႕ ေရြးရန္</option>
+                                                   @foreach($response['cities'] as $rows)
+                                                      <option value="{{$rows->id}}">{{$rows->name}}</option>
+                                                   @endforeach   
+                                                </select>  
+                                          </div>
+                                       </div>
+
+                                       <div class="control-group">
+                                          <label class="control-label" for="price">နုိင်ငံသား ေစျးနုန်း (ဆက်သွားမည့်ြမို့)</label>
+                                          <div class="controls">
+                                             <input  name="extend_price" class="m-wrap span12" placeholder="" type="text">
+                                          </div>
+                                       </div>
+                                         
+                                       <div class="control-group">
+                                          <label class="control-label" for="price">နုိင်ငံြခားသား ေစျးနုန်း (ဆက်သွားမည့်ြမို့)</label>
+                                          <div class="controls">
+                                             <input  name="extend_foreign_price" class="m-wrap span12" placeholder="" type="text">
+                                          </div>
+                                       </div>
+                                    </div>
+
                                  </div>
                                  <input type="hidden" value="{{$operator_id}}" name="operator_id" id="operator_id">
                                  <div class="span6" style="min-height:550px;border:1px solid #eee;">
@@ -213,7 +272,7 @@
                               
                               <div class="cleardiv">&nbsp;</div>
                               <div class="controls">
-                                    <input type = "submit" value ="Save" class="btn green"/>
+                                    <button type = "submit" class="btn green"/>သိမ္းမည္ <i class="m-icon-swapright m-icon-white"></i></div>
                               </div>
                            </div>
                         </div>

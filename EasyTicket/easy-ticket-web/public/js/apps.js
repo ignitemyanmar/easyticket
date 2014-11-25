@@ -1,4 +1,5 @@
 $(function(){
+      // checkextendcity();
      $('#seatplanview').html('');      
      seatplan_id=$('#seatplan').val();
      links="/trip/seatplan/"+seatplan_id;
@@ -39,7 +40,7 @@ $(function(){
        onlyone.style.display='none';
        customdays.style.display='none';
      }
-     $(".departuredays").each(function(){
+      $(".departuredays").each(function(){
         $(this).click(function(){
            var val_radio=$(this).val();
            if(val_radio=="custom"){
@@ -58,4 +59,20 @@ $(function(){
            }
         });
      });
+      $(".chkextend").each(function(){
+        $(this).click(function(){
+          var val_radio=$(this).val();
+          if(val_radio=="1"){
+             $('#extend_frame').show();
+          }else{
+             $('#extend_frame').hide();
+          }
+        });
+      });
+
+
   });
+
+ /* function checkextendcity(){
+    
+  }*/

@@ -25,19 +25,19 @@
          cursor: pointer;
      }
    .check-a label{height: 21px;}
-   .taken{background: url("../../img/rdored.png") repeat scroll transparent;}
    .own{background: url("../../img/rdoyellow.png") repeat scroll transparent;}
-   .choose{background: url("../../img/rdoyellow.png") repeat scroll transparent; }
-   .available{background: url("../../img/rdogreen.png") repeat scroll transparent;}
+
+   .taken{background: #FF1711;}
+   .choose{background:  #52C789;}
+   .available{background: #5586c8;}
+
    .controls .control-label{text-align: left;}
 
-   .operator_0{background:#00FF00;}
-   .operator_1{background:lightseagreen;}
-   .operator_2{background:#2047CE;}
-   .operator_3{background:#A520CE;}
-   .operator_4{background:#93CE20;}
-   .operator_5{background:#073963;}
-   .operator_6{background:#206307;}
+   .operator_0{background:#5586c8;} /*elite*/
+   .operator_1{background:#FF8514;} /*gov*/
+   .operator_2{background:#4BFFFF;} /*Aung Minglar*/
+   .operator_3{background:#B08620;} /*Mindama*/
+   .operator_4{background:#640F6D;} /*Aung San*/
 
 </style>
 <link rel="stylesheet" type="text/css" href="../../assets/chosen-bootstrap/chosen/chosen.css" />

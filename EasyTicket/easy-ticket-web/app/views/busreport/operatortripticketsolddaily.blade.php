@@ -64,7 +64,7 @@
                                           <!-- <td class="hidden-phone">{{ $tripbydaily['bus_no']}}</td> -->
                                           <td>{{ $tripbydaily['from'].'-'.$tripbydaily['to']}}</td>
                                           <td>{{ $tripbydaily['time']}}</td>
-                                          <td>{{ $tripbydaily['departure_date']}}</td>
+                                          <td>{{ date('d/m/Y',strtotime($tripbydaily['departure_date']))}}</td>
                                           <td>{{ $tripbydaily['purchased_total_seat']}}</td>
                                           <td>{{ $tripbydaily['total_amout']}}</td>
                                           <td>

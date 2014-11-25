@@ -11,58 +11,7 @@ class AgentController extends BaseController
 	  	return View::make('agent.add',array('agent'=>$agent,'agentgroup'=>$agentgroup,'commission'=>$commission, 'operator_id'=> $operator_id));
   	}
 
-  	/*public function postAddagentold()
-  	{
-    	$agentgroup_id=Input::get('agentgroup_id');
-      $name         =Input::get('name');
-      $phone        =Input::get('phone');
-      $address      =Input::get('address');
-      $commission_id=Input::get('comissiontype');
-      $commission   =Input::get('commission');
-      $email        =Input::get('email');
-      $password     =Input::get('password');
-
-      $check_exiting  =User::whereemail($email)->first();
-      if($check_exiting){
-        $response['message']="Email is already used.";
-      }
-      $response=array();
-
-      $checkagent  =Agent::whereagentgroup_id($agentgroup_id)->wherename($name)->wherephone($phone)->first();
-      if($checkagent){
-        $response['message']='This agent is already exit.';
-      }
-
-      $user=new User();
-      $user->name=$name;
-      $user->email=$email;
-      $user->password=Hash::make($password);
-      $user->type="agent";
-      $user->save();
-      $user_id=$user->id;
-
-      $objagent           =new Agent();
-      $objagent->agentgroup_id    =$agentgroup_id;
-      $objagent->name         =$name;
-      $objagent->phone        =$phone;
-      $objagent->address        =$address;
-      $objagent->commission_id    =$commission_id;
-      $objagent->commission       =$commission;
-      $objagent->user_id        =$user_id;
-      $objagent->save();
-
-      $objoauthclient =new OauthClients();
-      $client_id=rand(9000000,6);
-      $clientname=$name ."(agent)";
-      $secret =Hash::make($clientname);
-      $objoauthclient->id=$client_id;
-      $objoauthclient->secret=$secret;
-      $objoauthclient->name=$clientname;
-      $objoauthclient->save();
-      return Redirect::to('/agentlist');
-    }*/
-
-    public function postAddagent()
+  	public function postAddagent()
     {
       $operator_id  =Input::get('operator_id');
       $name         =Input::get('name');
@@ -70,7 +19,7 @@ class AgentController extends BaseController
       $address      =Input::get('address');
       $commission_id=Input::get('comissiontype');
       $commission   =Input::get('commission');
-      $owner   =Input::get('owner');
+      $owner   =Input::get('owner') ? Input::get('owner') : 0;
       $check_exiting=Agent::whereoperator_id($operator_id)->wherename($name)->wherephone($phone)->first();
       if($check_exiting){
         $message['status']=0;
@@ -84,7 +33,7 @@ class AgentController extends BaseController
       $objagent->address        =$address;
       $objagent->commission_id  =$commission_id;
       $objagent->commission     =$commission;
-      $objagent->owner          =$owner;
+      $objagent->owner          =$owner != null ? $owner : 0;
       $objagent->user_id        =0;
       $objagent->operator_id    =$operator_id;
       $objagent->save();

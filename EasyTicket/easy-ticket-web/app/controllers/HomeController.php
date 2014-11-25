@@ -2,77 +2,7 @@
 
 class HomeController extends \BaseController {
 
-	function msort($array, $key, $sort_flags = SORT_REGULAR, $order) {
-	    if (is_array($array) && count($array) > 0) {
-	        if (!empty($key)) {
-	            $mapping = array();
-	            foreach ($array as $k => $v) {
-	                $sort_key = '';
-	                if (!is_array($key)) {
-	                    $sort_key = $v[$key];
-	                } else {
-	                    // @TODO This should be fixed, now it will be sorted as string
-	                    foreach ($key as $key_key) {
-	                        $sort_key .= $v[$key_key];
-	                    }
-	                    $sort_flags = SORT_STRING;
-	                }
-	                $mapping[$k] = $sort_key;
-	            }
-	            switch ($order) {
-		            case SORT_ASC:
-		                asort($mapping, $sort_flags);
-		            break;
-		            case SORT_DESC:
-		                arsort($mapping, $sort_flags);
-		            break;
-		        }
-	            // asort($mapping, $sort_flags);
-	            // arsort($mapping, $sort_flags);
-	            $sorted = array();
-	            foreach ($mapping as $k => $v) {
-	                $sorted[] = $array[$k];
-	            }
-	            return $sorted;
-	        }
-	    }
-	    return $array;
-	}
-
-	public function generateAutoID($prefix){
-
-    	$autoid 			= 0;
-    	$last_order_id 		= SaleOrder::orderBy('id','desc')->limit('1')->pluck('id');
-    	if($last_order_id){
-    		$last_order_value 	= (int) substr($last_order_id, count($prefix));
-    	}else{
-    		return $prefix."0000001";
-    	}
-    	
-    	if($last_order_value >= 0 && $last_order_value <9){
-    		$inc_value = ++$last_order_value;
-    		$autoid = "000000".$inc_value;
-    	}elseif($last_order_value >= 9 && $last_order_value <99){
-    		$inc_value = ++$last_order_value;
-    		$autoid = "00000".$inc_value;
-    	}elseif($last_order_value >= 99 && $last_order_value <999){
-    		$inc_value = ++$last_order_value;
-    		$autoid = "0000".$inc_value;
-    	}elseif($last_order_value >= 999 && $last_order_value <9999){
-    		$inc_value = ++$last_order_value;
-    		$autoid = "000".$inc_value;
-    	}elseif($last_order_value >= 9999 && $last_order_value <99999){
-    		$inc_value = ++$last_order_value;
-    		$autoid = "00".$inc_value;
-    	}elseif($last_order_value >= 99999 && $last_order_value <999999){
-    		$inc_value = ++$last_order_value;
-    		$autoid = "0".$inc_value;
-    	}elseif($last_order_value >= 999999 && $last_order_value <9999999){
-    		$inc_value = ++$last_order_value;
-    		$autoid = $inc_value;
-    	}
-    	return $prefix.$autoid;
-    }
+	
 	/**
 	 * Display a listing of the resource.
 	 *
@@ -86,7 +16,7 @@ class HomeController extends \BaseController {
     	if($operator_id !=''){
     		$objbusoccurance =BusOccurance::whereoperator_id($operator_id)->groupBy('from','to')->get(array('from','to'));
     	}else{
-    		$operator_id=Operator::wherename('elite')->pluck('id');
+    		$operator_id=$this->myGlob->operator_id;
     		$objbusoccurance =BusOccurance::whereoperator_id($operator_id)->groupBy('from','to')->get(array('from','to'));
     	}
     	if($objbusoccurance){
@@ -98,33 +28,51 @@ class HomeController extends \BaseController {
     			$trip[]=$temp;
     		}
     	}
-    	$response=$trip;	
-    	// return Response::json($trip);	
+    	$response=array();
+    	$go=array();
+    	$return=array();
+    	if($trip){
+    		foreach($trip as $row)
+	    	{
+	    		if($row['from']=="Yangon"){
+	    			$go[]=$row;
+	    		}else{
+	    			$return[]=$row;
+	    		}
+	    	}
+    	}
+    	$response['go']=$go;
+    	$response['return']=$return;
+    	// return Response::json($response);
 		return View::make('home.triplist',array('response'=>$response));
 	}
 
 	public function getTimeList(){
-		$operator_id		=OperatorGroup::whereuser_id(Auth::user()->id)->pluck('operator_id');
+		$operator_id		=$this->myGlob->operator_id;
 		$from_to=Input::get('trip');
 		$from_to=explode(',', $from_to);
-		// dd($from_to);
 		$from_city			=$from_to[0];
 		$to_city			=$from_to[1];
 		$trip_date 			=Input::get('departure_date');
 
 		if($operator_id && $from_city && $to_city && $trip_date){
-			$objtrip=BusOccurance::whereoperator_id($operator_id)->wheredeparture_date($trip_date)->wherefrom($from_city)->whereto($to_city)->get();
+			$objtrip=BusOccurance::whereoperator_id($operator_id)
+						->wheredeparture_date($trip_date)
+						->wherefrom($from_city)
+						->whereto($to_city)
+						->orderBy('departure_time','asc')
+						->get();
 		}elseif($operator_id && !$from_city && !$to_city){
 			$objtrip=BusOccurance::whereoperator_id($operator_id)->groupBy('departure_time')->get();
 		}else{
 			$objtrip=BusOccurance::groupBy('departure_time')->get();
 		}
 		$times=array();
-		// return Response::json($objtrip);
 		if($objtrip){
 			foreach ($objtrip as $row) {
 				// dd($trip_id);
 				$temp['tripid']				= $row->id;
+				$temp['class_id']			= $row->classes;
 				$temp['bus_class']			= Classes::whereid($row->classes)->pluck('name');
 				$temp['total_seat']			= SeatInfo::whereseat_plan_id($row->seat_plan_id)->wherestatus(1)->count();
 				$temp['total_sold_seat']	= SaleItem::wheretrip_id($row->trip_id)->wheredeparture_date($trip_date)->count();
@@ -145,13 +93,14 @@ class HomeController extends \BaseController {
 				$m++;
 			}
 		}
+		
 		$response['morning']=$morning;
 		$response['evening']=$evening;
 		$response['operator_id']=$operator_id;
 		$response['from']=$from_city;
 		$response['to']=$to_city;
 		$response['date']=$trip_date;
-		// return Response::json($morning); 
+		// return Response::json($evening); 
 
 		return View::make('home.departuretimelist',array('response'=>$response));
 	}
@@ -163,16 +112,19 @@ class HomeController extends \BaseController {
 
 	public function getchoosebusseat(){
 		$operator_id 	=Input::get('operator_id');
+		// dd($operator_id);
     	$from 			=Input::get('from_city');
     	$to 			=Input::get('to_city');
     	$date 			=Input::get('date');
     	$time 			=Input::get('time');
+    	$class_id		=Input::get('class_id');
     	$bus_no			=Input::get('bus_no');
 
     	$objbusoccurance =	BusOccurance::wherefrom($from)
     									->whereto($to)
     									->wheredeparture_date($date)
     									->wheredeparture_time($time)
+    									->whereclasses($class_id)
     									->wherebus_no($bus_no)->first();
     	$seat_list=array();
     	$bus_id=null;
@@ -227,6 +179,7 @@ class HomeController extends \BaseController {
 				$seat_list['departure_time']=$time;
 				$seat_list['bus_no']		=$bus_no;
 				$seat_list['bus_id']		=$bus_id;
+				$seat_list['class_id']		=$objbusoccurance->classes;
 				$seattingplan				=SeatingPlan::whereid($seat_plan_id)->first();
 				$seat_list['row']			=$seattingplan->row;
 				$seat_list['column']		=$seattingplan->column;
@@ -256,7 +209,7 @@ class HomeController extends \BaseController {
 		$currentDate = strtotime($now_date);
 		$futureDate = $currentDate+(60*15);//add 15 minutes for expired_time;
 		$expired_date = date("Y-m-d H:i:s", $futureDate);
-		$operator_id=OperatorGroup::whereuser_id(Auth::user()->id)->pluck('operator_id');
+		$operator_id=$this->myGlob->operator_id;
     	$date=Input::get('date');
     	$time=Input::get('time');
     	$from_city=Input::get('from_city');
@@ -278,7 +231,7 @@ class HomeController extends \BaseController {
 
     	$available_tickets=0;
     	$available_seats=array();
-    	$expired_ids=SaleOrder::where('expired_at','<',$now_date)->where('name','=','')->lists('id');
+    	$expired_ids=SaleOrder::where('expired_at','<',$now_date)->where('name','=','')->where('booking','=',0)->lists('id');
     	if($expired_ids){
     		foreach ($expired_ids as $expired_id) {
     			SaleOrder::whereid($expired_id)->delete();
@@ -318,11 +271,12 @@ class HomeController extends \BaseController {
     	if(count($available_seats) == count($seat_list)){
 	    	$response['message']="Successfully your purchase or booking tickets.";
     		$can_buy=true;
-    			$group_operator_id=OperatorGroup::whereuser_id(Auth::user()->id)->pluck('id');
+    			$group_operator_id=$this->myGlob->operatorgroup_id;
     			$objsaleorder=new SaleOrder();
     			// $order_id=SaleOrder::max('id');
     			// $objsaleorder->id=$order_id+1;
     			$max_order_id = $objsaleorder->id 			= $this->generateAutoID($group_operator_id);
+    			// dd($max_order_id);
 	    		$objsaleorder->orderdate=date('Y-m-d');
 	    		$objsaleorder->departure_date 	= $departure_date;
 	    		$objsaleorder->operator_id=$operator_id;
@@ -413,7 +367,7 @@ class HomeController extends \BaseController {
 		}
     	$available_tickets=0;
     	$available_seats=array();
-    	$expired_ids=SaleOrder::where('expired_at','<',$now_date)->where('nrc_no','=','')->lists('id');
+    	$expired_ids=SaleOrder::where('expired_at','<',$now_date)->where('booking','=',0)->where('nrc_no','=','')->lists('id');
     	if($expired_ids){
     		foreach ($expired_ids as $expired_id) {
     			SaleOrder::whereid($expired_id)->delete();
@@ -447,7 +401,7 @@ class HomeController extends \BaseController {
     	if(count($available_seats) == count($seat_list)){
 	    	$response['message']="Successfully your purchase or booking tickets.";
     		$can_buy=true;
-    			$group_operator_id=OperatorGroup::whereuser_id(Auth::user()->id)->pluck('id');
+    			$group_operator_id=$this->myGlob->operatorgroup_id;
 	    		$objsaleorder=new SaleOrder();
 	    		$order_id=$objsaleorder->id = $this->generateAutoID($group_operator_id);
 	    		// dd($this->generateAutoID($group_operator_id));
@@ -482,8 +436,9 @@ class HomeController extends \BaseController {
 		$objorder=SaleOrder::whereid($id)->first();
 		$objsaleitems=SaleItem::whereorder_id($id)->get();
 		$tickets=array();
-		$operator_id=OperatorGroup::whereuser_id(Auth::user()->id)->pluck('operator_id');
+		$operator_id=$this->myGlob->operator_id;
 		$agents=Agent::whereoperator_id($operator_id)->get();
+		$objexendcity=array();
 		if($objsaleitems){
 			foreach ($objsaleitems as $ticket) {
 				$temp['id']				=$ticket['id'];
@@ -494,6 +449,9 @@ class HomeController extends \BaseController {
 				$operator_id=$temp['operator_id']	=$ticket['operator'];
 				$temp['operator']		=Operator::whereid($ticket['operator'])->pluck('name');
 				$objbus 				=BusOccurance::whereid($ticket['busoccurance_id'])->first();
+				$trip_id=$objbus->trip_id;
+				$objexendcity=ExtraDestination::wheretrip_id($trip_id)->with('city')->first();
+				// return Response::json($objexendcity);
 				$temp['price']			=0;
 				$temp['foreign_price']	=0;
 				$temp['departure_date']	="";
@@ -511,7 +469,7 @@ class HomeController extends \BaseController {
 				$tickets[]				=$temp;
 			}
 		}
-		return View::make('bus.cartview', array('response'=> $tickets, 'objorder'=>$objorder, 'agents'=>$agents));
+		return View::make('bus.cartview', array('response'=> $tickets, 'objorder'=>$objorder, 'agents'=>$agents, 'objexendcity'=>$objexendcity));
 	}
 
 	public function checkout(){
@@ -527,6 +485,7 @@ class HomeController extends \BaseController {
 		$today=date('Y-m-d');
 		$oldsale 		=Input::get('oldsale');
 		$solddate 		=Input::get('solddate');
+		$extra_dest_id  =Input::get('extra_dest_id') ? Input::get('extra_dest_id') : 0;
 		$orderdate      =$today;
 		if($oldsale){
 			$orderdate       =$solddate ? $solddate : $today;
@@ -557,48 +516,59 @@ class HomeController extends \BaseController {
     		$commission=0;
     		foreach ($seat_no as $seatno) {
     			$objsaleitems=SaleItem::whereorder_id($sale_order_no)->whereseat_no($seatno)->wherebusoccurance_id($busoccurance_id[$i])->first();
-    			if($i==0){
-    				$busoccuranceid=$busoccurance_id[$i];
-    				$objagent_commission=AgentCommission::whereagent_id($agent_id)->wheretrip_id($objsaleitems->trip_id)->first();
-    				if($objagent_commission){
-    					if($objagent_commission->commission_id==1){
-    						$commission=$objagent_commission->commission;
-    					}else{
-    						if($nationality=='local'){
-			    				$commission +=($objsaleitems->price * $objagent_commission->commission) / 100;
-			    			}else{
-			    				$commission +=($objsaleitems->foreign_price * $objagent_commission->commission) / 100;
-			    			}
-    					}
-    				}
-    				$commission=$commission * count($seat_no);
+    			if($objsaleorder && $objsaleitems){
+    				if($i==0){
+	    				$busoccuranceid=$busoccurance_id[$i];
+	    				$objagent_commission=AgentCommission::whereagent_id($agent_id)->wheretrip_id($objsaleitems->trip_id)->first();
+	    				if($objagent_commission){
+	    					if($objagent_commission->commission_id==1){
+	    						$commission=$objagent_commission->commission;
+	    					}else{
+	    						if($nationality=='local'){
+				    				$commission +=($objsaleitems->price * $objagent_commission->commission) / 100;
+				    			}else{
+				    				$commission +=($objsaleitems->foreign_price * $objagent_commission->commission) / 100;
+				    			}
+	    					}
+	    				}
+	    				$commission=$commission * count($seat_no);
 
-    				if($commission==0){
-    					$tripcommission=Trip::whereid($objsaleitems->trip_id)->pluck('commission');
-    					$commission= $tripcommission * count($seat_no);
-    				}
-    			}
+	    				if($commission==0){
+	    					$tripcommission=Trip::whereid($objsaleitems->trip_id)->pluck('commission');
+	    					$commission= $tripcommission * count($seat_no);
+	    				}
+	    			}
 
-    			$objsaleitems->order_id 		=$sale_order_no;
-    			$objsaleitems->agent_id 		=$agent_id;
-    			$objsaleitems->busoccurance_id 	=$busoccurance_id[$i];
-    			$objsaleitems->seat_no			=$seatno;
-    			$objsaleitems->name				=$buyer_name;
-    			$objsaleitems->nrc_no			=$nrc_no;
-    			$objsaleitems->ticket_no		=$ticket_no[$i];
-    			$objsaleitems->free_ticket		=$foc[$i];
-    			$objsaleitems->update();
-    			if($nationality=='local'){
-    				$totalamount +=$objsaleitems->price;
-    			}else{
-    				$totalamount +=$objsaleitems->foreign_price;	
+	    			if($extra_dest_id != 0){
+						$extra_destination 					= ExtraDestination::whereid($extra_dest_id)->first();
+						$objsaleitems->extra_destination_id = $extra_dest_id;
+						$objsaleitems->price 				= $extra_destination->local_price;
+						$objsaleitems->foreign_price 		= $extra_destination->foreign_price;
+						$objsaleitems->extra_city_id		= $extra_destination->city_id;
+					}
+					$objsaleitems->order_id 		=$sale_order_no;
+	    			$objsaleitems->agent_id 		=$agent_id;
+	    			$objsaleitems->busoccurance_id 	=$busoccurance_id[$i];
+	    			$objsaleitems->seat_no			=$seatno;
+	    			$objsaleitems->name				=$buyer_name;
+	    			$objsaleitems->nrc_no			=$nrc_no;
+	    			$objsaleitems->ticket_no		=$ticket_no[$i];
+	    			$objsaleitems->free_ticket		=$foc[$i];
+	    			$objsaleitems->update();	
+				
+	    			if($nationality=='local'){
+	    				$totalamount +=$objsaleitems->price;
+	    			}else{
+	    				$totalamount +=$objsaleitems->foreign_price;	
+	    			}
     			}
     			$i++;
     		}
-    		$objsaleorder->departure_date=BusOccurance::whereid($busoccuranceid)->pluck('departure_date');
+			$objsaleorder->departure_date=BusOccurance::whereid($busoccuranceid)->pluck('departure_date');
     		$objsaleorder->total_amount=$totalamount;
     		$objsaleorder->agent_commission=$commission;
-    		$objsaleorder->update();
+    		$objsaleorder->update();	
+    		
 
     		//Payment Transaction
     		if($booking == 0){
@@ -622,8 +592,11 @@ class HomeController extends \BaseController {
 	    		$objdepositpayment_trans->save();
 
 	    		$saleOrder = SaleOrder::whereid($objsaleorder->id)->first();
-	    		$saleOrder->cash_credit = 1;
-	    		$saleOrder->update();
+	    		if($saleOrder){
+	    			$saleOrder->cash_credit = 1;
+	    			$saleOrder->update();
+	    		}
+	    		
     		}
 
     	$message="Success.";
@@ -704,5 +677,79 @@ class HomeController extends \BaseController {
 	{
 		//
 	}
+
+	function msort($array, $key, $sort_flags = SORT_REGULAR, $order) {
+	    if (is_array($array) && count($array) > 0) {
+	        if (!empty($key)) {
+	            $mapping = array();
+	            foreach ($array as $k => $v) {
+	                $sort_key = '';
+	                if (!is_array($key)) {
+	                    $sort_key = $v[$key];
+	                } else {
+	                    // @TODO This should be fixed, now it will be sorted as string
+	                    foreach ($key as $key_key) {
+	                        $sort_key .= $v[$key_key];
+	                    }
+	                    $sort_flags = SORT_STRING;
+	                }
+	                $mapping[$k] = $sort_key;
+	            }
+	            switch ($order) {
+		            case SORT_ASC:
+		                asort($mapping, $sort_flags);
+		            break;
+		            case SORT_DESC:
+		                arsort($mapping, $sort_flags);
+		            break;
+		        }
+	            // asort($mapping, $sort_flags);
+	            // arsort($mapping, $sort_flags);
+	            $sorted = array();
+	            foreach ($mapping as $k => $v) {
+	                $sorted[] = $array[$k];
+	            }
+	            return $sorted;
+	        }
+	    }
+	    return $array;
+	}
+
+	public function generateAutoID($prefix){
+		$prefix=$prefix."_";
+    	$autoid 			= 0;
+    	$last_order_id 		= SaleOrder::where('id','like',$prefix.'%')->orderBy('id','desc')->limit('1')->pluck('id');
+    	if($last_order_id){
+    		$last_order_value 	= (int) substr($last_order_id, strlen($prefix));
+    	}else{
+    		return $prefix."0000001";
+    	}
+    	// $last_order_value=substr($last_order_id, count($prefix));
+
+    	
+    	if($last_order_value >= 0 && $last_order_value <9){
+    		$inc_value = ++$last_order_value;
+    		$autoid = "000000".$inc_value;
+    	}elseif($last_order_value >= 9 && $last_order_value <99){
+    		$inc_value = ++$last_order_value;
+    		$autoid = "00000".$inc_value;
+    	}elseif($last_order_value >= 99 && $last_order_value <999){
+    		$inc_value = ++$last_order_value;
+    		$autoid = "0000".$inc_value;
+    	}elseif($last_order_value >= 999 && $last_order_value <9999){
+    		$inc_value = ++$last_order_value;
+    		$autoid = "000".$inc_value;
+    	}elseif($last_order_value >= 9999 && $last_order_value <99999){
+    		$inc_value = ++$last_order_value;
+    		$autoid = "00".$inc_value;
+    	}elseif($last_order_value >= 99999 && $last_order_value <999999){
+    		$inc_value = ++$last_order_value;
+    		$autoid = "0".$inc_value;
+    	}elseif($last_order_value >= 999999 && $last_order_value <9999999){
+    		$inc_value = ++$last_order_value;
+    		$autoid = $inc_value;
+    	}
+    	return $prefix.$autoid;
+    }
 
 }

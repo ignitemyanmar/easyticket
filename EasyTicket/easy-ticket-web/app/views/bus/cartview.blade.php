@@ -27,7 +27,7 @@
 				padding: 9px 9px;
 				margin-bottom: 13px;
 				background: rgba(236, 210, 166, .1);}
-	.select2-container {max-width: 287px;}
+	.select2-container {max-width: 287px; min-width: 287px;}
 	.large-4 label{padding-right: 0;}
 </style>
 	<div class="clear">&nbsp;</div>
@@ -39,6 +39,21 @@
 						<tbody>
 							<tr>
 								<td>
+									@if($objexendcity)
+									<div class="row">
+										<div class="large-4 columns">ဆက္သြားမည့္ျမိဳ႕</div>
+										<div class="large-8 columns">
+											<select name="extra_dest_id" id="extendcity">
+												<option value="0">ဆက္သြားမည့္ျမိဳ႕ ေရြးရန္</option>
+												<option value="{{$objexendcity->id}}">{{$objexendcity->city->name}}</option>
+											</select>
+											<input type="hidden" value="{{$objexendcity->city_id}}" name="extend_city_id">
+										</div>
+									</div>
+									<br>
+									@endif
+									<input type="hidden" id="order_id" value="{{$objorder->id}}">
+
 									<div class="row">
 										<div class="large-4 columns">အေရာင္းကုိ္ယ္စားလွယ္</div>
 										<div class="large-8 columns">
@@ -159,7 +174,7 @@
 					<h3 class="title">Ticket List</h3>
 					@if($response)
 						<div>Trip : {{$response[0]['from_to']}}</div><br>
-						<div>Date : {{$response[0]['departure_date']}}</div><br>
+						<div>Date : {{date('d/m/Y',strtotime($response[0]['departure_date']))}}</div><br>
 						<div>Time : {{$response[0]['time']}}</div><br>
 					<table style="width:100%">
 						<thead>
@@ -212,8 +227,100 @@
 	</div>
 
 	<script type="text/javascript">
+		/*$(document).ready(function()
+		{
+		    $(window).bind("beforeunload", function() { 
+		    	alert("Alert");
+		        return confirm("Do you really want to close?"); 
+		    });
+		});*/
+		/*function HandleBackFunctionality()
+		 {
+		     if(window.event)
+		    {
+		          if(window.event.clientX < 40 && window.event.clientY < 0)
+		         {
+		             alert("Browser back button is clicked...");
+		         }
+		         else
+		         {
+		             alert("Browser refresh button is clicked...");
+		         }
+		     }
+		     else
+		     {
+		          if(event.currentTarget.performance.navigation.type == 1)
+		         {
+		              alert("Browser refresh button is clicked...");
+		         }
+		         if(event.currentTarget.performance.navigation.type == 2)
+		        {
+		              alert("Browser back button is clicked...");
+		        }
+		     }
+		 }
+		*/
+		/*if (window.history && window.history.pushState) {
+
+		    $(window).on('popstate', function() {
+		      var hashLocation = location.hash;
+		      var hashSplit = hashLocation.split("#!/");
+		      var hashName = hashSplit[1];
+
+		      if (hashName !== '') {
+		        var hash = window.location.hash;
+		        if (hash === '') {
+		          alert('Back button was pressed.');
+		        }
+		      }
+		    });
+
+		    window.history.pushState('forward', null, './#forward');
+		  }*/
+
+	    /*window.onbeforeunload = function(evt)   
+	        {   
+	        if (typeof evt == 'undefined')    
+	        evt = window.event;    
+	     
+	     	// alert(evt);
+	            if(evt)   
+	            {  
+	            	console.log('abcccc'); 
+	            	return "If you leave this page, your information will not be updated.";   
+	            }   
+	        }  
+	     */
+
+
+
 		$(function(){
+
+			if (window.history && window.history.pushState) {
+			    var order_id=$('#order_id').val();
+			    window.history.pushState('forward', null, './'+order_id);
+			    $(window).on('popstate', function() {
+			      	$.get('/notconfirm-order-delete/'+order_id,function(data){
+				    });
+			    });
+			}
+
+			/*window.onbeforeunload = function(evt)   
+		    {   
+			    if (typeof evt == 'undefined')    
+			    evt = window.event;    
+		        if(evt)   
+		        {  
+				    var order_id=$('#order_id').val();
+			        $.get('/order-delete/'+order_id,function(data){
+					    });
+			        // return "message to display";
+                }   
+		    }  */
+
 			$("#agent").select2();
+			$("#extendcity").select2();
+
 			$('.remove').click(function(e){
 				$(this).parent().parent().remove();
 				e.preventDefault();

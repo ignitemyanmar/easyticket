@@ -106,7 +106,7 @@
                                              <!-- <td>{{ $parameter['time']}}</td> -->
                                              <td>{{ $tripbydaily['price']}}</td>
                                              <td>{{ $tripbydaily['price']-$tripbydaily['commission']}} ({{$tripbydaily['commission']}})</td>
-                                             <td>{{ $tripbydaily['invoice_no']}}</td>
+                                             <td>{{ $tripbydaily['ticket_no']}}</td>
                                              
                                           </tr>
                                        @endforeach

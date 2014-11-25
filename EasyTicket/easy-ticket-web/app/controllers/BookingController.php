@@ -59,7 +59,46 @@ class BookingController extends \BaseController {
 				}
 				$seat_nos=substr($seat_nos,0, -2);
 				$response[$i]['seat_numbers']=$seat_nos;
-				$response[$i]['departure_date']=$row->departure_date;
+				$response[$i]['departure_date']=date('d/m/Y',strtotime($row->departure_date));
+				$objbus=BusOccurance::whereid($row->saleitems[0]->busoccurance_id)->first();
+				$response[$i]['departure_time']=$objbus->departure_time;
+				$response[$i]['class']=Classes::whereid($objbus->classes)->pluck('name');
+				$i++;
+			}
+		}
+		
+		// return Response::json($response);
+		return View::make('busreport.booking.list', array('response'=>$response));
+
+	}
+
+	public function getTodayBookingList()
+	{
+		$today=$this->Date;
+		$today=substr($today, 0,10);
+		// dd($today);
+		$order_ids=SaleOrder::whereorderdate($today)->wherebooking(1)->lists('id');
+		// $order_ids=SaleItem::wherebusoccurance_id($id)->lists('order_id');
+		$response=array();
+		if($order_ids){
+			$response=SaleOrder::wherein('id',$order_ids)->wherebooking(1)->with(array('agent','saleitems'))->get();
+			$i=0;
+			foreach ($response as $row) {
+				$from=City::whereid($row->saleitems[0]->from)->pluck('name');
+				$to=City::whereid($row->saleitems[0]->to)->pluck('name');
+				$response[$i]['trip']=$from.'-'.$to;
+				$response[$i]['total_seat']=count($row->saleitems);
+				if($row->nationality=='foreign')
+				$response[$i]['total_amount']=count($row->saleitems) * $row->saleitems[0]->foreign_price;
+				else
+				$response[$i]['total_amount']=count($row->saleitems) * $row->saleitems[0]->price;
+				$seat_nos='';
+				foreach ($row->saleitems as $ticket) {
+					$seat_nos .=$ticket->seat_no .', ';
+				}
+				$seat_nos=substr($seat_nos,0, -2);
+				$response[$i]['seat_numbers']=$seat_nos;
+				$response[$i]['departure_date']=date('d/m/Y',strtotime($row->departure_date));
 				$objbus=BusOccurance::whereid($row->saleitems[0]->busoccurance_id)->first();
 				$response[$i]['departure_time']=$objbus->departure_time;
 				$response[$i]['class']=Classes::whereid($objbus->classes)->pluck('name');
@@ -163,7 +202,11 @@ class BookingController extends \BaseController {
 	 */
 	public function getBookingDelete($id)
 	{
-		SaleOrder::find($id)->delete();
+		$saleOrder = SaleOrder::whereid($id)->first();
+		if($saleOrder){
+			SaleOrder::find($id)->delete();
+		}
+		
 		$message="Successfully delete one record.";
 		return Redirect::to('/report/booking')->with('message',$message);
 	}

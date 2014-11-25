@@ -16,6 +16,18 @@
   font-style: normal;
 }
 
+
+@font-face {
+  font-family: 'Dosis';
+  src: url('../fonts/Dosis/Dosis-Regular.eot');
+  src: local('Dosis'), 
+  url('../fonts/Dosis/Dosis-Regular.woff') format('woff'), 
+  url('../fonts/Dosis/Dosis-Regular.ttf') format('truetype'), 
+  url('../fonts/Dosis/Dosis-Regular.svg') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
 @font-face {
   font-family: 'Helvetica Light';
   src: url('../fonts/helvetica/helvetica-light.eot');

@@ -15,7 +15,11 @@
       box-shadow: transparent;
    }
    .zawgyi-one{font-family: "Zawgyi-One";}  
- 
+   .fit-a{padding-top: 9px;}
+ .check-a label{height: 175px;}
+ .colorbox{width:24px; height:24px;float:left;margin-right:8px;}
+ .booking{background:  #470203;}
+
 </style>
 <!-- BEGIN PAGE -->  
    <div class="page-content">
@@ -54,7 +58,7 @@
                   <form id="update-form" name ="update-form" class="horizontal-form" action = "" method= "post">    
                         <div class="portlet box light-grey">
                            <div class="portlet-title">
-                              <h4><i class="icon-user"></i>ဝယ်သူ အချက်အလက်ြပင်ရန်</h4>
+                              <h4><i class="icon-user"></i>ဝယ္သူအခ်က္အလက္ျပင္ရန္</h4>
                               <div class="actions">
                               </div>
                            </div>
@@ -84,7 +88,7 @@
                               <div class="controls">
                                     <div class="large-2 column">&nbsp;</div>
                                     <div class="large-10 column">
-                                       <input type = "submit" value = "ြပင်မည်" class="btn green button-submit" id="btn_create" />
+                                       <input type = "submit" value = "ျပင္မည္" class="btn green button-submit" id="btn_create" />
                                        <br>
                                     </div>
                               </div>
@@ -124,10 +128,17 @@
                                  <li><span>ကားနံပါတ္</span>: {{$response['seat_plan']['bus_no']}}</li>
                                  <li><span>ခရီးစဥ္ </span>: {{$response['seat_plan']['from'].'-'. $response['seat_plan']['to']}}</li>
                                  <li><span>ကားအမ်ုိဳးအစား </span>: {{$response['seat_plan']['class']}}</li>
-                                 <li><span>ထွက်ခွာမည့် ေန့ရက်</span>: {{$response['seat_plan']['date']}}</li>
+                                 <li><span>ကားထြက္မည့္ေန႕</span>: {{date('d/m/Y',strtotime($response['seat_plan']['date']))}}</li>
                                  <li><span>အခ်ိန္ </span>: {{$response['seat_plan']['time']}}</li>
                                  <li><span>ေရာင္းျပီး/ စုစုေပါင္းလက္မွတ္ </span>: {{$response['seat_plan']['total_sold_seats'].'/'.$response['seat_plan']['total_seats']}}</li>
                                  <li><span>ေရာင္းရေငြစုစုေပါင္း </span>: {{$response['seat_plan']['total_amount']}} MMK</li>
+                                 <br>
+                                 <div class="colorbox taken"></div>ေရာင္းျပီးသားခုံမ်ား<br>
+                                 <div class="clear">&nbsp;</div>
+                                 <div class="colorbox booking"></div>ၾကိဳတင္မွာယူထားေသာ ခုံမ်ား<br>
+                                 <div class="clear">&nbsp;</div>
+                                 <div class="colorbox available"></div>ခုံလြတ္မ်ား<br>
+                                 <div class="clear">&nbsp;</div>
                                  <hr>
                               </ul>
                                  <div id="seating-map-wrapper">
@@ -144,9 +155,12 @@
                                                                <div class="span2">&nbsp;</div>
                                                             @else
                                                                <?php 
-                                                                  if($rows['status'] != 1){
+                                                                  if($rows['status'] == 2){
                                                                      $disabled="disabled";
                                                                      $taken="taken";
+                                                                  }else if($rows['status'] ==3){
+                                                                     $disabled="disabled";
+                                                                     $taken="booking";
                                                                   }else{
                                                                      $disabled=''; 
                                                                      $taken='available';  
@@ -161,14 +175,14 @@
                                                                                  <span></span>
                                                                                  
                                                                                   <!-- <input class="radios" type="checkbox" multiple="multiple" value="{{$rows['seat_no']}}" name="tickets" {{ $disabled }}> -->
-                                                                                 <div class="fit-a {{$taken}} zawgyi-one" title="{{$rows['agent_name']}}" id="{{$rows['seat_no']}}">{{$rows['customer']['name']}}<br> {{$rows['customer']['phone']}}<br> &nbsp;{{$rows['agent_name']}}</div>
+                                                                                 <div class="fit-a {{$taken}} zawgyi-one" title="{{$rows['agent_name']}}" id="{{$rows['seat_no']}}">{{$rows['customer']['name']}}<br> {{$rows['customer']['phone']}}<br> {{$rows['customer']['nrc_no']}}<br> &nbsp;{{$rows['agent_name']}}</div>
                                                                                  <input type="hidden" value="{{$rows['price']}}" class="price{{$rows['seat_no']}}">
                                                                                  <input type="hidden" value="{{$rows['seat_no']}}" class="seatno{{$rows['seat_no']}}">
                                                                               </label>
                                                                            </div>
                                                                            <figcaption><br>
                                                                               <!-- <a href="" class="print1" id='one'>Print</a> -->
-                                                                              <a href="/report/customers/update?saleitem_id={{$rows['customer']['saleitem_id']}}" style="text-align:center;padding-left:9px;" data-reveal-id="myModal" class="updatecustomer AyarWagaung" rel="{{$rows['customer']['name']}}" id="{{$rows['customer']['nrc']}}">ဝယ်သူ အချက်အလက် ြပင်ရန်</a>
+                                                                              <a href="/report/customers/update?saleitem_id={{$rows['customer']['saleitem_id']}}" style="text-align:center;padding-left:9px;" data-reveal-id="myModal" class="updatecustomer AyarWagaung" rel="{{$rows['customer']['name']}}" id="{{$rows['customer']['nrc_no']}}">ဝယ်သူ အချက်အလက် ြပင်ရန်</a>
                                                                            </figcaption>
                                                                         </figure>
                                                                      </div>
@@ -179,7 +193,7 @@
                                                                      <div class="checkboxframe">
                                                                         <label>
                                                                            <span></span>
-                                                                           <div class="fit-a {{$taken}}" title="{{$rows['seat_no'].'('. $rows['price'].' K)'}}" id="{{$rows['seat_no']}}">Seat No : <b>{{$rows['seat_no']}}</b><span class="zawgyi-one"><br>Price : <b>{{$rows['price']}}</b><br>{{$rows['customer']['name']}}<br>{{$rows['customer']['nrc']}}</span></div>
+                                                                           <div class="fit-a {{$taken}}" title="{{$rows['seat_no'].'('. $rows['price'].' K)'}}" id="{{$rows['seat_no']}}">Seat No : <b>{{$rows['seat_no']}}</b><span class="zawgyi-one"><br>Price : <b>{{$rows['price']}} <br> &nbsp;{{$rows['agent_name']}}</b><br>{{$rows['customer']['name']}}<br>{{$rows['customer']['nrc_no']}}</span></div>
                                                                            <input type="hidden" value="{{$rows['price']}}" class="price{{$rows['seat_no']}}">
                                                                            <input type="hidden" value="{{$rows['seat_no']}}" class="seatno{{$rows['seat_no']}}">
                                                                         </label>

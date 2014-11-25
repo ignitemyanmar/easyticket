@@ -189,10 +189,17 @@
                 </li>
 
 
-               <!--  <li @if($currentroute=='') class="" @endif>
+                <li @if($currentroute=='') class="" @endif>
                     <a href="/report/bestseller/agents">
                     <i class="icon-th-list"></i> 
                     <span class="title">အေရာင်းရဆုံး အေရာင်းကုိယ်စားလှယ် စာရင်းများ</span>
+                    </a>
+                </li>
+
+                <!-- <li @if($currentroute=='') class="" @endif>
+                    <a href="/report/bestseller/time">
+                    <i class="icon-th-list"></i> 
+                    <span class="title">အေရာင်းရဆုံး အချိန် စာရင်းများ</span>
                     </a>
                 </li> -->
 

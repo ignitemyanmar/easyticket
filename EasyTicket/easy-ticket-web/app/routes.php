@@ -16,6 +16,7 @@
 		Route::resource('checkout', 					'HomeController@checkout');
 		
 		Route::get('bookinglist/{id}',					'BookingController@getBookingListByBus');
+		Route::get('todaybookings',						'BookingController@getTodayBookingList');
 	});
 
 	Route::get('signin',      array('as'=>'signin','uses'=>'UserController@getFLogin'))->before('fguest');
@@ -69,6 +70,9 @@
 		Route::get('report/bestseller/trip',				'BestSellerController@trips');
 		Route::get('report/bestseller/tripdetail',			'BestSellerController@tripdetail');
 
+		Route::get('report/bestseller/time',				'BestSellerController@times');
+		Route::get('report/bestseller/timedetail',			'BestSellerController@timedetail');
+
 		Route::get('report/bestseller/agents',				'BestSellerController@agents');
 		Route::get('report/bestseller/agentdetail',			'BestSellerController@agentdetail');
 		
@@ -91,19 +95,12 @@
 		Route::post('report/agentcreditspayment',			'AgentCreditController@postCreditPayment');
 		Route::get('report/paymenttransaction/{id}',		'AgentCreditController@getPaymentTransaction');
 
-
-
-
-
 		//seatoccupiedbybus
 		// Route::get('report/seatoccupiedbybus',			'SeatOccupiedByBusController@index');
 		Route::get('report/seatoccupiedbytrip',				'ReportController@getSeatOccupancyBytrip');
 
 		Route::get('triplist/agentreport/{id}/dateragne',	'ReportController@getTripslistreport');
 	
-
-
-
 		///////////////Admin Route Begin//////////////////////////////////////
 		Route::get('agents/create',			'AgentController@getAddagent');
 		Route::post('addagent',				'AgentController@postAddagent');
@@ -124,6 +121,14 @@
 		Route::post('searchagentgroup',       	'AgentGroupController@postSearchAgentgroup');
 
 		Route::get('trip/create', 			'TripController@getAddtrip');
+		Route::get('trip/extend/{id}',      'TripController@getExtendTrip');
+		Route::post('trip/extend/{id}',     'TripController@postExtendTrip');
+
+		Route::get('trip/editextend/{id}',  'TripController@getEditExtendTrip');
+		Route::post('trip/editextend/{id}', 'TripController@postEditExtendTrip');
+
+		Route::get('trip/deleteextend/{id}',  'TripController@getDeleteExtendTrip');
+
 		Route::post('addtrip',				'TripController@postAddtrip');
 		// Route::get('triplist',				'TripController@showTriplist');
 		Route::get('trip-update/{id}', 		'TripController@getEditTrip');
@@ -169,7 +174,7 @@
 		Route::get('trip-list',					'TripController@triplists');
 		Route::post('trip-create',				'TripController@store');
 		Route::get('trip/seatplan/{id}',		'TripController@showSeatPlan');
-		Route::get('deletetrip/{id}',				'TripController@destroy');
+		Route::get('deletetrip/{id}',			'TripController@destroy');
 
 		Route::get('define-ownseat/{id}',		'TripController@ownseat');
 		Route::post('define-ownseat',			'TripController@postownseat');
@@ -177,6 +182,7 @@
 
 		Route::get('orderlist',					'OrderController@orderlist');
 		Route::get('order-delete/{id}',			'OrderController@destroy');
+		Route::get('notconfirm-order-delete/{id}','OrderController@deleteNotConfirmOrder');
 		Route::get('order-tickets/{id}',		'OrderController@ticketlist');
 		Route::get('order-tickets/delete/{id}',	'OrderController@ticketdelete');
 
@@ -265,13 +271,13 @@
 						ApiController::tripautocreate($operator_id);	
 						return Response::json($response);
 					}else{
-						$operator =	Operator::whereuser_id(Auth::user()->id)->first();
-						$response->user['id'] 				= $operator->id;
-						$response->user['operatorgroup_id'] = 0;
+						$groupUser = OperatorGroupUser::whereuser_id(Auth::user()->id)->first();
+						$response->user['id'] 				= $groupUser->operator_id;
+						$response->user['operatorgroup_id'] = $groupUser->operatorgroup_id;
 						$response->user['name'] 			= Auth::user()->name;
 						$response->user['type'] 			= Auth::user()->type;
 						$response->user['role'] 			= Auth::user()->role;
-						ApiController::tripautocreate($operator->id);	
+						ApiController::tripautocreate($groupUser->operator_id);	
 						return Response::json($response);
 					}
 	          	}
@@ -522,6 +528,9 @@
 		Route::post('closeseatlist',						'ApiController@postCloseSeatList');
 
 		Route::get('targetlabel',							'ApiController@getTargetLabel');
+		Route::get('extra_destination/{trip_id}',			'ApiController@getExtraDestination');
+
+		Route::get('booking/notify', 						'ApiController@getNotiBooking');
 
 	});
 
@@ -533,9 +542,11 @@
 
 	Route::get('404', function()
 	{
-	    return View::make('error.404');
+	    //return View::make('error.404');
+	    return Redirect::to('/');
 	});
 	Route::get('500', function()
 	{
 	    return View::make('error.500');
+	    //return Redirect::to('/');
 	});

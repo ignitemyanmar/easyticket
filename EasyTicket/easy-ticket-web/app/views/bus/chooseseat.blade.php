@@ -1,6 +1,7 @@
 @extends('master')
 @section('content')
     {{HTML::style('../../css/Tixato_files/seating_builder.css')}}
+    {{HTML::style('../../bootstrap/css/bootstrap.alert.css')}}
 	<style type="text/css">
 	    .remove{cursor: pointer;background-color: rgba(0,0,0,.5);opacity: .6;color:white;padding:4px 8px;}
 	    .remove:hover{opacity: 1;}
@@ -10,19 +11,24 @@
 		border-color: #EED3D7;}
 
 		.colorbox{width:24px; height:24px;float:left;margin-right:8px;}
-		.operator_0{background:#00FF00;}
-		.operator_1{background:lightseagreen;}
-	   	.operator_2{background:#2047CE;}
-	   	.operator_3{background:#A520CE;}
-	   	.operator_4{background:#93CE20;}
+		.operator_0{background:#5586c8;} /*elite*/
+		.operator_1{background:#FF8514;} /*gov*/
+	   	.operator_2{background:#4BFFFF;} /*Aung Minglar*/
+	   	.operator_3{background:#B08620;} /*Mindama*/
+	   	.operator_4{background:#640F6D;} /*Aung San*/
 	   	.operator_5{background:#073963;}
 	   	.operator_6{background:#206307;}
-	   	.booking{background: #FFAB05;}
+	   	.booking{background:  #470203;}
 
 	   	.select2-container {max-width: 270px;}
 	    /*.seat_frame{overflow-y: scroll;
 			overflow-x: hidden;
 			max-height: 600px;border:1px solid #eee;}*/
+		.loading{
+	      width:32px;
+	      height:32px;
+	      background: url('../../img/loader.gif') no-repeat;
+	  	}
 	</style>
 	<div class="large-12 columns">
 		<br>
@@ -44,6 +50,7 @@
 
 									<input type="hidden" value="{{$current_url}}" id='current_url'>
 									<input type="hidden" value="{{$response['bus_id']}}" name='busoccurance_id' id='busoccurance_id'>
+									<input type="hidden" value="{{$response['class_id']}}" name='class_id' id='class_id'>
 									<input type="hidden" value="{{$response['from_city']}}" name='from' id="from">
 									<input type="hidden" value="{{$response['to_city']}}" name='to' id="to">
 									<input type="hidden" value="{{$response['operator_id']}}" name='operatorid' id="operator_id">
@@ -114,7 +121,7 @@
 					<div class="large-12 columns">
 						<h3 class="hdtitle" style="padding:0px;"><a>{{$response['operator']}}</a></h3>
 						<p><b>{{$response['from'].'-'.$response['to']}}</b></p>
-						<p>{{$response['departure_date']}} ({{$response['departure_time']}})</b></p>
+						<p>{{date('d/m/Y',strtotime($response['departure_date']))}} ({{$response['departure_time']}})</b></p>
 					</div>
 					<div class="clear">&nbsp;</div>
 					<div class="large-12 columns">
@@ -156,9 +163,10 @@
 						<div class="large-12 columns nopadding">  
 							<div id="warning" style="display:none;"></div>
 						    <input type="button" class="btn1" value="Order" style="border:1px solid #ccc;padding:7px 24px;" id='order'> 
-
+						    <div class="indicator right">&nbsp;</div>
 						    <input type="hidden" value="0" id='total' style="text-align:right">
 						    <div><br><b>Sub Total: </b><span id='totalamount'>0</span> KS </div>
+						    
 						</div>
 						<div style="border-bottom:4px dotted #333;">&nbsp;</div>
 						<!-- <p>Yangon Mandaly trip long time is 6hours. This bus is one stop at something township.</p> -->
@@ -199,6 +207,8 @@
 
 	<div class="large-4 columns">&nbsp;</div>
     {{HTML::script('../js/chooseseats.js')}}
+    {{HTML::script('../bootstrap/js/bootstrap.alert.js')}}
+    {{HTML::script('../js/jquery.bootstrap-growl.min.js')}}
     <script type="text/javascript">
     	$(function(){
 			$("#agent_id").select2();
@@ -217,10 +227,32 @@
 				document.getElementById('agents').style.display="none";
 			}
     	}
+    	var option_info = {
+				  ele: 'body', // which element to append to
+				  type: 'info', // (null, 'info', 'error', 'success')
+				  offset: {from: 'top', amount: 20}, // 'top', or 'bottom'
+				  align: 'right', // ('left', 'right', or 'center')
+				  width: 250, // (integer, or 'auto')
+				  delay: 6000,
+				  allow_dismiss: true,
+				  stackup_spacing: 10 // spacing between consecutively stacked growls.
+				}
+		var option_success = {
+				  ele: 'body', // which element to append to
+				  type: 'success', // (null, 'info', 'error', 'success')
+				  offset: {from: 'top', amount: 20}, // 'top', or 'bottom'
+				  align: 'right', // ('left', 'right', or 'center')
+				  width: 250, // (integer, or 'auto')
+				  delay: 6000,
+				  allow_dismiss: true,
+				  stackup_spacing: 10 // spacing between consecutively stacked growls.
+				}
 		$('#order').click(function(){
+				$('.indicator').addClass('loading');
 				var busid=$('#busoccurance_id').val();
 				var operator_id=$('#operator_id').val();
 				var agent_id=$('#agent_id').val();
+				var class_id=$('#class_id').val();
 				// alert(agent_id);
 				var from=$('#from').val();
 				var to=$('#to').val();
@@ -228,8 +260,8 @@
 				var departure_time=$('#departure_time').val();
 				var access_token=$('#access_token').val();
 				var booking=$('#booking:checked').val();
-				if(booking==undefined){booking=0;}
 
+				if(booking==undefined){booking=0;}
 				var current_url=$('#current_url').val();
 				var selected = new Array();
 		              $("input:checkbox[name=tickets]:checked").each(function() {
@@ -239,6 +271,7 @@
 		                   selected.push(pararray);
 		              });
 		              if(selected.length ==0){
+		              	$.bootstrapGrowl("Please choose seat!.", option_info);
 		                return false;
 		              }
 		        var stringparameter=JSON.stringify(selected);
@@ -253,9 +286,12 @@
 		        			to_city:to,
 		        			date:departure_date,
 		        			time:departure_time,
+		        			class_id:class_id,
 		        			booking:booking,
 		        			access_token:access_token}
 		        }).done(function(result){
+		        	//alert(JSON.stringify(result));
+		        	$('.indicator').removeClass('loading');
 		        	console.log(result);
 		        	if(result.can_buy==false){
 		        		$('#warning').html(result.message);
@@ -263,7 +299,8 @@
 		        		return false;
 		        	}else{
 		        		if(result.booking=="1"){
-		        			var parameters="?operator_id="+operator_id+"&from_city="+from+"&to_city="+to+"&date="+departure_date+"&time="+departure_time+"&bus_no=-";
+		        			$.bootstrapGrowl("Successfully your booking!.", option_success);
+		        			var parameters="?operator_id="+operator_id+"&from_city="+from+"&to_city="+to+"&date="+departure_date+"&time="+departure_time+"&class_id="+class_id+"&bus_no=-";
 		        			window.location.href='/'+current_url+parameters;
 		        			return false;	
 		        		}

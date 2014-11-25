@@ -16,9 +16,9 @@
       cursor: pointer;
   }
 .check-a label{height: 108px;}
-.taken{background: url("../../img/rdored.png") repeat scroll transparent;}
-.choose{background: url("../../img/rdoyellow.png") repeat scroll transparent;}
-.available{background: url("../../img/rdogreen.png") repeat scroll transparent;}
+.taken{background: #FF1711;/*url("../../img/rdored.png") repeat scroll transparent;*/}
+.choose{background:  #52C789; /*url("../../img/rdoyellow.png") repeat scroll transparent;*/}
+.available{background: #5586c8; /*url("../../img/rdogreen.png") repeat scroll transparent;*/}
 
 body .ui-tooltip, .arrow:after {
     background: black;

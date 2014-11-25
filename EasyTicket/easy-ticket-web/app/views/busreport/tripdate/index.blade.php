@@ -66,7 +66,7 @@
                                           <!-- <td>{{$tripbydaily['trip']}}</td> -->
                                           <td>{{$tripbydaily['class']}}</td>
                                           <td>{{$tripbydaily['departure_time']}}</td>
-                                          <td>{{$tripbydaily['departure_date']}}</td>
+                                          <td>{{date('d/m/Y',strtotime($tripbydaily['departure_date']))}}</td>
                                           <td>{{$tripbydaily['sold_seats']}}</td>
                                           <td>{{$tripbydaily['total_amount']}}</td>
                                           <td>

@@ -54,10 +54,6 @@
                                  @if($response)
                                     @foreach($response as $result)
                                        <tr>
-                                          <!-- <td>{{$result['bus_no']}}</td>
-                                          <td>{{$result['trip']}}</td>
-                                          <td>{{$result['class']}}</td> 
-                                          <td>{{$result['departure_time']}}</td>-->
                                           <td><div style="word-wrap: break-word;width:330px;">{{$result['agent']}}</div></td>
                                           <td>{{$result['sold_tickets']}}</td>
                                           <td>{{$result['total_amount']}}</td>
@@ -67,6 +63,11 @@
                                           </td>
                                        </tr>
                                     @endforeach
+                                    <tr>
+                                       <td>ဂိတ္ၾကီးအေရာင္း စုစုေပါင္း = {{$total_sold['main_gate_total']}} က်ပ္</td>
+                                       <td colspan="2">ဂိတ္ခြဲအေရာင္း စုစုေပါင္း = {{$total_sold['agent_gate_total']}} က်ပ္</td>
+                                       <td>အားလုံးစုစုေပါင္း = {{$total_sold['grand_total']}} က်ပ္</td>
+                                    </tr>
                                  @endif
 
                               </tbody>

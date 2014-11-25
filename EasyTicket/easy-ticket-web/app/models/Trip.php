@@ -28,6 +28,10 @@
 			return $this->hasMany('AgentCommission', 'trip_id');
 		}
 
+		public function extendcity(){
+			return $this->hasOne('ExtraDestination', 'trip_id');
+		}
+
 
 	}
 ?>

@@ -34,5 +34,5 @@ a:hover, a:focus{text-decoration: none; color:#222;}
 
 .total, .trip_info{font-size: 14px;}
 h3, th{font-family: "Georgia";}
-.table td, .table th{text-align: right;}
+/*.table td, .table th{text-align: right;}*/
 .required{color:red;}

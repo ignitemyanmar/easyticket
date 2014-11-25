@@ -7,6 +7,19 @@ class BaseController extends Controller {
 	 *
 	 * @return void
 	 */
+	public function __construct(){
+		$this->Date = App::make('MyDate');
+		
+		$today=date('Y-m-d');
+		$bookingcount=SaleOrder::wherebooking(1)->whereorderdate($today)->count('id');
+		$currentroute=Route::getCurrentRoute()->getPath();
+		if($currentroute=='departure-times'){
+		}
+        Session::put('bookingcount', $bookingcount);
+
+        $this->myGlob=App::make('myApp');
+    }
+
 	protected function setupLayout()
 	{
 		if ( ! is_null($this->layout))

@@ -71,11 +71,14 @@ class TripController extends \BaseController {
 		$operator_id		=Input::get('operator_id');
 		$from				=Input::get('from');
 		$to					=Input::get('to');
+		$extendcity			=Input::get('extendcity');
 		$class_id			=Input::get('class_id');
 		$day				=Input::get('day');
 		$available_days		=Input::get('available_day');
 		$price				=Input::get('price');
 		$foreign_price		=Input::get('foreign_price');
+		$extend_price		=Input::get('extend_price');
+		$extend_foreign_price=Input::get('extend_foreign_price');
 		$time				=Input::get('time');
 		$seat_plan_id		=Input::get('seat_plan_id');
 		$onlyone_day		=Input::get('onlyone_day');
@@ -130,6 +133,14 @@ class TripController extends \BaseController {
 		$objtrip->save();
 		
 		$trip_id=$objtrip->id;
+		if($extendcity !=0){
+			$objextendcity=new ExtraDestination();
+			$objextendcity->trip_id=$trip_id;
+			$objextendcity->city_id=$extendcity;
+			$objextendcity->local_price=$extend_price;
+			$objextendcity->foreign_price=$extend_foreign_price;
+			$objextendcity->save();
+		}
 		if($day=='onlyone'){
 			return $this->postBusOccuranceOnlyOne($operator_id, $trip_id, $onlyone_day, $time);
 		}
@@ -140,6 +151,8 @@ class TripController extends \BaseController {
 			$availableDays=$objtrip->available_day;
 			return $this->postBusOccuranceAutoCreateCustom($operator_id, $trip_id, $availableDays);
 		}
+
+
 		
 	}
 
@@ -149,10 +162,59 @@ class TripController extends \BaseController {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function show($id)
+
+
+	public function getExtendTrip($id)
 	{
-		//
+		$objcities=City::all();
+		$response=Trip::whereid($id)->with(array('from_city','to_city','busclass'))->orderBy('id','asc')->first();
+		return View::make('trip.addextendtrip', array('response'=>$response, 'cities'=>$objcities));
 	}
+
+	
+
+	public function postExtendTrip($id){
+		$check_exiting=ExtraDestination::wheretrip_id($id)->wherecity_id($id)->first();
+		if($check_exiting){
+			$check_exiting->local_price=Input::get('extend_price');
+			$check_exiting->foreign_price=Input::get('extend_foreign_price');
+			$objextendcity->update();
+			return Redirect::to('trip-list')->with('message','Successfully Update extend city.');
+		}
+		$objextendcity=new ExtraDestination();
+		$objextendcity->trip_id=$id;
+		$objextendcity->city_id=Input::get('extendcity');
+		$objextendcity->local_price=Input::get('extend_price');
+		$objextendcity->foreign_price=Input::get('extend_foreign_price');
+		$objextendcity->save();
+		return Redirect::to('trip-list')->with('message','Successfully defined extend city.');
+	}
+
+	public function getEditExtendTrip($id)
+	{
+		$objcities=City::all();
+		$response=Trip::whereid($id)->with(array('from_city','to_city','busclass'))->orderBy('id','asc')->first();
+		$extendcity=ExtraDestination::wheretrip_id($id)->first();
+		return View::make('trip.editextendcity', array('response'=>$response, 'cities'=>$objcities,'extendcity'=>$extendcity));
+	}
+
+	public function postEditExtendTrip($id){
+		$extendcity_id=Input::get('extendcity_id');
+		$objextendcity=ExtraDestination::whereid($extendcity_id)->first();
+		$objextendcity->trip_id=$id;
+		$objextendcity->city_id=Input::get('extendcity');
+		$objextendcity->local_price=Input::get('extend_price');
+		$objextendcity->foreign_price=Input::get('extend_foreign_price');
+		$objextendcity->update();
+		return Redirect::to('trip-list')->with('message','Successfully Update extend city.');
+	}
+
+	public function getDeleteExtendTrip($id){
+		ExtraDestination::whereid($id)->delete();
+		return Redirect::to('trip-list')->with('message','Successfully Delete extend city.');
+
+	}
+
 
 	/**
 	 * Show the form for editing the specified resource.
@@ -191,8 +253,8 @@ class TripController extends \BaseController {
 
 	public function triplists(){
 		$operator_id=OperatorGroup::whereuser_id(Auth::user()->id)->pluck('operator_id');
-		$response=Trip::whereoperator_id($operator_id)->with(array('operator','from_city','to_city','busclass','seat_plan'))->orderBy('id','desc')->get();
-		
+		$response=Trip::whereoperator_id($operator_id)->with(array('operator','from_city','to_city','busclass','seat_plan','extendcity'))->orderBy('id','desc')->get();
+		// return Response::json($response);
 		return View::make('trip.list', array('response'=>$response));
 	}
 
@@ -550,12 +612,12 @@ class TripController extends \BaseController {
 	}
 
 	public function ownseat($id){
+
 		$operator_id=Operator::whereuser_id(Auth::user()->id)->pluck('id');
 		$objtrip=Trip::whereid($id)->first();
 		$seatplan=SeatingPlan::find($objtrip->seat_plan_id);
 		$closeseat=CloseSeatInfo::wheretrip_id($objtrip->id)->whereseat_plan_id($objtrip->seat_plan_id)->pluck('seat_lists');
 		$jsoncloseseat=json_decode($closeseat,true);
-
 		$from=City::whereid($objtrip->from)->pluck('name');
 		$to=City::whereid($objtrip->to)->pluck('name');
 		$tripinfo['from_to']=$from.'=>'.$to;
@@ -594,16 +656,26 @@ class TripController extends \BaseController {
 							    $query->addSelect(array('id','name'));
 							}))
 							->get();
+
+		// $a=json_decode($seatplan->seat_list,true);
+		// return Response::json($response);
 		if(!$jsoncloseseat){
-			$jsoncloseseat=$seatplan->seat_list;
-			$jsoncloseseat=json_decode($jsoncloseseat,true);
+			if(is_null($closeseat)){
+				$jsoncloseseat=$response['seat_list'];
+			}else{
+				$jsoncloseseat=$seatplan->seat_list;
+				$jsoncloseseat=json_decode($jsoncloseseat,true);
+			}
+
 			$j=0;
 			foreach($jsoncloseseat as $rowseatinfo){
 				$jsoncloseseat[$j]['operatorgroup_id']=0;
 				$j++;
 			}
 		}
-		// return Response::json($operatorgroup);
+
+		// return Response::json($response);
+
 		return View::make('trip.ownseat', array('response'=>$response,'operatorgroup'=>$operatorgroup, 'operator_id'=>$operator_id, 'tripinfo'=>$tripinfo,'jsoncloseseat'=>$jsoncloseseat));
 	}
 
@@ -615,8 +687,8 @@ class TripController extends \BaseController {
 		$seat_plan_id=Input::get('seat_plan_id');
 		$chosen_seats=Input::get('seats');
 		$operatorgroup_id=Input::get('operatorgroup_id');
-
 		$objseatinfo=SeatInfo::whereseat_plan_id($seat_plan_id)->get();
+
 		if($objseatinfo){
 			$i=0;
 			foreach($objseatinfo as $seat){
@@ -628,15 +700,14 @@ class TripController extends \BaseController {
 						}
 					}
 				}
-				if($ownseat)
+				if($ownseat){
 					$objseatinfo[$i]['operatorgroup_id']=$operatorgroup_id ? $operatorgroup_id : 0;
-				else
+				}else
 					$objseatinfo[$i]['operatorgroup_id']=0;
 				$i++;
 			}
 		}
-		// $stringseatlist = (string)($objseatinfo, true);
-		// dd($stringseatlist);
+
 		$check_exiting=CloseSeatInfo::wheretrip_id($trip_id)->whereseat_plan_id($seat_plan_id)->first();
 		if(!$chosen_seats){
 			CloseSeatInfo::wheretrip_id($trip_id)->whereseat_plan_id($seat_plan_id)->delete();
@@ -646,7 +717,6 @@ class TripController extends \BaseController {
 		if($check_exiting){
 			$seat_lists=$check_exiting->seat_lists;
 			$jsonexitingseats=json_decode($seat_lists, true);
-			// return Response::json($chosen_seats);
 			if($chosen_seats){
 				$k=0;
 				foreach ($jsonexitingseats as $rows) {
@@ -672,9 +742,7 @@ class TripController extends \BaseController {
 					$k++;
 				}
 			}
-			// return Response::json($jsonseats);
 			$jsonexitingseats=json_encode($jsonexitingseats);
-			// dd($jsonexitingseats);
 			$check_exiting->seat_lists=$jsonexitingseats;
 			$check_exiting->update();
 		}else{

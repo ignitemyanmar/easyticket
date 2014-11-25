@@ -1,5 +1,6 @@
 $(function(){
 			$("#totalamount").html('0');
+			$("#total").val('0');
 			$('.radios').each(function(){
 				$(this).prop('checked', "");
 			});

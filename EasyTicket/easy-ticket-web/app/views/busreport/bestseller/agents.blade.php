@@ -3,8 +3,9 @@
 <style type="text/css">
    .padding-10{padding: 5px 10px;}
 </style>
-      {{HTML::style('../../src/select2.css')}}
-      {{HTML::style('../../css/jquery-ui.css')}}
+<link rel="stylesheet" href="../../assets/data-tables/DT_bootstrap.css" />
+      <!-- {{HTML::style('../../src/select2.css')}}
+      {{HTML::style('../../css/jquery-ui.css')}} -->
 <!-- BEGIN PAGE -->  
    <div class="page-content">
       <!-- BEGIN PAGE CONTAINER-->
@@ -49,7 +50,7 @@
                         </div>
 
                         <div class="portlet-body">
-                           <table class="table table-striped table-bordered table-advance table-hover">
+                           <table class="table table-striped table-bordered table-advance table-hover" id="sample_editable_1">
                               <thead>
                                  <tr>
                                     <th>အေရာင္းကုိယ္စားလွယ္</th>
@@ -84,32 +85,13 @@
    </div>
 <!-- END PAGE -->  
    <script type="text/javascript" src="../../assets/data-tables/jquery.dataTables.js"></script>
-   {{HTML::script('../../src/jquery-ui.js')}}
-   {{HTML::script('../../src/select2.min.js')}}
-   <script type="text/javascript">
-      $(function(){
-         $('#agents').select2();
-         $('#from').select2();
-         $('#to').select2();
-         $('#departure_time').select2();
-         var date = new Date();
-         var m = date.getMonth(), d = date.getDate()-30, y = date.getFullYear();
-         $("#startdate").datepicker({
-            minDate: new Date(y, m, d),
-            numberOfMonth: 2,
-            onSelect: function(dateStr) {
-                  var min = $(this).datepicker('getDate');
-            },
-            dateFormat: 'yy-mm-dd'
-         });
-         $("#enddate").datepicker({
-            minDate: new Date(y, m, d),
-            numberOfMonth: 2,
-            onSelect: function(dateStr) {
-                  var min = $(this).datepicker('getDate');
-            },
-            dateFormat: 'yy-mm-dd'
-         });
+   <script type="text/javascript" src="../../assets/data-tables/DT_bootstrap.js"></script>
+   <script>
+      jQuery(document).ready(function() {       
+         // initiate layout and plugins
+         App.setPage("table_editable");
+         // App.init();
       });
    </script>
+   
 @stop

@@ -78,6 +78,12 @@ class OrderController extends \BaseController {
 		return Redirect::to('orderlist')->with('message',$message);
 	}
 
+	public function deleteNotConfirmOrder($id){
+		SaleOrder::whereid($id)->where('name','=','')->where('total_amount','=','')->delete();
+		$message="Successfully delete order.";
+		return Redirect::to('orderlist')->with('message',$message);
+	}
+
 	public function orderlist(){
 		$operator_id=OperatorGroup::whereuser_id(Auth::user()->id)->pluck('operator_id');
 		$response=SaleOrder::whereoperator_id($operator_id)->with(array('agent','saleitems'))->get();

@@ -18,7 +18,7 @@
                         $orderdate=Session::get('search_daily_date'); 
                         $V_operator_id=Session::get('operator_id');
                      ?>
-                        {{$orderdate}}&nbsp;ေန႔စဥ္ေရာင္းရေသာစာရင္း
+                        {{date('d/m/Y',strtotime($orderdate))}}&nbsp;ေန႔စဥ္ေရာင္းရေသာစာရင္း
 
                         <!-- <small>form wizard sample</small> -->
                      </h3>
@@ -32,7 +32,7 @@
                            <a href="/report/dailycarandadvancesale/search?date={{$orderdate}}&operator_id={{$V_operator_id}}">ေန႔စဥ္ အေရာင္းစာရင္း</a>
                            <span class="icon-angle-right"></span>
                         </li>
-                        <li><a href="#">{{$orderdate}}&nbsp;ေန႔စဥ္ေရာင္းရေသာစာရင္း</a></li>
+                        <li><a href="#">{{date('d/m/Y',strtotime($orderdate))}}&nbsp;ေန႔စဥ္ေရာင္းရေသာစာရင္း</a></li>
                      </ul>
                   </div>
                </div>

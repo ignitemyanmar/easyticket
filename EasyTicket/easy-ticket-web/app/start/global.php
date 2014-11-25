@@ -49,7 +49,7 @@ Log::useFiles(storage_path().'/logs/laravel.log');
 App::error(function(Exception $exception, $code)
 {
 	Log::error($exception);
-	/*switch ($code)
+	switch ($code)
 	{
 	    case 403:
 	        return Response::view('errors.403', array(), 403);
@@ -62,8 +62,58 @@ App::error(function(Exception $exception, $code)
 	        return Redirect::to('500');
 
 	    default:
-	        return Response::view('errors.index', array(), $code);
-	}*/
+	        //return Response::view('errors.index', array(), $code);
+	}
+});
+
+App::before(function($request)
+{
+    // Singleton (global) object
+    App::singleton('MyDate', function(){
+        $today = date("Y-m-d H:i:s",strtotime(date("Y-m-d H:i:s")) + ((60*60) * 6.5));
+        return $today;
+    });
+    $myToday = App::make('MyDate');
+    View::share('today', $myToday);
+
+
+
+
+    
+
+    App::singleton('myApp', function(){
+        $app = new stdClass;
+        $currentroute=$url=Request::url(); 
+		$currentroute=substr($currentroute,15);
+        if (Auth::check()) {
+            $operator_id=OperatorGroup::whereuser_id(Auth::user()->id)->pluck('operator_id');
+            $operatorgroup_id=OperatorGroup::whereuser_id(Auth::user()->id)->pluck('id');
+            if(!$operator_id){
+                $operator_id=OperatorGroupUser::whereuser_id(Auth::user()->id)->pluck('operator_id');
+                $operatorgroup_id=OperatorGroupUser::whereuser_id(Auth::user()->id)->pluck('operatorgroup_id');
+            }
+            $app->operator_id=$operator_id;
+            $app->operatorgroup_id=$operatorgroup_id;
+            // $app->isLogedin = TRUE;
+        }
+        else {
+            // $app->isLogedin = FALSE;
+        }
+        
+        if(strpos($currentroute,'foo') !== false){
+        	$app->currentroute="foo";
+        }else{
+        	$app->currentroute="bar";
+        }
+
+        
+
+
+        $app->url="http://easyticket.dev";
+        return $app;
+    });
+    $app = App::make('myApp');
+    View::share('myApp', $app);
 });
 
 /*

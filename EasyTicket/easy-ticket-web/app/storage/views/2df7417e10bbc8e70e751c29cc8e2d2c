@@ -105,7 +105,7 @@
                                     <?php foreach($dailyforadvance as $advance): ?>
                                        <tr>
                                           <!-- <td><?php echo $advance['from'].'-'. $advance['to']; ?></td> -->
-                                          <td><?php echo $advance['departure_date']; ?></td>
+                                          <td><?php echo date("d/m/Y", strtotime($advance['departure_date'])); ?></td>
                                           <td><?php echo $advance['purchased_total_seat']; ?></td>
                                           <td><?php echo $advance['from'].'-'.$advance['to']; ?></td>
                                           <td><?php echo $advance['total_amout']; ?></td>

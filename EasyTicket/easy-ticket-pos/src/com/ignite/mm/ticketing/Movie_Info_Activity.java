@@ -52,7 +52,7 @@ import com.ignite.mm.ticketing.sqlite.database.model.AllMovieObject;
 public class Movie_Info_Activity extends SherlockActivity{
 	private TextView actionBarTitle, movieName, cinemaName, movieTime, price, seats, totalTickets, amount;
 	private ActionBar actionBar;
-	private ImageButton actionBarBack,actionBarProceed;
+	private ImageButton actionBarBack;
 	
 	private String TicketTypeID,MovieId, MovieTitle, DateId, Date, CinemaId, Cinema, MovieTimeId, MovieTime, SelectedSeat, YourSelectedSeat = "",SelectedPrice= "",upStairSelectedPrice="";
 	public static int no_of_ticket;
@@ -84,11 +84,7 @@ public class Movie_Info_Activity extends SherlockActivity{
 				R.id.action_bar_title);
 		actionBarBack = (ImageButton) actionBar.getCustomView().findViewById(
 				R.id.action_bar_back);
-		actionBarProceed = (ImageButton) actionBar.getCustomView().findViewById(R.id.action_bar_proceed);
 		actionBarTitle.setText("MOVIE");
-		actionBarProceed.setVisibility(View.VISIBLE);
-		actionBarProceed.setImageResource(R.drawable.print);
-		actionBarProceed.setOnClickListener(clickListener);
 
 		actionBarBack.setOnClickListener(clickListener);
 		actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
@@ -165,33 +161,6 @@ public class Movie_Info_Activity extends SherlockActivity{
 				finish();
 			}
 			
-			if(v==actionBarProceed){
-			    Bitmap bitmap = getWholeListViewItemsToBitmap();
-			    if (bitmap != null) {
-					Bitmap bitmapOrg = bitmap;// BitmapFactory.decodeFile(picPath);
-					int w = bitmapOrg.getWidth();
-					int h = bitmapOrg.getHeight();
-					mBTService.PrintImage(resizeImage(bitmapOrg, (int)(verson* 8), h),80);
-					
-					/*Intent nextScreen = new Intent(Movie_Info_Activity.this, PDFMovieActivity.class);
-					Bundle bundle = new Bundle();
-					bundle.putString("movie_id", MovieId);
-					bundle.putString("movie_title", MovieTitle);
-					bundle.putString("date_id", DateId);
-					bundle.putString("date", Date);
-					bundle.putString("cinema_id", CinemaId);
-					bundle.putString("cinema", Cinema);
-					bundle.putString("movie_time_id", MovieTimeId);
-					bundle.putString("movie_time", MovieTime);
-					bundle.putString("selected_seat_id", SelectedSeat);
-					bundle.putString("selected_seat", YourSelectedSeat);
-					nextScreen.putExtras(bundle);
-					startActivity(nextScreen);*/
-					return;
-				}
-			    
-			}
-			
 		}
 	};
 	private LinearLayout ticketContainer;
@@ -214,10 +183,10 @@ public class Movie_Info_Activity extends SherlockActivity{
 		mTime=(TextView)invoice.findViewById(R.id.txt_time);
 		amount=(TextView)invoice.findViewById(R.id.txt_grand_total);
 		
-		mCinema.setText("ရုပ္ရွင္ရုံ: "+Cinema);
-		mMovieName.setText("ရုပ္ရွင္: "+MovieTitle);
-		mDate.setText("ေန႕စြဲ: "+Date);
-		mTime.setText("ျပသမည့္အခ်ိန္: "+MovieTime);
+		mCinema.setText("á€›á€¯á€•á€¹á€›á€½á€„á€¹á€›á€¯á€¶: "+Cinema);
+		mMovieName.setText("á€›á€¯á€•á€¹á€›á€½á€„á€¹: "+MovieTitle);
+		mDate.setText("á€±á€”á‚•á€…á€¼á€²: "+Date);
+		mTime.setText("á€»á€•á€žá€™á€Šá€¹á€·á€¡á€�á€ºá€­á€”á€¹: "+MovieTime);
 		int GrandTotal = 0;
 		String[] seletedSeat = SelectedSeat.split(",");
 		allMovieObject = new ArrayList<AllMovieObject>();
@@ -234,7 +203,7 @@ public class Movie_Info_Activity extends SherlockActivity{
 		lvMovie=(ListView)findViewById(R.id.lvMovie);
 		lvMovie.addHeaderView(invoice);
 		lvMovie.setAdapter(new PDFMovieAdapter(this,allMovieObject));
-		amount.setText(String.valueOf("စုစုေပါင္း: "+GrandTotal + " MMK"));
+		amount.setText(String.valueOf("á€…á€¯á€…á€¯á€±á€•á€«á€„á€¹á€¸: "+GrandTotal + " MMK"));
 		
 	}
 	public static boolean storeImage(Bitmap imageData, String path, String filename) {

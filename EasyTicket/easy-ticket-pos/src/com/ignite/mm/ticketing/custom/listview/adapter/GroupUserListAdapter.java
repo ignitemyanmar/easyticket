@@ -57,13 +57,13 @@ public class GroupUserListAdapter extends BaseAdapter{
 		
 		switch(OperatorGroupUser.get(position).getColor()){
 			case 1:
-				holder.color.setBackgroundColor(Color.parseColor("#FFB857"));
+				holder.color.setBackgroundColor(Color.parseColor("#FF8514"));
 				break;
 			case 2:
 				holder.color.setBackgroundColor(Color.parseColor("#4BFFFF"));
 				break;
 			case 3:
-				holder.color.setBackgroundColor(Color.parseColor("#FFE51E"));
+				holder.color.setBackgroundColor(Color.parseColor("#B08620"));
 				break;
 			case 4:
 				holder.color.setBackgroundColor(Color.parseColor("#640F6D"));

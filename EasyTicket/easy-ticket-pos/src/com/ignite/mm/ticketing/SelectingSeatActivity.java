@@ -33,7 +33,7 @@ public class SelectingSeatActivity extends SherlockActivity {
 	public static List<Seat> Seat_List;
 	private ActionBar actionBar;
 	private TextView actionBarTitle;
-	private ImageButton actionBarBack, actionBarPrice, actionBarProceed,upDown;
+	private ImageButton actionBarBack, actionBarPrice,upDown;
 
 	private LinearLayout mMenuContainer;
 	private ListView mMenuList;
@@ -74,14 +74,8 @@ public class SelectingSeatActivity extends SherlockActivity {
 				R.id.action_bar_title);
 		actionBarBack = (ImageButton) actionBar.getCustomView().findViewById(
 				R.id.action_bar_back);
-		actionBarProceed = (ImageButton) actionBar.getCustomView()
-				.findViewById(R.id.action_bar_proceed);
 		actionBarTitle.setText("MOVIE");
-		actionBarProceed.setVisibility(View.VISIBLE);
-		actionBarPrice.setVisibility(View.VISIBLE);
 
-		actionBarProceed.setOnClickListener(clickListener);
-		actionBarPrice.setOnClickListener(clickListener);
 		actionBarBack.setOnClickListener(clickListener);
 		actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
 		
@@ -397,29 +391,7 @@ public class SelectingSeatActivity extends SherlockActivity {
 			if (v == actionBarBack) {
 				finish();
 			}
-			if (v == actionBarProceed) {
-				//Log.i("","Hello : "+SelectedSeat);
-				if(!SelectedSeat.isEmpty()){
-					Intent nextScreen = new Intent(SelectingSeatActivity.this,Movie_Info_Activity.class);
-					Bundle bundle = new Bundle();
-					//bundle.putString("ticketTypeId", TicketTypeId);
-					bundle.putString("movie_id", MovieID);
-					bundle.putString("movie_title", MovieTitle);
-					bundle.putString("date_id", DateID);
-					bundle.putString("date", Date);
-					bundle.putString("cinema_id", CinemaID);
-					bundle.putString("cinema", Cinema);
-					bundle.putString("movie_time_id", MovieTimeID);
-					bundle.putString("movie_time", Time);
-					bundle.putString("selected_seat",SelectedSeat);
-					//Log.i("","Selected seat :" + SelectedSeat);
-					nextScreen.putExtras(bundle);
-					startActivity(nextScreen);
-				}else{
-					Toast.makeText(SelectingSeatActivity.this, "Please choose the seat.", Toast.LENGTH_LONG).show();
-				}
-				
-			}
+			
 			if (v == actionBarPrice) {
 				if (menuClicked == false) {
 					mMenuContainer.setTranslationY(0);

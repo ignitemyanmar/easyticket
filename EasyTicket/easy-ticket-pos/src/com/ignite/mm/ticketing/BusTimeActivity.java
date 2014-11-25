@@ -11,6 +11,7 @@ import retrofit.client.Response;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -68,7 +69,6 @@ public class BusTimeActivity extends BaseSherlockActivity {
 	private ActionBar actionBar;
 	private TextView actionBarTitle;
 	private ImageButton actionBarBack;
-	private ImageButton actionBarProceed;
 	protected List<City> cities;
 	protected List<Operator> operators;
 	private ListView lst_morning_time;
@@ -79,6 +79,9 @@ public class BusTimeActivity extends BaseSherlockActivity {
 	private List<Time> time_evening_list;
 	private String selectedFrom;
 	private String selectedTo;
+	private TextView actionBarNoti;
+	private Integer NotifyBooking;
+	protected String selectedClasses;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -90,10 +93,10 @@ public class BusTimeActivity extends BaseSherlockActivity {
 				R.id.action_bar_title);
 		actionBarBack = (ImageButton) actionBar.getCustomView().findViewById(
 				R.id.action_bar_back);
-		actionBarProceed = (ImageButton) actionBar.getCustomView().findViewById(R.id.action_bar_proceed);
-		actionBarProceed.setImageResource(R.drawable.ic_agent);
-		
+		actionBarNoti = (TextView) actionBar.getCustomView().findViewById(R.id.txt_notify_booking);
+		actionBarNoti.setOnClickListener(clickListener);
 		actionBarBack.setOnClickListener(clickListener);
+		
 		actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
 		
 		setContentView(R.layout.busdest_list);
@@ -127,6 +130,13 @@ public class BusTimeActivity extends BaseSherlockActivity {
 		selectedFrom = bundle.getString("from");
 		selectedTo = bundle.getString("to");
 		selectedDate = bundle.getString("date");
+		
+		SharedPreferences notify = getSharedPreferences("NotifyBooking", Context.MODE_PRIVATE);
+		NotifyBooking = notify.getInt("count", 0);
+		if(NotifyBooking > 0){
+			actionBarNoti.setVisibility(View.VISIBLE);
+			actionBarNoti.setText(NotifyBooking.toString());
+		}
 		
 		actionBarTitle.setText("Choose Time > "+selectedFrom+" - "+selectedTo);
 		
@@ -275,6 +285,7 @@ public class BusTimeActivity extends BaseSherlockActivity {
 				long arg3) {
 			// TODO Auto-generated method stub
 			selectedTime = time_morning_list.get(arg2).getTime();
+			selectedClasses = time_morning_list.get(arg2).getClass_id();
 			Bundle bundle = new Bundle();
 	        bundle.putString("agent_id", selectedAgentId);
 			bundle.putString("operator_id", selectedOperatorId);
@@ -282,6 +293,7 @@ public class BusTimeActivity extends BaseSherlockActivity {
 			bundle.putString("from_city", selectedFrom);
 			bundle.putString("to_city_id", selectedToId);
 			bundle.putString("to_city", selectedTo);
+			bundle.putString("class_id", selectedClasses);
 			bundle.putString("time", selectedTime);
 			bundle.putString("date", selectedDate);
 			startActivity(new Intent(getApplicationContext(), BusSelectSeatActivity.class).putExtras(bundle));
@@ -295,6 +307,7 @@ public class BusTimeActivity extends BaseSherlockActivity {
 				long arg3) {
 			// TODO Auto-generated method stub
 			selectedTime = time_evening_list.get(arg2).getTime();
+			selectedClasses = time_evening_list.get(arg2).getClass_id();
 			Bundle bundle = new Bundle();
 	        bundle.putString("agent_id", selectedAgentId);
 			bundle.putString("operator_id", selectedOperatorId);
@@ -302,6 +315,7 @@ public class BusTimeActivity extends BaseSherlockActivity {
 			bundle.putString("from_city", selectedFrom);
 			bundle.putString("to_city_id", selectedToId);
 			bundle.putString("to_city", selectedTo);
+			bundle.putString("class_id", selectedClasses);
 			bundle.putString("time", selectedTime);
 			bundle.putString("date", selectedDate);
 			startActivity(new Intent(getApplicationContext(), BusSelectSeatActivity.class).putExtras(bundle));
@@ -357,7 +371,17 @@ public class BusTimeActivity extends BaseSherlockActivity {
 			if(v == actionBarBack){
 				finish();
 			}
+			if(v == actionBarNoti){
+				SharedPreferences sharedPreferences = getSharedPreferences("order",MODE_PRIVATE);
+				SharedPreferences.Editor editor = sharedPreferences.edit();
+				editor.clear();
+				editor.commit();
+				editor.putString("order_date", getToday());
+				editor.commit();
+	        	startActivity(new Intent(getApplicationContext(),	BusTicketingOrderListActivity.class));
+			}
 		}
+		
 	};
 	
 	private void setListViewHeightBasedOnChildren(ListView listView) {

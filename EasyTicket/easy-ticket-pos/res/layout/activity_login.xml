@@ -51,14 +51,14 @@
                         android:maxWidth="300dp"
                         android:paddingLeft="5dp"
                         android:typeface="normal" />
-
+
                     <Button
                         android:id="@+id/cmd_login"
                         android:layout_width="fill_parent"
                         android:layout_height="40dp"
                         android:layout_marginBottom="10dp"
                         android:layout_marginTop="10dp"
-                        android:background="@drawable/btn_orange_date"
+                        android:background="@drawable/btn_blue"
                         android:maxWidth="300dp"
                         android:shadowColor="#2073D3"
                         android:shadowDx="1"

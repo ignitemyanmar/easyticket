@@ -3,6 +3,7 @@ package com.ignite.mm.ticketing.sqlite.database.model;
 	public class Time {
 	
 	private String tripid;
+	private String class_id;
 	private String bus_class;
 	private Integer total_seat;
 	private Integer total_sold_seat;
@@ -32,6 +33,14 @@ package com.ignite.mm.ticketing.sqlite.database.model;
 	
 	public void setTime(String time) {
 	this.time = time;
+	}
+
+	public String getClass_id() {
+		return class_id;
+	}
+
+	public void setClass_id(String class_id) {
+		this.class_id = class_id;
 	}
 
 	public String getBus_class() {

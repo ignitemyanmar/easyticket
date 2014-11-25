@@ -15,6 +15,8 @@ public class Seat_list {
 	@Expose
 	private Integer operatorgroup_id;
 	
+	private CustomerInfo customerInfo;
+	
 	public Seat_list(Integer id, String seat_no, Integer status) {
 		super();
 		this.id = id;
@@ -61,4 +63,13 @@ public class Seat_list {
 	public void setOperatorgroup_id(Integer operatorgroup_id) {
 		this.operatorgroup_id = operatorgroup_id;
 	}
+
+	public CustomerInfo getCustomerInfo() {
+		return customerInfo;
+	}
+
+	public void setCustomerInfo(CustomerInfo customerInfo) {
+		this.customerInfo = customerInfo;
+	}
+	
 }

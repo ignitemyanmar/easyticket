@@ -6,10 +6,10 @@ import com.google.gson.annotations.SerializedName;
 public class Saleitem {
 
 	@Expose
-	private Integer id;
+	private String id;
 	@SerializedName("order_id")
 	@Expose
-	private Integer orderId;
+	private String orderId;
 	@SerializedName("ticket_no")
 	@Expose
 	private String ticketNo;
@@ -29,19 +29,19 @@ public class Saleitem {
 	@Expose
 	private Integer operator;
 	
-	public Integer getId() {
+	public String getId() {
 	return id;
 	}
 	
-	public void setId(Integer id) {
+	public void setId(String id) {
 	this.id = id;
 	}
 	
-	public Integer getOrderId() {
+	public String getOrderId() {
 	return orderId;
 	}
 	
-	public void setOrderId(Integer orderId) {
+	public void setOrderId(String orderId) {
 	this.orderId = orderId;
 	}
 	

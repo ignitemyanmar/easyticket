@@ -55,26 +55,26 @@ public class TimeAdapter extends BaseAdapter {
 		/*String timeStr = getItem(position).getTime().replaceAll(" ", "").toLowerCase();
 		String timeTypeStr = timeStr.substring(timeStr.length() - 2, timeStr.length());*/
 		if(getItem(position).getTime().toLowerCase().contains("am")){
-			holder.Time.setTextColor(Color.parseColor("#FF9408"));
-			holder.Line.setBackgroundColor(Color.parseColor("#FF9408"));
-			convertView.setBackgroundColor(aty.getResources().getColor(R.color.transparent_orange));
+			//holder.Time.setTextColor(aty.getResources().getColor(R.color.forest_green));
+			holder.Line.setBackgroundColor(aty.getResources().getColor(R.color.forest_green));
+			convertView.setBackgroundColor(aty.getResources().getColor(R.color.transparent_dark_green));
 		}else{
-			holder.Time.setTextColor(Color.parseColor("#32bf3b"));
-			holder.Line.setBackgroundColor(Color.parseColor("#32bf3b"));
-			convertView.setBackgroundColor(aty.getResources().getColor(R.color.transparent_forest_green));
+			//holder.Time.setTextColor(aty.getResources().getColor(R.color.dark_green));
+			holder.Line.setBackgroundColor(aty.getResources().getColor(R.color.dark_green));
+			convertView.setBackgroundColor(aty.getResources().getColor(R.color.transparent_dark_blue));
 		}
 		holder.Time.setText(getItem(position).getTime());
 		holder.TotalSeat.setText(getItem(position).getTotal_sold_seat().toString() +"/"+ getItem(position).getTotal_seat().toString());
 		int left_total_seat = getItem(position).getTotal_seat() - getItem(position).getTotal_sold_seat();
 		if(left_total_seat > 0 && left_total_seat <= 5){
-			holder.Time.setBackgroundResource(R.drawable.ovel_time_orange);
-			holder.Line.setBackgroundColor(aty.getResources().getColor(R.color.orange));
+			//holder.Time.setBackgroundResource(R.drawable.ovel_time_orange);
+			//holder.Line.setBackgroundColor(aty.getResources().getColor(R.color.orange));
 		}else if(left_total_seat == 0){
-			holder.Time.setBackgroundResource(R.drawable.ovel_time_red);
-			holder.Line.setBackgroundColor(aty.getResources().getColor(R.color.red));
+			//holder.Time.setBackgroundResource(R.drawable.ovel_time_red);
+			//holder.Line.setBackgroundColor(aty.getResources().getColor(R.color.red));
 		}else{
-			holder.Time.setBackgroundResource(R.drawable.ovel_time_green);
-			holder.Line.setBackgroundColor(aty.getResources().getColor(R.color.forest_green));
+			//holder.Time.setBackgroundResource(R.drawable.ovel_time_green);
+			//holder.Line.setBackgroundColor(aty.getResources().getColor(R.color.forest_green));
 		}
 		
 		return convertView;

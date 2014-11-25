@@ -24,7 +24,7 @@ public class ShowInfoActivity extends SherlockActivity {
 	private TextView actionBarTitle,showTitle,price,totalCost;
 	public static EditText noOfTickets;
 	private ActionBar actionBar;
-	private ImageButton actionBarBack,actionBarProceed;
+	private ImageButton actionBarBack;
 	private String TicketTypeID;
 	public static String ShowId,ShowName,TicketID,Price,totalTicket;
 	public static int  totalValue;
@@ -42,10 +42,7 @@ public class ShowInfoActivity extends SherlockActivity {
 				R.id.action_bar_title);
 		actionBarBack = (ImageButton) actionBar.getCustomView().findViewById(
 				R.id.action_bar_back);
-		actionBarProceed = (ImageButton) actionBar.getCustomView().findViewById(R.id.action_bar_proceed);
 		actionBarTitle.setText("SHOW");
-		actionBarProceed.setVisibility(View.VISIBLE);
-		actionBarProceed.setOnClickListener(clickListener);
 
 		actionBarBack.setOnClickListener(clickListener);
 		actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
@@ -67,22 +64,7 @@ public class ShowInfoActivity extends SherlockActivity {
 			if (v == actionBarBack) {
 				finish();
 			}
-			
-			if(v==actionBarProceed){
-				totalTicket = noOfTickets.getText().toString();
-				Intent nextScreen = new Intent(ShowInfoActivity.this, ShowInvoice.class);
-				Bundle bundle = new Bundle();
-			//	bundle.putString("ticketTypeId",TicketTypeID);
-				bundle.putString("Show_ID",ShowId);
-				bundle.putString("Show_Name",ShowName);
-				bundle.putString("Ticket_ID", TicketID); 
-				bundle.putString("Price", Price);
-				bundle.putString("No_of_ticket", totalTicket);
-				nextScreen.putExtras(bundle);
-				startActivity(nextScreen);
-				
-			}
-			
+						
 		}
 	};
 	

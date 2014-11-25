@@ -47,7 +47,7 @@ import com.smk.custom.view.CustomTextView;
 public class Bus_Info_Activity extends SherlockActivity{
 	private TextView actionBarTitle, destination, tripDate, agentName, dep_time,amount;
 	private ActionBar actionBar;
-	private ImageButton actionBarBack,actionBarProceed;
+	private ImageButton actionBarBack;
 	
 	private String Trip, Date, OperatorID, OperatorName, Time;
 	private String SelectedSeatIndex = "";
@@ -95,11 +95,7 @@ public class Bus_Info_Activity extends SherlockActivity{
 				R.id.action_bar_title);
 		actionBarBack = (ImageButton) actionBar.getCustomView().findViewById(
 				R.id.action_bar_back);
-		actionBarProceed = (ImageButton) actionBar.getCustomView().findViewById(R.id.action_bar_proceed);
 		actionBarTitle.setText("BUS");
-		actionBarProceed.setVisibility(View.VISIBLE);
-		actionBarProceed.setImageResource(R.drawable.print);
-		actionBarProceed.setOnClickListener(clickListener);
 
 		actionBarBack.setOnClickListener(clickListener);
 		actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
@@ -168,19 +164,6 @@ public class Bus_Info_Activity extends SherlockActivity{
 			if (v == actionBarBack) {
 				finish();
 			}
-			if(v == actionBarProceed){
-				
-	           Bitmap bitmap = getWholeListViewItemsToBitmap();
-	            Log.i("","bitmap :" +bitmap.getHeight());
-			    if (bitmap != null) {
-					Bitmap bitmapOrg = bitmap;// BitmapFactory.decodeFile(picPath);
-					int w = bitmapOrg.getWidth();
-					int h = bitmapOrg.getHeight();
-					mBTService.PrintImage(resizeImage(bitmapOrg, (int)(verson* 8), h),80);
-					return;
-			   }
-			}
-			
 		}
 	};
 	

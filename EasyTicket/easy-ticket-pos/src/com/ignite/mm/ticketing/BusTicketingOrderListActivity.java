@@ -17,6 +17,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -123,18 +124,20 @@ public class BusTicketingOrderListActivity extends BaseSherlockActivity {
         dialog.setCancelable(true);
 		SharedPreferences pref = getSharedPreferences("order", Activity.MODE_PRIVATE);
 		String orderDate = pref.getString("order_date", null);
-		
+		Log.i("","Hello : "+ AppLoginUser.getUserID()+" , Order Date = "+orderDate );
 		NetworkEngine.getInstance().getBookingOrder(AppLoginUser.getAccessToken(), AppLoginUser.getUserID(), orderDate, new Callback<List<CreditOrder>>() {
 			
 			public void success(List<CreditOrder> arg0, Response arg1) {
 				// TODO Auto-generated method stub
 				credit_list = arg0;
+				Log.i("","Hello size: "+ credit_list.size());
 				lst_credit.setAdapter(new OrderListViewAdapter(BusTicketingOrderListActivity.this, credit_list));
 				dialog.dismiss();
 			}
 			
 			public void failure(RetrofitError arg0) {
 				// TODO Auto-generated method stub
+				Log.i("","Failure : "+ arg0.getCause());
 				dialog.dismiss();
 			}
 		});

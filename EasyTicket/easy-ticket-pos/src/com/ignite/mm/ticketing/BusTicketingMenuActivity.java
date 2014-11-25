@@ -2,12 +2,19 @@ package com.ignite.mm.ticketing;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
+
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -19,8 +26,10 @@ import android.widget.TextView;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
 import com.ignite.mm.ticketing.application.BaseSherlockActivity;
+import com.ignite.mm.ticketing.clientapi.NetworkEngine;
 import com.smk.calender.widget.SKCalender;
 import com.smk.calender.widget.SKCalender.Callbacks;
+import com.smk.skconnectiondetector.SKConnectionDetector;
 
 public class BusTicketingMenuActivity extends BaseSherlockActivity {
 	private LinearLayout btn_sale_ticket;
@@ -29,6 +38,7 @@ public class BusTicketingMenuActivity extends BaseSherlockActivity {
 	private TextView actionBarTitle;
 	private ImageButton actionBarBack;
 	private LinearLayout btn_old_sale;
+	private TextView actionBarNoti;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +52,8 @@ public class BusTicketingMenuActivity extends BaseSherlockActivity {
 		actionBarBack = (ImageButton) actionBar.getCustomView().findViewById(
 				R.id.action_bar_back);
 		actionBarBack.setOnClickListener(clickListener);
+		actionBarNoti = (TextView) actionBar.getCustomView().findViewById(R.id.txt_notify_booking);
+		actionBarNoti.setOnClickListener(clickListener);
 		actionBarTitle.setText("Easy Ticket");
 		actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
 		
@@ -55,12 +67,26 @@ public class BusTicketingMenuActivity extends BaseSherlockActivity {
 		btn_order.setOnClickListener(clickListener);
 		btn_old_sale.setOnClickListener(clickListener);
 		
+		SKConnectionDetector detector = SKConnectionDetector.getInstance(this);
+		if(detector.isConnectingToInternet()){
+			getNotiBooking();
+		}
+		
 	}
 	
 	private OnClickListener clickListener = new OnClickListener() {
 		
 		public void onClick(View v) {
 			// TODO Auto-generated method stub
+			if(v == actionBarNoti){
+				SharedPreferences sharedPreferences = getSharedPreferences("order",MODE_PRIVATE);
+				SharedPreferences.Editor editor = sharedPreferences.edit();
+				editor.clear();
+				editor.commit();
+				editor.putString("order_date", getToday());
+				editor.commit();
+	        	startActivity(new Intent(getApplicationContext(),	BusTicketingOrderListActivity.class));
+			}
 			if(v == btn_sale_ticket){
 				SharedPreferences sharedPreferences = getSharedPreferences("old_sale",MODE_PRIVATE);
 				SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -137,4 +163,32 @@ public class BusTicketingMenuActivity extends BaseSherlockActivity {
 			}
 		}
 	};
+	
+	private void getNotiBooking(){
+		
+		NetworkEngine.getInstance().getNotiBooking(AppLoginUser.getAccessToken(), getToday() , new Callback<Integer>() {
+			
+			public void success(Integer arg0, Response arg1) {
+				// TODO Auto-generated method stub
+				SharedPreferences sharedPreferences = getSharedPreferences("NotifyBooking",Activity.MODE_PRIVATE);
+				SharedPreferences.Editor editor = sharedPreferences.edit();
+				
+				editor.clear();
+				editor.commit();
+				
+				editor.putInt("count", arg0);
+				editor.commit();
+				
+				if(arg0 > 0){
+					actionBarNoti.setVisibility(View.VISIBLE);
+					actionBarNoti.setText(arg0.toString());
+				}
+			}
+			
+			public void failure(RetrofitError arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+	}
 }

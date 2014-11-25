@@ -185,7 +185,7 @@
                         android:layout_weight="10" />
                 </LinearLayout>
             </LinearLayout>
-
+
             <TextView
                 android:id="@+id/textView1"
                 android:layout_width="wrap_content"
@@ -194,13 +194,13 @@
                 android:layout_marginTop="10dp"
                 android:text="မ နက္"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="#FF9408" />
-
+                android:textColor="@color/dark_green" />
+
             <View
                 android:id="@+id/view1"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="#FF9408" />
+                android:background="@color/dark_green" />
 
             <ListView
                 android:id="@+id/lst_time_morning"
@@ -211,7 +211,7 @@
                 android:layout_marginTop="10dp"
                 android:choiceMode="singleChoice" >
             </ListView>
-
+
             <TextView
                 android:id="@+id/textView3"
                 android:layout_width="wrap_content"
@@ -220,13 +220,13 @@
                 android:layout_marginTop="10dp"
                 android:text="ည ေန"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="#32bf3b" />
-
+                android:textColor="@color/dark_blue" />
+
             <View
                 android:id="@+id/View02"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="#32bf3b" />
+                android:background="@color/dark_blue" />
 
             <ListView
                 android:id="@+id/lst_time_evening"

@@ -52,7 +52,7 @@ import com.ignite.mm.ticketing.sqlite.database.model.AllShowObject;
 public class ShowInvoice extends SherlockActivity{
 	private ActionBar actionBar;
 	private TextView actionBarTitle;
-	private ImageButton actionBarBack,actionBarProceed;
+	private ImageButton actionBarBack;
 	private int verson = 52;
 	private BlueToothService mBTService = null;
 	private ListView mDeviceList;
@@ -80,11 +80,7 @@ public class ShowInvoice extends SherlockActivity{
 				R.id.action_bar_title);
 		actionBarBack = (ImageButton) actionBar.getCustomView().findViewById(
 				R.id.action_bar_back);
-		actionBarProceed = (ImageButton) actionBar.getCustomView().findViewById(R.id.action_bar_proceed);
 		actionBarTitle.setText("SHOW");
-		actionBarProceed.setVisibility(View.VISIBLE);
-		actionBarProceed.setImageResource(R.drawable.print);
-		actionBarProceed.setOnClickListener(clickListener);
 
 		actionBarBack.setOnClickListener(clickListener);
 		actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
@@ -261,17 +257,6 @@ public class ShowInvoice extends SherlockActivity{
 			// TODO Auto-generated method stub
 			if (v == actionBarBack) {
 				finish();
-			}
-			if (v == actionBarProceed) {
-
-				Bitmap bitmap = getWholeListViewItemsToBitmap();
-				if (bitmap != null) {
-					Bitmap bitmapOrg = bitmap;// BitmapFactory.decodeFile(picPath);
-					int w = bitmapOrg.getWidth();
-					int h = bitmapOrg.getHeight();
-					mBTService.PrintImage(resizeImage(bitmapOrg, (int) (verson * 8), h), 80);
-					return;
-				}
 			}
 		}
 

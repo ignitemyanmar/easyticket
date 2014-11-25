@@ -11,11 +11,13 @@
         android:layout_width="wrap_content"
         android:layout_height="2dp"
         android:background="#FF8C26" />
-
+
     <RelativeLayout
-        android:id="@+id/RelativeLayout1"
+        android:id="@+id/layout_seat_plan"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:descendantFocusability="beforeDescendants" 
+     	android:focusableInTouchMode="true"
         android:orientation="vertical" >
 
         <ScrollView
@@ -106,26 +108,6 @@
                     android:numColumns="3" >
 
                 </GridView>
-
-                <com.smk.custom.view.CustomTextView
-                    android:id="@+id/txt_departure_date"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"
-                    android:layout_marginTop="10dp"
-                    android:text="ထြက္ခြာမည့္ ရက္ : 2014-06-06"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
-
-                <com.smk.custom.view.CustomTextView
-                    android:id="@+id/txt_departure_time"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"
-                    android:layout_marginTop="10dp"
-                    android:text="ထြက္ခြာမည့္ အခ်ိန္ : 10:00 AM"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -216,8 +198,18 @@
                                 android:text="Booking ခံုမ်ား" />
 
                         </LinearLayout>
+
+                        <ListView
+                            android:id="@+id/lst_group_user"
+                            android:layout_width="200dp"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="10dp"
+                            android:divider="#FFF" >
+
+                        </ListView>
+
                     </LinearLayout>
-
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -225,9 +217,28 @@
                         android:orientation="vertical" >
 
                         <com.smk.custom.view.CustomTextView
+                            android:id="@+id/txt_departure_date"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:layout_weight="59.64"
+                            android:text="ထြက္ခြာမည့္ ရက္ : 2014-06-06"
+                            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                        <com.smk.custom.view.CustomTextView
+                            android:id="@+id/txt_departure_time"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:layout_weight="59.64"
+                            android:text="ထြက္ခြာမည့္ အခ်ိန္ : 10:00 AM"
+                            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                        <com.smk.custom.view.CustomTextView
                             android:id="@+id/txt_operator"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
                             android:layout_weight="59.64"
                             android:text="Operator: Elite"
                             android:textAppearance="?android:attr/textAppearanceMedium" />
@@ -260,63 +271,71 @@
                             android:divider="#FFF"
                             android:visibility="gone" >
                         </ListView>
-                        
-                         <com.smk.custom.view.CustomTextView
-                             android:id="@+id/CustomTextView02"
-                             android:layout_width="match_parent"
-                             android:layout_height="wrap_content"
-                             android:layout_marginTop="10dp"
-                             android:layout_weight="59.64"
-                             android:text="Please Choose Agent"
-                             android:textAppearance="?android:attr/textAppearanceMedium" />
-
-                        <AutoCompleteTextView
-                            android:id="@+id/edt_agent"
+
+                        <com.smk.custom.view.CustomTextView
+                            android:id="@+id/CustomTextView02"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
                             android:layout_weight="59.64"
-                            android:ems="10" />
+                            android:text="Please Choose Agent"
+                            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+	                    <com.smk.custom.view.CustomAutocompleteTextView
+			                android:id="@+id/edt_agent"
+			                android:layout_width="match_parent"
+			                android:layout_height="wrap_content"
+			                android:layout_marginTop="10dp"
+			                android:ems="10" >
+			            </com.smk.custom.view.CustomAutocompleteTextView>
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="59.64" >
-
+
                             <Button
                                 android:id="@+id/btn_now_booking"
                                 style="?android:attr/buttonStyleSmall"
                                 android:layout_width="150dp"
-                                android:layout_height="50dp"
+                                android:layout_height="60dp"
                                 android:layout_marginTop="30dp"
                                 android:background="@drawable/btn_blue"
                                 android:text="Now Booking"
-                                android:textColor="@color/white" />
-
+                                android:textColor="@color/white"
+                                android:textSize="20dp"
+                                android:textStyle="bold" />
+
                             <Button
                                 android:id="@+id/btn_booking"
                                 style="?android:attr/buttonStyleSmall"
                                 android:layout_width="150dp"
-                                android:layout_height="50dp"
+                                android:layout_height="60dp"
                                 android:layout_marginLeft="10dp"
                                 android:layout_marginTop="30dp"
-                                android:background="@drawable/btn_orange"
-                                android:text="Go to Booking List"
-                                android:textColor="@color/white" />
+                                android:background="@drawable/btn_gold"
+                                android:text="Booking List"
+                                android:textColor="@color/white"
+                                android:textSize="20dp"
+                                android:textStyle="bold" />
 
                         </LinearLayout>
+
+                        <Button
+                            android:id="@+id/btn_check_out"
+                            android:layout_width="310dp"
+                            android:layout_height="60dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_weight="59.64"
+                            android:background="@drawable/btn_green"
+                            android:text="Check Out"
+                            android:textColor="@color/white"
+                            android:textSize="20dp"
+                            android:textStyle="bold" />
 
                     </LinearLayout>
 
                 </LinearLayout>
-
-            	<ListView
-            	    android:id="@+id/lst_group_user"
-            	    android:layout_width="match_parent"
-            	    android:layout_height="wrap_content"
-            	    android:layout_margin="10dp"
-            	    android:divider="#FFF" >
-
-                </ListView>
             </LinearLayout>
         </ScrollView>
     </RelativeLayout>

@@ -18,6 +18,7 @@ import com.ignite.mm.ticketing.sqlite.database.model.AgentList;
 import com.ignite.mm.ticketing.sqlite.database.model.BusSeat;
 import com.ignite.mm.ticketing.sqlite.database.model.CityList;
 import com.ignite.mm.ticketing.sqlite.database.model.CreditOrder;
+import com.ignite.mm.ticketing.sqlite.database.model.ExtraCity;
 import com.ignite.mm.ticketing.sqlite.database.model.OperatorGroupUser;
 import com.ignite.mm.ticketing.sqlite.database.model.Operators;
 import com.ignite.mm.ticketing.sqlite.database.model.ReturnComfrim;
@@ -41,6 +42,7 @@ public interface INetworkEngine {
 			@Query("operator_id") String operator_id,
 			@Query("from_city") String from_city,
 			@Query("to_city") String to_city, 
+			@Query("class_id") String class_id,
 			@Query("date") String date,
 			@Query("time") String time, Callback<List<BusSeat>> callback);
 	
@@ -89,4 +91,10 @@ public interface INetworkEngine {
 
 	@GET("/operatorgroup")
 	void getOperatorGroupUser(@Query("access_token")String access_token,@Query("operator_id")String operator_id, Callback<List<OperatorGroupUser>> callback);
+	
+	@GET("/extra_destination/{id}")
+	void getExtraDestination(@Query("access_token")String access_token ,@Path("id")String id, Callback<List<ExtraCity>> callback);
+
+	@GET("/booking/notify")
+	void getNotiBooking(@Query("access_token")String access_token, @Query("date")String date, Callback<Integer> callback);
 }

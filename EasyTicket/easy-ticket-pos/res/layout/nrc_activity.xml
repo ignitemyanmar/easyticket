@@ -18,7 +18,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="20dp" >
 
@@ -54,9 +54,9 @@
                 android:ems="10"
                 android:inputType="text"
                 android:singleLine="true" />
-
+
             <com.smk.custom.view.CustomTextView
-                android:id="@+id/textView4"
+                android:id="@+id/CustomTextView03"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
@@ -86,6 +86,30 @@
                 android:layout_marginTop="10dp"
                 android:ems="10" >
             </com.smk.custom.view.CustomAutocompleteTextView>
+
+            <LinearLayout
+                android:id="@+id/extra_city_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone" >
+
+                <com.smk.custom.view.CustomTextView
+                    android:id="@+id/CustomTextView02"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="ဆက္သြား မည့္ ၿမိဳ႕"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:visibility="visible" />
+
+                <Spinner
+                    android:id="@+id/sp_extra_city"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:visibility="visible" />
+            </LinearLayout>
 
             <com.smk.custom.view.CustomTextView
                 android:id="@+id/CustomTextView01"
@@ -111,6 +135,27 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical" >
             </LinearLayout>
+
+            <com.smk.custom.view.CustomTextView
+                android:id="@+id/textView4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="အ ေၾကာင္း အ ရာ တစ္ခုခု ေရးရန္"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:visibility="gone" />
+
+            <com.smk.custom.view.CustomEditText
+                android:id="@+id/edt_remark"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:ems="10"
+                android:inputType="textMultiLine"
+                android:minLines="3"
+                android:visibility="gone" >
+
+            </com.smk.custom.view.CustomEditText>
 
             <LinearLayout
                 android:layout_width="match_parent"

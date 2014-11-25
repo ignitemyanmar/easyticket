@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="forest_green">#349A10</color>
-    <color name="pussian_blue">#01315A</color>
+    <color name="forest_green">#0DFFB5</color>
+    <color name="dark_green">#01AEBF</color>
+    <color name="pussian_blue">#001AFF</color>
     <color name="golden_brown">#9A6610</color>
     <color name="white">#FFFFFF</color>
     <color name="gray">#CCCCCC</color>
     <color name="black">#000000</color>
-    <color name="dark_blue">#105B9A</color>
-    <color name="red">#F01D09</color>
+    <color name="dark_blue">#22409A</color>
+    <color name="red">#FF0000</color>
     <color name="orange">#FF9408</color>
-    <color name="transparent_orange">#7FFF9408</color>
-    <color name="transparent_forest_green">#7F349A10</color>
+    <color name="transparent_dark_green">#CC01AEBF</color>
+    <color name="transparent_dark_blue">#CC22409A</color>
 </resources>

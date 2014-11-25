@@ -15,9 +15,11 @@ import android.widget.TextView;
 public class TripsCityAdapter extends BaseAdapter {
 	private LayoutInflater mInflater;
 	private List<TripsCollection> listItem;
+	private Activity aty;
 	public TripsCityAdapter(Activity aty, List<TripsCollection> _list){
 		mInflater = LayoutInflater.from(aty);
 		listItem = _list;
+		this.aty = aty;
 	}
 	public int getCount() {
 		// TODO Auto-generated method stub
@@ -43,6 +45,11 @@ public class TripsCityAdapter extends BaseAdapter {
         	convertView.setTag(holder);
 		}else{
 			holder = (ViewHolder) convertView.getTag();
+		}
+		if(getItem(position).getFrom_id().equals("13")){
+			holder.TripCity.setBackgroundColor(aty.getResources().getColor(R.color.transparent_dark_green));
+		}else{
+			holder.TripCity.setBackgroundColor(aty.getResources().getColor(R.color.transparent_dark_blue));
 		}
 		holder.TripCity.setText(getItem(position).getFrom()+" - "+getItem(position).getTo());
 		return convertView;

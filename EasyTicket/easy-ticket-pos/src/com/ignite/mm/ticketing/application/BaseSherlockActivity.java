@@ -1,10 +1,14 @@
 package com.ignite.mm.ticketing.application;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
@@ -61,6 +65,16 @@ public class BaseSherlockActivity extends SherlockActivity {
 			closeAllActivities();
 		}
 		super.onResume();
+	}
+	
+	protected String getToday(){
+		Calendar c = Calendar.getInstance();
+		System.out.println("Current time => " + c.getTime());
+
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		String formattedDate = df.format(c.getTime());
+		Log.i("","Hello Today: "+formattedDate);
+		return formattedDate;
 	}
 	
 	@Override

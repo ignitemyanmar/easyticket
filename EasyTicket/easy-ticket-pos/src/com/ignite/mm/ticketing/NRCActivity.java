@@ -14,6 +14,7 @@ import retrofit.client.Response;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -48,10 +49,12 @@ import com.ignite.mm.ticketing.application.BaseSherlockActivity;
 import com.ignite.mm.ticketing.application.DeviceUtil;
 import com.ignite.mm.ticketing.clientapi.NetworkEngine;
 import com.ignite.mm.ticketing.custom.listview.adapter.AgentListAdapter;
+import com.ignite.mm.ticketing.custom.listview.adapter.ExtraCityAdapter;
 import com.ignite.mm.ticketing.http.connection.HttpConnection;
 import com.ignite.mm.ticketing.sqlite.database.model.Agent;
 import com.ignite.mm.ticketing.sqlite.database.model.AgentList;
 import com.ignite.mm.ticketing.sqlite.database.model.ConfirmSeat;
+import com.ignite.mm.ticketing.sqlite.database.model.ExtraCity;
 import com.smk.custom.view.CustomTextView;
 import com.smk.skalertmessage.SKToastMessage;
 import com.smk.skconnectiondetector.SKConnectionDetector;
@@ -84,6 +87,13 @@ public class NRCActivity extends BaseSherlockActivity {
 	private ArrayAdapter<String> nrcListAdapter;
 	private String BusOccurence;
 	private String Intents;
+	private LinearLayout extra_city_container;
+	private Spinner sp_extra_city;
+	private List<ExtraCity> extraCity;
+	protected Integer ExtraCityID = 0;
+	private Integer NotifyBooking;
+	private TextView actionBarNoti;
+	private EditText edt_remark;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -99,8 +109,17 @@ public class NRCActivity extends BaseSherlockActivity {
 				R.id.action_bar_back);
 		actionBarBack.setOnClickListener(clickListener);
 		actionBarTitle.setText("BUS");
+		actionBarNoti = (TextView) actionBar.getCustomView().findViewById(R.id.txt_notify_booking);
+		actionBarNoti.setOnClickListener(clickListener);
 		actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-
+		
+		SharedPreferences notify = getSharedPreferences("NotifyBooking", Context.MODE_PRIVATE);
+		NotifyBooking = notify.getInt("count", 0);
+		if(NotifyBooking > 0){
+			actionBarNoti.setVisibility(View.VISIBLE);
+			actionBarNoti.setText(NotifyBooking.toString());
+		}
+		
 		Bundle bundle = getIntent().getExtras();
 		Intents = bundle.getString("from_intent");
 		if(Intents.equals("booking")){
@@ -118,6 +137,9 @@ public class NRCActivity extends BaseSherlockActivity {
 		rdo_cash_down = (RadioButton) findViewById(R.id.rdo_cash_down);
 		rdo_credit = (RadioButton) findViewById(R.id.rdo_credit);
 		rdo_local = (RadioButton) findViewById(R.id.rdo_local);
+		extra_city_container = (LinearLayout) findViewById(R.id.extra_city_container);
+		sp_extra_city = (Spinner) findViewById(R.id.sp_extra_city);
+		edt_remark = (EditText) findViewById(R.id.edt_remark);
 		
 		nrcFormat = new ArrayList<String>();
 		nrcFormat.add("1/MaAhaPa(N) ");
@@ -150,6 +172,7 @@ public class NRCActivity extends BaseSherlockActivity {
 			String user_type = pref.getString("user_type", null);
 			if(user_type.equals("operator")){
 				getAgent();
+				getExtraDestination();
 			}else{
 				txt_agent.setVisibility(View.GONE);
 				auto_txt_agent.setVisibility(View.GONE);
@@ -205,8 +228,46 @@ public class NRCActivity extends BaseSherlockActivity {
 			});
 		}
 		
+		extraCity = new ArrayList<ExtraCity>();
+		extraCity.add(new ExtraCity(0, 0, 0, 0, 0, "Select Next Destination City"));
+		
 	}
 	
+	private void getExtraDestination(){
+		NetworkEngine.getInstance().getExtraDestination(AppLoginUser.getAccessToken(), BusOccurence, new Callback<List<ExtraCity>>() {
+			
+			public void success(List<ExtraCity> arg0, Response arg1) {
+				// TODO Auto-generated method stub
+				if(arg0.size() > 0){
+					extra_city_container.setVisibility(View.VISIBLE);
+					extraCity.addAll(arg0);
+					sp_extra_city.setAdapter(new ExtraCityAdapter(NRCActivity.this, extraCity));
+					sp_extra_city.setOnItemSelectedListener(itemSelectedListener);
+				}else{
+					extra_city_container.setVisibility(View.GONE);
+				}
+			}
+			
+			public void failure(RetrofitError arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+	}
+	
+	private OnItemSelectedListener itemSelectedListener = new OnItemSelectedListener() {
+
+		public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2,
+				long arg3) {
+			// TODO Auto-generated method stub
+			ExtraCityID  = extraCity.get(arg2).getId();
+		}
+
+		public void onNothingSelected(AdapterView<?> arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+	};
 
 	private void comfirmOrder() {
 		dialog = ProgressDialog.show(this, "", " Please wait...", true);
@@ -245,7 +306,9 @@ public class NRCActivity extends BaseSherlockActivity {
 		params.add(new BasicNameValuePair("nationality", rdo_local.isChecked() == true ? "local" : "foreign"));
 		params.add(new BasicNameValuePair("reference_no", edt_ref_invoice_no.getText().toString()));
 		params.add(new BasicNameValuePair("order_date",working_date));
+		params.add(new BasicNameValuePair("remark",edt_remark.getText().toString()));
 		params.add(new BasicNameValuePair("booking","0"));
+		params.add(new BasicNameValuePair("extra_dest_id",ExtraCityID.toString()));
 		params.add(new BasicNameValuePair("device_id",DeviceUtil.getInstance(this).getID()));
 		params.add(new BasicNameValuePair("access_token", accessToken));
 		Log.i("","Hello Params :"+ params.toString());
@@ -273,7 +336,7 @@ public class NRCActivity extends BaseSherlockActivity {
 			}
 		};
 		HttpConnection lt = new HttpConnection(handler, "POST",
-				"http://192.168.1.116/sale/comfirm", params);
+				"http://192.168.1.101/sale/comfirm", params);
 		lt.execute();
 	}
 	
@@ -304,6 +367,16 @@ public class NRCActivity extends BaseSherlockActivity {
 		public void onClick(View v) {
 			if (v == actionBarBack) {
 				onBackPressed();
+			}
+
+			if(v == actionBarNoti){
+				SharedPreferences sharedPreferences = getSharedPreferences("order",MODE_PRIVATE);
+				SharedPreferences.Editor editor = sharedPreferences.edit();
+				editor.clear();
+				editor.commit();
+				editor.putString("order_date", getToday());
+				editor.commit();
+	        	startActivity(new Intent(getApplicationContext(),	BusTicketingOrderListActivity.class));
 			}
 
 			if (v == btnsubmit) {

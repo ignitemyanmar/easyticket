@@ -3,6 +3,7 @@ package com.ignite.mm.ticketing;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -43,6 +44,7 @@ public class BusTripsCityActivity extends BaseSherlockActivity{
 	private ImageButton actionBarBack;
 	private int NofColumn;
 	private String selectedDate;
+	private TextView actionBarNoti;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +57,8 @@ public class BusTripsCityActivity extends BaseSherlockActivity{
 				R.id.action_bar_title);
 		actionBarBack = (ImageButton) actionBar.getCustomView().findViewById(
 				R.id.action_bar_back);
+		actionBarNoti = (TextView) actionBar.getCustomView().findViewById(R.id.txt_notify_booking);
+		actionBarNoti.setOnClickListener(clickListener);
 		actionBarTitle.setText("Choose City");
 		actionBarBack.setOnClickListener(clickListener);
 		actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
@@ -69,6 +73,7 @@ public class BusTripsCityActivity extends BaseSherlockActivity{
 		skDetector.setMessageStyle(SKConnectionDetector.VERTICAL_TOASH);
 		if(skDetector.isConnectingToInternet()){
 			getTripsCity();
+			getNotiBooking();
 		}else{
 			skDetector.showErrorMessage();
 			fadeData();
@@ -82,6 +87,16 @@ public class BusTripsCityActivity extends BaseSherlockActivity{
 			// TODO Auto-generated method stub
 			if(v == actionBarBack){
 				finish();
+			}
+			
+			if(v == actionBarNoti){
+				SharedPreferences sharedPreferences = getSharedPreferences("order",MODE_PRIVATE);
+				SharedPreferences.Editor editor = sharedPreferences.edit();
+				editor.clear();
+				editor.commit();
+				editor.putString("order_date", getToday());
+				editor.commit();
+	        	startActivity(new Intent(getApplicationContext(),	BusTicketingOrderListActivity.class));
 			}
 		}
 	};
@@ -115,6 +130,34 @@ public class BusTripsCityActivity extends BaseSherlockActivity{
 			public void failure(RetrofitError arg0) {
 				// TODO Auto-generated method stub
 				dialog.dismiss();
+			}
+		});
+	}
+	
+	private void getNotiBooking(){
+		
+		NetworkEngine.getInstance().getNotiBooking(AppLoginUser.getAccessToken(), getToday() , new Callback<Integer>() {
+			
+			public void success(Integer arg0, Response arg1) {
+				// TODO Auto-generated method stub
+				SharedPreferences sharedPreferences = getSharedPreferences("NotifyBooking",Activity.MODE_PRIVATE);
+				SharedPreferences.Editor editor = sharedPreferences.edit();
+				
+				editor.clear();
+				editor.commit();
+				
+				editor.putInt("count", arg0);
+				editor.commit();
+				
+				if(arg0 > 0){
+					actionBarNoti.setVisibility(View.VISIBLE);
+					actionBarNoti.setText(arg0.toString());
+				}
+			}
+			
+			public void failure(RetrofitError arg0) {
+				// TODO Auto-generated method stub
+				
 			}
 		});
 	}

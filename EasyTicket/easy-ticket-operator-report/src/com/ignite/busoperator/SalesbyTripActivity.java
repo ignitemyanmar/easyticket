@@ -1,7 +1,6 @@
 package com.ignite.busoperator;
 
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -9,12 +8,9 @@ import java.util.List;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
-import com.actionbarsherlock.app.SherlockActivity;
-import com.actionbarsherlock.view.MenuItem;
 import com.ignite.busoperator.R;
 import com.ignite.busoperator.adapter.CityFromAdapter;
 import com.ignite.busoperator.adapter.CityToAdapter;
-import com.ignite.busoperator.adapter.OperatorAdapter;
 import com.ignite.busoperator.adapter.OperatorDateListAdapter;
 import com.ignite.busoperator.adapter.TimeAdapter;
 import com.ignite.busoperator.application.BaseSherlockActivity;
@@ -23,8 +19,6 @@ import com.ignite.busoperator.clientapi.NetworkEngine;
 import com.ignite.busoperator.model.CitiesbyAgent;
 import com.ignite.busoperator.model.From;
 import com.ignite.busoperator.model.OAuth2Error;
-import com.ignite.busoperator.model.Operator;
-import com.ignite.busoperator.model.OperatorsbyAgent;
 import com.ignite.busoperator.model.TimesbyOperator;
 import com.ignite.busoperator.model.To;
 import com.ignite.busoperator.model.TripsbyOperator;

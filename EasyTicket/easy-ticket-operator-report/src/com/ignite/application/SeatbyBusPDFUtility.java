@@ -127,35 +127,46 @@ public class SeatbyBusPDFUtility {
             // step 3
             document.open();
             // step 4
-			document.add(new Paragraph("Trip: "+seatbyBus.get(0).getTrip().toString()));
-			document.add(new Paragraph("Departure Date: "+seatbyBus.get(0).getDeparture_date().toString()));
-			document.add(new Paragraph("Departuer Time: "+seatbyBus.get(0).getDeparture_time().toString()));
-			document.add(new Paragraph("Order Date: "+seatbyBus.get(0).getOrder_date().toString()));
+			document.add(new Paragraph("Trip: "+seatbyBus.get(0).getFromTo().toString()));
+			document.add(new Paragraph("Departure Date: "+seatbyBus.get(0).getDepartureDate().toString()));
+			document.add(new Paragraph("Departuer Time: "+seatbyBus.get(0).getTime().toString()));
+			document.add(new Paragraph("Order Date: "+seatbyBus.get(0).getOrderDate().toString()));
 			document.add(new Paragraph("  "));
 			
-			PdfPTable table = new PdfPTable(6);
+			PdfPTable table = new PdfPTable(10);
 			table.setTotalWidth(527);
 			table.setLockedWidth(true);
-            table.getDefaultCell().setFixedHeight(20);
+            //table.getDefaultCell().setFixedHeight(20);
             table.getDefaultCell().setBorder(Rectangle.BOX);
 			
 	        
-			table.addCell("Bus No.");
-			table.addCell("Customer");
-			table.addCell("Seller Name");
+			table.addCell("Departure Date");
+			table.addCell("Trip");
+			table.addCell("Time");
+			table.addCell("Bus Class");
+			table.addCell("Agent Name");
+			table.addCell("Ticket No.");
+			table.addCell("QTY");
 			table.addCell("Price");
 			table.addCell("Commission");
-			table.addCell("Ticket No.");
-				        
+			table.addCell("Total Amount");
+			int grand_total_amount = 0;        
 	        for(SeatbyBus seatBus: seatbyBus){
-	        	table.addCell(seatBus.getSeat_no());
-	            table.addCell(seatBus.getName());
-	            table.addCell(seatBus.getAgent());
+	        	table.addCell(seatBus.getDepartureDate());
+	            table.addCell(seatBus.getFromTo());
+	            table.addCell(seatBus.getTime());
+	            table.addCell(seatBus.getClasses());
+	            table.addCell(seatBus.getAgentName());
+	            table.addCell(seatBus.getSeatNo());
+	            table.addCell(seatBus.getSoldSeat().toString());
 	            table.addCell(seatBus.getPrice().toString());
 	            table.addCell(seatBus.getCommission().toString());
-	            table.addCell(seatBus.getTicket_no());
+	            table.addCell(seatBus.getTotalAmount().toString());
+	            grand_total_amount += seatBus.getTotalAmount();
 	        }
 	        document.add(table);
+	        document.add(new Paragraph("  "));
+	        document.add(new Paragraph("Grand Total Amount: "+grand_total_amount+" KS"));
 	        document.close();
 	        
 		} catch (DocumentException e) {

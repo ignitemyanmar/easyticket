@@ -1,97 +1,260 @@
 package com.ignite.busoperator.model;
 
 import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 public class TodayBus {
+	
+	@SerializedName("bus_id")
 	@Expose
-	private String bus_id;
+	private Integer busId;
+	@SerializedName("departure_date")
 	@Expose
-	private String classes;
+	private String departureDate;
+	@SerializedName("from_id")
 	@Expose
-	private String from;
+	private Integer fromId;
+	@SerializedName("to_id")
 	@Expose
-	private String to;
+	private Integer toId;
+	@SerializedName("from_to")
+	@Expose
+	private String fromTo;
 	@Expose
 	private String time;
+	@SerializedName("class_id")
 	@Expose
-	private Integer sold_seat;
+	private Integer classId;
+	@SerializedName("class_name")
 	@Expose
-	private Integer total_seat;
+	private String className;
+	@SerializedName("local_price")
 	@Expose
-	private String price;
+	private Integer localPrice;
+	@SerializedName("foreign_price")
 	@Expose
-	private Integer sold_amount;
+	private Integer foreignPrice;
+	@SerializedName("sold_seat")
+	@Expose
+	private Integer soldSeat;
+	@SerializedName("total_amount")
+	@Expose
+	private Integer totalAmount;
 	
-	public String getBus_id() {
-		return bus_id;
-	}
-
-	public void setBus_id(String bus_id) {
-		this.bus_id = bus_id;
-	}
-
-	public String getClasses() {
-		return classes;
-	}
-
-	public void setClasses(String classes) {
-		this.classes = classes;
-	}
-
-	public String getFrom() {
-	return from;
+	/**
+	* 
+	* @return
+	* The busId
+	*/
+	public Integer getBusId() {
+	return busId;
 	}
 	
-	public void setFrom(String from) {
-	this.from = from;
+	/**
+	* 
+	* @param busId
+	* The bus_id
+	*/
+	public void setBusId(Integer busId) {
+	this.busId = busId;
 	}
 	
-	public String getTo() {
-	return to;
+	/**
+	* 
+	* @return
+	* The departureDate
+	*/
+	public String getDepartureDate() {
+	return departureDate;
 	}
 	
-	public void setTo(String to) {
-	this.to = to;
+	/**
+	* 
+	* @param departureDate
+	* The departure_date
+	*/
+	public void setDepartureDate(String departureDate) {
+	this.departureDate = departureDate;
 	}
 	
+	/**
+	* 
+	* @return
+	* The fromId
+	*/
+	public Integer getFromId() {
+	return fromId;
+	}
+	
+	/**
+	* 
+	* @param fromId
+	* The from_id
+	*/
+	public void setFromId(Integer fromId) {
+	this.fromId = fromId;
+	}
+	
+	/**
+	* 
+	* @return
+	* The toId
+	*/
+	public Integer getToId() {
+	return toId;
+	}
+	
+	/**
+	* 
+	* @param toId
+	* The to_id
+	*/
+	public void setToId(Integer toId) {
+	this.toId = toId;
+	}
+	
+	/**
+	* 
+	* @return
+	* The fromTo
+	*/
+	public String getFromTo() {
+	return fromTo;
+	}
+	
+	/**
+	* 
+	* @param fromTo
+	* The from_to
+	*/
+	public void setFromTo(String fromTo) {
+	this.fromTo = fromTo;
+	}
+	
+	/**
+	* 
+	* @return
+	* The time
+	*/
 	public String getTime() {
 	return time;
 	}
 	
+	/**
+	* 
+	* @param time
+	* The time
+	*/
 	public void setTime(String time) {
 	this.time = time;
 	}
 	
-	public Integer getSold_seat() {
-	return sold_seat;
+	/**
+	* 
+	* @return
+	* The classId
+	*/
+	public Integer getClassId() {
+	return classId;
 	}
 	
-	public void setSold_seat(Integer sold_seat) {
-	this.sold_seat = sold_seat;
+	/**
+	* 
+	* @param classId
+	* The class_id
+	*/
+	public void setClassId(Integer classId) {
+	this.classId = classId;
 	}
 	
-	public Integer getTotal_seat() {
-	return total_seat;
+	/**
+	* 
+	* @return
+	* The className
+	*/
+	public String getClassName() {
+	return className;
 	}
 	
-	public void setTotal_seat(Integer total_seat) {
-	this.total_seat = total_seat;
+	/**
+	* 
+	* @param className
+	* The class_name
+	*/
+	public void setClassName(String className) {
+	this.className = className;
 	}
 	
-	public String getPrice() {
-	return price;
+	/**
+	* 
+	* @return
+	* The localPrice
+	*/
+	public Integer getLocalPrice() {
+	return localPrice;
 	}
 	
-	public void setPrice(String price) {
-	this.price = price;
+	/**
+	* 
+	* @param localPrice
+	* The local_price
+	*/
+	public void setLocalPrice(Integer localPrice) {
+	this.localPrice = localPrice;
 	}
 	
-	public Integer getSold_amount() {
-	return sold_amount;
+	/**
+	* 
+	* @return
+	* The foreignPrice
+	*/
+	public Integer getForeignPrice() {
+	return foreignPrice;
 	}
 	
-	public void setSold_amount(Integer sold_amount) {
-	this.sold_amount = sold_amount;
+	/**
+	* 
+	* @param foreignPrice
+	* The foreign_price
+	*/
+	public void setForeignPrice(Integer foreignPrice) {
+	this.foreignPrice = foreignPrice;
+	}
+	
+	/**
+	* 
+	* @return
+	* The soldSeat
+	*/
+	public Integer getSoldSeat() {
+	return soldSeat;
+	}
+	
+	/**
+	* 
+	* @param soldSeat
+	* The sold_seat
+	*/
+	public void setSoldSeat(Integer soldSeat) {
+	this.soldSeat = soldSeat;
+	}
+	
+	/**
+	* 
+	* @return
+	* The totalAmount
+	*/
+	public Integer getTotalAmount() {
+	return totalAmount;
+	}
+	
+	/**
+	* 
+	* @param totalAmount
+	* The total_amount
+	*/
+	public void setTotalAmount(Integer totalAmount) {
+	this.totalAmount = totalAmount;
 	}
 
 }

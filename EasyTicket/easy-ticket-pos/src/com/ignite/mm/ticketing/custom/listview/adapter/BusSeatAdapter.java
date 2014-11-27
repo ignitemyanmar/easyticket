@@ -11,6 +11,7 @@ import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.ignite.mm.ticketing.R;
@@ -51,6 +52,12 @@ public class BusSeatAdapter extends BaseAdapter{
 	            holder = new ViewHolder();
 	            holder.seat = (CheckBox) convertView.findViewById(R.id.chk_seat);
 	            holder.seatNo = (TextView) convertView.findViewById(R.id.txt_seat_no);
+	            holder.layout_customer_info = (RelativeLayout) convertView.findViewById(R.id.layout_customer_info);
+	            holder.txt_name = (TextView) convertView.findViewById(R.id.txt_name);
+	            holder.txt_phone = (TextView) convertView.findViewById(R.id.txt_phone);
+	            holder.txt_nrc = (TextView) convertView.findViewById(R.id.txt_nrc);
+	            holder.txt_agent = (TextView) convertView.findViewById(R.id.txt_agent);
+	            holder.txt_seating_no = (TextView) convertView.findViewById(R.id.txt_seating_no);
 	            holder.cover = (View) convertView.findViewById(R.id.v_cover);
 	            convertView.setTag(holder);
 			} else {
@@ -94,14 +101,26 @@ public class BusSeatAdapter extends BaseAdapter{
 			if(list.get(position).getStatus() == 2){
 				holder.seat.setEnabled(false);
             	holder.seatNo.setText(list.get(position).getSeat_no());
+            	if(list.get(position).getCustomerInfo() != null && list.get(position).getBooking() == 0){
+            		holder.layout_customer_info.setVisibility(View.VISIBLE);
+            		holder.txt_name.setText(list.get(position).getCustomerInfo().getName());
+            		holder.txt_phone.setText(list.get(position).getCustomerInfo().getPhone());
+            		holder.txt_nrc.setText(list.get(position).getCustomerInfo().getNrcNo());
+            		holder.txt_agent.setText(list.get(position).getCustomerInfo().getAgentName());
+            		holder.txt_seating_no.setText(list.get(position).getSeat_no());
+            	}else{
+            		holder.layout_customer_info.setVisibility(View.INVISIBLE);
+            	}
             }
             
             if(list.get(position).getStatus() == 3){
+            	holder.layout_customer_info.setVisibility(View.INVISIBLE);
             	holder.seat.setChecked(true);
             	holder.seatNo.setText(list.get(position).getSeat_no());
             }
             
             if(list.get(position).getStatus() == 1){
+            	holder.layout_customer_info.setVisibility(View.INVISIBLE);
             	holder.seatNo.setText(list.get(position).getSeat_no());
             	holder.seat.setEnabled(true);
             	holder.seat.setTag(position);
@@ -146,16 +165,11 @@ public class BusSeatAdapter extends BaseAdapter{
             }
             
             if(list.get(position).getStatus() == 0){
+            	holder.layout_customer_info.setVisibility(View.INVISIBLE);
             	holder.seat.setVisibility(View.INVISIBLE);
             	holder.seatNo.setVisibility(View.INVISIBLE);
             }
             
-           /* if(list.get(position).getStatus().equals("5")){
-            	holder.seat.setChecked(false);
-            	holder.cover.setVisibility(View.VISIBLE);
-        		holder.cover.setClickable(false);
-            }*/
-    
 	        return convertView;
 		}
 		
@@ -172,6 +186,12 @@ public class BusSeatAdapter extends BaseAdapter{
 		
 		 static class ViewHolder {
 				CheckBox seat;
+				RelativeLayout layout_customer_info;
+				TextView txt_name;
+				TextView txt_phone;
+				TextView txt_nrc;
+				TextView txt_agent;
+				TextView txt_seating_no;
 				View cover;
 				TextView seatNo;
 			}

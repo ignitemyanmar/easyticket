@@ -2558,6 +2558,7 @@ class ApiController extends BaseController
 							$temp['status']			=2;
 							$temp['booking']		= SaleOrder::whereid($checkoccupied_seat->order_id)->pluck('booking');
 							$temp['customer_info']  = $checkoccupied_seat->toarray();
+							$temp['customer_info']['phone'] = SaleOrder::whereid($checkoccupied_seat->order_id)->pluck('phone');
 							$temp['customer_info']['agent_name'] = Agent::whereid($checkoccupied_seat->agent_id)->pluck('name');
 						}else{
 							$temp['status']			=$rows->status;
@@ -5650,131 +5651,188 @@ class ApiController extends BaseController
     	$operator_id  		=Input::get('operator_id');
     	$agent_id  			=Input::get('agent_id');
 
-    	$order_ids = array();
-    	$order_ids = SaleOrder::/*with(array('saleitems'=>function($query){
-    		//$query->groupBy('trip_id');
-    		$query->selectRaw('count(*) as count')->groupBy('trip_id');
-    	}))->*/where('orderdate','=',$date)->lists('id');
+    	$order_ids = SaleOrder::where('orderdate','=',$date)->where('operator_id','=',$operator_id)->wherebooking(0)->lists('id');
 	
 		$sale_item = SaleItem::wherein('order_id', $order_ids)
-								->selectRaw('count(*) as total_seat, trip_id')
-								->groupBy('trip_id')->get();
-
-    	return Response::json($sale_item);
-
-    	if($agent_id){
-    		$order_ids=SaleOrder::whereagent_id($agent_id)->lists('id');
-    		$objbusoccurance_ids=SaleItem::wherein('order_id', $order_ids)->lists('id');
-    	}
-    	if($departure_time){
-    		if($operator_id){
-    			$objbusoccurance_ids=BusOccurance::whereoperator_id($operator_id)
-									->wheredeparture_date($date)
-									->wheredeparture_time($departure_time)
-									->lists('id');
-    		}
-    	}else{
-    		if($operator_id){
-    			$objbusoccurance_ids=BusOccurance::whereoperator_id($operator_id)
-									->wheredeparture_date($date)
-									->lists('id');	
-    		}
-    	}
+								->selectRaw('order_id, count(*) as sold_seat, trip_id, price, foreign_price, departure_date, busoccurance_id, SUM(free_ticket) as free_ticket')
+								->groupBy('order_id')->get();
+		$lists = array();
 		
-		$salerecord=array();
-		if($departure_time){
-			if($objbusoccurance_ids){
-				foreach ($objbusoccurance_ids as $occurrent_id) {
-						$saleiteminfo 	=SaleItem::wherebusoccurance_id($occurrent_id)->groupBy('order_id')->get();
-						$order_ids 		=SaleItem::wherebusoccurance_id($occurrent_id)->groupBy('order_id')->lists('order_id');
-						$busoccuranceinfo=BusOccurance::whereid($occurrent_id)->first();
-						if($order_ids){
-							$soldticketcount 	=SaleItem::wherebusoccurance_id($occurrent_id)->wherein('order_id',$order_ids)->count('id');
-							$temp['bus_id']		=$busoccuranceinfo->id;
-							$temp['bus_no']		=$busoccuranceinfo->bus_no;
-							$from_city 			=City::whereid($busoccuranceinfo->from)->pluck('name');
-							$to_city 			=City::whereid($busoccuranceinfo->to)->pluck('name');
-							$temp['from'] 		=$from_city;
-							$temp['to'] 		=$to_city;
-							$temp['class']		=Classes::whereid($busoccuranceinfo->classes)->pluck('name');
-							$temp['time'] 		=$busoccuranceinfo->departure_time;
-							$temp['sold_seat']	=$soldticketcount;
-							$temp['total_seat']	=SeatInfo::whereseat_plan_id($busoccuranceinfo->seat_plan_id)->where('status','<>',0)->count();
-							$temp['price']		=$busoccuranceinfo->price;
-							$temp['sold_amount']=$temp['price'] * $soldticketcount;
-							$temp['operator'] 	=Operator::whereid($busoccuranceinfo->operator_id)->pluck('name');
-							$salerecord[] 		=$temp;
-						}
+		foreach ($sale_item as $rows) {
+			$local_person = 0;
+			$foreign_price = 0;
+			$total_amount = 0;
+			$trip = Trip::whereid($rows->trip_id)->first();
+			if($trip){
+				$list['id'] = $rows->trip_id;
+				$list['bus_id'] = $rows->busoccurance_id;
+				$list['departure_date'] = $rows->departure_date;
+				$list['from_id'] = $trip->from;
+				$list['to_id'] = $trip->to;
+				$list['from_to'] = City::whereid($trip->from)->pluck('name').'-'.City::whereid($trip->to)->pluck('name');
+				$list['time'] = $trip->time;
+				$list['class_id'] = $trip->class_id;
+				$list['class_name'] = Classes::whereid($trip->class_id)->pluck('name');
+				if(SaleOrder::whereid($rows->order_id)->pluck('nationality') == 'local'){
+					$local_person += $rows->sold_seat;
+					$total_amount += $rows->free_ticket > 0 ? ($rows->price * $rows->sold_seat) - ($rows->price * $rows->free_ticket) : $rows->price * $rows->sold_seat ;
+				}else{
+					$foreign_price += $rows->sold_seat;
+					$total_amount += $rows->free_ticket > 0 ? ($rows->foreign_price * $rows->sold_seat) - ($rows->foreign_price * $rows->free_ticket) : $rows->foreign_price * $rows->sold_seat ;
 				}
+				$list['local_person'] = $local_person;
+				$list['foreign_person'] = $foreign_price;
+				$list['local_price'] = $rows->price;
+				$list['foreign_price'] = $rows->foreign_price;
+				$list['sold_seat'] = $rows->sold_seat;
+				$list['free_ticket'] = $rows->free_ticket;
+				$list['total_amount'] = $total_amount;
+				$lists[] = $list;
 			}
-			return Response::json($salerecord);	
-		}else{
-			$salerecord=array();
-			if($objbusoccurance_ids){
-				$i=0;
-				foreach ($objbusoccurance_ids as $occurrent_id) {
-					if($i==0){
-						$saleiteminfo 	=SaleItem::wherebusoccurance_id($occurrent_id)->groupBy('order_id')->get();
-						$order_ids 		=SaleItem::wherebusoccurance_id($occurrent_id)->groupBy('order_id')->lists('order_id');
-						$busoccuranceinfo=BusOccurance::whereid($occurrent_id)->first();
-						if($order_ids){
-							$soldticketcount 	=SaleItem::wherebusoccurance_id($occurrent_id)->wherein('order_id',$order_ids)->count('id');
-							$from_city 			=City::whereid($busoccuranceinfo->from)->pluck('name');
-							$to_city 			=City::whereid($busoccuranceinfo->to)->pluck('name');
-							$temp['bus_id']		=$busoccuranceinfo->id;
-							$temp['classes']	=Classes::whereid($busoccuranceinfo->classes)->pluck('name');
-							$temp['from'] 		=$from_city;
-							$temp['to']			=$to_city;
-							$temp['time'] 		=$busoccuranceinfo->departure_time;
-							$temp['sold_seat']	=$soldticketcount;
-							$temp['total_seat']	=SeatInfo::whereseat_plan_id($busoccuranceinfo->seat_plan_id)->where('status','<>',0)->count();
-							$temp['price']		=$busoccuranceinfo->price;
-							$temp['sold_amount']=$temp['price'] * $soldticketcount;
-							$temp['operator'] 	=Operator::whereid($busoccuranceinfo->operator_id)->pluck('name');
-							$salerecord[] 		=$temp;
-						}
-					}else{
-						$saleiteminfo 	=SaleItem::wherebusoccurance_id($occurrent_id)->groupBy('order_id')->get();
-						$order_ids 		=SaleItem::wherebusoccurance_id($occurrent_id)->groupBy('order_id')->lists('order_id');
-						$busoccuranceinfo=BusOccurance::whereid($occurrent_id)->first();
-						if($order_ids){
-							$soldticketcount 	=SaleItem::wherebusoccurance_id($occurrent_id)->wherein('order_id',$order_ids)->count('id');
-							$from_city 			=City::whereid($busoccuranceinfo->from)->pluck('name');
-							$to_city 			=City::whereid($busoccuranceinfo->to)->pluck('name');
-							$temp['bus_id']		=$busoccuranceinfo->id;
-							$temp['classes']	=Classes::whereid($busoccuranceinfo->classes)->pluck('name');
-							$temp['from'] 		=$from_city;
-							$temp['to'] 		=$to_city;
-							$temp['time'] 		=$busoccuranceinfo->departure_time;
-							$temp['sold_seat']	=$soldticketcount;
-							$temp['total_seat']	=SeatInfo::whereseat_plan_id($busoccuranceinfo->seat_plan_id)->where('status','<>',0)->count();
-							$temp['price']		=$busoccuranceinfo->price;
-							$temp['sold_amount']=$temp['price'] * $soldticketcount;
-							$sametime=0;
-							foreach ($salerecord as $key => $value) {
-								if($value['time']== $temp['time']){
-									$salerecord[$key]['sold_seat']=$value['sold_seat'] + $temp['sold_seat'];
-									$salerecord[$key]['total_seat']=$value['total_seat'] + $temp['total_seat'];
-									$salerecord[$key]['sold_amount']=$value['sold_amount'] + $temp['sold_amount'];
-									$sametime +=1;
-								}
-							}
-							if($sametime==0){
-								$salerecord[] 		=$temp;
-							}else{
-
-							}
-						}
-						
-
-					}
-					$i++;
-				}
-
+		}
+		//Grouping from Lists
+		$stack = array();
+		foreach ($lists as $rows) {
+			$check = $this->ifExist($rows, $stack);
+			if($check != -1){
+				$stack[$check]['local_person'] += $rows['local_person'];
+				$stack[$check]['foreign_person'] += $rows['foreign_person'];
+				$stack[$check]['sold_seat'] += $rows['sold_seat'];
+				$stack[$check]['free_ticket'] += $rows['free_ticket'];
+				$stack[$check]['total_amount'] += $rows['total_amount'];
+			}else{
+				array_push($stack, $rows);
 			}
-			return Response::json($salerecord);	
 		}
 
+    	return Response::json($stack);
+    	/*
+	    	if($agent_id){
+	    		$order_ids=SaleOrder::whereagent_id($agent_id)->lists('id');
+	    		$objbusoccurance_ids=SaleItem::wherein('order_id', $order_ids)->lists('id');
+	    	}
+	    	if($departure_time){
+	    		if($operator_id){
+	    			$objbusoccurance_ids=BusOccurance::whereoperator_id($operator_id)
+										->wheredeparture_date($date)
+										->wheredeparture_time($departure_time)
+										->lists('id');
+	    		}
+	    	}else{
+	    		if($operator_id){
+	    			$objbusoccurance_ids=BusOccurance::whereoperator_id($operator_id)
+										->wheredeparture_date($date)
+										->lists('id');	
+	    		}
+	    	}
+			
+			$salerecord=array();
+			if($departure_time){
+				if($objbusoccurance_ids){
+					foreach ($objbusoccurance_ids as $occurrent_id) {
+							$saleiteminfo 	=SaleItem::wherebusoccurance_id($occurrent_id)->groupBy('order_id')->get();
+							$order_ids 		=SaleItem::wherebusoccurance_id($occurrent_id)->groupBy('order_id')->lists('order_id');
+							$busoccuranceinfo=BusOccurance::whereid($occurrent_id)->first();
+							if($order_ids){
+								$soldticketcount 	=SaleItem::wherebusoccurance_id($occurrent_id)->wherein('order_id',$order_ids)->count('id');
+								$temp['bus_id']		=$busoccuranceinfo->id;
+								$temp['bus_no']		=$busoccuranceinfo->bus_no;
+								$from_city 			=City::whereid($busoccuranceinfo->from)->pluck('name');
+								$to_city 			=City::whereid($busoccuranceinfo->to)->pluck('name');
+								$temp['from'] 		=$from_city;
+								$temp['to'] 		=$to_city;
+								$temp['class']		=Classes::whereid($busoccuranceinfo->classes)->pluck('name');
+								$temp['time'] 		=$busoccuranceinfo->departure_time;
+								$temp['sold_seat']	=$soldticketcount;
+								$temp['total_seat']	=SeatInfo::whereseat_plan_id($busoccuranceinfo->seat_plan_id)->where('status','<>',0)->count();
+								$temp['price']		=$busoccuranceinfo->price;
+								$temp['sold_amount']=$temp['price'] * $soldticketcount;
+								$temp['operator'] 	=Operator::whereid($busoccuranceinfo->operator_id)->pluck('name');
+								$salerecord[] 		=$temp;
+							}
+					}
+				}
+				return Response::json($salerecord);	
+			}else{
+				$salerecord=array();
+				if($objbusoccurance_ids){
+					$i=0;
+					foreach ($objbusoccurance_ids as $occurrent_id) {
+						if($i==0){
+							$saleiteminfo 	=SaleItem::wherebusoccurance_id($occurrent_id)->groupBy('order_id')->get();
+							$order_ids 		=SaleItem::wherebusoccurance_id($occurrent_id)->groupBy('order_id')->lists('order_id');
+							$busoccuranceinfo=BusOccurance::whereid($occurrent_id)->first();
+							if($order_ids){
+								$soldticketcount 	=SaleItem::wherebusoccurance_id($occurrent_id)->wherein('order_id',$order_ids)->count('id');
+								$from_city 			=City::whereid($busoccuranceinfo->from)->pluck('name');
+								$to_city 			=City::whereid($busoccuranceinfo->to)->pluck('name');
+								$temp['bus_id']		=$busoccuranceinfo->id;
+								$temp['classes']	=Classes::whereid($busoccuranceinfo->classes)->pluck('name');
+								$temp['from'] 		=$from_city;
+								$temp['to']			=$to_city;
+								$temp['time'] 		=$busoccuranceinfo->departure_time;
+								$temp['sold_seat']	=$soldticketcount;
+								$temp['total_seat']	=SeatInfo::whereseat_plan_id($busoccuranceinfo->seat_plan_id)->where('status','<>',0)->count();
+								$temp['price']		=$busoccuranceinfo->price;
+								$temp['sold_amount']=$temp['price'] * $soldticketcount;
+								$temp['operator'] 	=Operator::whereid($busoccuranceinfo->operator_id)->pluck('name');
+								$salerecord[] 		=$temp;
+							}
+						}else{
+							$saleiteminfo 	=SaleItem::wherebusoccurance_id($occurrent_id)->groupBy('order_id')->get();
+							$order_ids 		=SaleItem::wherebusoccurance_id($occurrent_id)->groupBy('order_id')->lists('order_id');
+							$busoccuranceinfo=BusOccurance::whereid($occurrent_id)->first();
+							if($order_ids){
+								$soldticketcount 	=SaleItem::wherebusoccurance_id($occurrent_id)->wherein('order_id',$order_ids)->count('id');
+								$from_city 			=City::whereid($busoccuranceinfo->from)->pluck('name');
+								$to_city 			=City::whereid($busoccuranceinfo->to)->pluck('name');
+								$temp['bus_id']		=$busoccuranceinfo->id;
+								$temp['classes']	=Classes::whereid($busoccuranceinfo->classes)->pluck('name');
+								$temp['from'] 		=$from_city;
+								$temp['to'] 		=$to_city;
+								$temp['time'] 		=$busoccuranceinfo->departure_time;
+								$temp['sold_seat']	=$soldticketcount;
+								$temp['total_seat']	=SeatInfo::whereseat_plan_id($busoccuranceinfo->seat_plan_id)->where('status','<>',0)->count();
+								$temp['price']		=$busoccuranceinfo->price;
+								$temp['sold_amount']=$temp['price'] * $soldticketcount;
+								$sametime=0;
+								foreach ($salerecord as $key => $value) {
+									if($value['time']== $temp['time']){
+										$salerecord[$key]['sold_seat']=$value['sold_seat'] + $temp['sold_seat'];
+										$salerecord[$key]['total_seat']=$value['total_seat'] + $temp['total_seat'];
+										$salerecord[$key]['sold_amount']=$value['sold_amount'] + $temp['sold_amount'];
+										$sametime +=1;
+									}
+								}
+								if($sametime==0){
+									$salerecord[] 		=$temp;
+								}else{
+
+								}
+							}
+							
+
+						}
+						$i++;
+					}
+
+				}
+				return Response::json($salerecord);	
+			}*/
+
+    }
+
+    public function ifExist($key, $arr){
+    	if(is_array($arr)){
+    		$i = 0;
+    		foreach ($arr as $key_row) {
+    			if($key_row['id'] == $key['id']){
+    				return $i;
+    			}
+    			$i++;
+    		}
+    	}
+    	return -1;
     }
 
     public function getDailyReportforTripByAgent(){
@@ -5899,10 +5957,60 @@ class ApiController extends BaseController
 
     public function getDetailDailyReportforBus(){
     	$todaydate 			=$this->today;
-    	$date				=Input::get('date') ? Input::get('date') : $todaydate;
+    	$date				=Input::get('date') ? Input::get('date') : date('Y-m-d',strtotime($todaydate));
     	$operator_id  		=Input::get('operator_id');
     	$bus_id  			=Input::get('bus_id');
-		$objbusoccurance=BusOccurance::whereid($bus_id)->first();
+
+    	$sale_order = SaleOrder::with('saleitems')->whereHas('saleitems',function($query){
+    											$bus_id = Input::get('bus_id');
+    											if($bus_id){
+    												$query->wherebusoccurance_id($bus_id);
+    											}
+    									})->where('orderdate','=',$date)
+    									  ->where('operator_id','=',$operator_id)
+    									  ->get();
+
+    	$lists = array();
+    	foreach ($sale_order as $rows) {
+    		$list['vr_no'] = $rows->id;
+    		$list['order_date'] = $date;
+    		$list['from_to'] = 
+    		$list['departure_date'] = $rows->departure_date;
+    		$seats_no = "";
+    		$from_to  = null;
+    		$time = null;
+    		$price = null;
+    		$class_id = null;
+    		$agent_commission = null;
+    		$commission = 0;
+    		foreach ($rows->saleitems as $seat_row) {
+    			$seats_no .= $seat_row->seat_no.", ";
+    			$from_to   = City::whereid($seat_row->from)->pluck('name').'-'.City::whereid($seat_row->to)->pluck('name');
+    			$time = Trip::whereid($seat_row->trip_id)->pluck('time');
+    			$price = Trip::whereid($seat_row->trip_id)->pluck('price');
+    			$class_id = Trip::whereid($seat_row->trip_id)->pluck('class_id');
+    			$agent_commission = AgentCommission::wheretrip_id($seat_row->trip_id)->whereagent_id($rows->agent_id)->first();
+    			if($agent_commission){
+    				$commission = $agent_commission->commission;
+	    		}else{
+	    			$commission = Trip::whereid($seat_row->trip_id)->pluck('commission');
+	    		}
+    		}
+    		$list['from_to'] = $from_to;
+    		$list['time'] = $time;
+    		$list['classes'] = Classes::whereid($class_id)->pluck('name');
+    		$list['agent_name'] = Agent::whereid($rows->agent_id)->pluck('name');
+    		$list['commission'] = $commission;
+    		$list['seat_no'] = substr($seats_no, 0, -2);
+    		$list['sold_seat'] = count($rows->saleitems);
+    		$list['price'] = $price;
+    		$list['total_amount'] = (count($rows->saleitems) * $price) - (count($rows->saleitems) * $commission);
+    		$lists[] = $list;
+    	}
+
+    	return Response::json($lists);
+
+		/*$objbusoccurance=BusOccurance::whereid($bus_id)->first();
 		$salerecord=array();
 		if($objbusoccurance){
 			$saleiteminfo 	=SaleItem::wherebusoccurance_id($objbusoccurance->id)->get();
@@ -5933,7 +6041,7 @@ class ApiController extends BaseController
 				}
 			}
 		}
-		return Response::json($salerecord);
+		return Response::json($salerecord);*/
     }
 
     public function getSeatOccupancyReportbyBusid(){

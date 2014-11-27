@@ -169,6 +169,7 @@ public interface INetworkEngine {
 	
 	@GET("/report/bus/daily/busid")
 	void getSeatbyBusID(@Query("access_token")String access_token,
+			@Query("operator_id") String operator_id,
 			@Query("bus_id") String bus_id,
 			Callback<List<SeatbyBus>> callback);
 	

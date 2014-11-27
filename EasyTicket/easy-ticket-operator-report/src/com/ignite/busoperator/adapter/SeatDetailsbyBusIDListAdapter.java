@@ -3,6 +3,7 @@ package com.ignite.busoperator.adapter;
 import java.util.List;
 
 import com.ignite.busoperator.R;
+import com.ignite.busoperator.application.AppUtil;
 import com.ignite.busoperator.application.DeviceUtil;
 import com.ignite.busoperator.model.SeatbyBus;
 
@@ -47,40 +48,48 @@ public class SeatDetailsbyBusIDListAdapter extends BaseAdapter {
 		if (convertView == null) {
 			convertView = mInflater.inflate(R.layout.activity_seat_details_item, null);
 			holder = new ViewHolder();
-			holder.seatno = (TextView)convertView .findViewById(R.id.txtseat_no);
-			holder.buyer = (TextView)convertView .findViewById(R.id.txtbuyer);
-			holder.seller = (TextView)convertView .findViewById(R.id.txtseller);
-			holder.prices = (TextView)convertView .findViewById(R.id.txtPrice);
+			holder.date = (TextView)convertView .findViewById(R.id.txtDepartureDate);
+			holder.trip = (TextView)convertView .findViewById(R.id.txtTrip);
+			holder.time = (TextView)convertView .findViewById(R.id.txtTime);
+			holder.classes = (TextView)convertView .findViewById(R.id.txtClasses);
+			holder.agent = (TextView)convertView .findViewById(R.id.txtAgent);
+			holder.seatno = (TextView)convertView .findViewById(R.id.txtSeatNo);
+			holder.qty = (TextView)convertView .findViewById(R.id.txtQty);
+			holder.price = (TextView)convertView .findViewById(R.id.txtPrice);
 			holder.commission = (TextView)convertView .findViewById(R.id.txtCommission);
-			holder.vouncherNo = (TextView)convertView .findViewById(R.id.txtvouncher_no);
+			holder.total_amount = (TextView)convertView .findViewById(R.id.txtTotalAmount);
 			convertView.setTag(holder);
 		} else {
 			holder = (ViewHolder) convertView.getTag();
 		}
 		
-		holder.seatno.getLayoutParams().width = DeviceUtil.getInstance(aty).getWidth() / 6;
-		holder.buyer.getLayoutParams().width = DeviceUtil.getInstance(aty).getWidth() / 6;
-		holder.seller.getLayoutParams().width = DeviceUtil.getInstance(aty).getWidth() / 6;
-		holder.prices.getLayoutParams().width = DeviceUtil.getInstance(aty).getWidth() / 6;
-		holder.commission.getLayoutParams().width = DeviceUtil.getInstance(aty).getWidth() / 6;
-		holder.vouncherNo.getLayoutParams().width = DeviceUtil.getInstance(aty).getWidth() / 6;
+		holder.date.getLayoutParams().width = DeviceUtil.getInstance(aty).getWidth() / 10;
+		holder.trip.getLayoutParams().width = DeviceUtil.getInstance(aty).getWidth() / 10;
+		holder.time.getLayoutParams().width = DeviceUtil.getInstance(aty).getWidth() / 10;
+		holder.classes.getLayoutParams().width = DeviceUtil.getInstance(aty).getWidth() / 10;
+		holder.agent.getLayoutParams().width = DeviceUtil.getInstance(aty).getWidth() / 10;
+		holder.seatno.getLayoutParams().width = DeviceUtil.getInstance(aty).getWidth() / 10;
+		holder.qty.getLayoutParams().width = DeviceUtil.getInstance(aty).getWidth() / 10;
+		holder.price.getLayoutParams().width = DeviceUtil.getInstance(aty).getWidth() / 10;
+		holder.commission.getLayoutParams().width = DeviceUtil.getInstance(aty).getWidth() / 10;
+		holder.total_amount.getLayoutParams().width = DeviceUtil.getInstance(aty).getWidth() / 10;
 		
-		holder.seatno.setText(seat_list.get(position).getSeat_no());
-		holder.buyer.setText(seat_list.get(position).getName());
-		holder.seller.setText(seat_list.get(position).getAgent());
-		if(seat_list.get(position).getFree_ticket() == 1){
-			holder.prices.setText("Free Ticket");
-			holder.commission.setText("Free Ticket");
-		}else{
-			holder.prices.setText(seat_list.get(position).getPrice().toString());
-			holder.commission.setText((seat_list.get(position).getPrice() - seat_list.get(position).getCommission())+"("+seat_list.get(position).getCommission()+")" );
-		}
-		holder.vouncherNo.setText(seat_list.get(position).getTicket_no());
+		holder.date.setText(AppUtil.changeDate(seat_list.get(position).getDepartureDate()));
+		holder.trip.setText(seat_list.get(position).getFromTo());
+		holder.time.setText(seat_list.get(position).getTime());
+		holder.classes.setText(seat_list.get(position).getClasses());
+		holder.agent.setText(seat_list.get(position).getAgentName());
+		holder.seatno.setText(seat_list.get(position).getSeatNo());
+		holder.qty.setText(seat_list.get(position).getSoldSeat().toString());
+		holder.price.setText(seat_list.get(position).getPrice().toString());
+		holder.commission.setText((seat_list.get(position).getPrice() - seat_list.get(position).getCommission()) +"("+seat_list.get(position).getCommission().toString()+")");
+		holder.total_amount.setText(String.format("%,d", seat_list.get(position).getTotalAmount()));
+		
 		return convertView;
 	}
 
 	static class ViewHolder {
-		TextView seatno , buyer, seller, prices,commission, vouncherNo;
+		TextView date, trip, time, classes, agent, seatno, qty, price, commission, total_amount;
 				
 	}
 

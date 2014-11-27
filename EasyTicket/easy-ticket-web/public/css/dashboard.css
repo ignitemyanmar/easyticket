@@ -6,13 +6,13 @@ a{color:#4C9ED9;}
 h4 a{color: #77f;}
 body, input.m-wrap, button.m-wrap, select.m-wrap, textarea.m-wrap, select, .table-advance thead tr th{font-family: "Zawgyi-One"; font-size: 13px;}
 a:hover, a:focus{text-decoration: none; color:#222;}
-.wordwrap{width:210px; height:auto; padding:8px 4px;word-wrap:break-word;text-align: left;}
+.wordwrap{max-width:160px; height:auto; padding:8px 4px;word-wrap:break-word;text-align: left;}
 .dashboard-stat .description {
     width: 150px;
     padding-top: 15px;
     color: #eee;
 }
-.table-bordered thead:first-child tr:first-child th,.breadcrumb, .page-title,.portlet-title, .page-sidebar, .btn:hover, .btn:focus, .btn:active, .btn.active, .btn[disabled], .btn.disabled, .form-section,.trip_info h3, .trip_info span, .btn{font-family: "Zawgyi-One";}
+.table-bordered thead:first-child tr:first-child th,.breadcrumb, .page-title,.portlet-title, .page-sidebar, .btn:hover, .btn:focus, .btn:active, .btn.active, .btn[disabled], .btn.disabled, .form-section,.trip_info h3, .trip_info span, .btn,td,th{font-family: "Zawgyi-One" !important;}
 .trip_info li {
     background: none repeat scroll 0% 0% transparent;
     margin: 0px;

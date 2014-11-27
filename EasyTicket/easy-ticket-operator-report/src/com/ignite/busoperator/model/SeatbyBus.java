@@ -1,148 +1,256 @@
 package com.ignite.busoperator.model;
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class SeatbyBus {
 	
+	@SerializedName("vr_no")
 	@Expose
-	private String bus_id;
-	@SerializedName("Trip")
+	private String vrNo;
+	@SerializedName("order_date")
 	@Expose
-	private String trip;
+	private String orderDate;
+	@SerializedName("departure_date")
 	@Expose
-	private String sale_id;
+	private String departureDate;
+	@SerializedName("from_to")
 	@Expose
-	private String order_id;
+	private String fromTo;
 	@Expose
-	private String order_date;
+	private String time;
 	@Expose
-	private String seat_no;
+	private String classes;
+	@SerializedName("agent_name")
 	@Expose
-	private String ticket_no;
-	@Expose
-	private Integer free_ticket;
-	@Expose
-	private String name;
-	@Expose
-	private String agent;
-	@Expose
-	private Integer price;
+	private String agentName;
 	@Expose
 	private Integer commission;
+	@SerializedName("seat_no")
 	@Expose
-	private String departure_date;
+	private String seatNo;
+	@SerializedName("sold_seat")
 	@Expose
-	private String departure_time;
-
-	public String getBus_id() {
-	return bus_id;
+	private Integer soldSeat;
+	@Expose
+	private Integer price;
+	@SerializedName("total_amount")
+	@Expose
+	private Integer totalAmount;
+	
+	/**
+	* 
+	* @return
+	* The vrNo
+	*/
+	public String getVrNo() {
+	return vrNo;
 	}
 	
-	public void setBus_id(String bus_id) {
-	this.bus_id = bus_id;
+	/**
+	* 
+	* @param vrNo
+	* The vr_no
+	*/
+	public void setVrNo(String vrNo) {
+	this.vrNo = vrNo;
 	}
 	
-	public String getTrip() {
-	return trip;
+	/**
+	* 
+	* @return
+	* The orderDate
+	*/
+	public String getOrderDate() {
+	return orderDate;
 	}
 	
-	public void setTrip(String trip) {
-	this.trip = trip;
+	/**
+	* 
+	* @param orderDate
+	* The order_date
+	*/
+	public void setOrderDate(String orderDate) {
+	this.orderDate = orderDate;
 	}
 	
-	public String getSale_id() {
-	return sale_id;
+	/**
+	* 
+	* @return
+	* The departureDate
+	*/
+	public String getDepartureDate() {
+	return departureDate;
 	}
 	
-	public void setSale_id(String sale_id) {
-	this.sale_id = sale_id;
+	/**
+	* 
+	* @param departureDate
+	* The departure_date
+	*/
+	public void setDepartureDate(String departureDate) {
+	this.departureDate = departureDate;
 	}
 	
-	public String getOrder_id() {
-	return order_id;
+	/**
+	* 
+	* @return
+	* The fromTo
+	*/
+	public String getFromTo() {
+	return fromTo;
 	}
 	
-	public void setOrder_id(String order_id) {
-	this.order_id = order_id;
+	/**
+	* 
+	* @param fromTo
+	* The from_to
+	*/
+	public void setFromTo(String fromTo) {
+	this.fromTo = fromTo;
 	}
 	
-	public String getOrder_date() {
-	return order_date;
+	/**
+	* 
+	* @return
+	* The time
+	*/
+	public String getTime() {
+	return time;
 	}
 	
-	public void setOrder_date(String order_date) {
-	this.order_date = order_date;
+	/**
+	* 
+	* @param time
+	* The time
+	*/
+	public void setTime(String time) {
+	this.time = time;
 	}
 	
-	public String getSeat_no() {
-	return seat_no;
+	/**
+	* 
+	* @return
+	* The classes
+	*/
+	public String getClasses() {
+	return classes;
 	}
 	
-	public void setSeat_no(String seat_no) {
-	this.seat_no = seat_no;
+	/**
+	* 
+	* @param classes
+	* The classes
+	*/
+	public void setClasses(String classes) {
+	this.classes = classes;
 	}
 	
-	public String getTicket_no() {
-		return ticket_no;
-	}
-
-	public void setTicket_no(String ticket_no) {
-		this.ticket_no = ticket_no;
-	}
-	
-	public Integer getFree_ticket() {
-		return free_ticket;
-	}
-
-	public void setFree_ticket(Integer free_ticket) {
-		this.free_ticket = free_ticket;
-	}
-
-	public String getName() {
-	return name;
+	/**
+	* 
+	* @return
+	* The agentName
+	*/
+	public String getAgentName() {
+	return agentName;
 	}
 	
-	public void setName(String name) {
-	this.name = name;
+	/**
+	* 
+	* @param agentName
+	* The agent_name
+	*/
+	public void setAgentName(String agentName) {
+	this.agentName = agentName;
 	}
 	
-	public String getAgent() {
-	return agent;
+	/**
+	* 
+	* @return
+	* The commission
+	*/
+	public Integer getCommission() {
+	return commission;
 	}
 	
-	public void setAgent(String agent) {
-	this.agent = agent;
+	/**
+	* 
+	* @param commission
+	* The commission
+	*/
+	public void setCommission(Integer commission) {
+	this.commission = commission;
 	}
 	
+	/**
+	* 
+	* @return
+	* The seatNo
+	*/
+	public String getSeatNo() {
+	return seatNo;
+	}
+	
+	/**
+	* 
+	* @param seatNo
+	* The seat_no
+	*/
+	public void setSeatNo(String seatNo) {
+	this.seatNo = seatNo;
+	}
+	
+	/**
+	* 
+	* @return
+	* The soldSeat
+	*/
+	public Integer getSoldSeat() {
+	return soldSeat;
+	}
+	
+	/**
+	* 
+	* @param soldSeat
+	* The sold_seat
+	*/
+	public void setSoldSeat(Integer soldSeat) {
+	this.soldSeat = soldSeat;
+	}
+	
+	/**
+	* 
+	* @return
+	* The price
+	*/
 	public Integer getPrice() {
 	return price;
 	}
 	
+	/**
+	* 
+	* @param price
+	* The price
+	*/
 	public void setPrice(Integer price) {
 	this.price = price;
 	}
-	public Integer getCommission() {
-		return commission;
-	}
-
-	public void setCommission(Integer commission) {
-		this.commission = commission;
-	}
-	public String getDeparture_date() {
-	return departure_date;
+	
+	/**
+	* 
+	* @return
+	* The totalAmount
+	*/
+	public Integer getTotalAmount() {
+	return totalAmount;
 	}
 	
-	public void setDeparture_date(String departure_date) {
-	this.departure_date = departure_date;
-	}
-	
-	public String getDeparture_time() {
-	return departure_time;
-	}
-	
-	public void setDeparture_time(String departure_time) {
-	this.departure_time = departure_time;
+	/**
+	* 
+	* @param totalAmount
+	* The total_amount
+	*/
+	public void setTotalAmount(Integer totalAmount) {
+	this.totalAmount = totalAmount;
 	}
 
 }

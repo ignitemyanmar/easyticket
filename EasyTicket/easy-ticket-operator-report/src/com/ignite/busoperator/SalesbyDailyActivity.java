@@ -62,15 +62,16 @@ public class SalesbyDailyActivity extends BaseSherlockActivity{
 	private TextView txt_total;
 	private MyDevice myDevice;
 	private TextView txt_total_amount;
-	private TextView txt_total_label;
 	private SKConnectionDetector skDetector;
 	private TextView txt_time;
 	private TextView txt_seat;
 	private TextView txt_trip;
 	private ListView lst_feature_bus;
-	private Button btn_date;
 	public static String selectedDate;
 	private Integer totalAmout = 0;
+	private TextView txt_date;
+	private TextView txt_classes;
+	private TextView txt_price;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -84,24 +85,25 @@ public class SalesbyDailyActivity extends BaseSherlockActivity{
 		lst_today_bus = (ListView) findViewById(R.id.lst_today_bus);
 		lst_feature_bus = (ListView) findViewById(R.id.lst_feature_bus);
 		
-		btn_date = (Button) findViewById(R.id.btn_date);
-		btn_date.setOnClickListener(clickListener);
-		txt_time = (TextView) findViewById(R.id.txt_time);
-		txt_seat = (TextView) findViewById(R.id.txt_seat);
+		txt_date = (TextView) findViewById(R.id.txt_date);
 		txt_trip = (TextView) findViewById(R.id.txt_trip);
+		txt_time = (TextView) findViewById(R.id.txt_time);
+		txt_classes = (TextView) findViewById(R.id.txt_classes);
+		txt_seat = (TextView) findViewById(R.id.txt_seat);
+		txt_price = (TextView) findViewById(R.id.txt_price);
 		txt_total = (TextView) findViewById(R.id.txt_total);
-		txt_total_label = (TextView) findViewById(R.id.txt_label);
 		txt_total_amount = (TextView) findViewById(R.id.txt_total_amount);
 		
 		if (myDevice.getHeight() > myDevice.getWidth()){
 		} else {
 			
-			txt_time.getLayoutParams().width = (int) myDevice.getWidth() / 5;
-			txt_seat.getLayoutParams().width = (int) myDevice.getWidth() / 5;
-			txt_trip.getLayoutParams().width = (int) myDevice.getWidth() / 5;
-			txt_total.getLayoutParams().width = (int) myDevice.getWidth() / 5;
-			txt_total_label.getLayoutParams().width = (int) myDevice.getWidth() / 5;
-			txt_total_amount.getLayoutParams().width = (int) myDevice.getWidth() / 2;
+			txt_date.getLayoutParams().width = (int) myDevice.getWidth() / 8;
+			txt_trip.getLayoutParams().width = (int) myDevice.getWidth() / 8;
+			txt_time.getLayoutParams().width = (int) myDevice.getWidth() / 8;
+			txt_classes.getLayoutParams().width = (int) myDevice.getWidth() / 8;
+			txt_seat.getLayoutParams().width = (int) myDevice.getWidth() / 8;
+			txt_price.getLayoutParams().width = (int) myDevice.getWidth() / 8;
+			txt_total.getLayoutParams().width = (int) myDevice.getWidth() / 8;
 		}
 		
 		skDetector = SKConnectionDetector.getInstance(getApplicationContext());
@@ -112,7 +114,7 @@ public class SalesbyDailyActivity extends BaseSherlockActivity{
 	        dialog.setCancelable(true);
 	        dialog.show();
 			getTodayBus();
-			getAdvanceBus();
+			//getAdvanceBus();
 		}else{
 			skDetector.showErrorMessage();
 		}		
@@ -179,6 +181,7 @@ public class SalesbyDailyActivity extends BaseSherlockActivity{
 
 			public void failure(RetrofitError arg0) {
 				// TODO Auto-generated method stub
+				dialog.dismiss();
 			}
 
 			public void success(List<TodayBus> arg0, Response arg1) {
@@ -187,9 +190,10 @@ public class SalesbyDailyActivity extends BaseSherlockActivity{
 				lst_today_bus.setAdapter(new TodayBusListAdapter(SalesbyDailyActivity.this, todayBus));
 				setListViewHeightBasedOnChildren(lst_today_bus);
 				for(TodayBus report: arg0){
-					totalAmout  += report.getSold_amount();
+					totalAmout  += report.getTotalAmount();
 				}
-				txt_total_amount.setText(totalAmout+" Kyats");
+				txt_total_amount.setText(String.format("%,d", totalAmout)+" Kyats");
+				dialog.dismiss();
 			}
 		});
 	}

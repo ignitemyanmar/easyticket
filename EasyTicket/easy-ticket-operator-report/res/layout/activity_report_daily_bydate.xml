@@ -3,8 +3,9 @@
     android:id="@+id/RelativeLayout1"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
-    android:orientation="vertical" >
+    android:background="@color/gray"
+    android:orientation="vertical"
+    android:padding="10dp" >
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -12,6 +13,25 @@
         android:background="#000000"
         android:gravity="center_vertical"
         android:orientation="horizontal" >
+
+        <com.smk.custom.view.CustomTextView
+            android:id="@+id/txt_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:text="ထြက္ခြာမည့္ ေန႕"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="#FFFFFF"
+            android:textSize="14dp" />
+
+        <com.smk.custom.view.CustomTextView
+            android:id="@+id/txt_trip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ခရီးစဥ္"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="#FFFFFF"
+            android:textSize="14dp" />
 
         <com.smk.custom.view.CustomTextView
             android:id="@+id/txt_time"
@@ -21,12 +41,12 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="#FFFFFF"
             android:textSize="14dp" />
-
+
         <com.smk.custom.view.CustomTextView
-            android:id="@+id/txt_trip"
+            android:id="@+id/txt_classes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="ခရီးစဥ္"
+            android:text="ကား အမိ်ဳးအစား"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="#FFFFFF"
             android:textSize="14dp" />
@@ -41,21 +61,20 @@
             android:textSize="14dp" />
 
         <com.smk.custom.view.CustomTextView
+            android:id="@+id/txt_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ေစ်းႏႈန္း"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="#FFFFFF"
+            android:textSize="14dp" />
+
+        <com.smk.custom.view.CustomTextView
             android:id="@+id/txt_total"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="စုစုေပါင္း"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="#FFFFFF"
-            android:textSize="14dp" />
-
-        <com.smk.custom.view.CustomButton
-            android:id="@+id/btn_date"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginLeft="30dp"
-            android:background="#080852"
-            android:text="ေန႕ရက္ ေရႊးရန္"
             android:textColor="#FFFFFF"
             android:textSize="14dp" />
 
@@ -72,7 +91,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical" >
-
+
         <com.smk.custom.view.CustomTextView
             android:id="@+id/textView1"
             android:layout_width="match_parent"
@@ -82,15 +101,17 @@
             android:text="ယ ေန႕ထြက္မည့္ကား၏ ေရာင္းရစာရင္း"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="#FFFFFF"
-            android:textSize="14dp" />
-
+            android:textSize="14dp"
+            android:visibility="gone" />
+
         <ListView
             android:id="@+id/lst_today_bus"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content"
+            android:background="@color/white" >
 
         </ListView>
-
+
         <com.smk.custom.view.CustomTextView
             android:id="@+id/TextView01"
             android:layout_width="match_parent"
@@ -100,33 +121,34 @@
             android:text="ေနာက္ေန႕ထြက္မည့္ကား၏ ယ ေန႕ေရာင္းရစာရင္း"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="#FFFFFF"
-            android:textSize="14dp" />
-
+            android:textSize="14dp"
+            android:visibility="gone" />
+
         <ListView
             android:id="@+id/lst_feature_bus"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content"
+            android:visibility="gone" >
 
         </ListView>
 
     </LinearLayout>
     </ScrollView>
-
-    
-
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_alignParentBottom="true"
         android:background="#000000"
         android:gravity="center_vertical"
-        android:orientation="horizontal" >
-
+        android:orientation="horizontal"
+        android:padding="5dp" >
+
         <com.smk.custom.view.CustomTextView
             android:id="@+id/txt_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="အားလံုး စုစုေပါင္း"
+            android:text="အားလံုး စုစုေပါင္း = "
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="#FFFFFF"
             android:textSize="14dp" />

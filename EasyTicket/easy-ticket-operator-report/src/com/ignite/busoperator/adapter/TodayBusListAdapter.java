@@ -8,6 +8,7 @@ import com.ignite.busoperator.R;
 import com.ignite.busoperator.SalesbyDailyActivity;
 import com.ignite.busoperator.SeatDetailsbyTodayBusActivity;
 import com.ignite.busoperator.TodayBusActivity;
+import com.ignite.busoperator.application.AppUtil;
 import com.ignite.busoperator.application.DeviceUtil;
 import com.ignite.busoperator.model.TodayBus;
 
@@ -58,36 +59,43 @@ public class TodayBusListAdapter extends BaseAdapter {
 		if (convertView == null) {
 			convertView = mInflater.inflate(R.layout.list_item_today_sale, null);
 			holder = new ViewHolder();
+			holder.date = (TextView)convertView .findViewById(R.id.txtDepartureDate);
 			holder.time = (TextView)convertView .findViewById(R.id.txtTime);
 			holder.trip = (TextView)convertView .findViewById(R.id.txtTrip);
+			holder.classes = (TextView)convertView .findViewById(R.id.txtClasses);
 			holder.seat = (TextView)convertView .findViewById(R.id.txtTotalticket);
+			holder.price = (TextView)convertView .findViewById(R.id.txtPrice);
 			holder.total= (TextView)convertView .findViewById(R.id.txtTotal);
 			holder.viewDetails = (Button)convertView.findViewById(R.id.btnDetails);
 			convertView.setTag(holder);
 		} else {
 			holder = (ViewHolder) convertView.getTag();
 		}
-		holder.time.getLayoutParams().width = (int) DeviceUtil.getInstance(aty).getWidth() / 5;
-		holder.trip.getLayoutParams().width = (int) DeviceUtil.getInstance(aty).getWidth() / 5;
-		holder.seat.getLayoutParams().width = (int) DeviceUtil.getInstance(aty).getWidth() / 5;
-		holder.total.getLayoutParams().width = (int) DeviceUtil.getInstance(aty).getWidth() / 5;
+		holder.date.getLayoutParams().width = (int) DeviceUtil.getInstance(aty).getWidth() / 8;
+		holder.time.getLayoutParams().width = (int) DeviceUtil.getInstance(aty).getWidth() / 8;
+		holder.trip.getLayoutParams().width = (int) DeviceUtil.getInstance(aty).getWidth() / 8;
+		holder.classes.getLayoutParams().width = (int) DeviceUtil.getInstance(aty).getWidth() / 8;
+		holder.seat.getLayoutParams().width = (int) DeviceUtil.getInstance(aty).getWidth() / 8;
+		holder.price.getLayoutParams().width = (int) DeviceUtil.getInstance(aty).getWidth() / 8;
+		holder.total.getLayoutParams().width = (int) DeviceUtil.getInstance(aty).getWidth() / 8;
 		
-		holder.time.setText(busReports.get(position).getTime()+"("+busReports.get(position).getClasses()+")");
-		holder.trip.setText(busReports.get(position).getFrom() +"-"+ busReports.get(position).getTo());
-		holder.seat.setText(busReports.get(position).getSold_seat().toString());
-		holder.total.setText(busReports.get(position).getSold_amount().toString());
-		holder.viewDetails.setTag(busReports.get(position).getBus_id());
+		holder.date.setText(AppUtil.changeDate(busReports.get(position).getDepartureDate()));
+		holder.time.setText(busReports.get(position).getTime());
+		holder.trip.setText(busReports.get(position).getFromTo());
+		holder.classes.setText(busReports.get(position).getClassName());
+		holder.seat.setText(busReports.get(position).getSoldSeat().toString());
+		holder.price.setText(busReports.get(position).getLocalPrice().toString());
+		holder.total.setText(String.format("%,d",busReports.get(position).getTotalAmount()));
+		holder.viewDetails.setTag(busReports.get(position));
 		holder.viewDetails.setOnClickListener(new OnClickListener() {
 
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				/*Bundle bundle = new Bundle();
-				bundle.putString("time", v.getTag().toString());
-				bundle.putString("date",SalesbyDailyActivity.selectedDate);
-				Intent next = new Intent(aty.getApplication(), TodayBusActivity.class).putExtras(bundle);
-				aty.startActivity(next);*/
+				TodayBus todayBus = (TodayBus) v.getTag();
 				Bundle bundle = new Bundle();
-				bundle.putString("bus_id", v.getTag().toString());
+				bundle.putString("bus_id", todayBus.getBusId().toString());
+				bundle.putString("from_to", todayBus.getFromTo()+"("+todayBus.getClassName()+")");
+				bundle.putString("date_time", todayBus.getDepartureDate()+" "+todayBus.getTime());
 				Intent next = new Intent(aty.getApplication(), SeatDetailsbyTodayBusActivity.class).putExtras(bundle);
 				aty.startActivity(next);
 			}
@@ -97,7 +105,7 @@ public class TodayBusListAdapter extends BaseAdapter {
 	}
 
 	static class ViewHolder {
-		TextView  time, trip, seat, total;
+		TextView  date,time, trip,classes, seat,price, total;
 		Button viewDetails;
 				
 	}

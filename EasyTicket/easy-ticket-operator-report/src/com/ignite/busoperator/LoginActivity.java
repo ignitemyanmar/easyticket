@@ -91,8 +91,10 @@ public class LoginActivity extends SherlockActivity{
 						
 						public void failure(RetrofitError arg0) {
 							// TODO Auto-generated method stub
-							if(arg0.getResponse().getStatus() == 400){
-								SKToastMessage.showMessage(LoginActivity.this, "သင္၏ Login Email ႏွင့္ Password ဟာ မွား ေနပါသည္", SKToastMessage.ERROR);
+							if(arg0.getResponse() != null){
+								if(arg0.getResponse().getStatus() == 400){
+									SKToastMessage.showMessage(LoginActivity.this, "သင္၏ Login Email ႏွင့္ Password ဟာ မွား ေနပါသည္", SKToastMessage.ERROR);
+								}
 							}
 							dialog.dismiss();
 							//Log.i("","Hello Error Response Code : "+arg0.getResponse().getStatus() +" Reason: "+ arg0.getResponse().getReason());

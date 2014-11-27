@@ -14,8 +14,8 @@ public class Seat_list {
 	private Integer booking;
 	@Expose
 	private Integer operatorgroup_id;
-	
-	private CustomerInfo customerInfo;
+	@Expose
+	private CustomerInfo customer_info;
 	
 	public Seat_list(Integer id, String seat_no, Integer status) {
 		super();
@@ -65,11 +65,11 @@ public class Seat_list {
 	}
 
 	public CustomerInfo getCustomerInfo() {
-		return customerInfo;
+		return customer_info;
 	}
 
 	public void setCustomerInfo(CustomerInfo customerInfo) {
-		this.customerInfo = customerInfo;
+		this.customer_info = customerInfo;
 	}
 	
 }

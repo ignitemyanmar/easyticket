@@ -93,7 +93,7 @@ class HomeController extends \BaseController {
 				$m++;
 			}
 		}
-		
+		//return Response::json($evening);
 		$response['morning']=$morning;
 		$response['evening']=$evening;
 		$response['operator_id']=$operator_id;
@@ -112,7 +112,6 @@ class HomeController extends \BaseController {
 
 	public function getchoosebusseat(){
 		$operator_id 	=Input::get('operator_id');
-		// dd($operator_id);
     	$from 			=Input::get('from_city');
     	$to 			=Input::get('to_city');
     	$date 			=Input::get('date');
@@ -144,15 +143,32 @@ class HomeController extends \BaseController {
     				$temp['id']=$seat->id;
     				$checkoccupied_seat =SaleItem::wherebusoccurance_id($bus_id)
     												->whereseat_no($seat->seat_no)
+    				
     												->first();
+    				$customer=array();
 					if($checkoccupied_seat){
 						$temp['status']		=2;
-						$checkbooking=SaleOrder::whereid($checkoccupied_seat->order_id)->pluck('booking');
-						if($checkbooking==1){
+						$objorder=SaleOrder::whereid($checkoccupied_seat->order_id)->first();
+						// $checkbooking=SaleOrder::whereid($checkoccupied_seat->order_id)->pluck('booking');
+						if($objorder->booking==1){
 							$temp['status']		=3;
 						}
+						$agentname='-';
+						if($objorder->agent_id !=0){
+							$agentname=Agent::whereid($objorder->agent_id)->pluck('name');
+						}
+						$customer=SaleItem::whereorder_id($checkoccupied_seat->order_id)->whereseat_no($seat->seat_no)->first(array('name','phone','nrc_no'));
+						// return Response::json($cubrid_save_to_glo(conn_identifier, oid, file_name)omer);
+						$customerinfo['name']	=$customer->name ? $customer->name : $objorder->name;
+						$customerinfo['phone']	=$objorder->phone;
+						$customerinfo['nrc']	=$customer->nrc_no ? $customer->nrc_no : $objorder->nrc_no;
+						$temp['customer']	=$customerinfo;
+						$temp['agent']		=$agentname;
 					}else{
 						$temp['status']		=$seat->status;
+						$temp['customer']=$customer;
+						$temp['agent']		='-';
+
 					}
     				$temp['seat_no']	=$seat->seat_no;
     				// $temp['status']		=$seat->status;

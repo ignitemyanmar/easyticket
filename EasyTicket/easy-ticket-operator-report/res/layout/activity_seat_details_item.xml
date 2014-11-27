@@ -13,37 +13,58 @@
         android:background="#ffffff"
         android:gravity="center_vertical"
         android:orientation="horizontal" >
-
+
         <com.smk.custom.view.CustomTextView
-            android:id="@+id/txtseat_no"
+            android:id="@+id/txtDepartureDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:text="Seat No" />
+
+        <com.smk.custom.view.CustomTextView
+            android:id="@+id/txtTrip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:text="Seat No" />
+
+        <com.smk.custom.view.CustomTextView
+            android:id="@+id/txtTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:text="Seat No" />
+
+        <com.smk.custom.view.CustomTextView
+            android:id="@+id/txtClasses"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:text="Seat No" />
+
+        <com.smk.custom.view.CustomTextView
+            android:id="@+id/txtAgent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="left"
+            android:maxLines="2"
+            android:text="Buyer" />
+
+        <com.smk.custom.view.CustomTextView
+            android:id="@+id/txtSeatNo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="left"
             android:text="Seat No" />
-
-
-
-
-
-
+
         <com.smk.custom.view.CustomTextView
-            android:id="@+id/txtbuyer"
+            android:id="@+id/txtQty"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
             android:gravity="left"
-            android:text="Buyer" />
-
-        <com.smk.custom.view.CustomTextView
-            android:id="@+id/txtseller"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:ellipsize="end"
-            android:gravity="left|center"
-            android:maxLines="2"
-            android:text="Seller" />
+            android:text="Seat No" />
 
         <com.smk.custom.view.CustomTextView
             android:id="@+id/txtPrice"
@@ -60,14 +81,9 @@
             android:layout_gravity="center"
             android:gravity="left"
             android:text="Price" />
-
-
-
-
-
-
+
         <com.smk.custom.view.CustomTextView
-            android:id="@+id/txtvouncher_no"
+            android:id="@+id/txtTotalAmount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"

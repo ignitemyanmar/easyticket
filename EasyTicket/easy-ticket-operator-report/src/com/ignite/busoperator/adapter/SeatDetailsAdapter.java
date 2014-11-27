@@ -45,7 +45,7 @@ public class SeatDetailsAdapter extends BaseAdapter {
 		// TODO Auto-generated method stub
 		ViewHolder holder;
 		if (convertView == null) {
-			convertView = mInflater.inflate(R.layout.activity_seat_details_item, null);
+			convertView = mInflater.inflate(R.layout.activity_seat_details_item_1, null);
 			holder = new ViewHolder();
 			holder.seatno = (TextView)convertView .findViewById(R.id.txtseat_no);
 			holder.buyer = (TextView)convertView .findViewById(R.id.txtbuyer);

@@ -7,6 +7,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import com.ignite.busoperator.model.SeatbyBus;
+import com.itextpdf.text.Paragraph;
+
 import android.os.Environment;
 import android.util.Log;
 import jxl.CellView;
@@ -82,16 +84,25 @@ public class SeatbyBusExcelUtility {
     cv.setFormat(labels);
     cv.setFormat(boldUnderline);
     cv.setAutosize(true);
+    
+    // Report Header
+    addLabel(sheet, 0, 0, "Trip: "+seatbyBus.get(0).getFromTo().toString());
+    addLabel(sheet, 0, 1, "Departure Date: "+seatbyBus.get(0).getDepartureDate().toString());
+    addLabel(sheet, 0, 2, "Departuer Time: "+seatbyBus.get(0).getTime().toString());
+    addLabel(sheet, 0, 3, "Order Date: "+seatbyBus.get(0).getOrderDate().toString());
 
     // Write a few headers
-    addCaption(sheet, 0, 0, "Seat No.");
-    addCaption(sheet, 1, 0, "Customer");
-    addCaption(sheet, 2, 0, "Agent");
-    addCaption(sheet, 3, 0, "Price");
-    addCaption(sheet, 4, 0, "Commission");
-    addCaption(sheet, 5, 0, "Ticket No.");
+    addCaption(sheet, 0, 0, "Departure Date");
+    addCaption(sheet, 1, 0, "Trip");
+    addCaption(sheet, 2, 0, "Departure Time");
+    addCaption(sheet, 3, 0, "Bus Class");
+    addCaption(sheet, 4, 0, "Agent Name");
+    addCaption(sheet, 5, 0, "Seat No.");
+    addCaption(sheet, 6, 0, "QTY");
+    addCaption(sheet, 7, 0, "Price");
+    addCaption(sheet, 8, 0, "Commission");
+    addCaption(sheet, 9, 0, "Total Amount");
     
-
   }
 
   private void createContent(WritableSheet sheet) throws WriteException,
@@ -99,36 +110,40 @@ public class SeatbyBusExcelUtility {
 	  
     int i = 1;
     for(SeatbyBus seat: seatbyBus){
-    	addLabel(sheet, 0, i, seat.getSeat_no());
-    	addLabel(sheet, 1, i, seat.getName());
-    	addLabel(sheet, 2, i, seat.getAgent());
-    	addLabel(sheet, 3, i, seat.getPrice().toString());
-    	addLabel(sheet, 4, i, seat.getCommission().toString());
-    	addLabel(sheet, 5, i, seat.getTicket_no());
+    	addLabel(sheet, 0, i, seat.getDepartureDate());
+    	addLabel(sheet, 1, i, seat.getFromTo());
+    	addLabel(sheet, 2, i, seat.getTime());
+    	addLabel(sheet, 3, i, seat.getClasses());
+    	addLabel(sheet, 4, i, seat.getAgentName());
+    	addLabel(sheet, 5, i, seat.getSeatNo());
+    	addLabel(sheet, 6, i, seat.getSoldSeat().toString());
+    	addLabel(sheet, 7, i, seat.getPrice().toString());
+    	addLabel(sheet, 8, i, seat.getCommission().toString());
+    	addLabel(sheet, 9, i, seat.getTotalAmount().toString());
     	i++;
     }
   }
 
-  private void addCaption(WritableSheet sheet, int column, int row, String s)
-      throws RowsExceededException, WriteException {
-    Label label;
-    label = new Label(column, row, s, boldUnderline);
-    sheet.addCell(label);
-  }
+	private void addCaption(WritableSheet sheet, int column, int row, String s)
+	      throws RowsExceededException, WriteException {
+	   Label label;
+	   label = new Label(column, row, s, boldUnderline);
+	   sheet.addCell(label);
+	}
 
-  public void addNumber(WritableSheet sheet, int column, int row,
+  	public void addNumber(WritableSheet sheet, int column, int row,
       Integer integer) throws WriteException, RowsExceededException {
-    Number number;
-    number = new Number(column, row, integer, labels);
-    sheet.addCell(number);
-  }
+  		Number number;
+    	number = new Number(column, row, integer, labels);
+    	sheet.addCell(number);
+  	}
 
-  private void addLabel(WritableSheet sheet, int column, int row, String s)
-      throws WriteException, RowsExceededException {
-    Label label;
-    label = new Label(column, row, s, labels);
-    sheet.addCell(label);
-  }
+	private void addLabel(WritableSheet sheet, int column, int row, String s)
+	      throws WriteException, RowsExceededException {
+	   Label label;
+	   label = new Label(column, row, s, labels);
+	   sheet.addCell(label);
+	}
   
   	public Boolean IfExistFileDir(String Dir){
 		File fileDir = new File(Dir);

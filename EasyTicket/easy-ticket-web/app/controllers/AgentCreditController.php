@@ -234,15 +234,16 @@ class AgentCreditController extends \BaseController {
 
 	public function getAgentCreditSaleList($agent_id)
 	{
-		$operator_id=OperatorGroup::whereuser_id(Auth::user()->id)->pluck('operator_id');
+		$operator_id=$this->myGlob->operator_id;
     	$response =SaleOrder::where('operator_id','=',$operator_id)
     							->where('agent_id','=',$agent_id)
-    							->wherecash_credit(2)
+    							// ->wherecash_credit(2)
     							->with(array('saleitems'=> function($query) {
 																$query->wherefree_ticket(0);
 							 								}))
-    							->orderBy('orderdate','asc')
-								->get(array('id', 'orderdate', 'agent_id', 'operator_id'));
+                                ->orderBy('orderdate','desc')
+    							->orderBy('cash_credit','desc')
+								->get(array('id', 'orderdate','departure_date', 'agent_id', 'operator_id','cash_credit'));
 
     	$filter=array();
     	// for from to filter
@@ -257,7 +258,10 @@ class AgentCreditController extends \BaseController {
     			$amount=0;
     			$tickets=count($row->saleitems);
     			$saleitems=array();
-    			if(count($row->saleitems)>0){
+    			$class="";
+                // $deparutre_date="";
+                // $deparutre_time="";
+                if(count($row->saleitems)>0){
     				$objbusoccurance=BusOccurance::whereid($row->saleitems[0]->busoccurance_id)->first();
     				if($objbusoccurance){
     					$from=City::whereid($objbusoccurance->from)->pluck('name');
@@ -265,16 +269,23 @@ class AgentCreditController extends \BaseController {
     					$trip=$from.'-'.$to;
     					$price= $objbusoccurance->price;
     					$amount= $objbusoccurance->price * $tickets;
+                        $class=Classes::whereid($objbusoccurance->classes)->pluck('name');
+                        // dd($objbusoccurance->deparutre_date);
+                        $response[$i]['departure_time']=$objbusoccurance->departure_time;
     				}
     				$objorderinfo=SaleOrder::whereid($row->saleitems[0]->order_id)->first();
     				$response[$i]['customer']=$objorderinfo->name;
-    				$response[$i]['phone']=$objorderinfo->phone;
+                    $response[$i]['phone']=$objorderinfo->phone;
     			}else{
     				$response[$i]['customer']='-';
     				$response[$i]['phone']='-';
+                    $response[$i]['departure_time']="";
     			}
+                
+                $response[$i]['class']=$class;
+
 				$operator = Operator::whereid($row->operator_id)->pluck('name');
-				$trip_id  = Busoccurance::whereid($row['saleitems'][0]['busoccurance_id'])->pluck('trip_id');
+				$trip_id  = BusOccurance::whereid($row['saleitems'][0]['busoccurance_id'])->pluck('trip_id');
 				$objagent = AgentCommission::whereagent_id($row['agent_id'])->wheretrip_id($trip_id)->first();
     			$response_value['operator']=$operator;
     			$response_value['agent']='-';

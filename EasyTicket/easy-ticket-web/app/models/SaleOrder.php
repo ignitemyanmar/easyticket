@@ -3,6 +3,8 @@
 	{ 
 		protected $table = 'tbl_saleorder';
 
+		protected $fillable = array('id','orderdate','departure_date','departure_datetime','device_id','reference_no','agent_id','name','nrc_no','phone','operator_id','cash_credit','booking','total_amount','agent_commission','payment_id','nationality','remark_type','remark','created_at','updated_at','expired_at');
+
 		public function saleitems(){
 			return $this->hasMany('SaleItem', 'order_id');
 		}

@@ -26,6 +26,7 @@
 	      height:32px;
 	      background: url('../../img/loader.gif') no-repeat;
 	  	}
+	  	.fit-a div{font-family: "Zawgyi-One" !important;}
 	</style>
 	<div class="large-12 columns">
 		<br>
@@ -84,9 +85,10 @@
 							                <div class="fit-a {{$taken}}" title="{{$rows['seat_no'].'('. $rows['price'].' K)'.$booking}}" id="{{$seatNO_id}}">
 							                	@if($rows['customer'])
 							                		<div title="{{$rows['customer']['nrc'].'၊ '.$rows['agent']}}">
-							                		{{$rows['customer']['name']}}<br>
+							                		<strong>{{$rows['customer']['name']}}</strong><br>
 							                		{{$rows['customer']['phone']}}<br>
 							                		{{$rows['customer']['nrc']}}<br>
+							                		{{$rows['customer']['ticket_no']}}<br>
 							                		&nbsp;{{$rows['agent']}}<br>
 							                		</div>
 							                	@endif
@@ -203,7 +205,7 @@
     <script type="text/javascript">
     	$(function(){
 			$("#agent_id").select2();
-			checkbooking();
+			    checkbooking();
 
 			$('#booking').click(function(){
 				checkbooking();
@@ -244,7 +246,6 @@
 				var operator_id=$('#operator_id').val();
 				var agent_id=$('#agent_id').val();
 				var class_id=$('#class_id').val();
-				// alert(agent_id);
 				var from=$('#from').val();
 				var to=$('#to').val();
 				var departure_date=$('#departure_date').val();
@@ -255,15 +256,16 @@
 				if(booking==undefined){booking=0;}
 				var current_url=$('#current_url').val();
 				var selected = new Array();
-		              $("input:checkbox[name=tickets]:checked").each(function() {
-		                   var seat_no=$(this).val();
-		                   var pararray={'busoccurance_id':busid, 'seat_no':seat_no};
-		                   selected.push(pararray);
-		              });
-		              if(selected.length ==0){
-		              	$.bootstrapGrowl("Please choose seat!.", option_info);
-		                return false;
-		              }
+				$("input:checkbox[name=tickets]:checked").each(function() {
+				   var seat_no=$(this).val();
+				   var pararray={'busoccurance_id':busid, 'seat_no':seat_no};
+				   selected.push(pararray);
+				});
+				if(selected.length ==0){
+					$.bootstrapGrowl("Please choose seat!.", option_info);
+					return false;
+				}
+				
 		        var stringparameter=JSON.stringify(selected);
 		        $.ajax({
 		        	type:'POST',
@@ -284,9 +286,12 @@
 		        	console.log(result);
 		        	if(result.can_buy==false){
 		        		$('#warning').html(result.message);
+		        		$.bootstrapGrowl(result.message, option_info);
 		        		document.getElementById('warning').style.display='block';
+		        		var parameters="?operator_id="+operator_id+"&from_city="+from+"&to_city="+to+"&date="+departure_date+"&time="+departure_time+"&class_id="+class_id+"&bus_no=-";
+		        		window.location.href='/'+current_url+parameters;
 		        		return false;
-		        	}else{
+		        	}else if(result.can_buy==true){
 		        		if(result.booking=="1"){
 		        			$.bootstrapGrowl("Successfully your booking!.", option_success);
 		        			var parameters="?operator_id="+operator_id+"&from_city="+from+"&to_city="+to+"&date="+departure_date+"&time="+departure_time+"&class_id="+class_id+"&bus_no=-";

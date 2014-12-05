@@ -98,11 +98,12 @@ class OrderController extends \BaseController {
 					$response[$i]['from_to']=$from_to;
 					$busclass=Classes::whereid($orders->saleitems[0]->class_id)->pluck('name');
 					$response[$i]['busclass']=$busclass;
-					$departure_time=Busoccurance::whereid($orders->saleitems[0]->busoccurance_id)->pluck('departure_time');
+					$departure_time=BusOccurance::whereid($orders->saleitems[0]->busoccurance_id)->pluck('departure_time');
 					$response[$i]['departure_time']=$departure_time;
 					$response[$i]['price']=$orders->saleitems[0]->price;
 					$response[$i]['total_ticket']=count($orders->saleitems);
 				}else{
+					SaleOrder::whereid($orders->id)->delete();
 					$response[$i]['from_to']='-';
 					$response[$i]['busclass']='-';
 					$response[$i]['departure_time']='-';
@@ -128,6 +129,10 @@ class OrderController extends \BaseController {
 		$objsaleitem=SaleItem::find($id);
 		$orderid=$objsaleitem->order_id;
 		$objsaleitem->delete();
+		$saleitems=SaleItem::whereorder_id($orderid)->count();
+		if($saleitems ==0){
+			SaleOrder::whereid($orderid)->delete();
+		}
 		$message="Successfully delete ticket.";
 		return Redirect::to('/order-tickets/'.$orderid)->with('message',$message);
 	}

@@ -1,5 +1,16 @@
 @extends('../admin')
 @section('content')
+<style type="text/css">
+   thead tr,thead tr td{border:none !important; color: #222;font-weight: bold; border-right: none !important;border-right-color:#fff; }
+   h4,th,td,h3{font-family: "Zawgyi-One" !important;}
+   
+   @media print{
+      #printable { display: block; font-family: "Zawgyi-One" !important; }
+      h3{text-align: center !important; }
+      h4,th,td{font-family: "Zawgyi-One" !important;}
+   }
+   #printable { display: none; }
+</style>
 
 <!-- BEGIN PAGE -->  
    <div class="page-content">
@@ -16,6 +27,13 @@
                      <h3 class="page-title">
                         &nbsp;ေန႔စဥ္ အေရာင္းစာရင္း
                      </h3>
+
+                     @if($bus_id)
+                        <div id="filename" style="display:none;">{{date('d/m/Y',strtotime($search['date']))}} [{{$search['trip']}}]-Sale Report</div>
+                        
+                     @else
+                        <div id="filename" style="display:none;">{{$orderdate}}-Sale Report</div>
+                     @endif
                      <ul class="breadcrumb">
                         <li>
                            <i class="icon-home"></i>
@@ -48,18 +66,16 @@
                         <div class="portlet-body">
                            <div class="row-fluid">
                               <div class="span7">
-                                 @if(count($response)>0)
-                                    <div><h4>ခရီးစဥ္ : {{$response[0]['from_to']}} ({{$response[0]['classes']}}) </h4></div>
-                                    <div><h4>ေန ့ရက္(အခ်ိန္)  : {{date('d/m/Y',strtotime($response[0]['departure_date']))}} ({{$response[0]['time']}})  </h4></div><br>
-                                 @endif
+                                 
                               </div>
                               <div class="span5">
                                  <div class="clearfix">
                                     <div class="btn-group pull-right">
-                                       <button class="btn dropdown-toggle" data-toggle="dropdown">Tools <i class="icon-angle-down"></i>
+                                       <button class="btn green dropdown-toggle" data-toggle="dropdown">Tools <i class="icon-angle-down"></i>
                                        </button>
                                        <ul class="dropdown-menu">
-                                          <li><a href="#" class="print">Print</a></li>
+                                          <li>
+                                             <a href="#" class="print">Print</a></li>
                                           <!-- <li><a href="#">Save as PDF</a></li> -->
                                           <li><a href="#" id="btnExportExcel">Export to Excel</a></li>
                                        </ul>
@@ -68,43 +84,109 @@
                               </div>
                            </div>
                            <div id="contents">
-                              <table class="table table-striped table-bordered table-advance table-hover" id="tblExport">
+                              <div id="printable">
+                                 <h3>Elite Express Public Company Limited</h3>
+                                 <h3>Sale Details</h3>
+                                 
+                              </div>
+                              <table class="table table-striped table-advance table-hover" id="tblExport">
                                  <thead>
                                     <tr>
-                                       <th>ထြက္ခြာမည့္ေန ့ရက္</th>
-                                       <th>ခရီးစဥ္</th>
-                                       <th>ထြက္ခြာမည့္အခ်ိန္</th>
-                                       <th>ကားအမ်ုိဳးအစား</th>
-                                       <th>အေရာင္း ကုိယ္စားလွယ္</th>
+                                       <td  colspan="14">
+                                          <h3 align="center">Elite Express Public Company Limited</h3>
+                                          <h4 align="center">ေန႔စဥ္ အေရာင္းစာရင္း အေသးစိတ္</h4>
+                                       </td>
+                                    </tr>
+                                    <tr>
+                                       <td colspan="14"><b>Trips : 
+                                          [ {{$search['start_trip']}} ] @if($search['start_trip'] != $search['end_trip']) - [ {{$search['end_trip']}} ]  @endif
+                                       </td>
+                                    </tr>
+                                    <tr>
+                                       <td colspan="14"><b>Date Of Report : 
+                                          [ {{date('d/m/Y',strtotime($search['date']))}} ]
+                                          </b>
+                                       </td>
+                                    </tr>
+
+                                    <tr class="table-bordered">
+                                       <!-- <th>ထြက္ခြာ မည့္ ေန့ရက္</th> -->
+                                       <th>လက္မွတ္ No</th>
                                        <th>ခုံနံပါတ္</th>
-                                       <th>ခုံအေရအတြက္</th>
+                                       <th>ခရီးစဥ္</th>
+                                       <th>ထြက္ခြာ မည့္ ေန့ရက္ / အခ်ိန္</th>
+                                       <th>ကားအမ်ုိဳး အစား</th>
+                                       <th>အေရာင္း ကုိယ္စားလွယ္</th>
+                                       <th>ဝယ္သူ</th>
+                                       <th>ခုံအေရ အတြက္</th>
+                                       <th>အခမဲ႕ လက္မွတ္ </th>
                                        <th>ေစ်းႏုန္း</th>
                                        <th>ရွင္းႏႈန္း</th>
                                        <th>စုုစုုေပါင္း</th>
                                     </tr>
                                  </thead>
-                                 <tbody>
+                                 <tbody class="table-bordered">
                                     @if($response)
-                                       @foreach($response as $result)
+                                       <?php 
+                                          $G_totalticket=0;
+                                          $G_totalamount=0;
+                                       ?> 
+                                       @foreach($response as $key=>$rows)
                                           <tr>
-                                             <td>{{date('d/m/Y',strtotime($result['departure_date']))}}</td>
-                                             <td>{{$result['from_to']}}</td>
-                                             <td>{{$result['time']}}</td>
-                                             <td>{{$result['classes']}}</td>
-                                             <td>
-                                                <div class="wordwrap">
-                                                   &nbsp;{{$result['agent_name']}}
-                                                </div>
-                                             </td>
-                                             <td>{{$result['seat_no']}}</td>
-                                             <td>{{$result['sold_seat']}}</td>
-                                             <td>{{$result['price']}}</td>
-                                             <td>{{$result['price']-$result['commission']}} ({{$result['commission']}})</td>
-                                             <td>{{$result['total_amount']}}</td>
+                                             <td colspan="13"><h4>{{$key}}</h4></td>
                                           </tr>
+                                          @if(count($rows)>0)
+                                             <?php 
+                                                $totalticket=0;
+                                                $totalamount=0;
+                                             ?> 
+                                             @foreach($rows as $result)
+                                                <tr>
+                                                   <!-- <td></td> -->
+                                                   <td>{{$result['ticket_no']}}</td>
+                                                   <td>{{$result['sold_seat']}}</td>
+                                                   <td>{{$result['from_to']}}</td>
+                                                   <td>{{date('d/m/Y',strtotime($result['departure_date']))}} ({{$result['time']}})</td>
+                                                   <td>{{$result['classes']}}</td>
+                                                   <td>
+                                                      <div class="wordwrap">
+                                                         &nbsp;{{$result['agent_name']}}
+                                                      </div>
+                                                   </td>
+                                                   <td>{{$result['buyer_name']}}</td>
+                                                   <td>{{$result['seat_no']}}</td>
+                                                   <td>{{$result['free_ticket']}}</td>
+                                                   <td>{{$result['price']}}</td>
+                                                   <td>{{$result['price']-$result['commission']}} ({{$result['commission']}})</td>
+                                                   <td>{{$result['total_amount']}}</td>
+                                                </tr>
+                                                <?php 
+                                                   $totalticket +=$result['sold_seat'];
+                                                   $totalamount +=$result['total_amount'];
+                                                ?> 
+                                             @endforeach
+                                             <tr>
+                                                <th colspan="6">&nbsp;</th>
+                                                <th colspan="2">Sub Quantity</th>
+                                                <th>{{$totalticket}}</th>
+                                                <th colspan="2">Sub Total</th>
+                                                <th colspan="2" style="text-align:right;">{{$totalamount}}</th>
+                                             </tr>
+                                          @endif
+                                          <?php 
+                                             $G_totalticket +=$totalticket;
+                                             $G_totalamount +=$totalamount;
+                                          ?> 
                                        @endforeach
-                                    @endif
+                                          <tr style="background:#ddd;">
+                                             <th colspan="6">&nbsp;</th>
+                                             <th colspan="2">Grand Quantity</th>
+                                             <th>{{$G_totalticket}}</th>
+                                             <th colspan="2">Grand Total</th>
+                                             <th colspan="2" style="text-align:right;">{{$G_totalamount}}</th>
+                                          </tr>
 
+                                    @endif
                                  </tbody>
                               </table>
                            </div>
@@ -122,32 +204,27 @@
    
    <script type="text/javascript">
       $(function() {
+         $('.page-container').addClass('sidebar-closed');
+         
          $('.print').click(function() {
-            //Get the HTML of div
-            var divElements = document.getElementById('contents').innerHTML;
-            //Get the HTML of whole page
-            var oldPage = document.body.innerHTML;
-
-            //Reset the page's HTML with div's HTML only
-            document.body.innerHTML = 
-              "<html><head><title>Report</title></head><body>" + 
-              divElements + "</body>";
-            //Print Page
-            window.print();
-            //Restore orignal HTML
-            document.body.innerHTML = oldPage;
-            return false;
+            w=window.open();
+            w.document.write($('#contents').html());
+            w.print();
+            w.close();
          });
 
          $("#btnExportExcel").click(function () {
-               $("#tblExport").btechco_excelexport({
-                   containerid: "tblExport"
-                  , datatype: $datatype.Table
-               });
-            return false;  
+               var filename=$('#filename').html();
+               var filename=filename;
+               var uri =$("#tblExport").btechco_excelexport({
+                      containerid: "tblExport"
+                     , datatype: $datatype.Table
+                     , returnUri: true
+                  });
+               $(this).attr('download', filename+'.xls').attr('href', uri).attr('target', '_blank');
          });
-         
+                 
       });
-
+      
    </script>
 @stop

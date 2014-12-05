@@ -52,11 +52,8 @@
           @elseif($currentroute=="/")
             ခရီးစဥ္ ေရြးရန္
           @else
-          
           @endif
-
           @if(Auth::check())
-
             <div class="user">
               @if(Session::get('bookingcount') > 0) 
                 <a href="/todaybookings" target="_blank"><span class="noti red">{{Session::get('bookingcount')}}</span></a>

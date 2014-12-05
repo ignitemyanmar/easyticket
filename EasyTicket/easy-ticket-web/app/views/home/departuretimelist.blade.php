@@ -27,7 +27,11 @@
 	.clear{clear:both; height: 1.7rem;}
 	.trips{color: white; text-align: center; font-size: 24px;position: relative;top:40%; bottom:40%; left: 0; right: 0; margin: auto;}
 	a:hover{text-decoration: none;}
-	
+	hr{margin-bottom:0;padding-bottom:0;border-top:1px dashed #000;}
+	.title_heading{width:50%;padding-left:1rem;border-bottom: 45px solid rgba(52,78,161, 1);border-right: 40px solid transparent;position:relative;}
+	.morning_hd{border-bottom: 45px solid #0AD2E6}
+	.title_heading span{color:#fff;font-size:24px;position:absolute;top:.6rem;}
+	.panel{padding:.2rem;border:2px solid #ddd;}
 	@media only screen and (max-width: 40em){
 		.small-12{margin-bottom: 2px;}
 		.departure_frame{margin-bottom: 0px;}
@@ -42,81 +46,103 @@
 	<div style="padding:1rem;">
 		<div class="clear">&nbsp;&nbsp;</div>
 		<h3 class="light-blue">မနက္</h3>
-		<?php $i=1;?>
 		@if($response)
 			<!-- <div class="departure_frame"> -->
-			@foreach($response['morning'] as $trip)
-				@if($i%2==1)
-				<div class="row departure_frame">
-				@endif
-					<div class="large-6 medium-6 small-12 columns nopadding stripe-morning">
-						<?php 
-							$link="operator_id=".$response['operator_id']."&from_city=".$response['from']."&to_city=".$response['to']."&date=".$response['date']."&time=".$trip['time']."&class_id=".$trip['class_id']."&bus_no=-";
-						?>
-						<a href="/bus_seat_choose?{{$link}}">
-							<div class="row tripframe-morning">
-								<div class="large-4 medium-4 small-4 columns">
-									<div class="time-frame">
-										<div class="class-label">{{substr($trip['time'],0,5)}} <br>{{substr($trip['time'],5)}}</div>
+			@if(count($response['morning'])>0)
+				@foreach($response['morning'] as $key=>$trip)
+					<?php $i=1;?>
+					@if($trip)
+						<div class="clear">&nbsp;&nbsp;</div>
+						<h3 class="title_heading morning_hd"><span>{{$key}}</span></h3>
+							<div class="panel">
+							@foreach($trip as $row)
+								@if($i%3==1)
+								<div class="row departure_frame">
+								@endif
+									<div class="large-4 medium-4 small-12 columns nopadding stripe-morning left">
+										<?php 
+											$link="operator_id=".$response['operator_id']."&from_city=".$response['from']."&to_city=".$response['to']."&date=".$response['date']."&time=".$row['time']."&class_id=".$row['class_id']."&bus_no=-";
+										?>
+										<a href="/bus_seat_choose?{{$link}}">
+											<div class="row tripframe-morning">
+												<div class="large-6 medium-6 small-6 columns">
+													<div class="time-frame">
+														<div class="class-label">{{substr($row['time'],0,5)}} <br>{{substr($row['time'],5)}}</div>
+													</div>
+												</div>
+												<div class="large-6 medium-6 small-6 columns">
+													<div class="departure-info">
+														<div class="class-seat">
+														{{$row['bus_class']}} <br><br>
+														Seats : {{$row['total_sold_seat'].'/'.$row['total_seat']}}
+														</div>
+													</div>
+													<!-- {{$i}} -->
+												</div>
+											</div>
+										</a>
 									</div>
+								@if($i%3==0 || $i==count($trip))
 								</div>
-								<div class="large-8 medium-8 small-8 columns">
-									<div class="departure-info">
-										<div class="class-seat">
-										Class : {{$trip['bus_class']}} <br><br>
-										Seats : {{$trip['total_sold_seat'].'/'.$trip['total_seat']}}
-										</div>
-									</div>
-									<!-- {{$i}} -->
-								</div>
+								@endif
+								<?php $i++;?>
+							@endforeach
 							</div>
-						</a>
-					</div>
-				@if($i%2==0 || $i==count($response['morning']))
-				</div>
-				<!-- <div class="clear">&nbsp;&nbsp;</div> -->
-				@endif
-				<?php $i++;?>
-			@endforeach
+						<hr>
+					@endif
+				@endforeach
+			@endif
 			<!-- </div> -->
 		@endif
 		
 		<div class="clear">&nbsp;&nbsp;</div>
 		<h3 class="blue">ညေန</h3>
-		<?php $i=1;?>
 		@if($response)
-			@foreach($response['evening'] as $trip)
-				@if($i%2==1)
-				<div class="row departure_frame">
-				@endif
-					<div class="large-6 medium-6 small-12 columns nopadding stripe-evening">
-						<?php 
-							$link="operator_id=".$response['operator_id']."&from_city=".$response['from']."&to_city=".$response['to']."&date=".$response['date']."&time=".$trip['time']."&class_id=".$trip['class_id']."&bus_no=-";
-						?>
-						<a href="/bus_seat_choose?{{$link}}">
-							<div class="row tripframe-evening">
-								<div class="large-4 medium-4 small-4 columns">
-									<div class="time-frame">
-										<div class="class-label">{{$trip['time']}}</div>
+			@if(count($response['evening'])>0)
+				@foreach($response['evening'] as $key=>$trip)
+					<?php $i=1;?>
+					@if($trip)
+						<div class="clear">&nbsp;&nbsp;</div>
+						<h3 class="title_heading"><span>{{$key}}</span></h3>
+						<div class="panel">
+							@foreach($trip as $row)
+								@if($i%3==1)
+								<div class="row departure_frame">
+								@endif
+									<div class="large-4 medium-4 small-12 columns nopadding stripe-evening left">
+										<?php 
+											$link="operator_id=".$response['operator_id']."&from_city=".$response['from']."&to_city=".$response['to']."&date=".$response['date']."&time=".$row['time']."&class_id=".$row['class_id']."&bus_no=-";
+										?>
+										<a href="/bus_seat_choose?{{$link}}">
+											<div class="row tripframe-evening">
+												<div class="large-6 medium-6 small-6 columns">
+													<div class="time-frame">
+														<div class="class-label">{{$row['time']}}</div>
+													</div>
+												</div>
+												<div class="large-6 medium-6 small-6 columns">
+													<div class="departure-info">
+														<div class="class-seat lightblue">
+														{{$row['bus_class']}} <br><br>
+														Seats : {{$row['total_sold_seat'].'/'.$row['total_seat']}}
+														</div>
+													</div>
+													<!-- {{$i}} -->
+												</div>
+											</div>
+										</a>
 									</div>
+								@if($i%3==0 || $i==count($trip))
 								</div>
-								<div class="large-8 medium-8 small-8 columns">
-									<div class="departure-info">
-										<div class="class-seat lightblue">
-										Class : {{$trip['bus_class']}} <br><br>
-										Seats : {{$trip['total_sold_seat'].'/'.$trip['total_seat']}}
-										</div>
-									</div>
-									<!-- {{$i}} -->
-								</div>
-							</div>
-						</a>
-					</div>
-				@if($i%2==0 || $i==count($response['evening']))
-				</div>
-				@endif
-				<?php $i++;?>
-			@endforeach
+								@endif
+								<?php $i++;?>
+							@endforeach
+						</div>
+						<hr>
+
+					@endif
+				@endforeach
+			@endif
 		@endif
 
 	</div>

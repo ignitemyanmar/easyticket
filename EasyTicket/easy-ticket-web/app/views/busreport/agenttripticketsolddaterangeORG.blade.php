@@ -169,7 +169,7 @@
                                              <div class="control-group">
                                                 <label class="control-label" for="departure_time">&nbsp;</label>
 
-                                                <input type="hidden" value="{{$search['start_date'].' - '. $search['end_date']}} " id="report_date">
+                                                <input type="hidden" value="{{$search['end_date'].' to '. $search['end_date']}}" id="report_date">
                                                 <button type="submit" class="btn green pull-right">Search &nbsp; <i class="m-icon-swapright m-icon-white"></i></button>
                                              </div>
                                           </div>
@@ -257,97 +257,45 @@
                         <div class="portlet-body">
                            <table class="table table-striped table-bordered table-advance table-hover" id="tblExport">
                               <thead>
-                                 
                                  <tr>
                                     <th>ဝယ္ယူသည့္ေန႔</th>
                                     @if($search['trips']!=1)
                                     <th>အေရာင္း ကုိယ္စားလွယ္</th>
                                     @endif
+                                    <th>ထြက္ခြာမည့္ေန ့ရက္</th>
                                     <th>ခရီးစဥ္</th>
-                                    <th>ထြက္ခြာမည့္ေန ့ရက္ / အခ်ိန္</th>
-                                    <!-- <th>ထြက္ခြာမည့္အခ်ိန္</th> -->
+                                    <th>ထြက္ခြာမည့္အခ်ိန္</th>
                                     <th>ကားအမ်ိဴးအစား</th>
                                     <th>ခုံအေရအတြက္</th>
                                     <th>အခမဲ႕ လက္မွတ္ </th>
                                     <th>ေစ်းႏုန္း</th>
                                     <th>စုုစုုေပါင္း</th>
-                                    <th style="width:0;"><a class="btn small green blue-stripe imagechange" id="" href="/triplist/{{$search['start_date'].','.$search['end_date']}}/daily?f={{$search['from']}}&t={{$search['to']}}&a={{$search['agent_id']}}&agentrp={{$search['agent_rp']}}">အေသးစိတ္(All)</a></th>
+                                    <th><a class="btn small green blue-stripe imagechange" id="" href="/triplist/{{$search['start_date'].','.$search['end_date']}}/daily?f={{$search['from']}}&t={{$search['to']}}&a={{$search['agent_id']}}">အေသးစိတ္(All)</a></th>
                                  </tr>
                               </thead>
                               <tbody>
                                  @if($response)
-                                    @if($search['agent_rp'])
-                                       <?php $columns=10; ?>
-                                    @else
-                                       <?php $columns=9;?>
-
-                                    @endif
-                                    <!-- <div id="jsonvalue" style="display:none;">{{json_encode($response)}}</div> -->
+                                    <div id="jsonvalue" style="display:none;">{{json_encode($response)}}</div>
                                     <div id="dvjson"></div>
-                                    <?php $G_total_ticket=0; $G_total_amount=0; $G_free_ticket=0; ?>
-                                    @foreach($response as $key=>$rows)
-                                    
-                                    <tr><th style="background:rgba(228, 246, 245, 1) !important;" colspan="{{$columns}}" align="left">{{$key}}</th></tr>
-                                       <?php $total_ticket=0; $total_amount=0; $free_ticket=0; ?>
-                                       @if(count($rows)>0)
-                                          @foreach($rows as $result)
-                                             <tr>
-                                                <td>{{date('d/m/Y',strtotime($result['order_date']))}}</td>
-                                                @if($search['trips']!=1)
-                                                   <td><div class="wordwrap">{{$result['agent_name']}}</div></td>
-                                                @endif
-                                                <td>{{$result['from_to']}}</td>
-                                                <td>{{date('d/m/Y',strtotime($result['departure_date']))}} ({{$result['time']}})</td>
-                                                <!-- <td>{{$result['time']}}</td> -->
-                                                <td>{{$result['class_name']}}</td>
-                                                <td>{{$result['sold_seat']}}</td>
-                                                <td>{{$result['free_ticket']}}</td>
-                                                <td>{{$result['local_price']}}</td>
-                                                <td>{{$result['total_amount']}}</td>
-                                                <td>
-                                                   <a class="btn mini green-stripe imagechange" id="" href="/triplist/{{$result['order_date']}}/daily?bus_id={{$result['bus_id']}}&a={{$result['agent_id']}}&agentrp={{$search['agent_rp']}}">အေသးစိတ္ၾကည့္ရန္</a>
-                                                </td>
-                                             </tr>
-                                             <?php 
-                                                $total_ticket +=$result['sold_seat']; 
-                                                $total_amount+=$result['total_amount'];
-                                                $free_ticket+=$result['free_ticket'];
-                                             ?>
-                                          @endforeach
-                                       @endif
+                                    @foreach($response as $result)
                                        <tr>
-                                          <th colspan="3"></th>
-                                          @if($search['agent_rp'])
-                                             <th>&nbsp;</th>
+                                          <td>{{date('d/m/Y',strtotime($result['order_date']))}}</td>
+                                          @if($search['trips']!=1)
+                                          <td>{{$result['agent_name']}}</td>
                                           @endif
-                                          <th>Sub Quantity</th>
-                                          <th>{{$total_ticket}}</th>
-                                          <th>Sub Free Ticket : {{$free_ticket}}</th>
-                                          <th>Sub Total</th>
-                                          <th>{{$total_amount}}</th>
-                                          <th>&nbsp;</th>
+                                          <td>{{date('d/m/Y',strtotime($result['departure_date']))}}</td>
+                                          <td>{{$result['from_to']}}</td>
+                                          <td>{{$result['time']}}</td>
+                                          <td>{{$result['class_name']}}</td>
+                                          <td>{{$result['sold_seat']}}</td>
+                                          <td>{{$result['free_ticket']}}</td>
+                                          <td>{{$result['local_price']}}</td>
+                                          <td>{{$result['total_amount']}}</td>
+                                          <td>
+                                             <a class="btn mini green-stripe imagechange" id="" href="/triplist/{{$result['order_date']}}/daily?bus_id={{$result['bus_id']}}&a={{$result['agent_id']}}">အေသးစိတ္ၾကည့္ရန္</a>
+                                          </td>
                                        </tr>
-                                       <?php 
-                                          $G_total_ticket +=$total_ticket; 
-                                          $G_total_amount +=$total_amount; 
-                                          $G_free_ticket +=$free_ticket; 
-                                       ?>
-
                                     @endforeach
-                                       
-                                    <?php $columns=3;?>
-                                    @if($search['agent_rp'])
-                                       <?php $columns=4;?>
-                                    @endif
-                                    <tr style="background:#ddd;">
-                                       <th colspan="{{$columns}}"  style="background:#ddd;"></th>
-                                       <th style="background:#ddd;">Grand Quantity</th>
-                                       <th style="background:#ddd;">{{$G_total_ticket}}</th>
-                                       <th style="background:#ddd;">Grand Free Ticket : {{$G_free_ticket}}</th>
-                                       <th style="background:#ddd;">Grand Total</th>
-                                       <th style="background:#ddd;">{{$G_total_amount}}</th>
-                                       <th style="background:#ddd;">&nbsp;</th>
-                                    </tr>
                                  @endif
                               </tbody>
                            </table>
@@ -373,9 +321,9 @@
              tripallcombo($(this).val());           
          })
 
-         /*$("#btnExportExcel").click(function () {
+         $("#btnExportExcel").click(function () {
             var report_date=$('#report_date').val();
-            var filename=report_date+" Sale List";
+            var filename="Daily Sale Report("+report_date+")";
             var dataobject = $('#jsonvalue').html();
             var dataobj =JSON.parse(dataobject);
             var uri =$("#dvjson").btechco_excelexport({
@@ -383,7 +331,6 @@
                 , datatype: $datatype.Json
                 , dataset: dataobj
                 , columns: [
-                    { headertext: "ဝယ္ယူသည့္ေန႔", datatype: "date", format: "xxxx,xx", datafield: "order_date", ishidden: false }
                     { headertext: "ထြက္ခြာမည့္ေန ့ရက္", datatype: "date", format: "xxxx,xx", datafield: "departure_date", ishidden: false }
                     , { headertext: "ခရီးစဥ္", datatype: "string", datafield: "from_to"}
                     , { headertext: "ထြက္ခြာမည့္အခ်ိန္", datatype: "string", datafield: "time", ishidden: false }
@@ -396,18 +343,7 @@
                , returnUri: true
             });
             $(this).attr('download', filename+'.xls').attr('href', uri).attr('target', '_blank');
-         });*/
-
-         $("#btnExportExcel").click(function () {
-               var report_date=$('#report_date').val();
-               var filename=report_date+" Sale List";
-               var uri =$("#tblExport").btechco_excelexport({
-                      containerid: "tblExport"
-                     , datatype: $datatype.Table
-                     , returnUri: true
-                  });
-               $(this).attr('download', filename+'.xls').attr('href', uri).attr('target', '_blank');
-         });
+        });
       });
       
       function tripallcombo(from){

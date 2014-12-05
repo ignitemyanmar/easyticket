@@ -52,11 +52,8 @@
           <?php elseif($currentroute=="/"): ?>
             ခရီးစဥ္ ေရြးရန္
           <?php else: ?>
-          
           <?php endif; ?>
-
           <?php if(Auth::check()): ?>
-
             <div class="user">
               <?php if(Session::get('bookingcount') > 0): ?> 
                 <a href="/todaybookings" target="_blank"><span class="noti red"><?php echo Session::get('bookingcount'); ?></span></a>

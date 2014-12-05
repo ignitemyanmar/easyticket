@@ -14,11 +14,16 @@
       margin-left: 0px;
       box-shadow: transparent;
    }
-   .zawgyi-one{font-family: "Zawgyi-One";}  
+   .zawgyi-one, h4{font-family: "Zawgyi-One";}  
    .fit-a{padding-top: 9px;}
  .check-a label{height: 175px;}
  .colorbox{width:24px; height:24px;float:left;margin-right:8px;}
  .booking{background:  #470203;}
+ .rm_typeframe{border:1px solid #eee;min-height:200px !important;background: rgba(231, 241, 246, 1);}
+ .rm_heading{background:#000; color:white;padding:11px 12px;margin-top:0;}
+ hr{margin:4px 0; border-bottom:1px solid #444;}
+ .padding_rmtype{padding: 0 12px;}
+ .padding_rmtype span{background:#000;padding:0 1px;color:white;position:relative;}
 
 </style>
 <!-- BEGIN PAGE -->  
@@ -115,13 +120,10 @@
                                  </button>
                                  <ul class="dropdown-menu">
                                     <li><a href="" class="print">Print</a></li>
-                                    <!-- <li><a href="#">Save as PDF</a></li> -->
-                                    <!-- <li><a href="#" id="btnExportExcel">Export to Excel</a></li> -->
                                  </ul>
                               </div>
                            </div>
                            <div id="contents">
-
                               @if($response['seat_plan']['seat_list'])
                               <ul class="trip_info">
                                  <h3>ခရီးစဥ္ အခ်က္အလက္မ်ား</h3>
@@ -141,148 +143,147 @@
                                  <div class="clear">&nbsp;</div>
                                  <hr>
                               </ul>
-                                 <div id="seating-map-wrapper">
-                                    <div id="seating-map-creator">
-                                             <div class="check-a">
 
-                                                   <?php $k=1;  $columns=$response['seat_plan']['column'];?>
-                                                   @foreach($response['seat_plan']['seat_list'] as $rows)
-                                                      @if($k%$columns==1)
-                                                      <div class="row-fluid .ul">
-                                                         <div class="span1 ">&nbsp;</div>
-                                                      @endif
-                                                            @if($rows['status']==0)
-                                                               <div class="span2">&nbsp;</div>
-                                                            @else
-                                                               <?php 
-                                                                  if($rows['status'] == 2){
-                                                                     $disabled="disabled";
-                                                                     $taken="taken";
-                                                                  }else if($rows['status'] ==3){
-                                                                     $disabled="disabled";
-                                                                     $taken="booking";
-                                                                  }else{
-                                                                     $disabled=''; 
-                                                                     $taken='available';  
-                                                                  }
-                                                               ?>
-                                                               @if($taken=="taken")
-                                                                  <div class="span2 grid cs-style-3">
-                                                                     <div class="list">
-                                                                        <figure>
-                                                                           <div class="checkboxframe">
-                                                                              <label>
-                                                                                 <span></span>
-                                                                                 
-                                                                                  <!-- <input class="radios" type="checkbox" multiple="multiple" value="{{$rows['seat_no']}}" name="tickets" {{ $disabled }}> -->
-                                                                                 <div class="fit-a {{$taken}} zawgyi-one" title="{{$rows['agent_name']}}" id="{{$rows['seat_no']}}">{{$rows['customer']['name']}}<br> {{$rows['customer']['phone']}}<br> {{$rows['customer']['nrc_no']}}<br> &nbsp;{{$rows['agent_name']}}</div>
-                                                                                 <input type="hidden" value="{{$rows['price']}}" class="price{{$rows['seat_no']}}">
-                                                                                 <input type="hidden" value="{{$rows['seat_no']}}" class="seatno{{$rows['seat_no']}}">
-                                                                              </label>
-                                                                           </div>
-                                                                           <figcaption><br>
-                                                                              <!-- <a href="" class="print1" id='one'>Print</a> -->
-                                                                              <a href="/report/customers/update?saleitem_id={{$rows['customer']['saleitem_id']}}" style="text-align:center;padding-left:9px;" data-reveal-id="myModal" class="updatecustomer AyarWagaung" rel="{{$rows['customer']['name']}}" id="{{$rows['customer']['nrc_no']}}">ဝယ်သူ အချက်အလက် ြပင်ရန်</a>
-                                                                           </figcaption>
-                                                                        </figure>
-                                                                     </div>
-                                                                  </div>
-
-                                                               @else
-                                                                  <div class="span2">
-                                                                     <div class="checkboxframe">
-                                                                        <label>
-                                                                           <span></span>
-                                                                           <div class="fit-a {{$taken}}" title="{{$rows['seat_no'].'('. $rows['price'].' K)'}}" id="{{$rows['seat_no']}}">Seat No : <b>{{$rows['seat_no']}}</b><span class="zawgyi-one"><br>Price : <b>{{$rows['price']}} <br> &nbsp;{{$rows['agent_name']}}</b><br>{{$rows['customer']['name']}}<br>{{$rows['customer']['nrc_no']}}</span></div>
-                                                                           <input type="hidden" value="{{$rows['price']}}" class="price{{$rows['seat_no']}}">
-                                                                           <input type="hidden" value="{{$rows['seat_no']}}" class="seatno{{$rows['seat_no']}}">
-                                                                        </label>
-                                                                     </div>
-                                                                  </div>
-                                                               @endif
-                                                            @endif
-                                                      @if($k%$columns==0)
-                                                         <div class="span">&nbsp;</div>
+                              <div class="check-a">
+                                    <?php $k=1;  $columns=$response['seat_plan']['column'];?>
+                                    @foreach($response['seat_plan']['seat_list'] as $rows)
+                                       @if($k%$columns==1)
+                                       <div class="row-fluid">
+                                          <div class="span1 ">&nbsp;</div>
+                                       @endif
+                                             @if($rows['status']==0)
+                                                <div class="span2">&nbsp;</div>
+                                             @else
+                                                <?php 
+                                                   if($rows['status'] == 2){
+                                                      $disabled="disabled";
+                                                      $taken="taken";
+                                                   }else if($rows['status'] ==3){
+                                                      $disabled="disabled";
+                                                      $taken="booking";
+                                                   }else{
+                                                      $disabled=''; 
+                                                      $taken='available';  
+                                                   }
+                                                ?>
+                                                @if($taken=="taken")
+                                                   <div class="span2 grid cs-style-3">
+                                                      <div class="list">
+                                                         <figure>
+                                                            <div class="checkboxframe">
+                                                               <label>
+                                                                  <span></span>
+                                                                  <div class="fit-a {{$taken}} zawgyi-one" title="{{$rows['agent_name']}}" id="{{$rows['seat_no']}}">{{$rows['customer']['name']}}<br> {{$rows['customer']['phone']}}<br> {{$rows['customer']['nrc_no']}}<br> &nbsp;{{$rows['agent_name']}}</div>
+                                                                  <input type="hidden" value="{{$rows['price']}}" class="price{{$rows['seat_no']}}">
+                                                                  <input type="hidden" value="{{$rows['seat_no']}}" class="seatno{{$rows['seat_no']}}">
+                                                               </label>
+                                                            </div>
+                                                            <figcaption><br>
+                                                               <a href="/report/customers/update?saleitem_id={{$rows['customer']['saleitem_id']}}" style="text-align:center;padding-left:9px;" data-reveal-id="myModal" class="updatecustomer AyarWagaung" rel="{{$rows['customer']['name']}}" id="{{$rows['customer']['nrc_no']}}">ဝယ်သူ အချက်အလက် ြပင်ရန်</a>
+                                                            </figcaption>
+                                                         </figure>
                                                       </div>
-                                                      <div class="clear-fix">&nbsp;</div>
-                                                      @endif
-                                                      <?php $k++;?>
-                                                   @endforeach
-                                             </div>
-                                    </div>
-                                 </div>
+                                                   </div>
 
-                                 <!-- <ul class="grid cs-style-3">
-                                    <li>
-                                       <figure>
-                                          <img src="../../images/4.png" alt="img04">
-                                          <figcaption>
-                                             <h3>Settings</h3>
-                                             <span>Jacob Cummings</span>
-                                             <a href="http://dribbble.com/shots/1116685-Settings">Take a look</a>
-                                          </figcaption>
-                                       </figure>
-                                    </li>
-                                    <li>
-                                       <figure>
-                                          <img src="../../images/1.png" alt="img01">
-                                          <figcaption>
-                                             <h3>Camera</h3>
-                                             <span>Jacob Cummings</span>
-                                             <a href="http://dribbble.com/shots/1115632-Camera">Take a look</a>
-                                          </figcaption>
-                                       </figure>
-                                    </li>
-                                    <li>
-                                       <figure>
-                                          <img src="../../images/2.png" alt="img02">
-                                          <figcaption>
-                                             <h3>Music</h3>
-                                             <span>Jacob Cummings</span>
-                                             <a href="http://dribbble.com/shots/1115960-Music">Take a look</a>
-                                          </figcaption>
-                                       </figure>
-                                    </li>
-                                    <li>
-                                       <figure>
-                                          <img src="bannerphoto/bussm.jpg" alt="img05">
-                                          <figcaption>
-                                             <h3>Safari</h3>
-                                             <span>Jacob Cummings</span>
-                                             <a href="http://dribbble.com/shots/1116775-Safari">Take a look</a>
-                                          </figcaption>
-                                       </figure>
-                                    </li>
-                                    <li>
-                                       <figure>
-                                          <img src="../../images/3.png" alt="img03">
-                                          <figcaption>
-                                             <h3>Phone</h3>
-                                             <span>Jacob Cummings</span>
-                                             <a href="http://dribbble.com/shots/1117308-Phone">Take a look</a>
-                                          </figcaption>
-                                       </figure>
-                                    </li>
-                                    <li>
-                                       <figure>
-                                          <img src="../../images/6.png" alt="img06"> <figcaption>
-                                             <h3>Game Center</h3>
-                                             <span>Jacob Cummings</span>
-                                             <a href="http://dribbble.com/shots/1118904-Game-Center">Take a look</a>
-                                          </figcaption>
-                                       </figure>
-                                    </li>
-                                 </ul> -->
+                                                @else
+                                                   <div class="span2">
+                                                      <div class="checkboxframe">
+                                                         <label>
+                                                            <span></span>
+                                                            <div class="fit-a {{$taken}}" title="{{$rows['seat_no'].'('. $rows['price'].' K)'}}" id="{{$rows['seat_no']}}">Seat No : <b>{{$rows['seat_no']}}</b><span class="zawgyi-one"><br>Price : <b>{{$rows['price']}} <br> &nbsp;{{$rows['agent_name']}}</b><br>{{$rows['customer']['name']}}<br>{{$rows['customer']['nrc_no']}}</span></div>
+                                                            <input type="hidden" value="{{$rows['price']}}" class="price{{$rows['seat_no']}}">
+                                                            <input type="hidden" value="{{$rows['seat_no']}}" class="seatno{{$rows['seat_no']}}">
+                                                         </label>
+                                                      </div>
+                                                   </div>
+                                                @endif
+                                             @endif
+                                       @if($k%$columns==0)
+                                          <div class="span">&nbsp;</div>
+                                       </div>
+                                       <div class="clear-fix">&nbsp;</div>
+                                       @endif
+                                       <?php $k++;?>
+                                    @endforeach
+                              </div>
                               @endif
                            </div>
-                           
-
-                           <!-- <img src="../../img/icon-48-print.png" border=0 align="middle" class="print"></a> -->
                         </div>
                      </div>
 
                   </div>
                </div>
+                  @if(count($remarkgroup)>0)
+                     <?php $i=1;?>
+                     @foreach($remarkgroup as $key=>$remark_typerow)
+                        <?php 
+                           switch ($key) {
+                              case '1':
+                                 $remark_type="လမ္းၾကိဳ";
+                                 break;
+                              case '2':
+                                 $remark_type="ေတာင္းရန္";
+                                 break;
+                              case '3':
+                                 $remark_type="ခုံေရြ႕ရန္";
+                                 break;
+                              case '4':
+                                 $remark_type="Date Chanage ရန္";
+                                 break;
+                              
+                              default:
+                                  $remark_type="စည္းဖ်က္";
+                                 break;
+                           }
+                        ?>
+                        @if($i%3==1)
+                        <div class="row-fluid">
+                        @endif
+                           <div class="span4 rm_typeframe">
+                                 <h4 class="rm_heading">{{$remark_type}}</h4>
+                                 <div class="row-fluid padding_rmtype">
+                                    <div class="span4"><b>Seat No</b><br>
+                                    </div>
+                                    <div class="span8"><b>Remark</b></div> 
+
+                                 </div>
+                                 <div class="clearfix"><hr></div> 
+
+                                 @foreach($remark_typerow as $remarkrow)
+                                    @if(count($remarkrow['saleitems'])>0)
+                                       <div class="row-fluid padding_rmtype">
+                                          <div class="span4">
+                                             <?php $j=1;?>
+                                             @foreach($remarkrow['saleitems'] as $seats)
+                                                <span>{{$seats['seat_no']}}</span>
+                                                @if($j%4==0)
+                                                   <div>&nbsp;</div>
+                                                @endif
+                                                <?php $j++;?>
+                                             @endforeach
+                                          </div>
+                                          <div class="span8">
+                                             @if($key==5)
+                                                {{$remarkrow['name']}}
+                                                <br>
+                                             @endif
+                                             @if($remarkrow['remark']) {{$remarkrow['remark']}} @else - @endif
+                                          </div>
+                                       </div>
+                                       <div class="clearfix"><hr></div> 
+                                    @endif
+                                 @endforeach
+
+                           </div>
+                        @if($i%3==0 || $i==count($remarkgroup)) 
+                        </div>
+                        <div class="clearfix"><br></div> 
+                        @endif
+                        <?php $i++;?>
+                     @endforeach
+                  @endif
+
+               
             <!-- END PAGE CONTENT-->         
          </div>
       <!-- END PAGE CONTAINER-->

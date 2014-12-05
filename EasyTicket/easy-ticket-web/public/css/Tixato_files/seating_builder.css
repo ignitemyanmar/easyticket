@@ -1,4 +1,5 @@
-.fit-a{color:white;text-align:center; padding-top: 39px;}
+.fit-a{color:white;text-align:center; padding-top: 39px;font-size: 12px !important;line-height: 17px;}
+.fit-a strong{font-size: 15px !important;}
 .checkboxframe input[type="checkbox"]{
   margin:9px;
   position: absolute;

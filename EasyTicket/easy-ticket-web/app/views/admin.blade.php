@@ -333,6 +333,12 @@
                         <li ><a href="/seatplanlist">ခုံနံပါတ်များ</a></li>
                     </ul>
                 </li> 
+                <li @if($currentroute=='cli') class="" @endif>
+                    <a href="/client/sync">
+                    <i class="icon-th-list"></i> 
+                    <span class="title">Sync</span>
+                    </a>
+                </li>
                 <!-- <li @if($currentroute=='sea') class=""@endif>
                     <a href="javascript:;">
                     <i class="icon-th-list"></i> 
@@ -399,7 +405,6 @@
     
     
     {{HTML::script('../../../assets/breakpoints/breakpoints.js')}}
-    {{HTML::script('../../../assets/jquery-ui/jquery-ui-1.10.1.custom.min.js')}}
     {{HTML::script('../../../assets/jquery-slimscroll/jquery.slimscroll.min.js')}}
     <!-- {{HTML::script('../../../assets/fullcalendar/fullcalendar/fullcalendar.min.js')}} -->
     {{HTML::script('../../../assets/bootstrap/js/bootstrap.min.js')}}
@@ -408,9 +413,9 @@
     {{HTML::script('../../../assets/flot/jquery.flot.js')}}
     {{HTML::script('../../../assets/flot/jquery.flot.resize.js')}}
     {{HTML::script('../../../assets/gritter/js/jquery.gritter.js')}}
-    {{HTML::script('../../../assets/uniform/jquery.uniform.min.js')}}
-    {{HTML::script('../../../assets/bootstrap-daterangepicker/date.js')}}
-    {{HTML::script('../../../assets/bootstrap-daterangepicker/daterangepicker.js')}}
+    <!-- {{HTML::script('../../../assets/uniform/jquery.uniform.min.js')}} -->
+    <!-- {{HTML::script('../../../assets/bootstrap-daterangepicker/date.js')}} -->
+    <!-- {{HTML::script('../../../assets/bootstrap-daterangepicker/daterangepicker.js')}} -->
     {{HTML::script('../../../assets/js/app.js')}}   
     <script>
         jQuery(document).ready(function() { 

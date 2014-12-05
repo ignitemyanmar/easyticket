@@ -1,5 +1,20 @@
 <?php
 	
+	/*Route::post('/activate', function(){
+		$id = Input::get('device_id');
+		$device = Device::wheredevice_name($id)->whereactivated(1)->first();
+		if($device){
+			return Response::json("Your device is already activated.")
+		}else{
+			$device = new Device();
+			$device->devece_name = $id;
+			$device->save();
+			if($device){
+				return Response::json("Your device was registered, please contact to \"Ignite Software Solution.\"")
+			}
+		}
+		
+	});*/
 
 	Route::get('tripautocreate',       				'ApiController@tripautocreate');
 
@@ -40,6 +55,9 @@
 	
 	Route::group(array('before' => 'auth'), function()
 	{
+		//Sync
+		Route::get('/client/sync', 					'SyncDatabaseController@index');
+
 		//operator report
 		Route::get('report/operator/trip/dateranges',	'ReportController@getTripslistreportOperator');
 		Route::get('triplist/{date}/daily',				'ReportController@getTripsSellingReportbyDaily');
@@ -534,7 +552,9 @@
 
 	});
 
-	Route::get('exportjson', 				'SyncDatabaseController@exportJson');
+	Route::get('downloadjson', 				'SyncDatabaseController@downloadJsonfromServer');
+	Route::get('exportbusjson/{fname}', 	'SyncDatabaseController@exportBusOccurance');
+	Route::get('writetodatabase', 			'SyncDatabaseController@writeJsonToDatabase');
 	Route::get('uploadjson', 				'SyncDatabaseController@pushJsonToServer');
 	Route::get('downloadjson', 				'SyncDatabaseController@downloadJsonFromServer');
 	Route::get('readjson', 					'SyncDatabaseController@readJson');

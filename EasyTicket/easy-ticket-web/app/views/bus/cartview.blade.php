@@ -7,21 +7,20 @@
 	}
 	
 	.btn1 {
-    background-color: #FF951D;
-    background-image: none;
-    filter: none;
-    border: 0px none;
-    box-shadow: none;
-    padding: 7px 14px;
-    text-shadow: none;
-    font-family: "Segoe UI",Helvetica,Arial,sans-serif;
-    font-size: 14px;
-    color: #eee;
-    cursor: pointer;
-    outline: medium none;
-    float: right;
-    margin-left: 1em;
-    border-radius: 0px !important;
+	    background-color: #FF951D;
+	    background-image: none;
+	    filter: none;
+	    border: 0px none;
+	    box-shadow: none;
+	    padding: 7px 14px;
+	    text-shadow: none;
+	    font-size: 14px;
+	    color: #eee;
+	    cursor: pointer;
+	    outline: medium none;
+	    float: right;
+	    margin-left: 1em;
+	    border-radius: 0px !important;
 	}
 	#warning{border:1px solid #C09853;color: #333;
 				padding: 9px 9px;
@@ -29,6 +28,7 @@
 				background: rgba(236, 210, 166, .1);}
 	.select2-container {max-width: 287px; min-width: 287px;}
 	.large-4 label{padding-right: 0;}
+	textarea{font-family: "Zawgyi-One" !important;}
 </style>
 	<div class="clear">&nbsp;</div>
 	<div class="row" style="min-height:480px;">
@@ -157,6 +157,27 @@
 											<input type="text" name="phone" required>
 										</div>
 									</div>
+
+									<div class="row">
+										<div class="large-4 columns">မွတ္ခ်က္ အမ်ိဳးအစား (Remark Type)</div>
+										<div class="large-8 columns">
+											<select name="remark_type" id="remark_type">
+												<option value="0">မွတ္ခ်က္ အမ်ိဳးအစား  ေရြးရန္</option>
+												<option value="1">လမ္းၾကိဳ</option>
+												<option value="2">ေတာင္းရန္</option>
+												<option value="3">ခုံေရြ႕ရန္</option>
+												<option value="4">Date Chanage ရန္</option>
+												<option value="5">စည္းဖ်က္</option>
+											</select>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="large-4 columns">မွတ္ခ်က္ (Remark)</div>
+										<div class="large-8 columns">
+											<textarea name="remark"></textarea>
+										</div>
+									</div>
 									
 
 									<div class="row">
@@ -179,13 +200,9 @@
 					<table style="width:100%">
 						<thead>
 							<tr>
-								<!-- <th>BusNo</th> -->
-								<!-- <th>Trip</th> -->
-								<!-- <th>Date Time</th> -->
 								<th>SeatNo</th>
 								<th>Price</th>
 								<th>Foreign Price</th>
-								<!-- <th>Action</th> -->
 							</tr>
 						</thead>
 						<tbody>
@@ -196,15 +213,9 @@
 									<input type="hidden" name="seat_no[]" value="{{$tickets['seat_no']}}">
 									<input type="hidden" name="agent_id1" value="{{$tickets['agent_id']}}">
 									<tr>
-										<!-- <td>{{$tickets['bus_no']}}</td> -->
-										<!-- <td>{{$tickets['from_to']}}</td> -->
-										<!-- <td>{{$tickets['departure_date'] .'<br>'.$tickets['time']}}</td> -->
 										<td>{{$tickets['seat_no']}}</td>
 										<td>{{$tickets['price']}} KS</td>
 										<td>{{$tickets['foreign_price']}} KS</td>
-										<!-- <td>
-											<a href="/sales/{{$tickets['id']}}/delete" class="remove">Remove</a>
-										</td> -->
 									</tr>
 									<?php $total +=$tickets['price']; ?>
 									<?php $foreign_total +=$tickets['foreign_price']; ?>
@@ -227,75 +238,7 @@
 	</div>
 
 	<script type="text/javascript">
-		/*$(document).ready(function()
-		{
-		    $(window).bind("beforeunload", function() { 
-		    	alert("Alert");
-		        return confirm("Do you really want to close?"); 
-		    });
-		});*/
-		/*function HandleBackFunctionality()
-		 {
-		     if(window.event)
-		    {
-		          if(window.event.clientX < 40 && window.event.clientY < 0)
-		         {
-		             alert("Browser back button is clicked...");
-		         }
-		         else
-		         {
-		             alert("Browser refresh button is clicked...");
-		         }
-		     }
-		     else
-		     {
-		          if(event.currentTarget.performance.navigation.type == 1)
-		         {
-		              alert("Browser refresh button is clicked...");
-		         }
-		         if(event.currentTarget.performance.navigation.type == 2)
-		        {
-		              alert("Browser back button is clicked...");
-		        }
-		     }
-		 }
-		*/
-		/*if (window.history && window.history.pushState) {
-
-		    $(window).on('popstate', function() {
-		      var hashLocation = location.hash;
-		      var hashSplit = hashLocation.split("#!/");
-		      var hashName = hashSplit[1];
-
-		      if (hashName !== '') {
-		        var hash = window.location.hash;
-		        if (hash === '') {
-		          alert('Back button was pressed.');
-		        }
-		      }
-		    });
-
-		    window.history.pushState('forward', null, './#forward');
-		  }*/
-
-	    /*window.onbeforeunload = function(evt)   
-	        {   
-	        if (typeof evt == 'undefined')    
-	        evt = window.event;    
-	     
-	     	// alert(evt);
-	            if(evt)   
-	            {  
-	            	console.log('abcccc'); 
-	            	return "If you leave this page, your information will not be updated.";   
-	            }   
-	        }  
-	     */
-
-
-
 		$(function(){
-
 			if (window.history && window.history.pushState) {
 			    var order_id=$('#order_id').val();
 			    window.history.pushState('forward', null, './'+order_id);
@@ -304,6 +247,8 @@
 				    });
 			    });
 			}
+
+
 
 			/*window.onbeforeunload = function(evt)   
 		    {   
@@ -320,6 +265,8 @@
 
 			$("#agent").select2();
 			$("#extendcity").select2();
+			$("#remark_type").select2();
+			
 
 			$('.remove').click(function(e){
 				$(this).parent().parent().remove();

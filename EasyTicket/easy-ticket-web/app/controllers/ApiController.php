@@ -1326,7 +1326,7 @@ class ApiController extends BaseController
 								$obj_busoccurance->commission		=$commission;
 								$obj_busoccurance->operator_id 		=$operator_id;
 								$obj_busoccurance->trip_id 			=$trip_id;
-								$checkbusoccurances=Busoccurance::wheretrip_id($trip_id)->wheredeparture_date($departure_date)->wheredeparture_time($time)->whereclasses($class_id)->first();
+								$checkbusoccurances=BusOccurance::wheretrip_id($trip_id)->wheredeparture_date($departure_date)->wheredeparture_time($time)->whereclasses($class_id)->first();
 								if($checkbusoccurances){
 									
 								}else{
@@ -2417,7 +2417,7 @@ class ApiController extends BaseController
 
 	public function getSeatPlan(){
 		$now_date = $this->today;
-    	$expired_ids=SaleOrder::where('expired_at','<',$now_date)->where('name','=','')->lists('id');
+    	$expired_ids=SaleOrder::where('expired_at','<',$now_date)->wherebooking(0)->where('name','=','')->lists('id');
     	if($expired_ids){
     		foreach ($expired_ids as $expired_id) {
     			SaleOrder::whereid($expired_id)->delete();
@@ -2623,15 +2623,53 @@ class ApiController extends BaseController
 				$times[]					= $temp;
 			}
 		}
-		return Response::json($times); 
+		$tmp_times=$this->msort($times,array("bus_class","time"), $sort_flags=SORT_REGULAR,$order=SORT_ASC);
+
+		return Response::json($tmp_times); 
 	}
 
+	function msort($array, $key, $sort_flags = SORT_REGULAR, $order) {
+	    if (is_array($array) && count($array) > 0) {
+	        if (!empty($key)) {
+	            $mapping = array();
+	            foreach ($array as $k => $v) {
+	                $sort_key = '';
+	                if (!is_array($key)) {
+	                    $sort_key = $v[$key];
+	                } else {
+	                    // @TODO This should be fixed, now it will be sorted as string
+	                    foreach ($key as $key_key) {
+	                        $sort_key .= $v[$key_key];
+	                    }
+	                    $sort_flags = SORT_STRING;
+	                }
+	                $mapping[$k] = $sort_key;
+	            }
+	            switch ($order) {
+		            case SORT_ASC:
+		                asort($mapping, $sort_flags);
+		            break;
+		            case SORT_DESC:
+		                arsort($mapping, $sort_flags);
+		            break;
+		        }
+	            // asort($mapping, $sort_flags);
+	            // arsort($mapping, $sort_flags);
+	            $sorted = array();
+	            foreach ($mapping as $k => $v) {
+	                $sorted[] = $array[$k];
+	            }
+	            return $sorted;
+	        }
+	    }
+	    return $array;
+	}
 
-    public function postSale(){
+	public function postSale(){
     	/*
     	 * Calulate Expired Time
     	 */
-	    	$now_date = $this->today;
+	    	$now_date = $this->getDateTime();
 			$currentDate = strtotime($now_date);
 			$futureDate = $currentDate+(60*15);//add 15 minutes for expired_time;
 			$expired_date = date("Y-m-d H:i:s", $futureDate);
@@ -2677,7 +2715,7 @@ class ApiController extends BaseController
     	/*
     	 * Delete Expired Order.
     	 */
-	    	$expired_ids=SaleOrder::where('expired_at','<',$now_date)->where('name','=','')->lists('id');
+	    	$expired_ids=SaleOrder::where('expired_at','<',$now_date)->wherebooking(0)->where('name','=','')->lists('id');
 	    	if($expired_ids){
 	    		foreach ($expired_ids as $expired_id) {
 	    			SaleOrder::whereid($expired_id)->delete();
@@ -2691,9 +2729,9 @@ class ApiController extends BaseController
 
     		$busoccuranceid = $rows->busoccurance_id;
     		$seat_plan_id   = BusOccurance::whereid($busoccuranceid)->pluck('seat_plan_id');
-    		$trip_id 	    = Busoccurance::whereid($busoccuranceid)->pluck('trip_id');
-    		$departure_date = Busoccurance::whereid($busoccuranceid)->pluck('departure_date');
-    		$departure_time = Busoccurance::whereid($busoccuranceid)->pluck('departure_time');
+    		$trip_id 	    = BusOccurance::whereid($busoccuranceid)->pluck('trip_id');
+    		$departure_date = BusOccurance::whereid($busoccuranceid)->pluck('departure_date');
+    		$departure_time = BusOccurance::whereid($busoccuranceid)->pluck('departure_time');
     		$objseatinfo    = SeatInfo::whereseat_plan_id($seat_plan_id)->whereseat_no($rows->seat_no)->first();
     		
     		/*
@@ -2737,7 +2775,8 @@ class ApiController extends BaseController
     	}
 
     	if(count($available_seats) == count($seat_list) && $all_canby){
-	    		$response['message']="Successfully your purchase or booking tickets.";
+    		try {
+    			$response['message']="Successfully your purchase or booking tickets.";
     			$can_buy=true;
     			$order_auto_id = $this->generateAutoID($group_operator_id);
     			$objsaleorder=new SaleOrder();
@@ -2774,21 +2813,29 @@ class ApiController extends BaseController
 	    				}
 	    			}
 	    		}
+    		} catch (Exception $e) {
+    			$response['message']="Something was wrong!.";
+    			$all_canby=false;
+    		}
+	    		
     	}else{
 	    	$response['message']="Unfortunately your purchase or booking some tickets have been taken by another customer.";
     		$all_canby=false;
     	}
 
     	$available_device_id=SaleOrder::whereid($order_auto_id)->pluck('device_id');
-    	$check_orderstatus=SaleItem::whereorder_id($order_auto_id)->wheredevice_id($available_device_id)->first();
+    	$check_saleitem_count=SaleItem::whereorder_id($order_auto_id)->wheredevice_id($available_device_id)->count();
     	$response['status'] = 1;
-    	if($check_orderstatus){
+    	if($check_saleitem_count == count($available_seats)){
     		$response['sale_order_no']=$order_auto_id;
 	    	$response['device_id']=$available_device_id;
 	    	$response['can_buy']=$all_canby;
 	    	$response['tickets']=$tickets;
     		return Response::json($response);
     	}else{
+    		$sale_order = SaleOrder::whereid($order_auto_id)->first();
+    		if($sale_order)
+    			$sale_order->delete();
     		$response['sale_order_no']=$order_auto_id;
 	    	$response['device_id']="-";
 	    	$response['can_buy']=$all_canby;
@@ -2883,7 +2930,7 @@ class ApiController extends BaseController
     		}
     		$order_date=Input::get('order_date');
     		$objsaleorder->orderdate=$order_date ? $order_date : $this->today;
-			$operator_id=Busoccurance::whereid($json_tickets[0]->busoccurance_id)->pluck('operator_id');
+			$operator_id=BusOccurance::whereid($json_tickets[0]->busoccurance_id)->pluck('operator_id');
 			
 			if($agent_name && !$agent_id){
 	    		$objagent=new Agent();
@@ -2959,7 +3006,7 @@ class ApiController extends BaseController
     		// $objagent=Agent::whereid($agent_id)->first();
 
     		$total_commission=0;
-    		$trip_id=Busoccurance::whereid($json_tickets[0]->busoccurance_id)->pluck('trip_id');
+    		$trip_id=BusOccurance::whereid($json_tickets[0]->busoccurance_id)->pluck('trip_id');
     		$objagent=AgentCommission::whereagent_id($agent_id)->wheretrip_id($trip_id)->first();
     		$total_ticket=count($json_tickets);
     		if($objagent){
@@ -3375,7 +3422,7 @@ class ApiController extends BaseController
     	}
     }
 
-	public function getTripReportByDateRanges(){
+	/*public function getTripReportByDateRanges(){
 		
 		$report_info 			=array();
 		$operator_id  			=Input::get('operator_id');
@@ -3390,7 +3437,7 @@ class ApiController extends BaseController
 		// operator only
 		if($operator_id && !$agent_id && !$from && !$to && !$start_date && !$end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 										$query->whereoperator_id(Input::get('operator_id'))
 										->orderBy('id','desc');
@@ -3403,7 +3450,7 @@ class ApiController extends BaseController
 		// operator from, to , departure_time
 		elseif($operator_id && !$agent_id && $from && $to && !$start_date && !$end_date && $departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 										$query->whereoperator_id(Input::get('operator_id'))
 										->orderBy('id','desc');
@@ -3420,7 +3467,7 @@ class ApiController extends BaseController
 		// operator from, to
 		elseif($operator_id && !$agent_id && $from && $to && !$start_date && !$end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 										$query->whereoperator_id(Input::get('operator_id'))
 										->orderBy('id','desc');
@@ -3436,7 +3483,7 @@ class ApiController extends BaseController
 		// operator startdate, enddate (order)
 		elseif($operator_id && !$agent_id && !$from && !$to && $start_date && $end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('orderdate','>=', Input::get('start_date'))
 																->where('orderdate','<=',Input::get('end_date'))->lists('id');
@@ -3451,7 +3498,7 @@ class ApiController extends BaseController
 		// operator startdate
 		elseif($operator_id && !$agent_id && !$from && !$to && $start_date && !$end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('orderdate','=', Input::get('start_date'))->lists('id');
 											$query->wherein('order_id',$orderids
@@ -3465,7 +3512,7 @@ class ApiController extends BaseController
 		// operator startdate, enddate (order), agentid
 		elseif($operator_id && $agent_id && !$from && !$to && $start_date && $end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('agent_id','=',Input::get('agent_id'))
 																->where('orderdate','>=', Input::get('start_date'))
@@ -3481,7 +3528,7 @@ class ApiController extends BaseController
 		// operator startdate, (order), agentid
 		elseif($operator_id && $agent_id && !$from && !$to && $start_date && !$end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('agent_id','=',Input::get('agent_id'))
 																->where('orderdate','=',Input::get('start_date'))
@@ -3497,7 +3544,7 @@ class ApiController extends BaseController
 		// operator from, to ,startdate, enddate (order)
 		elseif($operator_id && !$agent_id && $from && $to && $start_date && $end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('orderdate','>=', Input::get('start_date'))
 																->where('orderdate','<=',Input::get('end_date'))->lists('id');
@@ -3515,7 +3562,7 @@ class ApiController extends BaseController
 		// operator from, to ,startdate, enddate (order), time
 		elseif($operator_id && !$agent_id && $from && $to && $start_date && $end_date && $departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('orderdate','>=', Input::get('start_date'))
 																->where('orderdate','<=',Input::get('end_date'))->lists('id');
@@ -3537,7 +3584,7 @@ class ApiController extends BaseController
 		// operator from, to ,startdate,  (order), time, agent_id
 		elseif($operator_id && $agent_id && $from && $to && $start_date && !$end_date && $departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('orderdate','=', Input::get('start_date'))
 																->lists('id');
@@ -3556,7 +3603,7 @@ class ApiController extends BaseController
 		// operator from, to ,startdate,  (order), agent_id
 		elseif($operator_id && $agent_id && $from && $to && $start_date && !$end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('orderdate','=', Input::get('start_date'))
 																->lists('id');
@@ -3574,7 +3621,7 @@ class ApiController extends BaseController
 		// operator from, to ,startdate(order)
 		elseif($operator_id && !$agent_id && $from && $to && $start_date && !$end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('orderdate','=', Input::get('start_date'))->lists('id');
 											$query->wherein('order_id',$orderids
@@ -3591,7 +3638,7 @@ class ApiController extends BaseController
 		// operator from, to ,startdate, enddate (order), agent_id
 		elseif($operator_id && $agent_id && $from && $to && $start_date && $end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('agent_id','=',Input::get('agent_id'))
 																->where('orderdate','>=', Input::get('start_date'))
@@ -3611,7 +3658,7 @@ class ApiController extends BaseController
 		// operator , agent_id
 		elseif($operator_id && $agent_id && !$from && !$to && !$start_date && !$end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('agent_id','=',Input::get('agent_id'))
 																->lists('id');
@@ -3628,7 +3675,7 @@ class ApiController extends BaseController
 		// operator from, to , agent_id
 		elseif($operator_id && $agent_id && $from && $to && !$start_date && !$end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('agent_id','=',Input::get('agent_id'))
 																->lists('id');
@@ -3646,7 +3693,7 @@ class ApiController extends BaseController
 		// operator from, to , agent_id, from, to , $departtime 
 		elseif($operator_id && $agent_id && $from && $to && !$start_date && !$end_date && $departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('agent_id','=',Input::get('agent_id'))
 																->lists('id');
@@ -3665,7 +3712,7 @@ class ApiController extends BaseController
 		// operator from, to , agent_id, from, to ,date,edate $departtime 
 		elseif($operator_id && $agent_id && $from && $to && $start_date && $end_date && $departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('agent_id','=',Input::get('agent_id'))
 																->where('orderdate','>=', Input::get('start_date'))
@@ -3739,7 +3786,7 @@ class ApiController extends BaseController
 					$total_seat=0;
 					$purchased_total_seat=0;
 					$total_amout=0;
-					$seatplanid=Busoccurance::whereid($row->id)->pluck('seat_plan_id');
+					$seatplanid=BusOccurance::whereid($row->id)->pluck('seat_plan_id');
 					$total_seats=SeatInfo::whereseat_plan_id($seatplanid)->where('status','!=',0)->count('id');
 					$order_date=SaleOrder::find($row->saleitems[0]->order_id)->pluck('orderdate');
 					
@@ -3786,7 +3833,7 @@ class ApiController extends BaseController
 						$total_seat=0;
 						$purchased_total_seat=0;
 						$total_amout=0;
-						$seatplanid=Busoccurance::whereid($row->id)->pluck('seat_plan_id');
+						$seatplanid=BusOccurance::whereid($row->id)->pluck('seat_plan_id');
 						$total_seats=SeatInfo::whereseat_plan_id($seatplanid)->where('status','!=',0)->count('id');
 						$order_date=SaleOrder::find($row->agentsaleitems[0]['order_id'])->pluck('orderdate');
 						
@@ -3833,23 +3880,173 @@ class ApiController extends BaseController
 			
 		}
 		return Response::json($response);
+	}*/
+
+	public function getTripReportByDateRanges()
+	{
+		$report_info 			=array();
+		$operator_id  			=Input::get('operator_id');
+		$agent_id  				=Input::get('agent_id');
+		// $trips  				=Input::get('trips'); //for agent report or not
+		if($agent_id=="All")
+			$agent_id='';
+		$from  					=Input::get('from');
+		$to  					=Input::get('to');
+		$start_date  			=Input::get('start_date') ? Input::get('start_date') : $this->getDate();
+		$end_date  				=Input::get('end_date') ? Input::get('end_date') : $this->getDate();
+		$start_date				=date('Y-m-d', strtotime($start_date));
+		$end_date				=date('Y-m-d', strtotime($end_date));
+		$departure_time  		=Input::get('departure_time');
+		$departure_time			=str_replace('-', ' ', $departure_time);
+
+	    $operator_id 	=$operator_id ? $operator_id : $this->myGlob->operator_id;
+
+	    if($from=='all')
+	    	$from=0;
+
+		$trip_ids=array();
+		if($from && $to)
+		{
+			if($departure_time){
+				$trip_ids=Trip::whereoperator_id($operator_id)
+									->wherefrom($from)
+									->whereto($to)
+									->wheretime($departure_time)->lists('id');
+			}else{
+				$trip_ids=Trip::whereoperator_id($operator_id)
+									->wherefrom($from)
+									->whereto($to)
+									->lists('id');
+			}
+		}else{
+			if($departure_time){
+				$trip_ids=Trip::whereoperator_id($operator_id)
+									->wheretime($departure_time)->lists('id');
+			}else{
+				$trip_ids=Trip::whereoperator_id($operator_id)
+									->lists('id');
+			}
+		}
+    	
+    	$sale_item=array();
+    	$order_ids=array();
+
+    	if($agent_id){
+	    	$order_ids = SaleOrder::where('orderdate','>=',$start_date)
+	    					->where('orderdate','<=',$end_date)
+	    					->whereagent_id($agent_id)
+	    					->where('operator_id','=',$operator_id)->lists('id');
+    	}else{
+    		$order_ids = SaleOrder::where('orderdate','>=',$start_date)
+	    					->where('orderdate','<=',$end_date)
+	    					->where('operator_id','=',$operator_id)->lists('id');
+    	}
+    	if($order_ids)
+    		$arrtrip_id=SaleItem::wherein('order_id',$order_ids)->lists('trip_id');
+
+    	$trip_ids=array_intersect($trip_ids, $trip_ids);
+
+    	if($trip_ids)
+			if($agent_id){
+				$sale_item = SaleItem::wherein('trip_id', $trip_ids)
+								->selectRaw('order_id, count(*) as sold_seat, trip_id, price, foreign_price, departure_date, busoccurance_id, SUM(free_ticket) as free_ticket, agent_id')
+								->where('departure_date','>=',$start_date)
+								->where('departure_date','<=',$end_date)
+								->whereagent_id($agent_id)
+								->groupBy('order_id')->orderBy('departure_date','asc')->get();	
+			}else{
+				$sale_item = SaleItem::wherein('trip_id', $trip_ids)
+								->selectRaw('order_id, count(*) as sold_seat, trip_id, price, foreign_price, departure_date, busoccurance_id, SUM(free_ticket) as free_ticket, agent_id')
+								->where('departure_date','>=',$start_date)
+								->where('departure_date','<=',$end_date)
+								->groupBy('order_id')->orderBy('departure_date','asc')->get();
+			}
+
+    	// return Response::json($sale_item);
+			
+		$lists = array();
+		foreach ($sale_item as $rows) {
+			$local_person = 0;
+			$foreign_price = 0;
+			$total_amount = 0;
+			$trip = Trip::whereid($rows->trip_id)->first();
+			$order_date=SaleOrder::whereid($rows->order_id)->pluck('orderdate');
+			$list['order_date'] = $order_date;
+			// dd($rows->agent_id);
+			$agent_name=Agent::whereid($rows->agent_id)->pluck('name');
+			$list['agent_id']=$rows->agent_id ? $rows->agent_id : 0;
+			$list['agent_name']=$agent_name ? $agent_name : "-";
+			
+			if($trip){
+				$list['id'] = $rows->trip_id;
+				$list['bus_id'] = $rows->busoccurance_id;
+				$list['departure_date'] = $rows->departure_date;
+				$list['from_id'] = $trip->from;
+				$list['to_id'] = $trip->to;
+				$list['from_to'] = City::whereid($trip->from)->pluck('name').'-'.City::whereid($trip->to)->pluck('name');
+				$list['time'] = $trip->time;
+				$list['class_id'] = $trip->class_id;
+				$list['class_name'] = Classes::whereid($trip->class_id)->pluck('name');
+				if(SaleOrder::whereid($rows->order_id)->pluck('nationality') == 'local'){
+					$local_person += $rows->sold_seat;
+					$total_amount += $rows->free_ticket > 0 ? ($rows->price * $rows->sold_seat) - ($rows->price * $rows->free_ticket) : $rows->price * $rows->sold_seat ;
+				}else{
+					$foreign_price += $rows->sold_seat;
+					$total_amount += $rows->free_ticket > 0 ? ($rows->foreign_price * $rows->sold_seat) - ($rows->foreign_price * $rows->free_ticket) : $rows->foreign_price * $rows->sold_seat ;
+				}
+				$list['local_person'] = $local_person;
+				$list['foreign_person'] = $foreign_price;
+				$list['local_price'] = $rows->price;
+				$list['foreign_price'] = $rows->foreign_price;
+				$list['sold_seat'] = $rows->sold_seat;
+				$list['free_ticket'] = $rows->free_ticket;
+				$list['total_amount'] = $total_amount;
+				$lists[] = $list;
+			}
+		}
+		//Grouping from Lists
+		$stack = array();
+		foreach ($lists as $rows) {
+			$check = $this->ifExist($rows, $stack);
+			if($check != -1){
+				$stack[$check]['local_person'] += $rows['local_person'];
+				$stack[$check]['foreign_person'] += $rows['foreign_person'];
+				$stack[$check]['sold_seat'] += $rows['sold_seat'];
+				$stack[$check]['free_ticket'] += $rows['free_ticket'];
+				$stack[$check]['total_amount'] += $rows['total_amount'];
+			}else{
+				array_push($stack, $rows);
+			}
+		}
+
+		$search=array();
+    	$cities=array();
+    	$cities=$this->getCitiesByoperatorId($operator_id);
+    	
+		$search['cities']=$cities;
+		
+		$times=array();
+		$times=$this->getTime($operator_id, $from, $to);
+		/*$search['times']=$times;
+		$search['operator_id']=$operator_id;
+		$search['trips']=$trips;
+		$search['from']=$from;
+		$search['to']=$to;
+		$search['time']=$departure_time;
+		$search['start_date']=$start_date;
+		$search['end_date']=$end_date;
+		$search['agent_id']=$agent_id;
+
+		$agent=Agent::whereoperator_id($operator_id)->get();
+		$search['agent']=$agent;*/
+
+		$response=$this->msort($stack,array("order_date","departure_date","from_to"), $sort_flags=SORT_REGULAR,$order=SORT_ASC);
+		return Response::json($response);
+		// return View::make('busreport.operatortripticketsolddaterange', array('response'=>$response, 'search'=>$search));
 	}
 
-    public function getTripsReportByDaily(){
 
-		// format for api
-		/* {
-	        "purchased_total_seat": 2,
-	        "total_amout": 30000,
-	        "bus_id": 1,
-	        "bus_no": "YGN-9898",
-	        "from": "Yangon",
-	        "to": "Nay Pyi Taw",
-	        "departure_date": "2014-06-30",
-	        "time": "9:00 AM",
-	        "total_seat": 44
-	    }
-        */
+    /*public function getTripsReportByDaily(){
 		$response 				=array();
 		$operator_id  			=Input::get('operator_id');
 		$agent_id  				=Input::get('agent_id');
@@ -3862,7 +4059,7 @@ class ApiController extends BaseController
 		// operator only
 		if($operator_id && !$agent_id && !$from && !$to && !$start_date && !$end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 										$query->whereoperator_id(Input::get('operator_id'))
 										->orderBy('id','desc');
@@ -3875,7 +4072,7 @@ class ApiController extends BaseController
 		// operator from, to , departure_time
 		elseif($operator_id && !$agent_id && $from && $to && !$start_date && !$end_date && $departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 										$query->whereoperator_id(Input::get('operator_id'))
 										->orderBy('id','desc');
@@ -3892,7 +4089,7 @@ class ApiController extends BaseController
 		// operator from, to
 		elseif($operator_id && !$agent_id && $from && $to && !$start_date && !$end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 										$query->whereoperator_id(Input::get('operator_id'))
 										->orderBy('id','desc');
@@ -3908,7 +4105,7 @@ class ApiController extends BaseController
 		// operator startdate, enddate (order)
 		elseif($operator_id && !$agent_id && !$from && !$to && $start_date && $end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('orderdate','>=', Input::get('date'))
 																->where('orderdate','<=',Input::get('end_date'))->lists('id');
@@ -3923,7 +4120,7 @@ class ApiController extends BaseController
 		// operator startdate
 		elseif($operator_id && !$agent_id && !$from && !$to && $start_date && !$end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('orderdate','=', Input::get('date'))->lists('id');
 											$query->wherein('order_id',$orderids
@@ -3937,7 +4134,7 @@ class ApiController extends BaseController
 		// operator startdate, enddate (order), agentid
 		elseif($operator_id && $agent_id && !$from && !$to && $start_date && $end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('agent_id','=',Input::get('agent_id'))
 																->where('orderdate','>=', Input::get('date'))
@@ -3953,7 +4150,7 @@ class ApiController extends BaseController
 		// operator startdate,  agentid
 		elseif($operator_id && $agent_id && !$from && !$to && $start_date && !$end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('agent_id','=',Input::get('agent_id'))
 																->where('orderdate','=', Input::get('date'))
@@ -3969,7 +4166,7 @@ class ApiController extends BaseController
 		// operator from, to ,startdate, enddate (order)
 		elseif($operator_id && !$agent_id && $from && $to && $start_date && $end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('orderdate','>=', Input::get('date'))
 																->where('orderdate','<=',Input::get('end_date'))->lists('id');
@@ -3987,7 +4184,7 @@ class ApiController extends BaseController
 		// operator from, to ,startdate, enddate (order), time
 		elseif($operator_id && !$agent_id && $from && $to && $start_date && $end_date && $departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('orderdate','>=', Input::get('date'))
 																->where('orderdate','<=',Input::get('end_date'))->lists('id');
@@ -4006,7 +4203,7 @@ class ApiController extends BaseController
 		// operator from, to ,startdate, enddate (order), time
 		elseif($operator_id && $agent_id && $from && $to && $start_date && $end_date && $departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('orderdate','>=', Input::get('date'))
 																->where('orderdate','<=',Input::get('end_date'))
@@ -4027,7 +4224,7 @@ class ApiController extends BaseController
 		// operator from, to ,startdate, enddate (order), time
 		elseif($operator_id && $agent_id && $from && $to && $start_date && !$end_date && $departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('orderdate','=', Input::get('date'))
 																->whereagent_id(Input::get('agent_id'))
@@ -4047,7 +4244,7 @@ class ApiController extends BaseController
 		// operator from, to ,startdate, time
 		elseif($operator_id && !$agent_id && $from && $to && $start_date && !$end_date && $departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('orderdate','=', Input::get('date'))
 																->lists('id');
@@ -4066,7 +4263,7 @@ class ApiController extends BaseController
 		// operator from, to ,startdate (order)
 		elseif($operator_id && !$agent_id && $from && $to && $start_date && !$end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('orderdate','=', Input::get('date'))->lists('id');
 											$query->wherein('order_id',$orderids
@@ -4083,7 +4280,7 @@ class ApiController extends BaseController
 		// operator from, to ,startdate, enddate (order), agent_id
 		elseif($operator_id && $agent_id && $from && $to && $start_date && $end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('agent_id','=',Input::get('agent_id'))
 																->where('orderdate','>=', Input::get('date'))
@@ -4102,7 +4299,7 @@ class ApiController extends BaseController
 		// operator from, to ,startdate,agent_id
 		elseif($operator_id && $agent_id && $from && $to && $start_date && !$end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('orderdate','=', Input::get('date'))
 																->lists('id');
@@ -4120,7 +4317,7 @@ class ApiController extends BaseController
 		// operator , agent_id
 		elseif($operator_id && $agent_id && !$from && !$to && !$start_date && !$end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('agent_id','=',Input::get('agent_id'))
 																->lists('id');
@@ -4136,7 +4333,7 @@ class ApiController extends BaseController
 		// operator from, to , agent_id
 		elseif($operator_id && $agent_id && $from && $to && !$start_date && !$end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('agent_id','=',Input::get('agent_id'))
 																->lists('id');
@@ -4154,7 +4351,7 @@ class ApiController extends BaseController
 		// operator from, to , agent_id, from, to , $departtime 
 		elseif($operator_id && $agent_id && $from && $to && !$start_date && !$end_date && $departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('agent_id','=',Input::get('agent_id'))
 																->lists('id');
@@ -4219,7 +4416,7 @@ class ApiController extends BaseController
 					$total_seat=0;
 					$purchased_total_seat=0;
 					$total_amout=0;
-					$seatplanid=Busoccurance::whereid($row->id)->pluck('seat_plan_id');
+					$seatplanid=BusOccurance::whereid($row->id)->pluck('seat_plan_id');
 					$total_seats=SeatInfo::whereseat_plan_id($seatplanid)->where('status','!=',0)->count('id');
 					$order_date=SaleOrder::find($row->saleitems[0]->order_id)->pluck('orderdate');
 					
@@ -4251,7 +4448,7 @@ class ApiController extends BaseController
 					$total_seat=0;
 					$purchased_total_seat=0;
 					$total_amout=0;
-					$seatplanid=Busoccurance::whereid($row->id)->pluck('seat_plan_id');
+					$seatplanid=BusOccurance::whereid($row->id)->pluck('seat_plan_id');
 					$total_seats=SeatInfo::whereseat_plan_id($seatplanid)->where('status','!=',0)->count('id');
 					$order_date=SaleOrder::find($row->agentsaleitems[0]['order_id'])->pluck('orderdate');
 					
@@ -4279,7 +4476,212 @@ class ApiController extends BaseController
 			}
 		}
 		return Response::json($response);
-	}
+	}*/
+
+	public function getTripsReportByDaily()
+	{
+		$date=Input::get('date');
+		$bus_id=Input::get('bus_id');
+		$order_date=explode(',', $date);
+		$from=Input::get('from_city');
+		$to=Input::get('to_city');
+		$agent_id=Input::get('agent_id');
+		$start_date="";
+		$end_date="";
+		if($bus_id){
+			$date=$order_date[0];
+			$start_date=$order_date[0];
+			$end_date=$order_date[0];
+		}else{
+			$start_date=$order_date[0];
+			if(count($order_date)==2)
+				$end_date=$order_date[1];
+			else
+				$end_date=$order_date[0];
+		}
+		
+    	$operator_id 	=Input::get('operator_id');
+	    	Session::put('search_daily_date',$date);
+	    	if($bus_id){
+	    		if($agent_id){
+	    			$sale_order = SaleOrder::with('saleitems')->whereHas('saleitems',function($query) use ($bus_id , $agent_id){
+    										$query->wherebusoccurance_id($bus_id)->whereagent_id($agent_id);
+    									})->where('orderdate','=',$date)
+    									->where('operator_id','=',$operator_id)
+    									// ->where('booking','=',0)
+    									// ->where('name','!=','')
+    									->get();
+	    		}else{
+	    			$sale_order = SaleOrder::with('saleitems')->whereHas('saleitems',function($query) use ($bus_id){
+    											$query->wherebusoccurance_id($bus_id);
+    									})->where('orderdate','=',$date)
+    									->where('operator_id','=',$operator_id)
+    									// ->where('booking','=',0)
+    									// ->where('name','!=','')
+    									->get();	
+	    		}
+	    		
+			}else{
+				if($from && $agent_id){
+					$sale_order = SaleOrder::with('saleitems')->whereHas('saleitems',function($query) use ($from, $to, $agent_id){
+											$query->wherefrom($from)->whereto($to)->whereagent_id($agent_id);
+										})
+										->where('orderdate','>=',$start_date)
+										->where('orderdate','<=',$end_date)
+    									->where('operator_id','=',$operator_id)
+    									// ->where('booking','=',0)
+    									// ->where('name','!=','')
+    									->get();
+				}elseif($from && !$agent_id){
+					$sale_order = SaleOrder::with('saleitems')->whereHas('saleitems',function($query) use ($from, $to, $agent_id){
+											$query->wherefrom($from)->whereto($to);
+										})
+										->where('orderdate','>=',$start_date)
+										->where('orderdate','<=',$end_date)
+    									->where('operator_id','=',$operator_id)
+    									// ->where('booking','=',0)
+    									// ->where('name','!=','')
+    									->get();
+				}elseif(!$from && $agent_id){
+					$sale_order = SaleOrder::with('saleitems')->whereHas('saleitems',function($query) use ($from, $to, $agent_id){
+											$query->whereagent_id($agent_id);
+										})
+										->where('orderdate','>=',$start_date)
+										->where('orderdate','<=',$end_date)
+    									->where('operator_id','=',$operator_id)
+    									// ->where('booking','=',0)
+    									// ->where('name','!=','')
+    									->get();
+				}else{
+					$sale_order = SaleOrder::with('saleitems')->whereHas('saleitems',function($query){
+										})
+										->where('orderdate','>=',$start_date)
+										->where('orderdate','<=',$end_date)
+    									->where('operator_id','=',$operator_id)
+    									// ->where('booking','=',0)
+    									// ->where('name','!=','')
+    									->get();	
+				}
+				
+			}
+	    	
+			// return Response::json($sale_order);
+	    	$lists = array();
+	    	$l=1;
+	    	$frist_trip="";
+	    	$last_trip="";
+	    	foreach ($sale_order as $rows) {
+	    		
+	    		$seats_no = "";
+	    		$from_to  = null;
+	    		$time = null;
+	    		$price = 0;
+	    		$foreign_price = 0;
+	    		$class_id = null;
+	    		$agent_commission = null;
+	    		$commission = 0;
+	    		$local_person = 0;
+	    		$foreign_person = 0;
+	    		$free_ticket = 0;
+	    		$total_amount = 0;
+
+	    		
+	    		foreach ($rows->saleitems as $seat_row) {
+	    			$check = $this->ifExistTicket($seat_row, $lists);
+	    			// Already exist ticket no.
+	    			if($check != -1){
+	    				$seats_no = $lists[$check]['seat_no'] .", ".$seat_row->seat_no;
+	    				$free_ticket = $lists[$check]['free_ticket'] + $seat_row->free_ticket;
+	    				if($rows->nationality == 'local'){
+							$local_person = $lists[$check]['local_person'] + 1;
+							$total_amount = $lists[$check]['total_amount'] + ($seat_row->free_ticket > 0 ? 0 : $seat_row->price - $commission);
+						}else{
+							$foreign_person += $lists[$check]['foreign_person'] + 1;
+							$total_amount +=  $lists[$check]['total_amount'] + ($seat_row->free_ticket > 0 ? 0 : $seat_row->foreign_price - $commission);
+						}
+						$lists[$check]['seat_no'] = $seats_no;
+						$lists[$check]['local_person'] = $local_person;
+						$lists[$check]['foreign_person'] = $foreign_price;
+						$lists[$check]['free_ticket'] = $free_ticket;
+						$lists[$check]['sold_seat'] += 1;
+			    		$lists[$check]['total_amount'] = $total_amount;
+	    			}else{
+	    				$list['vr_no'] = $rows->id;
+	    				$list['ticket_no'] = $seat_row->ticket_no;
+			    		$list['order_date'] = $rows->orderdate;
+			    		$list['departure_date'] = $rows->departure_date;
+		    			$seats_no = $seat_row->seat_no.", ";
+		    			$from_to   = City::whereid($seat_row->from)->pluck('name').'-'.City::whereid($seat_row->to)->pluck('name');
+		    			$time = Trip::whereid($seat_row->trip_id)->pluck('time');
+		    			$price = $seat_row->price;
+		    			$free_ticket = $seat_row->free_ticket;
+		    			$foreign_price = $seat_row->foreign_price;
+		    			$class_id = Trip::whereid($seat_row->trip_id)->pluck('class_id');
+		    			$agent_commission = AgentCommission::wheretrip_id($seat_row->trip_id)->whereagent_id($rows->agent_id)->first();
+		    			if($agent_commission){
+		    				$commission = $agent_commission->commission;
+			    		}else{
+			    			$commission = Trip::whereid($seat_row->trip_id)->pluck('commission');
+			    		}
+
+			    		if($rows->nationality == 'local'){
+							$local_person = 1;
+							$total_amount = $seat_row->free_ticket > 0 ? 0 : $seat_row->price - $commission;
+						}else{
+							$foreign_person = 1;
+							$total_amount = $seat_row->free_ticket > 0 ? 0 : $seat_row->foreign_price - $commission;
+						}
+
+						$list['from_to'] = $from_to;
+						//for show header info 
+						if($l==1)
+							$frist_trip=$from_to;
+
+						if($l==count($sale_order))
+							$last_trip=$from_to;
+
+			    		$list['time'] = $time;
+			    		$list['classes'] = Classes::whereid($class_id)->pluck('name');
+			    		//for group trip and class
+			    			$list['from_to_class']=$from_to.'('.$list['classes'].')';
+			    		$list['agent_name'] = Agent::whereid($rows->agent_id)->pluck('name');
+			    		$list['buyer_name'] = $seat_row->name;
+			    		$list['commission'] = $commission;
+			    		$list['seat_no'] = substr($seats_no, 0, -2);
+			    		$list['sold_seat'] = 1;
+			    		$list['local_person'] = $local_person;
+						$list['foreign_person'] = $foreign_price;
+			    		$list['price'] = $price;
+			    		$list['foreign_price'] = $foreign_price;
+			    		$list['free_ticket'] = $free_ticket;
+			    		$list['total_amount'] = $total_amount;
+			    		$lists[] = $list;
+	    			}
+	    			
+	    		}		
+	    		$l++;
+	    	}
+
+	    	// SORTING AND GROUP BY TRIP AND BUSCLASS
+		    	// group
+		    	$tripandclassgroup = array();
+				foreach ($lists AS $arr) {
+				  $tripandclassgroup[$arr['from_to_class']][] = $arr;
+				}
+		    	// sorting
+				ksort($tripandclassgroup);
+
+	    	// return Response::json($tripandclassgroup);
+			/*$search=array();
+			$backurl=URL::previous();
+			$search['back_url']=$backurl;
+			$search['first_trip']=$frist_trip;
+			$search['last_trip']=$last_trip;
+			$search['start_date']=$start_date;
+			$search['end_date']=$end_date;*/
+			return Response::json($tripandclassgroup);
+	    	// return View::make('busreport.operatortripticketsolddaily', array('response'=>$tripandclassgroup,'bus_id'=>$bus_id,'search'=>$search));	
+	}	
 
     public function getSeatReportByTrip(){
 
@@ -4299,7 +4701,7 @@ class ApiController extends BaseController
 		// operator only
 		if($operator_id && !$agent_id && !$from && !$to && !$start_date && !$end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 										$query->whereoperator_id(Input::get('operator_id'))
 										->orderBy('id','desc');
@@ -4313,7 +4715,7 @@ class ApiController extends BaseController
 		// operator from, to , departure_time
 		elseif($operator_id && !$agent_id && $from && $to && !$start_date && !$end_date && $departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 										$query->whereoperator_id(Input::get('operator_id'))
 										->orderBy('id','desc');
@@ -4330,7 +4732,7 @@ class ApiController extends BaseController
 		// operator from, to , date, departure_time
 		elseif($operator_id && !$agent_id && $from && $to && $start_date && !$end_date && $departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('orderdate','=', Input::get('date'))
 																->lists('id');
@@ -4350,7 +4752,7 @@ class ApiController extends BaseController
 		// operator from, to
 		elseif($operator_id && !$agent_id && $from && $to && !$start_date && !$end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 										$query->whereoperator_id(Input::get('operator_id'))
 										->orderBy('id','desc');
@@ -4366,7 +4768,7 @@ class ApiController extends BaseController
 		// operator startdate, enddate (order)
 		elseif($operator_id && !$agent_id && !$from && !$to && $start_date && $end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('orderdate','>=', Input::get('date'))
 																->lists('id');
@@ -4381,7 +4783,7 @@ class ApiController extends BaseController
 		// operator, from, to , startdate, enddate (order), time
 		elseif($operator_id && !$agent_id && $from && $to && $start_date && $end_date && $departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('orderdate','>=', Input::get('date'))
 																->where('orderdate','<=', Input::get('end_date'))
@@ -4400,7 +4802,7 @@ class ApiController extends BaseController
 		// operator startdate
 		elseif($operator_id && !$agent_id && !$from && !$to && $start_date && !$end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('orderdate','=', Input::get('date'))->lists('id');
 											$query->wherein('order_id',$orderids
@@ -4414,7 +4816,7 @@ class ApiController extends BaseController
 		// operator startdate, enddate (order), agentid
 		elseif($operator_id && $agent_id && !$from && !$to && $start_date && $end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('agent_id','=',Input::get('agent_id'))
 																->where('orderdate','>=', Input::get('date'))
@@ -4430,7 +4832,7 @@ class ApiController extends BaseController
 		// operator from, to ,startdate, enddate (order)
 		elseif($operator_id && !$agent_id && $from && $to && $start_date && $end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('orderdate','>=', Input::get('date'))
 																->where('orderdate','<=',Input::get('end_date'))->lists('id');
@@ -4448,7 +4850,7 @@ class ApiController extends BaseController
 		// operator from, to ,startdate(order)
 		elseif($operator_id && !$agent_id && $from && $to && $start_date && !$end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('orderdate','=', Input::get('date'))->lists('id');
 											$query->wherein('order_id',$orderids
@@ -4465,7 +4867,7 @@ class ApiController extends BaseController
 		// operator from, to ,startdate, enddate (order), agent_id
 		elseif($operator_id && $agent_id && $from && $to && $start_date && $end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('agent_id','=',Input::get('agent_id'))
 																->where('orderdate','>=', Input::get('date'))
@@ -4484,7 +4886,7 @@ class ApiController extends BaseController
 		// operator from, to ,startdate, agent_id
 		elseif($operator_id && $agent_id && $from && $to && $start_date && !$end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('agent_id','=',Input::get('agent_id'))
 																->where('orderdate','=', Input::get('date'))
@@ -4503,7 +4905,7 @@ class ApiController extends BaseController
 		// operator , agent_id
 		elseif($operator_id && $agent_id && !$from && !$to && !$start_date && !$end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('agent_id','=',Input::get('agent_id'))
 																->lists('id');
@@ -4519,7 +4921,7 @@ class ApiController extends BaseController
 		// operator from, to , agent_id
 		elseif($operator_id && $agent_id && $from && $to && !$start_date && !$end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('agent_id','=',Input::get('agent_id'))
 																->lists('id');
@@ -4537,7 +4939,7 @@ class ApiController extends BaseController
 		// operator from, to , agent_id, from, to , $departtime 
 		elseif($operator_id && $agent_id && $from && $to && !$start_date && !$end_date && $departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('agent_id','=',Input::get('agent_id'))
 																->lists('id');
@@ -4562,7 +4964,7 @@ class ApiController extends BaseController
 		// operator from, to , departure_time
 		if($bus_id){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 										$query/*->whereoperator_id(Input::get('operator_id'))*/
 										->orderBy('id','desc');
@@ -4577,7 +4979,7 @@ class ApiController extends BaseController
 
 		if($invoice_no){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids[]=Input::get('invoice_no');
 											$query->wherein('order_id',$orderids
@@ -4633,7 +5035,7 @@ class ApiController extends BaseController
 					$total_seat=0;
 					$purchased_total_seat=0;
 					$total_amout=0;
-					$seatplanid=Busoccurance::whereid($row->id)->pluck('seat_plan_id');
+					$seatplanid=BusOccurance::whereid($row->id)->pluck('seat_plan_id');
 					$total_seats=SeatInfo::whereseat_plan_id($seatplanid)->where('status','!=',0)->count('id');
 					$order_date=SaleOrder::find($row->saleitems[0]->order_id)->pluck('orderdate');
 					
@@ -4656,7 +5058,7 @@ class ApiController extends BaseController
 						$temp['ticket_no']=$seat_list->ticket_no;
 						$temp['free_ticket']=$seat_list->free_ticket;
 						$agent_commission = AgentCommission::wheretrip_id($seat_list->trip_id)->whereagent_id($seat_list->agent_id)->pluck('commission');
-						$temp['commission'] = $agent_commission ? $agent_commission : Busoccurance::whereid($seat_list->busoccurance_id)->pluck('commission');
+						$temp['commission'] = $agent_commission ? $agent_commission : BusOccurance::whereid($seat_list->busoccurance_id)->pluck('commission');
 						$response[]=$temp;
 					}
 				}
@@ -4669,7 +5071,7 @@ class ApiController extends BaseController
 						$total_seat=0;
 						$purchased_total_seat=0;
 						$total_amout=0;
-						$seatplanid=Busoccurance::whereid($row->id)->pluck('seat_plan_id');
+						$seatplanid=BusOccurance::whereid($row->id)->pluck('seat_plan_id');
 						$total_seats=SeatInfo::whereseat_plan_id($seatplanid)->where('status','!=',0)->count('id');
 						$order_date=SaleOrder::find($row->agentsaleitems[0]['order_id'])->pluck('orderdate');
 						$purchased_total_seat +=count($row->agentsaleitems);
@@ -4691,7 +5093,7 @@ class ApiController extends BaseController
 							$temp['ticket_no']=$seat_list['ticket_no'];
 							$temp['free_ticket']=$seat_list->free_ticket;
 							$agent_commission = AgentCommission::wheretrip_id($seat_list->trip_id)->whereagent_id($seat_list->agent_id)->pluck('commission');
-							$temp['commission'] = $agent_commission ? $agent_commission : Busoccurance::whereid($seat_list->busoccurance_id)->pluck('commission');
+							$temp['commission'] = $agent_commission ? $agent_commission : BusOccurance::whereid($seat_list->busoccurance_id)->pluck('commission');
 							$response[]=$temp;
 						}
 					}
@@ -5068,7 +5470,7 @@ class ApiController extends BaseController
 		// operator only
 		if($operator_id && !$agent_id && !$from && !$to && !$start_date && !$end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 										$query->whereoperator_id(Input::get('operator_id'))
 										->orderBy('id','desc');
@@ -5081,7 +5483,7 @@ class ApiController extends BaseController
 		// operator from, to , departure_time
 		elseif($operator_id && !$agent_id && $from && $to && !$start_date && !$end_date && $departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 										$query->whereoperator_id(Input::get('operator_id'))
 										->orderBy('id','desc');
@@ -5098,7 +5500,7 @@ class ApiController extends BaseController
 		// operator from, to
 		elseif($operator_id && !$agent_id && $from && $to && !$start_date && !$end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 										$query->whereoperator_id(Input::get('operator_id'))
 										->orderBy('id','desc');
@@ -5114,7 +5516,7 @@ class ApiController extends BaseController
 		// operator startdate, enddate (order)
 		elseif($operator_id && !$agent_id && !$from && !$to && $start_date && $end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('orderdate','>=', Input::get('from_date'))
 																->where('orderdate','<=',Input::get('to_date'))->lists('id');
@@ -5129,7 +5531,7 @@ class ApiController extends BaseController
 		// operator startdate
 		elseif($operator_id && !$agent_id && !$from && !$to && $start_date && !$end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('orderdate','=', Input::get('from_date'))->lists('id');
 											$query->wherein('order_id',$orderids
@@ -5143,7 +5545,7 @@ class ApiController extends BaseController
 		// operator startdate, enddate (order), agentid
 		elseif($operator_id && $agent_id && !$from && !$to && $start_date && $end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('agent_id','=',Input::get('agent_id'))
 																->where('orderdate','>=', Input::get('from_date'))
@@ -5159,7 +5561,7 @@ class ApiController extends BaseController
 		// operator startdate,  agentid
 		elseif($operator_id && $agent_id && !$from && !$to && $start_date && !$end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('agent_id','=',Input::get('agent_id'))
 																->where('orderdate','=', Input::get('from_date'))
@@ -5175,7 +5577,7 @@ class ApiController extends BaseController
 		// operator from, to ,startdate, enddate (order)
 		elseif($operator_id && !$agent_id && $from && $to && $start_date && $end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('orderdate','>=', Input::get('from_date'))
 																->where('orderdate','<=',Input::get('to_date'))->lists('id');
@@ -5193,7 +5595,7 @@ class ApiController extends BaseController
 		// operator from, to ,startdate (order)
 		elseif($operator_id && !$agent_id && $from && $to && $start_date && !$end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('orderdate','=', Input::get('from_date'))->lists('id');
 											$query->wherein('order_id',$orderids
@@ -5210,7 +5612,7 @@ class ApiController extends BaseController
 		// operator from, to ,startdate, enddate (order), agent_id
 		elseif($operator_id && $agent_id && $from && $to && $start_date && $end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('agent_id','=',Input::get('agent_id'))
 																->where('orderdate','>=', Input::get('from_date'))
@@ -5229,7 +5631,7 @@ class ApiController extends BaseController
 		// operator , agent_id
 		elseif($operator_id && $agent_id && !$from && !$to && !$start_date && !$end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('agent_id','=',Input::get('agent_id'))
 																->lists('id');
@@ -5245,7 +5647,7 @@ class ApiController extends BaseController
 		// operator from, to , agent_id
 		elseif($operator_id && $agent_id && $from && $to && !$start_date && !$end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('agent_id','=',Input::get('agent_id'))
 																->lists('id');
@@ -5263,7 +5665,7 @@ class ApiController extends BaseController
 		// operator from, to , agent_id, from, to , $departtime 
 		elseif($operator_id && $agent_id && $from && $to && !$start_date && !$end_date && $departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('agent_id','=',Input::get('agent_id'))
 																->lists('id');
@@ -5295,7 +5697,7 @@ class ApiController extends BaseController
 				$total_seat=0;
 				$purchased_total_seat=0;
 				$total_amout=0;
-				$seatplanid=Busoccurance::whereid($row->id)->pluck('seat_plan_id');
+				$seatplanid=BusOccurance::whereid($row->id)->pluck('seat_plan_id');
 				$total_seats=SeatInfo::whereseat_plan_id($seatplanid)->where('status','!=',0)->count('id');
 				$agent_id=SaleOrder::whereid($row->saleitems[0]->order_id)->pluck('agent_id');
 				$agent_name=Agent::whereid($agent_id)->pluck('name');
@@ -5652,12 +6054,12 @@ class ApiController extends BaseController
     	$agent_id  			=Input::get('agent_id');
 
     	$order_ids = SaleOrder::where('orderdate','=',$date)->where('operator_id','=',$operator_id)->wherebooking(0)->lists('id');
-	
-		$sale_item = SaleItem::wherein('order_id', $order_ids)
+		if($order_ids)
+			$sale_item = SaleItem::wherein('order_id', $order_ids)
 								->selectRaw('order_id, count(*) as sold_seat, trip_id, price, foreign_price, departure_date, busoccurance_id, SUM(free_ticket) as free_ticket')
-								->groupBy('order_id')->get();
+								->groupBy('order_id')->orderBy('departure_date','asc')->get();
 		$lists = array();
-		
+		//return Response::json($sale_item);
 		foreach ($sale_item as $rows) {
 			$local_person = 0;
 			$foreign_price = 0;
@@ -5690,6 +6092,7 @@ class ApiController extends BaseController
 				$lists[] = $list;
 			}
 		}
+		//return Response::json($lists);
 		//Grouping from Lists
 		$stack = array();
 		foreach ($lists as $rows) {
@@ -5826,7 +6229,7 @@ class ApiController extends BaseController
     	if(is_array($arr)){
     		$i = 0;
     		foreach ($arr as $key_row) {
-    			if($key_row['id'] == $key['id']){
+    			if($key_row['id'].'-'.$key_row['departure_date'] == $key['id'].'-'.$key['departure_date']){
     				return $i;
     			}
     			$i++;
@@ -5968,81 +6371,113 @@ class ApiController extends BaseController
     											}
     									})->where('orderdate','=',$date)
     									  ->where('operator_id','=',$operator_id)
+    									  ->where('booking','=',0)
+    									  ->where('name','!=','')
     									  ->get();
+
+    	//return Response::json($sale_order);
 
     	$lists = array();
     	foreach ($sale_order as $rows) {
-    		$list['vr_no'] = $rows->id;
-    		$list['order_date'] = $date;
-    		$list['from_to'] = 
-    		$list['departure_date'] = $rows->departure_date;
+    		
     		$seats_no = "";
     		$from_to  = null;
     		$time = null;
-    		$price = null;
+    		$price = 0;
+    		$foreign_price = 0;
     		$class_id = null;
     		$agent_commission = null;
     		$commission = 0;
+    		$local_person = 0;
+    		$foreign_person = 0;
+    		$free_ticket = 0;
+    		$total_amount = 0;
+
     		foreach ($rows->saleitems as $seat_row) {
-    			$seats_no .= $seat_row->seat_no.", ";
-    			$from_to   = City::whereid($seat_row->from)->pluck('name').'-'.City::whereid($seat_row->to)->pluck('name');
-    			$time = Trip::whereid($seat_row->trip_id)->pluck('time');
-    			$price = Trip::whereid($seat_row->trip_id)->pluck('price');
-    			$class_id = Trip::whereid($seat_row->trip_id)->pluck('class_id');
-    			$agent_commission = AgentCommission::wheretrip_id($seat_row->trip_id)->whereagent_id($rows->agent_id)->first();
-    			if($agent_commission){
-    				$commission = $agent_commission->commission;
-	    		}else{
-	    			$commission = Trip::whereid($seat_row->trip_id)->pluck('commission');
-	    		}
-    		}
-    		$list['from_to'] = $from_to;
-    		$list['time'] = $time;
-    		$list['classes'] = Classes::whereid($class_id)->pluck('name');
-    		$list['agent_name'] = Agent::whereid($rows->agent_id)->pluck('name');
-    		$list['commission'] = $commission;
-    		$list['seat_no'] = substr($seats_no, 0, -2);
-    		$list['sold_seat'] = count($rows->saleitems);
-    		$list['price'] = $price;
-    		$list['total_amount'] = (count($rows->saleitems) * $price) - (count($rows->saleitems) * $commission);
-    		$lists[] = $list;
+    			$check = $this->ifExistTicket($seat_row, $lists);
+    			// Already exist ticket no.
+    			if($check != -1){
+    				$seats_no = $lists[$check]['seat_no'] .", ".$seat_row->seat_no;
+    				$free_ticket = $lists[$check]['free_ticket'] + $seat_row->free_ticket;
+    				if($rows->nationality == 'local'){
+						$local_person = $lists[$check]['local_person'] + 1;
+						$total_amount = $lists[$check]['total_amount'] + ($seat_row->free_ticket > 0 ? 0 : $seat_row->price - $commission);
+					}else{
+						$foreign_person += $lists[$check]['foreign_person'] + 1;
+						$total_amount +=  $lists[$check]['total_amount'] + ($seat_row->free_ticket > 0 ? 0 : $seat_row->foreign_price - $commission);
+					}
+					$lists[$check]['seat_no'] = $seats_no;
+					$lists[$check]['local_person'] = $local_person;
+					$lists[$check]['foreign_person'] = $foreign_price;
+					$lists[$check]['free_ticket'] = $free_ticket;
+					$lists[$check]['sold_seat'] += 1;
+		    		$lists[$check]['total_amount'] = $total_amount;
+    			}else{
+    				$list['vr_no'] = $rows->id;
+    				$list['ticket_no'] = $seat_row->ticket_no;
+		    		$list['order_date'] = $rows->orderdate;
+		    		$list['from_to'] = 
+		    		$list['departure_date'] = $rows->departure_date;
+	    			$seats_no = $seat_row->seat_no.", ";
+	    			$from_to   = City::whereid($seat_row->from)->pluck('name').'-'.City::whereid($seat_row->to)->pluck('name');
+	    			$time = Trip::whereid($seat_row->trip_id)->pluck('time');
+	    			$price = $seat_row->price;
+	    			$free_ticket = $seat_row->free_ticket;
+	    			$foreign_price = $seat_row->foreign_price;
+	    			$class_id = Trip::whereid($seat_row->trip_id)->pluck('class_id');
+	    			$agent_commission = AgentCommission::wheretrip_id($seat_row->trip_id)->whereagent_id($rows->agent_id)->first();
+	    			if($agent_commission){
+	    				$commission = $agent_commission->commission;
+		    		}else{
+		    			$commission = Trip::whereid($seat_row->trip_id)->pluck('commission');
+		    		}
+
+		    		if($rows->nationality == 'local'){
+						$local_person = 1;
+						$total_amount = $seat_row->free_ticket > 0 ? 0 : $seat_row->price - $commission;
+					}else{
+						$foreign_person = 1;
+						$total_amount = $seat_row->free_ticket > 0 ? 0 : $seat_row->foreign_price - $commission;
+					}
+
+					$list['from_to'] = $from_to;
+		    		$list['time'] = $time;
+		    		$list['classes'] = Classes::whereid($class_id)->pluck('name');
+		    		$list['agent_name'] = Agent::whereid($rows->agent_id)->pluck('name');
+		    		$list['buyer_name'] = $seat_row->name;
+		    		$list['commission'] = $commission;
+		    		$list['seat_no'] = substr($seats_no, 0, -2);
+		    		$list['sold_seat'] = 1;
+		    		$list['local_person'] = $local_person;
+					$list['foreign_person'] = $foreign_price;
+		    		$list['price'] = $price;
+		    		$list['foreign_price'] = $foreign_price;
+		    		$list['free_ticket'] = $free_ticket;
+		    		$list['total_amount'] = $total_amount;
+		    		$lists[] = $list;
+    			}
+    			
+    		}		
+
+    		
     	}
 
     	return Response::json($lists);
 
-		/*$objbusoccurance=BusOccurance::whereid($bus_id)->first();
-		$salerecord=array();
-		if($objbusoccurance){
-			$saleiteminfo 	=SaleItem::wherebusoccurance_id($objbusoccurance->id)->get();
-			$order_ids 		=SaleItem::wherebusoccurance_id($objbusoccurance->id)->lists('order_id','id');
-			if($order_ids){
-				foreach ($order_ids as $key => $orderid) {
-					$objorderinfo 			=SaleOrder::whereid($orderid)->first();
-					$temp['bus_id']			=$bus_id;
-					$from 					=City::whereid($objbusoccurance->from)->pluck('name');
-					$to 					=City::whereid($objbusoccurance->to)->pluck('name');
-					$temp['Trip']			=$from.'-'.$to;
-					$temp['sale_id']		=$key;
-					$temp['order_id']		=$objorderinfo->id;
-					$temp['order_date']		=$objorderinfo->orderdate;
-					$obj_saleitem 			=SaleItem::whereid($key)->first();
-					$temp['seat_no'] 		=$obj_saleitem->seat_no;
-					$temp['ticket_no']		=$obj_saleitem->ticket_no !=null ? $obj_saleitem->ticket_no : '-';
-					$temp['free_ticket'] 	=$obj_saleitem->free_ticket;
-					$temp['name']			=$objorderinfo->name !=null ? $objorderinfo->name : '-';
-					$agent_name 			=Agent::whereid($objorderinfo->agent_id)->pluck('name');
-					$temp['agent'] 			=$agent_name !=null ? $agent_name : '-';
-					$temp['price']			=$objbusoccurance->price;
-					$agent_commission		=AgentCommission::wheretrip_id($obj_saleitem->trip_id)->whereagent_id($obj_saleitem->agent_id)->pluck('commission');
-					$temp['commission']		=$agent_commission ? $agent_commission : $objbusoccurance->commission;
-					$temp['departure_date']	=$objbusoccurance->departure_date;
-					$temp['departure_time']	=$objbusoccurance->departure_time;
-					$salerecord[] 		=$temp;
-				}
-			}
-		}
-		return Response::json($salerecord);*/
-    }
+	}
+
+	public function ifExistTicket($key, $arr){
+		if(is_array($arr)){
+    		$i = 0;
+    		foreach ($arr as $key_row) {
+    			if($key_row['ticket_no']."-".$key_row['vr_no'] == $key['ticket_no']."-".$key['order_id']){
+    				return $i;
+    			}
+    			$i++;
+    		}
+    	}
+    	return -1;
+	}
 
     public function getSeatOccupancyReportbyBusid(){
     	$busoccuranceid =Input::get('bus_id');
@@ -6087,7 +6522,7 @@ class ApiController extends BaseController
 	    return Response::json($temp);
     }
 
-    public function getDailyAdvancedTrips(){
+    /*public function getDailyAdvancedTrips(){
 		$report_info 			=array();
     	$date 					=Input::get('date');
 		$operator_id  			=Input::get('operator_id');
@@ -6163,9 +6598,80 @@ class ApiController extends BaseController
 			return Response::json($response);
 		}
 		return Response::json($response);
-    }
+    }*/
 
-    public function getDailyAdvancedByFilterDate(){
+    public function getDailyAdvancedTrips()
+    {
+	    	$departure_time		=Input::get('departure_time');
+	    	$agent_id			=Input::get('agent_id');
+	    	$todaydate 			=date('Y-m-d');
+	    	$date				=Input::get('date') ? Input::get('date') : $todaydate;
+	    	Session::put('search_daily_date', $date);
+	    	$operator_id=Input::get('operator_id');
+
+	    	$sale_item=array();
+	    	
+	    	$order_ids = SaleOrder::where('orderdate','=',$date)->where('operator_id','=',$operator_id)->wherebooking(0)->lists('id');
+	
+	    	if($order_ids)
+				$sale_item = SaleItem::wherein('order_id', $order_ids)
+									->selectRaw('order_id, count(*) as sold_seat, trip_id, price, foreign_price, departure_date, busoccurance_id, SUM(free_ticket) as free_ticket')
+									->groupBy('order_id')->orderBy('departure_date','asc')->get();
+			$lists = array();
+			
+			foreach ($sale_item as $rows) {
+				$local_person = 0;
+				$foreign_price = 0;
+				$total_amount = 0;
+				$trip = Trip::whereid($rows->trip_id)->first();
+				if($trip){
+					$list['id'] = $rows->trip_id;
+					$list['bus_id'] = $rows->busoccurance_id;
+					$list['departure_date'] = $rows->departure_date;
+					$list['from_id'] = $trip->from;
+					$list['to_id'] = $trip->to;
+					$list['from_to'] = City::whereid($trip->from)->pluck('name').'-'.City::whereid($trip->to)->pluck('name');
+					$list['time'] = $trip->time;
+					$list['class_id'] = $trip->class_id;
+					$list['class_name'] = Classes::whereid($trip->class_id)->pluck('name');
+					if(SaleOrder::whereid($rows->order_id)->pluck('nationality') == 'local'){
+						$local_person += $rows->sold_seat;
+						$total_amount += $rows->free_ticket > 0 ? ($rows->price * $rows->sold_seat) - ($rows->price * $rows->free_ticket) : $rows->price * $rows->sold_seat ;
+					}else{
+						$foreign_price += $rows->sold_seat;
+						$total_amount += $rows->free_ticket > 0 ? ($rows->foreign_price * $rows->sold_seat) - ($rows->foreign_price * $rows->free_ticket) : $rows->foreign_price * $rows->sold_seat ;
+					}
+					$list['local_person'] = $local_person;
+					$list['foreign_person'] = $foreign_price;
+					$list['local_price'] = $rows->price;
+					$list['foreign_price'] = $rows->foreign_price;
+					$list['sold_seat'] = $rows->sold_seat;
+					$list['free_ticket'] = $rows->free_ticket;
+					$list['total_amount'] = $total_amount;
+					$lists[] = $list;
+				}
+			}
+			//Grouping from Lists
+			$stack = array();
+			foreach ($lists as $rows) {
+				$check = $this->ifExist($rows, $stack);
+				if($check != -1){
+					$stack[$check]['local_person'] += $rows['local_person'];
+					$stack[$check]['foreign_person'] += $rows['foreign_person'];
+					$stack[$check]['sold_seat'] += $rows['sold_seat'];
+					$stack[$check]['free_ticket'] += $rows['free_ticket'];
+					$stack[$check]['total_amount'] += $rows['total_amount'];
+				}else{
+					array_push($stack, $rows);
+				}
+			}
+			return Response::json($stack);
+	    	/*$search['operator_id']=$operator_id !=null ? $operator_id : 0;
+			$search['date']=$date;*/
+			// return View::make('busreport.daily.index', array('dailyforbus'=>$stack, 'search'=>$search));	
+	}
+
+    /*public function getDailyAdvancedByFilterDate(){
     	$report_info 			=array();
     	$order_date 					=Input::get('order_date');
     	$departure_date 				=Input::get('departure_date');
@@ -6221,6 +6727,124 @@ class ApiController extends BaseController
 			return Response::json($response);
 		}
     	return Response::json($response);
+    }*/
+
+    public function getDailyAdvancedByFilterDate()
+	{
+    	$operator_id 	=Input::get('operator_id');
+    	$date 			=Input::get('order_date') ? Input::get('order_date') : date('Y-m-d');
+    	Session::put('search_daily_date',$date);
+    	$bus_id  		=Input::get('bus_id');
+	
+    	$sale_order = SaleOrder::with('saleitems')->whereHas('saleitems',function($query){
+											$bus_id = Input::get('bus_id');
+											if($bus_id){
+												$query->wherebusoccurance_id($bus_id);
+											}
+									})->where('orderdate','=',$date)
+									  ->where('operator_id','=',$operator_id)
+									  ->where('booking','=',0)
+									  ->where('name','!=','')
+									  ->get();
+
+    	$lists = array();
+    	foreach ($sale_order as $rows) {
+    		
+    		$seats_no = "";
+    		$from_to  = null;
+    		$time = null;
+    		$price = 0;
+    		$foreign_price = 0;
+    		$class_id = null;
+    		$agent_commission = null;
+    		$commission = 0;
+    		$local_person = 0;
+    		$foreign_person = 0;
+    		$free_ticket = 0;
+    		$total_amount = 0;
+
+    		foreach ($rows->saleitems as $seat_row) {
+    			$check = $this->ifExistTicket($seat_row, $lists);
+    			// Already exist ticket no.
+    			if($check != -1){
+    				$seats_no = $lists[$check]['seat_no'] .", ".$seat_row->seat_no;
+    				$free_ticket = $lists[$check]['free_ticket'] + $seat_row->free_ticket;
+    				if($rows->nationality == 'local'){
+						$local_person = $lists[$check]['local_person'] + 1;
+						$total_amount = $lists[$check]['total_amount'] + ($seat_row->free_ticket > 0 ? 0 : $seat_row->price - $commission);
+					}else{
+						$foreign_person += $lists[$check]['foreign_person'] + 1;
+						$total_amount +=  $lists[$check]['total_amount'] + ($seat_row->free_ticket > 0 ? 0 : $seat_row->foreign_price - $commission);
+					}
+					$lists[$check]['seat_no'] = $seats_no;
+					$lists[$check]['local_person'] = $local_person;
+					$lists[$check]['foreign_person'] = $foreign_price;
+					$lists[$check]['free_ticket'] = $free_ticket;
+					$lists[$check]['sold_seat'] += 1;
+		    		$lists[$check]['total_amount'] = $total_amount;
+    			}else{
+    				$list['vr_no'] = $rows->id;
+    				$list['ticket_no'] = $seat_row->ticket_no;
+		    		$list['order_date'] = $rows->orderdate;
+		    		$list['from_to'] = 
+		    		$list['departure_date'] = $rows->departure_date;
+	    			$seats_no = $seat_row->seat_no.", ";
+	    			$from_to   = City::whereid($seat_row->from)->pluck('name').'-'.City::whereid($seat_row->to)->pluck('name');
+	    			$time = Trip::whereid($seat_row->trip_id)->pluck('time');
+	    			$price = $seat_row->price;
+	    			$free_ticket = $seat_row->free_ticket;
+	    			$foreign_price = $seat_row->foreign_price;
+	    			$class_id = Trip::whereid($seat_row->trip_id)->pluck('class_id');
+	    			$agent_commission = AgentCommission::wheretrip_id($seat_row->trip_id)->whereagent_id($rows->agent_id)->first();
+	    			if($agent_commission){
+	    				$commission = $agent_commission->commission;
+		    		}else{
+		    			$commission = Trip::whereid($seat_row->trip_id)->pluck('commission');
+		    		}
+
+		    		if($rows->nationality == 'local'){
+						$local_person = 1;
+						$total_amount = $seat_row->free_ticket > 0 ? 0 : $seat_row->price - $commission;
+					}else{
+						$foreign_person = 1;
+						$total_amount = $seat_row->free_ticket > 0 ? 0 : $seat_row->foreign_price - $commission;
+					}
+
+					$list['from_to'] = $from_to;
+		    		$list['time'] = $time;
+		    		$list['classes'] = Classes::whereid($class_id)->pluck('name');
+		    		//for group trip and class
+		    			$list['from_to_class']=$from_to.'('.$list['classes'].')';
+		    		$list['agent_name'] = Agent::whereid($rows->agent_id)->pluck('name');
+		    		$list['buyer_name'] = $seat_row->name;
+		    		$list['commission'] = $commission;
+		    		$list['seat_no'] = substr($seats_no, 0, -2);
+		    		$list['sold_seat'] = 1;
+		    		$list['local_person'] = $local_person;
+					$list['foreign_person'] = $foreign_price;
+		    		$list['price'] = $price;
+		    		$list['foreign_price'] = $foreign_price;
+		    		$list['free_ticket'] = $free_ticket;
+		    		$list['total_amount'] = $total_amount;
+		    		$lists[] = $list;
+    			}
+    			
+    		}		
+
+    		
+    	}
+
+    	// SORTING AND GROUP BY TRIP AND BUSCLASS
+	    	// group
+	    	$tripandclassgroup = array();
+			foreach ($lists AS $arr) {
+			  $tripandclassgroup[$arr['from_to_class']][] = $arr;
+			}
+	    	// sorting
+			ksort($tripandclassgroup);
+
+    	return Response::json($tripandclassgroup);
+    	// return View::make('busreport.daily.detail', array('response'=>$tripandclassgroup,'bus_id'=>$bus_id));	
     }
 
     public function postHolidays(){
@@ -6302,7 +6926,7 @@ class ApiController extends BaseController
 		// operator only
 		if($operator_id && !$agent_id && !$from && !$to && !$start_date &&!$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 										$query->whereoperator_id(Input::get('operator_id'))
 										->orderBy('id','desc');
@@ -6315,7 +6939,7 @@ class ApiController extends BaseController
 		// operator, departure_date
 		elseif($operator_id && !$agent_id && !$from && !$to && $start_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 										$query->whereoperator_id(Input::get('operator_id'))
 										->orderBy('id','desc');
@@ -6330,7 +6954,7 @@ class ApiController extends BaseController
 		// operator from, to , departure_time
 		elseif($operator_id && !$agent_id && $from && $to && !$start_date && $departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 										$query->whereoperator_id(Input::get('operator_id'))
 										->orderBy('id','desc');
@@ -6347,7 +6971,7 @@ class ApiController extends BaseController
 		// operator from, to
 		elseif($operator_id && !$agent_id && $from && $to && !$start_date && !$end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 										$query->whereoperator_id(Input::get('operator_id'))
 										->orderBy('id','desc');
@@ -6363,7 +6987,7 @@ class ApiController extends BaseController
 		// operator from, to, departdate, time
 		elseif($operator_id && !$agent_id && $from && $to && $start_date && !$end_date && $departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 										$query->whereoperator_id(Input::get('operator_id'))
 										->orderBy('id','desc');
@@ -6382,7 +7006,7 @@ class ApiController extends BaseController
 		// operator from, to, departdate, agent_id
 		elseif($operator_id && $agent_id && $from && $to && $start_date && !$end_date && !$departure_time){
 			try {
-					$objbusoccuranceids=Busoccurance::with('saleitems')
+					$objbusoccuranceids=BusOccurance::with('saleitems')
 											->whereHas('saleitems',  function($query)  {
 											$query->whereoperator_id(Input::get('operator_id'))
 											->orderBy('id','desc');
@@ -6400,7 +7024,7 @@ class ApiController extends BaseController
 		// operator from, to, departdate, end_date,  agent_id, time
 		elseif($operator_id && $agent_id && $from && $to && $start_date && $end_date && $departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('orderdate','>=', Input::get('departure_date'))
 																->where('orderdate','<=',Input::get('end_date'))
@@ -6422,7 +7046,7 @@ class ApiController extends BaseController
 		// operator from, to, departdate,  agent_id, time
 		elseif($operator_id && $agent_id && $from && $to && $start_date && !$end_date && $departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('orderdate','=', Input::get('departure_date'))
 																->whereagent_id('agent_id')
@@ -6443,7 +7067,7 @@ class ApiController extends BaseController
 		// operator from, to, departdate, end_date,  agent_id
 		elseif($operator_id && $agent_id && $from && $to && $start_date && $end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('orderdate','>=', Input::get('departure_date'))
 																->where('orderdate','<=',Input::get('end_date'))->lists('id');
@@ -6462,7 +7086,7 @@ class ApiController extends BaseController
 		// operator from, to, departdate, agent_id
 		elseif($operator_id && $agent_id && $from && $to && $start_date && !$end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::whereoperator_id(Input::get('operator_id'))->whereagent_id(Input::get('agent_id'))->lists('id');
 										$query->wherein('order_id',$orderids)
@@ -6480,7 +7104,7 @@ class ApiController extends BaseController
 		// operator from, to, departdate
 		elseif($operator_id && !$agent_id && $from && $to && $start_date && !$end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 										$query->whereoperator_id(Input::get('operator_id'))
 										->orderBy('id','desc');
@@ -6498,7 +7122,7 @@ class ApiController extends BaseController
 		// operator from, to, departtime
 		elseif($operator_id && !$agent_id && $from && $to && !$start_date && !$end_date && $departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 										$query->whereoperator_id(Input::get('operator_id'))
 										->orderBy('id','desc');
@@ -6516,7 +7140,7 @@ class ApiController extends BaseController
 		// operator startdate,  agentid
 		elseif($operator_id && $agent_id && !$from && !$to && $start_date && !$end_date && !$departure_time){
 			try {
-				$objbusoccuranceids=Busoccurance::with('saleitems')
+				$objbusoccuranceids=BusOccurance::with('saleitems')
 										->whereHas('saleitems',  function($query)  {
 											$orderids=SaleOrder::where('agent_id','=',Input::get('agent_id'))
 																->lists('id');
@@ -6579,7 +7203,7 @@ class ApiController extends BaseController
 					$total_seat=0;
 					$purchased_total_seat=0;
 					$total_amout=0;
-					$seatplanid=Busoccurance::whereid($row->id)->pluck('seat_plan_id');
+					$seatplanid=BusOccurance::whereid($row->id)->pluck('seat_plan_id');
 					$total_seats=SeatInfo::whereseat_plan_id($seatplanid)->where('status','!=',0)->count('id');
 					$order_date=SaleOrder::find($row->saleitems[0]->order_id)->pluck('orderdate');
 					
@@ -6612,7 +7236,7 @@ class ApiController extends BaseController
 						$total_seat=0;
 						$purchased_total_seat=0;
 						$total_amout=0;
-						$seatplanid=Busoccurance::whereid($row->id)->pluck('seat_plan_id');
+						$seatplanid=BusOccurance::whereid($row->id)->pluck('seat_plan_id');
 						$total_seats=SeatInfo::whereseat_plan_id($seatplanid)->where('status','!=',0)->count('id');
 						$order_date=SaleOrder::find($row->agentsaleitems[0]['order_id'])->pluck('orderdate');
 						
@@ -6993,7 +7617,7 @@ class ApiController extends BaseController
     							$temp['orderdate']=$row->orderdate;
     							$temp['agent_id']=$row->agent_id;
     							$temp['operator_id']=$row->operator_id;
-    							$trip_id=Busoccurance::whereid($busid)->pluck('trip_id');
+    							$trip_id=BusOccurance::whereid($busid)->pluck('trip_id');
     							foreach ($row->saleitems as $arrsaleitem) {
     								$tmpsaleitem['id']=$arrsaleitem->id;
 	    							$tmpsaleitem['order_id']=$arrsaleitem->order_id;
@@ -7071,7 +7695,7 @@ class ApiController extends BaseController
 	    				$response_value['phone']='-';
 	    			}
 					$operator=Operator::whereid($row['operator_id'])->pluck('name');
-					$trip_id = Busoccurance::whereid($row['saleitems'][0]['busoccurance_id'])->pluck('trip_id');
+					$trip_id = BusOccurance::whereid($row['saleitems'][0]['busoccurance_id'])->pluck('trip_id');
 					$objagent=AgentCommission::whereagent_id($row['agent_id'])->wheretrip_id($trip_id)->first();
 	    			$response_value['operator']=$operator;
 	    			$response_value['agent']='-';
@@ -7132,7 +7756,7 @@ class ApiController extends BaseController
 	    				$response[$i]['phone']='-';
 	    			}
 					$operator = Operator::whereid($row->operator_id)->pluck('name');
-					$trip_id  = Busoccurance::whereid($row['saleitems'][0]['busoccurance_id'])->pluck('trip_id');
+					$trip_id  = BusOccurance::whereid($row['saleitems'][0]['busoccurance_id'])->pluck('trip_id');
 					$objagent = AgentCommission::whereagent_id($row['agent_id'])->wheretrip_id($trip_id)->first();
 	    			$response_value['operator']=$operator;
 	    			$response_value['agent']='-';
@@ -7255,7 +7879,7 @@ class ApiController extends BaseController
     	if($response){
     		if($from && $to){
     			$arr_orderid=array();
-    			$objbusoccuranceids=Busoccurance::wherefrom($from)->whereto($to)->lists('id');
+    			$objbusoccuranceids=BusOccurance::wherefrom($from)->whereto($to)->lists('id');
 	    		if($objbusoccuranceids){
 	    			$orderidlist=SaleItem::wherein('busoccurance_id', $objbusoccuranceids)->lists('order_id');
 	    			if($orderidlist){
@@ -7485,24 +8109,24 @@ class ApiController extends BaseController
     	if($from && $to && !$departure_date && !$time)
     	{
     		if($operator_id){
-    			$busoccuranceid=Busoccurance::whereoperator_id($operator_id)->wherefrom($from)->whereto($to)->lists('id');
+    			$busoccuranceid=BusOccurance::whereoperator_id($operator_id)->wherefrom($from)->whereto($to)->lists('id');
     		}else{
-    			$busoccuranceid=Busoccurance::wherefrom($from)->whereto($to)->lists('id');
+    			$busoccuranceid=BusOccurance::wherefrom($from)->whereto($to)->lists('id');
     		}
     	}
     	elseif($from && $to && $departure_date && !$time)
     	{
     		if($operator_id){
-	    		$busoccuranceid=Busoccurance::whereoperator_id($operator_id)->wherefrom($from)->whereto($to)->wheredeparture_date($departure_date)->lists('id');
+	    		$busoccuranceid=BusOccurance::whereoperator_id($operator_id)->wherefrom($from)->whereto($to)->wheredeparture_date($departure_date)->lists('id');
     		}else{
-	    		$busoccuranceid=Busoccurance::wherefrom($from)->whereto($to)->wheredeparture_date($departure_date)->lists('id');
+	    		$busoccuranceid=BusOccurance::wherefrom($from)->whereto($to)->wheredeparture_date($departure_date)->lists('id');
     		}
     	}elseif($from && $to && $departure_date && $time)
     	{
     		if($operator_id){
-    			$busoccuranceid=Busoccurance::whereoperator_id($operator_id)->wherefrom($from)->whereto($to)->wheredeparture_date($departure_date)->wheredeparture_time($time)->lists('id');
+    			$busoccuranceid=BusOccurance::whereoperator_id($operator_id)->wherefrom($from)->whereto($to)->wheredeparture_date($departure_date)->wheredeparture_time($time)->lists('id');
     		}else{
-    			$busoccuranceid=Busoccurance::wherefrom($from)->whereto($to)->wheredeparture_date($departure_date)->wheredeparture_time($time)->lists('id');
+    			$busoccuranceid=BusOccurance::wherefrom($from)->whereto($to)->wheredeparture_date($departure_date)->wheredeparture_time($time)->lists('id');
     		}
     	}
     	else
@@ -7656,7 +8280,7 @@ class ApiController extends BaseController
     			$agent_commission=0;
     			if(count($row->saleitems)>0){
 
-    				$objbusoccurance=Busoccurance::whereid($row->saleitems[0]->busoccurance_id)->first();
+    				$objbusoccurance=BusOccurance::whereid($row->saleitems[0]->busoccurance_id)->first();
     				if($objbusoccurance){
     					$trip_id=$objbusoccurance->trip_id;
     					if($row->agent_id)
@@ -8037,7 +8661,7 @@ class ApiController extends BaseController
     }
 
     public function getExtraDestination($occuranceid){
-    	$trip_id = Busoccurance::whereid($occuranceid)->pluck('trip_id'); 
+    	$trip_id = BusOccurance::whereid($occuranceid)->pluck('trip_id'); 
     	$extra_destination = ExtraDestination::wheretrip_id($trip_id)->get();
     	$i = 0;
     	foreach ($extra_destination as $rows) {

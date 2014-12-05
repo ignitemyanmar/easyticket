@@ -16,6 +16,7 @@
                      <h3 class="page-title">
                         &nbsp;ေန႔စဥ္ အေရာင္းစာရင္း
                         <br><small style="margin-left:.8rem; color:#333;">{{date('d/m/Y',strtotime(Session::get('search_daily_date')))}} အေရာင္းစာရင္း</small>
+                        <input type="hidden" value="{{date('d/m/Y',strtotime(Session::get('search_daily_date')))}}" id="report_date">
                      </h3>
 
                      <ul class="breadcrumb">
@@ -68,38 +69,40 @@
                            <table class="table table-striped table-bordered table-advance table-hover" id="tblExport">
                               <thead>
                                  <tr>
-                                    <th style="display:none;">{{date('d/m/Y',strtotime(Session::get('search_daily_date')))}} အေရာင္းစာရင္း</th>
                                     <th>ထြက္ခြာမည့္ေန ့ရက္</th>
                                     <th>ခရီးစဥ္</th>
                                     <th>ထြက္ခြာမည့္အခ်ိန္</th>
                                     <th>ကားအမ်ိဴးအစား</th>
                                     <th>ခုံအေရအတြက္</th>
+                                    <th>အခမဲ႕ လက္မွတ္ </th>
                                     <th>ေစ်းႏုန္း</th>
                                     <th>စုုစုုေပါင္း</th>
-                                    <th>-</th>
+                                    <th><a class="btn small green blue-stripe imagechange" id="" href="/report/dailycarandadvancesale/detail?date={{Session::get('search_daily_date')}}">အေသးစိတ္(All)</a></th>
                                  </tr>
                               </thead>
                               <tbody>
                                  @if($dailyforbus)
+                                    <div id="jsonvalue" style="display:none;">{{json_encode($dailyforbus)}}</div>
+                                    <div id="dvjson"></div>
                                     @foreach($dailyforbus as $result)
                                        <tr>
-                                          <td style="display:none;">&nbsp;</td>
                                           <td>{{date('d/m/Y',strtotime($result['departure_date']))}}</td>
                                           <td>{{$result['from_to']}}</td>
                                           <td>{{$result['time']}}</td>
                                           <td>{{$result['class_name']}}</td>
                                           <td>{{$result['sold_seat']}}</td>
+                                          <td>{{$result['free_ticket']}}</td>
                                           <td>{{$result['local_price']}}</td>
                                           <td>{{$result['total_amount']}}</td>
                                           <td>
-                                             <a class="btn mini green-stripe imagechange" id="" href="/report/dailycarandadvancesale/detail?bus_id={{$result['bus_id']}}">အေသးစိတ္ၾကည့္ရန္</a>
+                                             <a class="btn mini green-stripe imagechange" id="" href="/report/dailycarandadvancesale/detail?bus_id={{$result['bus_id']}}&date={{Session::get('search_daily_date')}}">အေသးစိတ္ၾကည့္ရန္</a>
                                           </td>
                                        </tr>
                                        <?php $dailyforbustotal +=$result['total_amount']; ?>
                                     @endforeach
                                        <tr>
                                           <td colspan="4">&nbsp;</td>
-                                          <th colspan="3" class="" align="right">ယေန႕ေရာင္းရေငြစုစုေပါင္း</th>
+                                          <th colspan="4" class="" align="right">ယေန႕ေရာင္းရေငြစုစုေပါင္း</th>
                                           <th>: {{$dailyforbustotal}} KS</th>
                                        </tr>
                                  @endif
@@ -149,12 +152,28 @@
          });
 
          $("#btnExportExcel").click(function () {
-               $("#tblExport").btechco_excelexport({
-                   containerid: "tblExport"
-                  , datatype: $datatype.Table
-               });
-            return false;  
-         });
+            var report_date=$('#report_date').val();
+            var filename="Daily Sale Report("+report_date+")";
+            var dataobject = $('#jsonvalue').html();
+            var dataobj =JSON.parse(dataobject);
+            var uri =$("#dvjson").btechco_excelexport({
+                containerid: "dvjson"
+                , datatype: $datatype.Json
+                , dataset: dataobj
+                , columns: [
+                    { headertext: "ထြက္ခြာမည့္ေန ့ရက္", datatype: "date", format: "xxxx,xx", datafield: "departure_date", ishidden: false }
+                    , { headertext: "ခရီးစဥ္", datatype: "string", datafield: "from_to"}
+                    , { headertext: "ထြက္ခြာမည့္အခ်ိန္", datatype: "string", datafield: "time", ishidden: false }
+                    , { headertext: "ကားအမ်ိဴးအစား", datatype: "string", datafield: "class_name", ishidden: false }
+                    , { headertext: "ခုံအေရအတြက္", datatype: "string",  datafield: "sold_seat", ishidden: false }
+                    , { headertext: "ေစ်းႏုန္း", datatype: "string",  datafield: "local_price", ishidden: false, }
+                    , { headertext: "စုုစုုေပါင္း", datatype: "string",  datafield: "total_amount", ishidden: false }
+                ]
+               , returnUri: true
+            });
+            $(this).attr('download', filename+'.xls').attr('href', uri).attr('target', '_blank');
+        });
+
       });
    </script>
  

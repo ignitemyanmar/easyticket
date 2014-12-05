@@ -52,6 +52,29 @@
                                  </div>
                                  @endif
                               @endif
+
+                              <div class="row-fluid search-default">
+                                 <div class="span7">
+                                       <div class="btn-group" style="margin:11px;">
+                                          <button class="btn green dropdown-toggle" data-toggle="dropdown">Tools <i class="icon-angle-down"></i>
+                                          </button>
+                                          <ul class="dropdown-menu">
+                                             <li><a href="#" class="print">Print</a></li>
+                                             <li><a href="#" id="btnExportExcel">Export to Excel</a></li>
+                                          </ul>
+                                       </div>
+                                 </div>
+                                 <div class="span5">
+                                    <form class="form-search" action="/report/dailycarandadvancesale/search">
+                                       <div class="chat-form">
+                                          <div class="input-cont">   
+                                             <input placeholder="Choose Date..." class="m-wrap hasDatepicker" id="startdate" name="date" value="2014-12-04" type="text">
+                                          </div>
+                                          <button type="submit" class="btn green">Search &nbsp; <i class="m-icon-swapright m-icon-white"></i></button>
+                                       </div>
+                                    </form>
+                                 </div>
+                              </div>
                               <form action="/report/agentcreditspayment" method="post" id="paymentform">
                               <table class="table table-striped table-hover table-bordered" id="sample_editable_1">
                                  <thead>
@@ -59,9 +82,11 @@
                                        <th>Select</th>
                                        <th>ဝယ္ယူသည့္ေန႕ရက္</th>
                                        <th>ခရီးစဥ္</th>
+                                       <th>ကားထြက္ မည့္ေန႔ / အခ်ိန္</th>
                                        <th>ေဘာက္ခ်ာနံပါတ္</th>
                                        <th>ခုံအေရအတြက္</th>
                                        <th>ရွင္းႏႈန္း</th>
+                                       <th>အေၾကြး / ေပးျပီး</th>
                                        <th>%ႏုတ္ျပီးစုစုေပါင္း</th>
                                     </tr>
                                  </thead>
@@ -73,11 +98,13 @@
                                                 $amount=($row['price']-$row['commission']) * $row['total_ticket'];
                                              ?>
                                                 <td><input type="checkbox" name="order_id[]" value="{{$row->id}}" class="order_id" data-amounts="{{$amount}}"></td>
-                                                <td class="span-2">{{$row['orderdate']}}</td>
-                                                <td>{{ $row['trip']}}</td>
+                                                <td>{{$row['orderdate']}}</td>
+                                                <td>{{ $row['trip']}} ({{$row['class']}})</td>
+                                                <td>{{ date('d/m/Y', strtotime($row['departure_date']))}} [ {{$row['departure_time']}} ]</td>
                                                 <td>{{ $row['id']}}</td>
                                                 <td>{{$row['total_ticket']}}</td>
                                                 <td>{{$row['price']-$row['commission']}} ({{$row['commission']}})</td>
+                                                <td>@if($row['cash_credit']==2)<span class='badge badge-warning'>အေၾကြး</span> @else &nbsp; <span class='badge badge-success'>ေပးျပီး</span> @endif</td>
                                                 <td>{{($row['price']-$row['commission']) * $row['total_ticket']}}</td>
                                              </tr>
                                           @endforeach
@@ -138,22 +165,12 @@
       <!-- END PAGE --> 
    <script type="text/javascript" src="../../assets/data-tables/jquery.dataTables.js"></script>
    <script type="text/javascript" src="../../assets/data-tables/DT_bootstrap.js"></script>
-   
    <script type="text/javascript" src="../../js/foundation.min.js"></script>
    <script>
-      jQuery(document).ready(function() {  
-         // initiate layout and plugins
-         App.setPage("table_editable");
-         // App.init();
-      });
-   </script>
-   <script>
       $(document).foundation();
-      
    </script>
    <script type="text/javascript">
    $(function(){
-         
          $('#hdpayment').val(0);
          $('#txtpayamount').val('');
          $('#hdpaywithdeposit').val(0);
@@ -201,9 +218,6 @@
                $('.lbltopaytotal').html(topaytotal);
             
          });
-
-
-
       function setpaymentamt(obj){
          var payamount=obj.value;
             $('#hdpayment').val(payamount);

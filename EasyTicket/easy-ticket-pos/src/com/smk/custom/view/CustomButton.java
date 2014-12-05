@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.widget.Button;
+import android.widget.TextView;
 
 public class CustomButton extends Button{
 	public CustomButton(Context context){

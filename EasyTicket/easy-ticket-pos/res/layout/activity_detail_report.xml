@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@color/pussian_blue"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+
+        <com.smk.custom.view.CustomTextView
+            android:id="@+id/txt_invoice_no"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ေဘာင္ ခ်ာ နံပါတ္"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/white"
+            android:textSize="14dp" />
+
+        <com.smk.custom.view.CustomTextView
+            android:id="@+id/txt_customer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="အမည္"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/white"
+            android:textSize="14dp" />
+
+        <com.smk.custom.view.CustomTextView
+            android:id="@+id/txt_seat_no"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ခံု နံပါတ္"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/white"
+            android:textSize="14dp" />
+
+        <com.smk.custom.view.CustomTextView
+            android:id="@+id/txt_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="အခ်ိန္"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/white"
+            android:textSize="14dp" />
+
+        <com.smk.custom.view.CustomTextView
+            android:id="@+id/txt_trip_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="သြား - ေန႕"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/white"
+            android:textSize="14dp" />
+
+        <com.smk.custom.view.CustomTextView
+            android:id="@+id/txt_trip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ၿမိဳ႕ အမည္"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/white"
+            android:textSize="14dp" />
+
+        <com.smk.custom.view.CustomTextView
+            android:id="@+id/txt_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ရွင္း - ႏႈန္း"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/white"
+            android:textSize="14dp" />
+
+        <com.smk.custom.view.CustomTextView
+            android:id="@+id/txt_qty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ဦးေရ"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/white"
+            android:textSize="14dp" />
+
+        <com.smk.custom.view.CustomTextView
+            android:id="@+id/txt_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="စုစုေပါင္း"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/white"
+            android:textSize="14dp" />
+
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/lst_reports"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="40dp"
+        android:layout_marginTop="40dp" >
+
+    </ListView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/pussian_blue"
+        android:gravity="center_vertical" >
+
+        <TextView
+            android:id="@+id/TextView01"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="အားလံုး စုစုေပါင္း"
+            android:layout_weight="50"
+            android:textColor="@color/white"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/txt_total_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:layout_weight="50"
+            android:textColor="@color/white"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnPrint"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/selector_btn_print" />
+
+</RelativeLayout>

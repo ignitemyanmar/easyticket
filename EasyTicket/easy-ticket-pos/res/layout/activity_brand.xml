@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/RelativeLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:id="@+id/lydetails"
+        android:layout_width="380dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:orientation="vertical" >
+
+        <include
+            android:id="@+id/include1"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            layout="@layout/activity_title_by_date" />
+
+        <include
+            android:id="@+id/include2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginBottom="40dp"
+            android:layout_marginTop="40dp"
+            layout="@layout/activity_operdate" />
+
+        <include
+            android:id="@+id/include3"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            layout="@layout/activity_footer" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/lySearch"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:background="#d5f1e9"
+        android:gravity="center"
+        android:orientation="vertical" >
+
+        <ScrollView
+            android:id="@+id/scrollView1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+
+            <LinearLayout
+                android:id="@+id/lySearch112"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:paddingBottom="25dp"
+                android:paddingLeft="25dp"
+                android:paddingRight="25dp" >
+
+                <com.smk.custom.view.CustomTextView
+                    android:id="@+id/textView1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="ကားဂိတ္ ေရႊးရန္"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textSize="14dp" />
+
+                <Spinner
+                    android:id="@+id/spn_Brand"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:background="@drawable/button_border" />
+
+                <com.smk.custom.view.CustomTextView
+                    android:id="@+id/textView2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="ထြက္ခြာ မည့္ၿမိဳ႕မ်ား ေရႊးရန္"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textSize="14dp" />
+
+                <Spinner
+                    android:id="@+id/spn_TripsFrom"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:background="@drawable/button_border" />
+
+                <com.smk.custom.view.CustomTextView
+                    android:id="@+id/TextView01"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="ေရာက္ ရိွမည့္ၿမိဳ႕မ်ား ေရႊးရန္"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textSize="14dp" />
+
+                <Spinner
+                    android:id="@+id/spn_TripsTo"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:background="@drawable/button_border" />
+
+                <com.smk.custom.view.CustomTextView
+                    android:id="@+id/TextView03"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="ေန႕ရက္ မွ"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textSize="14dp" />
+
+                <Button
+                    android:id="@+id/btnDateFrom"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:background="@drawable/button_border"
+                    android:text="Choose from Date"
+                    android:textSize="14dp"
+                    android:textStyle="bold" />
+
+                <com.smk.custom.view.CustomTextView
+                    android:id="@+id/TextView04"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="ေန႕ရက္ သို႕"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textSize="14dp" />
+
+                <Button
+                    android:id="@+id/btnDateTo"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:background="@drawable/button_border"
+                    android:text="Choose to Date"
+                    android:textSize="14dp"
+                    android:textStyle="bold" />
+
+                <com.smk.custom.view.CustomTextView
+                    android:id="@+id/TextView05"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="အခ်ိန္မ်ား ေရႊးရန္"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textSize="14dp" />
+
+                <Spinner
+                    android:id="@+id/spn_time"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:background="@drawable/button_border"
+                    android:gravity="center" />
+
+                <Button
+                    android:id="@+id/btnSearch"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_weight="1"
+                    android:background="#000"
+                    android:text="Search"
+                    android:textColor="#ffffff"
+                    android:textSize="14dp" />
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+
+</RelativeLayout>

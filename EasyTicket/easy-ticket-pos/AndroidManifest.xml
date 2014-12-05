@@ -1,11 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.ignite.mm.ticketing"
+    package="com.ignite.busoperator"
     android:versionCode="1"
     android:versionName="1.0" >
 
     <uses-sdk
         android:minSdkVersion="8"
         android:targetSdkVersion="15" />
+    
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -16,7 +17,7 @@
     <application
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/Theme.Mytheme" >
+        android:theme="@style/AppTheme" >
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main" >
@@ -26,33 +27,44 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MenuActivity" android:screenOrientation="portrait"></activity>
-        <activity android:name=".MainFragment" android:screenOrientation="portrait"></activity>
-        <activity android:name=".MovieDateAndCinemaActivity" android:screenOrientation="portrait"></activity>
-        <activity android:name=".MovieTimeActivity" android:screenOrientation="portrait"></activity>
-        <activity android:name=".SelectingSeatActivity" android:screenOrientation="portrait"></activity>
-         <activity android:name=".Movie_Info_Activity" android:screenOrientation="portrait"></activity>
-        <activity android:name=".PDFMovieActivity" android:screenOrientation="portrait"></activity>
-       <activity android:name=".NRCActivity" android:screenOrientation="portrait"></activity>
-        <activity android:name=".UserLogin" android:screenOrientation="portrait"></activity>
-        <activity android:name=".UserRegister" android:screenOrientation="portrait"></activity>
-        <activity android:name=".SelectDateActivity" android:screenOrientation="portrait"></activity>
-        <activity android:name=".TravelAgentsActivity" android:screenOrientation="portrait"></activity>
-        <activity android:name=".DeperatureTimeActivity" android:screenOrientation="portrait"></activity>
-         <activity android:name=".BusSelectSeatActivity" android:screenOrientation="portrait"></activity>
-          <activity android:name=".Bus_Info_Activity" android:screenOrientation="portrait"></activity>
-         <activity android:name=".PDFBusActivity" android:screenOrientation="portrait"></activity>
-        <activity android:name=".TicketPriceActivity" android:screenOrientation="portrait"></activity>
-         <activity android:name=".ShowInfoActivity" android:screenOrientation="portrait"></activity>
-         <activity android:name=".ShowInvoice" android:screenOrientation="portrait"></activity>
-         <activity android:name=".PDFTicketActivity" android:screenOrientation="landscape"></activity>
-        <activity android:name=".OtherListActivity" android:screenOrientation="portrait"></activity>
-        <activity android:name=".BusTimeActivity" android:screenOrientation="portrait"></activity>
-        <activity android:name=".BusTripsCityActivity" android:screenOrientation="portrait"></activity>
-        <activity android:name=".BusTicketingMenuActivity" android:screenOrientation="portrait"></activity>
-        <activity android:name=".BusTicketingOrderListActivity" android:screenOrientation="portrait"></activity>
-        <activity android:name=".PayDeleteActivity" android:screenOrientation="portrait"></activity>
-        <activity android:name=".BusTicketingCustomerTicketActivity" android:screenOrientation="portrait"></activity>
-    </application>
+        <activity android:name="MenuActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="LoginActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name=".SalesbyTripActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="OperatorReportByDateActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name=".OperatorReportByBusNo"  android:screenOrientation="landscape" ></activity>
+        <activity android:name="BranchReportByDateActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name=".SalesbyAgentActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="BranchReportByVouncherActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name=".SalesbyInvoiceActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="TripsReportByDateActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="TripsReportByBranchActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name=".SeatDetailsbyBusnoActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="InvoiceReportByDate" android:screenOrientation="landscape" ></activity>
+        <activity android:name="SeatDetailsbyInvoiceActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="SalesbyCarActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="AgentReportByBusNo" android:screenOrientation="landscape" ></activity>
+        <activity android:name="SeatDetailsbyAgentActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="SalesbyDailyActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="TodayBusActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="SeatDetailsbyTodayBusActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="AdvanceBusActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="SalesbyOccupencySeatPlanActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="SeatPlanwithCustomerInfoActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="CustomerUpdateActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="CreditListActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="AgentListActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="AgentDepositActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="PayCreditActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="PayHistoryActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="AgentDetailActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="AgentInitCreditActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="ReportsActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="AgentCommissionActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="PopularAgentActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="PopularTripActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="PopularTriptimeActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="PopularTripbyAgentActivity" android:screenOrientation="landscape" ></activity>
+        <activity android:name="PopularClassesActivity" android:screenOrientation="landscape" ></activity>
+   </application>
 
 </manifest>

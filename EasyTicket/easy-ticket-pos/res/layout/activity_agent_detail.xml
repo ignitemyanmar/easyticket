@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="horizontal" >
+
+    <ScrollView
+        android:id="@+id/scrollView1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:layout_width="320dp"
+                android:layout_height="match_parent"
+                android:layout_margin="30dp"
+                android:orientation="vertical" >
+
+                <com.smk.custom.view.CustomButton
+                    android:id="@+id/btn_init_credit"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:background="@drawable/btn_green"
+                    android:text="အရင္ ေႂကြးေဟာင္းမ်ား ထည့္ရန္"
+                    android:textColor="@color/white" />
+
+                <com.smk.custom.view.CustomButton
+                    android:id="@+id/btn_commission"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="15dp"
+                    android:background="@drawable/btn_dark_blue"
+                    android:text="Commission ထည့္ရန္"
+                    android:textColor="@color/white"
+                    android:visibility="visible" />
+
+                <com.smk.custom.view.CustomButton
+                    android:id="@+id/btn_commission_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="15dp"
+                    android:background="@drawable/btn_blue"
+                    android:text="ခရီးစဥ္ - Commission မ်ား"
+                    android:textColor="@color/white"
+                    android:visibility="visible" />
+
+                <com.smk.custom.view.CustomButton
+                    android:id="@+id/btn_deposit_amount"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="15dp"
+                    android:background="@drawable/btn_green"
+                    android:text="စရံေငြ ထည့္ရန္"
+                    android:textColor="@color/white" />
+
+                <com.smk.custom.view.CustomButton
+                    android:id="@+id/btn_pay_credit"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="15dp"
+                    android:background="@drawable/btn_orange"
+                    android:text="ေႂကြး စာရင္းမ်ား ၾကည့္ရန္"
+                    android:textColor="@color/white" />
+
+                <com.smk.custom.view.CustomButton
+                    android:id="@+id/btn_pay_history"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="15dp"
+                    android:background="@drawable/btn_blue"
+                    android:text="ေပးၿပီးသာ စာရင္းမ်ား ၾကည့္ရန္"
+                    android:textColor="@color/white" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

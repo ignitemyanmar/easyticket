@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/RelativeLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:id="@+id/lydetails"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="#000"
+            android:gravity="center_vertical" >
+
+            <com.smk.custom.view.CustomTextView
+                android:id="@+id/txt_order_busno"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="left"
+                android:paddingLeft="3dp"
+                android:singleLine="false"
+                android:text="ကားနံပါတ္"
+                android:textColor="#ffffff"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
+            <com.smk.custom.view.CustomTextView
+                android:id="@+id/txt_trip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="left"
+                android:paddingLeft="3dp"
+                android:singleLine="false"
+                android:text="ခရီးစဥ္"
+                android:textColor="#ffffff"
+                android:textStyle="bold" />
+
+            <com.smk.custom.view.CustomTextView
+                android:id="@+id/txt_trip_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="left"
+                android:paddingLeft="3dp"
+                android:singleLine="false"
+                android:text="ကားထြက္မည့္ အခ်ိန္"
+                android:textColor="#ffffff"
+                android:textStyle="bold" />
+
+            <com.smk.custom.view.CustomTextView
+                android:id="@+id/txt_trip_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="left"
+                android:paddingLeft="3dp"
+                android:singleLine="false"
+                android:text="ကားထြက္မည့္ ေန႕"
+                android:textColor="#ffffff"
+                android:textStyle="bold" />
+
+            <com.smk.custom.view.CustomTextView
+                android:id="@+id/txt_total_ticket"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="left"
+                android:singleLine="false"
+                android:text="လက္မွတ္ အ ေရအတြက္"
+                android:textColor="#ffffff"
+                android:textStyle="bold" />
+
+            <com.smk.custom.view.CustomTextView
+                android:id="@+id/txt_total_amout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="left"
+                android:singleLine="false"
+                android:text="စုစုေပါင္း"
+                android:textColor="#ffffff"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <ListView
+            android:id="@+id/lvOperOne"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="40dp"
+            android:layout_marginTop="40dp"
+            android:divider="#000" >
+
+    	</ListView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_weight="80"
+            android:background="#000000"
+            android:gravity="center_vertical"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:id="@+id/txtTotal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="left"
+                android:paddingLeft="3dp"
+                android:text="အားလံုး စုစုေပါင္း"
+                android:textColor="#ffffff"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/txtSum"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="left"
+                android:textColor="#ffffff"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</RelativeLayout>

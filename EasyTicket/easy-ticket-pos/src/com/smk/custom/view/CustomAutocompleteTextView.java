@@ -29,11 +29,7 @@ public class CustomAutocompleteTextView extends AutoCompleteTextView {
             Rect previouslyFocusedRect) {
         super.onFocusChanged(focused, direction, previouslyFocusedRect);
         if (focused) {
-        	try{
-        		performFiltering(getText(), 0);
-        	}catch(NullPointerException e){
-        		//e.printStackTrace();
-        	}
+            performFiltering(getText(), 0);
         }
     }
 

@@ -6,12 +6,12 @@
     android:orientation="vertical"
     android:padding="10dp" >
 
-    <com.smk.custom.view.CustomTextView
+    <TextView
         android:id="@+id/txtTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="Medium Text"
-        android:textSize="14dp" />
+        android:textSize="18dp" />
 
 </LinearLayout>

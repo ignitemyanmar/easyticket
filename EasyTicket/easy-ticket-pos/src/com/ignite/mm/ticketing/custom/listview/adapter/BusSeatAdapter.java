@@ -56,6 +56,7 @@ public class BusSeatAdapter extends BaseAdapter{
 	            holder.txt_name = (TextView) convertView.findViewById(R.id.txt_name);
 	            holder.txt_phone = (TextView) convertView.findViewById(R.id.txt_phone);
 	            holder.txt_nrc = (TextView) convertView.findViewById(R.id.txt_nrc);
+	            holder.txt_ticket_no = (TextView) convertView.findViewById(R.id.txt_ticket_no);
 	            holder.txt_agent = (TextView) convertView.findViewById(R.id.txt_agent);
 	            holder.txt_seating_no = (TextView) convertView.findViewById(R.id.txt_seating_no);
 	            holder.cover = (View) convertView.findViewById(R.id.v_cover);
@@ -106,6 +107,7 @@ public class BusSeatAdapter extends BaseAdapter{
             		holder.txt_name.setText(list.get(position).getCustomerInfo().getName());
             		holder.txt_phone.setText(list.get(position).getCustomerInfo().getPhone());
             		holder.txt_nrc.setText(list.get(position).getCustomerInfo().getNrcNo());
+            		holder.txt_ticket_no.setText(list.get(position).getCustomerInfo().getTicketNo());
             		holder.txt_agent.setText(list.get(position).getCustomerInfo().getAgentName());
             		holder.txt_seating_no.setText(list.get(position).getSeat_no());
             	}else{
@@ -190,6 +192,7 @@ public class BusSeatAdapter extends BaseAdapter{
 				TextView txt_name;
 				TextView txt_phone;
 				TextView txt_nrc;
+				TextView txt_ticket_no;
 				TextView txt_agent;
 				TextView txt_seating_no;
 				View cover;

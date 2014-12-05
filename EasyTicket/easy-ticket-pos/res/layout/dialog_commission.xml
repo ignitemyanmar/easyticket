@@ -1,89 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/Linearlayout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" >
-
-    <com.smk.custom.view.CustomAutocompleteTextView
-        android:id="@+id/ato_edt_trip"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
-        android:layout_marginTop="20dp"
-        android:ems="10" >
-
-    </com.smk.custom.view.CustomAutocompleteTextView>
-
-    <RadioGroup
-        android:id="@+id/radioGroup1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
-        android:layout_marginTop="20dp"
-        android:orientation="horizontal" >
-
-        <RadioButton
-            android:id="@+id/rdo_percentage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="true"
-            android:text="Percentage" />
-
-        <RadioButton
-            android:id="@+id/rdo_fix_amount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Fix Amount" />
-
-    </RadioGroup>
-
-    <com.smk.custom.view.CustomEditText
-        android:id="@+id/edt_commission"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
-        android:layout_marginTop="10dp"
-        android:ems="10" >
-
-    </com.smk.custom.view.CustomEditText>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:orientation="horizontal" >
-
-        <com.smk.custom.view.CustomButton
-            android:id="@+id/btn_cancel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_weight="50"
-            android:background="@drawable/btn_gray"
-            android:maxWidth="320dp"
-            android:text="ထြက္မည္"
-            android:textColor="@color/white" />
-
-        <com.smk.custom.view.CustomButton
-            android:id="@+id/btn_change_agent"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_weight="50"
-            android:background="@drawable/btn_green"
-            android:maxWidth="320dp"
-            android:text="သိမ္းမည္"
-            android:textColor="@color/white" />
-
-    </LinearLayout>
-
-</LinearLayout>

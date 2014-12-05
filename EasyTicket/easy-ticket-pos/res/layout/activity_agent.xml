@@ -1,58 +1,17 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/LinearLayout1"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:background="#fff"
+    android:gravity="center_horizontal|center_vertical"
     android:orientation="vertical" >
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:background="@color/pussian_blue"
-        android:gravity="center_vertical"
-        android:orientation="horizontal" >
-
-        <com.smk.custom.view.CustomTextView
-            android:id="@+id/txt_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="အမည္"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@color/white"
-            android:textSize="14dp" />
-
-        <com.smk.custom.view.CustomTextView
-            android:id="@+id/txt_deposit_amount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="ၾကိဳတင္ - ေငြ"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@color/white"
-            android:textSize="14dp" />
-
-        <com.smk.custom.view.CustomTextView
-            android:id="@+id/txt_credit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="ယခု - အ ေႂကြး"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@color/white"
-            android:textSize="14dp" />
-
-        <com.smk.custom.view.CustomTextView
-            android:id="@+id/txt_latest_deposit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="လက္ က်န္ - အ ေႂကြး"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@color/white"
-            android:textSize="14dp" />
-
-    </LinearLayout>
-
+
     <ListView
         android:id="@+id/lst_agent"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="match_parent" >
 
     </ListView>
 

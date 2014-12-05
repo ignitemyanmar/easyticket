@@ -1,98 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/RelativeLayout1"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#FFFFFF"
-    android:orientation="vertical" >
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:background="#000000"
-        android:gravity="center_vertical"
-        android:orientation="horizontal" >
-
-        <com.smk.custom.view.CustomTextView
-            android:id="@+id/txt_bus_no"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="ကား နံပါတ္"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="#FFFFFF"
-            android:textSize="14dp" />
-
-        <com.smk.custom.view.CustomTextView
-            android:id="@+id/txt_class"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="ကား အမ်ိဳးအစား"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="#FFFFFF"
-            android:textSize="14dp" />
-
-        <com.smk.custom.view.CustomTextView
-            android:id="@+id/txt_seat"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="ခံုအ ေရအတြက္"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="#FFFFFF"
-            android:textSize="14dp" />
-
-        <com.smk.custom.view.CustomTextView
-            android:id="@+id/txt_total"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="စုစုေပါင္း"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="#FFFFFF"
-            android:textSize="14dp" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/LinearLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="48dp"
-        android:layout_marginTop="48dp"
-        android:orientation="vertical" >
-
-        <ListView
-            android:id="@+id/lst_today_bus"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
-
-        </ListView>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_alignParentBottom="true"
-        android:background="#000000"
-        android:gravity="center_vertical"
-        android:orientation="horizontal" >
-
-        <com.smk.custom.view.CustomTextView
-            android:id="@+id/txt_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="အားလံုး စုစုေပါင္း"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="#FFFFFF"
-            android:textSize="14dp" />
-
-        <com.smk.custom.view.CustomTextView
-            android:id="@+id/txt_total_amount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="#FFFFFF"
-            android:textSize="14dp" />
-
-    </LinearLayout>
-
-</RelativeLayout>

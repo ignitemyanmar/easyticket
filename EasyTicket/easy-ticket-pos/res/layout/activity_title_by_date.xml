@@ -1,48 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" >
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="#000"
-        android:gravity="center_vertical" >
-
-        <com.smk.custom.view.CustomTextView
-            android:id="@+id/txt_order_date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="left"
-            android:paddingLeft="3dp"
-            android:singleLine="false"
-            android:text="ဝယ္ယူသည့္ ေနရက္"
-            android:textColor="#ffffff"
-            android:textStyle="bold" />
-
-        <com.smk.custom.view.CustomTextView
-            android:id="@+id/txt_total_ticket"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:gravity="left"
-            android:singleLine="false"
-            android:text="လက္မွတ္ အ ေရအတြက္"
-            android:textColor="#ffffff"
-            android:textStyle="bold" />
-
-        <com.smk.custom.view.CustomTextView
-            android:id="@+id/txt_total_amout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:gravity="left"
-            android:singleLine="false"
-            android:text="စုစုေပါင္း"
-            android:textColor="#ffffff"
-            android:textStyle="bold" />
-
-    </LinearLayout>
-
-</LinearLayout>

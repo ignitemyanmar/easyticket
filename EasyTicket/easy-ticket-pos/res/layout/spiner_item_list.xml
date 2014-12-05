@@ -4,22 +4,15 @@
     android:layout_height="wrap_content"
     android:background="@android:color/transparent"
     android:orientation="vertical"
-    android:padding="10dp" >
-
-
-
-
-
-
-
-
-    <com.smk.custom.view.CustomTextView
+    android:padding="5dp" >
+
+    <TextView
         android:id="@+id/txtTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
         android:text="Medium Text"
-        android:textSize="14dp"
+        android:textColor="#000"
+        android:textSize="16dp"
         android:textStyle="bold" />
 
 </LinearLayout>

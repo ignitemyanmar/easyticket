@@ -1,16 +1,25 @@
 @extends('../admin')
 @section('content')
+<link rel="stylesheet" href="../../../../css/jquery.dataTables.v1.10.4.css" />
 <style type="text/css">
-   thead tr,thead tr td{border:none !important; color: #222;font-weight: bold; border-right: none !important;border-right-color:#fff; }
+   thead tr,thead tr td{border:none !important; color: #222;font-weight: bold; /*border-right: none !important;border-right-color:#fff; */}
    h4,th,td,h3{font-family: "Zawgyi-One" !important;}
-   
+   tfoot th{background: #ddd !important;}
    @media print{
       #printable { display: block; font-family: "Zawgyi-One" !important; }
       h3{text-align: center !important; }
       h4,th,td{font-family: "Zawgyi-One" !important;}
    }
    #printable { display: none; }
+   tr.group td,
+   tr.group td:hover {
+       background: #ddd !important;
+   }
+   tbody td, thead th{border-right: 1px solid #ddd;}
+   table{border-top: 1px solid #ddd;}
+   .text-right{text-align: right !important;}
 </style>
+
 
 <!-- BEGIN PAGE -->  
    <div class="page-content">
@@ -99,11 +108,15 @@
                                     </tr>
                                     <tr>
                                        <td colspan="14"><b>Trips : 
-                                          [ {{$search['start_trip']}} ] @if($search['start_trip'] != $search['end_trip']) - [ {{$search['end_trip']}} ]  @endif
+                                          @if($bus_id)
+                                             [ {{$search['start_trip']}} ] 
+                                          @else
+                                             All Trips
+                                          @endif
                                        </td>
                                     </tr>
                                     <tr>
-                                       <td colspan="14"><b>Date Of Report : 
+                                       <td colspan="14"><b>Sale Date : 
                                           [ {{date('d/m/Y',strtotime($search['date']))}} ]
                                           </b>
                                        </td>
@@ -125,16 +138,17 @@
                                        <th>စုုစုုေပါင္း</th>
                                     </tr>
                                  </thead>
-                                 <tbody class="table-bordered">
                                     @if($response)
+                                    <tbody class="table-bordered">
+
                                        <?php 
                                           $G_totalticket=0;
                                           $G_totalamount=0;
                                        ?> 
                                        @foreach($response as $key=>$rows)
-                                          <tr>
+                                          <!--  <tr>
                                              <td colspan="13"><h4>{{$key}}</h4></td>
-                                          </tr>
+                                          </tr> -->
                                           @if(count($rows)>0)
                                              <?php 
                                                 $totalticket=0;
@@ -143,8 +157,8 @@
                                              @foreach($rows as $result)
                                                 <tr>
                                                    <!-- <td></td> -->
-                                                   <td>{{$result['ticket_no']}}</td>
-                                                   <td>{{$result['sold_seat']}}</td>
+                                                   <td>@if($result['ticket_no']) {{$result['ticket_no']}} @else - @endif</td>
+                                                   <td>{{$result['seat_no']}}</td>
                                                    <td>{{$result['from_to']}}</td>
                                                    <td>{{date('d/m/Y',strtotime($result['departure_date']))}} ({{$result['time']}})</td>
                                                    <td>{{$result['classes']}}</td>
@@ -154,7 +168,7 @@
                                                       </div>
                                                    </td>
                                                    <td>{{$result['buyer_name']}}</td>
-                                                   <td>{{$result['seat_no']}}</td>
+                                                   <td>{{$result['sold_seat']}}</td>
                                                    <td>{{$result['free_ticket']}}</td>
                                                    <td>{{$result['price']}}</td>
                                                    <td>{{$result['price']-$result['commission']}} ({{$result['commission']}})</td>
@@ -165,29 +179,32 @@
                                                    $totalamount +=$result['total_amount'];
                                                 ?> 
                                              @endforeach
-                                             <tr>
+                                             <!-- <tr>
                                                 <th colspan="6">&nbsp;</th>
                                                 <th colspan="2">Sub Quantity</th>
                                                 <th>{{$totalticket}}</th>
                                                 <th colspan="2">Sub Total</th>
                                                 <th colspan="2" style="text-align:right;">{{$totalamount}}</th>
                                              </tr>
+                                             -->                                          
                                           @endif
                                           <?php 
                                              $G_totalticket +=$totalticket;
                                              $G_totalamount +=$totalamount;
                                           ?> 
                                        @endforeach
-                                          <tr style="background:#ddd;">
-                                             <th colspan="6">&nbsp;</th>
-                                             <th colspan="2">Grand Quantity</th>
-                                             <th>{{$G_totalticket}}</th>
-                                             <th colspan="2">Grand Total</th>
-                                             <th colspan="2" style="text-align:right;">{{$G_totalamount}}</th>
-                                          </tr>
-
+                                    </tbody>
+                                    <tfoot>
+                                       <tr style="background:#ddd;">
+                                          <th colspan="5">&nbsp;</th>
+                                          <th colspan="2" class="text-right">Grand Quantity</th>
+                                          <th>: {{$G_totalticket}}</th>
+                                          <th>&nbsp;</th>
+                                          <th colspan="2" class="text-right">Grand Total</th>
+                                          <th style="text-align:right;">: {{$G_totalamount}}</th>
+                                       </tr>
+                                   </tfoot>
                                     @endif
-                                 </tbody>
                               </table>
                            </div>
                         </div>
@@ -199,9 +216,49 @@
       <!-- END PAGE CONTAINER-->
    </div>
 <!-- END PAGE -->  
+   <!-- 
    <script type="text/javascript" src="../../assets/data-tables/jquery.dataTables.js"></script>
+    -->
    <script type="text/javascript" src="../../../js/jquery.battatech.excelexport.min.js"></script>
-   
+   <script type="text/javascript" src="../../../../js/jquery.dataTables.v1.10.4.min.js"></script>
+   <script type="text/javascript">
+      $(document).ready(function() {
+          var table = $('#tblExport').DataTable({
+              "columnDefs": [
+                  // { "visible": false, "targets": 2 }
+              ],
+              "order": [[ 2, 'asc' ]],
+              "displayLength": 25,
+              "pagingType": "full_numbers",
+              "drawCallback": function ( settings ) {
+                  var api = this.api();
+                  var rows = api.rows( {page:'current'} ).nodes();
+                  var last=null;
+       
+                  api.column(2, {page:'current'} ).data().each( function ( group, i ) {
+                      if ( last !== group ) {
+                          $(rows).eq( i ).before(
+                              '<tr class="group"><td colspan="12">'+group+'</td></tr>'
+                          );
+       
+                          last = group;
+                      }
+                  } );
+              }
+          } );
+          // Order by the grouping
+          $('#tblExport tbody').on( 'click', 'tr.group', function () {
+              var currentOrder = table.order()[0];
+              if ( currentOrder[0] === 2 && currentOrder[1] === 'asc' ) {
+                  table.order( [ 2, 'desc' ] ).draw();
+              }
+              else {
+                  table.order( [ 2, 'asc' ] ).draw();
+              }
+          } );
+      } );
+   </script>
+
    <script type="text/javascript">
       $(function() {
          $('.page-container').addClass('sidebar-closed');
@@ -225,6 +282,5 @@
          });
                  
       });
-      
    </script>
 @stop

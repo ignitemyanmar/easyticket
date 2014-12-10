@@ -2,6 +2,7 @@
 	Class Trip extends Eloquent 
 	{ 
 		protected $table = 'tbl_trip';
+		protected $fillable = array('id','operator_id','from','to','class_id','available_day','price','foreign_price','commission','time','seat_plan_id');
 		public $timestamps = false;
 
 		public function operator(){

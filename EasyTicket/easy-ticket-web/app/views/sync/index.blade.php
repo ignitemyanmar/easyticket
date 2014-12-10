@@ -1,5 +1,12 @@
 @extends('../admin')
 @section('content')
+   <style type="text/css">
+      .loading{
+         width:32px;
+         height:32px;
+         background: url('../../img/loader.gif') no-repeat;
+      }
+   </style>
    <link rel="stylesheet" href="assets/data-tables/DT_bootstrap.css" />
    <link rel="shortcut icon" href="favicon.ico" />
    <!-- BEGIN PAGE -->
@@ -50,7 +57,7 @@
             <div id="dashboard">
                <!-- BEGIN PAGE -->
                   <div class="row-fluid">
-                     <div class="span12">
+                     <div>
                         <!-- BEGIN EXAMPLE TABLE PORTLET-->
                         <div class="portlet box blue">
                            <div class="portlet-title">
@@ -62,20 +69,123 @@
                                     <button class="close" data-dismiss="alert"></button>
                                  </div>
 
-                                 <div class="progress progress-striped progress-warning">
-                                    <div style="width: 100%;" class="bar"></div>
+                                 
+                                 <div id="myModal1" class="modal hide fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="false">
+                                    <div class="modal-header">
+                                       <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                                       <h3>Sync</h3>
+                                    </div>
+                                    <div class="modal-body">
+                                       <p>Please wait sync...</p>
+                                       <div class="progress progress-striped progress-warning">
+                                          <div style="width: 100%;" class="bar"></div>
+                                       </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                       <button class="btn red" data-dismiss="modal" aria-hidden="true">Close</button>
+                                    </div>
                                  </div>
                                  <div class="control-group">
                                     <div class="controls">
                                        <span class="help-inline">Please click to Sync "Today Sale Order" button.</span>
                                        <p>
-                                          <a class="btn green big" id="sync_to_server">Sync Today Sale Order <i class="m-icon-big-swapup m-icon-white"></i></a>
+                                          <a  href="#myModal1" role="button" data-toggle="modal" class="btn green big" id="sync_to_server">Sync Today Sale Order <i class="m-icon-big-swapup m-icon-white"></i></a></div>
+                                       </p>
+                                    </div>
+                                    <div class="controls">
+                                       <span class="help-inline">Please click to Sync "Sync from Server" button.</span>
+                                       <p>
+                                          <a  href="#myModal1" role="button" data-toggle="modal" class="btn yellow big" id="sync_from_server">Sync from Server <i class="m-icon-big-swapdown m-icon-white"></i></a></div>
                                        </p>
                                     </div>
                                     <div class="controls">
                                        <span class="help-inline">Please click to Sync "Sync Bus Occourance" button.</span>
                                        <p>
-                                          <a class="btn blue big" id="sync_from_server">Sync Bus Occourance <i class="m-icon-big-swapdown m-icon-white"></i></a>
+                                          <a class="btn blue big" id="sync_bus_from_server">Sync Bus Occourance <i class="m-icon-big-swapdown m-icon-white"></i></a>
+                                       </p>
+                                    </div>
+                                    <div class="controls">
+                                       <span class="help-inline">Please click to Sync "Sync Trip" button.</span>
+                                       <p>
+                                          <a class="btn blue big" id="sync_trip_from_server">Sync Trip <i class="m-icon-big-swapdown m-icon-white"></i></a>
+                                       </p>
+                                    </div>
+                                    <div class="controls">
+                                       <span class="help-inline">Please click to Sync "Sync Seating Plan" button.</span>
+                                       <p>
+                                          <a class="btn blue big" id="sync_seatingplan_from_server">Sync Seating Plan<i class="m-icon-big-swapdown m-icon-white"></i></a>
+                                       </p>
+                                    </div>
+                                    <div class="controls">
+                                       <span class="help-inline">Please click to Sync "Sync Agent" button.</span>
+                                       <p>
+                                          <a class="btn blue big" id="sync_agent_from_server">Sync Agent<i class="m-icon-big-swapdown m-icon-white"></i></a>
+                                       </p>
+                                    </div>
+                                    <div class="controls">
+                                       <span class="help-inline">Please click to Sync "Sync City" button.</span>
+                                       <p>
+                                          <a class="btn blue big" id="sync_city_from_server">Sync City<i class="m-icon-big-swapdown m-icon-white"></i></a>
+                                       </p>
+                                    </div>
+                                    <div class="controls">
+                                       <span class="help-inline">Please click to Sync "Sync Extra Destination" button.</span>
+                                       <p>
+                                          <a class="btn blue big" id="sync_extradestination_from_server">Sync Extra Destination<i class="m-icon-big-swapdown m-icon-white"></i></a>
+                                       </p>
+                                    </div>
+                                    <div class="controls">
+                                       <span class="help-inline">Please click to Sync "Sync Bus Classes" button.</span>
+                                       <p>
+                                          <a class="btn blue big" id="sync_classes_from_server">Sync Bus Classes <i class="m-icon-big-swapdown m-icon-white"></i></a>
+                                       </p>
+                                    </div>
+                                    <div class="controls">
+                                       <span class="help-inline">Please click to Sync "Sync Agent Commission" button.</span>
+                                       <p>
+                                          <a class="btn blue big" id="sync_agentcommission_from_server">Sync Agent Commission <i class="m-icon-big-swapdown m-icon-white"></i></a>
+                                       </p>
+                                    </div>
+                                    <div class="controls">
+                                       <span class="help-inline">Please click to Sync "Sync Close Seat Info" button.</span>
+                                       <p>
+                                          <a class="btn blue big" id="sync_closeseatinfo_from_server">Sync Close Seat Info <i class="m-icon-big-swapdown m-icon-white"></i></a>
+                                       </p>
+                                    </div>
+                                    <div class="controls">
+                                       <span class="help-inline">Please click to Sync "Sync Commission Type" button.</span>
+                                       <p>
+                                          <a class="btn blue big" id="sync_commissiontype_from_server">Sync Commission Type <i class="m-icon-big-swapdown m-icon-white"></i></a>
+                                       </p>
+                                    </div>
+                                    <div class="controls">
+                                       <span class="help-inline">Please click to Sync "Sync Operator Group" button.</span>
+                                       <p>
+                                          <a class="btn blue big" id="sync_operatorgroup_from_server">Sync Operator Group <i class="m-icon-big-swapdown m-icon-white"></i></a>
+                                       </p>
+                                    </div>
+                                    <div class="controls">
+                                       <span class="help-inline">Please click to Sync "Sync Operator Group User" button.</span>
+                                       <p>
+                                          <a class="btn blue big" id="sync_operatorgroupuser_from_server">Sync Operator Group User <i class="m-icon-big-swapdown m-icon-white"></i></a>
+                                       </p>
+                                    </div>
+                                    <div class="controls">
+                                       <span class="help-inline">Please click to Sync "Sync User" button.</span>
+                                       <p>
+                                          <a class="btn blue big" id="sync_user_from_server">Sync User <i class="m-icon-big-swapdown m-icon-white"></i></a>
+                                       </p>
+                                    </div>
+                                    <div class="controls">
+                                       <span class="help-inline">Please click to Sync "Sync Operator" button.</span>
+                                       <p>
+                                          <a class="btn blue big" id="sync_operator_from_server">Sync Operator <i class="m-icon-big-swapdown m-icon-white"></i></a>
+                                       </p>
+                                    </div>
+                                    <div class="controls">
+                                       <span class="help-inline">Please click to Sync "Sync Seat Info" button.</span>
+                                       <p>
+                                          <a class="btn blue big" id="sync_seatinfo_from_server">Sync Seat Info <i class="m-icon-big-swapdown m-icon-white"></i></a>
                                        </p>
                                     </div>
                                  </div>
@@ -96,6 +206,9 @@
       <!-- END PAGE --> 
 
    <script type="text/javascript">
+   /**
+    * Sync To Server
+    */
 
    $('#sync_to_server').click(function(){
       $('.progress-striped').addClass('active');
@@ -106,7 +219,196 @@
       })
       .done(function( response ) {
          $('.progress-striped').removeClass('active');
-         //alert(JSON.stringify(response));
+         alert(JSON.stringify(response));
+         if(response.status_code === 1){
+            alert( "Data Saved: " + response.message );
+            $('.alert').show();
+            $('.alert').addClass('alert-success');
+            $('.alert').append(response.message);
+            $('#myModal1').modal('hide');
+         }
+         else{
+            alert( "Error: " + response.message);
+            $('.alert').show();
+            $('.alert').addClass('alert-error');
+            $('.alert').append(response.message);
+            $('#myModal1').modal('hide');
+         }
+         
+      });
+      
+   });
+   $('#sync_from_server').click(function(){
+      $('.progress-striped').addClass('active');
+      $.ajax({
+        type: "GET",
+        url: "/downloadjson",
+        data: null
+      })
+      .done(function( response ) {
+         $('.progress-striped').removeClass('active');
+         alert(JSON.stringify(response));
+         if(response.status_code === 1){
+            alert( "Data Saved: " + response.message );
+            $('.alert').show();
+            $('.alert').addClass('alert-success');
+            $('.alert').append(response.message);
+            $('#myModal1').modal('hide');
+         }
+         else{
+            alert( "Error: " + response.message);
+            $('.alert').show();
+            $('.alert').addClass('alert-error');
+            $('.alert').append(response.message);
+            $('#myModal1').modal('hide');
+         }
+         
+      });
+      
+   });
+   /**
+    * Sync from Server
+    */
+   $('#sync_bus_from_server').click(function(){
+      $('.progress-striped').addClass('active');
+      $.ajax({
+        type: "GET",
+        url: "/downloadbusjson",
+        data: null
+      })
+      .done(function( response ) {
+         $('.progress-striped').removeClass('active');
+         alert(JSON.stringify(response));
+         if(response.status_code === 1){
+            alert( "Data Saved: " + response.message );
+            $('.alert').show();
+            $('.alert').addClass('alert-success');
+            $('.alert').append(response.message);
+         }
+         else{
+            alert( "Error: " + response.message);
+            $('.alert').show();
+            $('.alert').addClass('alert-error');
+            $('.alert').append(response.message);
+         }
+         
+      });
+      
+   });
+   $('#sync_trip_from_server').click(function(){
+      $('.progress-striped').addClass('active');
+      $.ajax({
+        type: "GET",
+        url: "/downloadtripjson",
+        data: null
+      })
+      .done(function( response ) {
+         $('.progress-striped').removeClass('active');
+         alert(JSON.stringify(response));
+         if(response.status_code === 1){
+            alert( "Data Saved: " + response.message );
+            $('.alert').show();
+            $('.alert').addClass('alert-success');
+            $('.alert').append(response.message);
+         }
+         else{
+            alert( "Error: " + response.message);
+            $('.alert').show();
+            $('.alert').addClass('alert-error');
+            $('.alert').append(response.message);
+         }
+         
+      });
+      
+   });
+   $('#sync_seatingplan_from_server').click(function(){
+      $('.progress-striped').addClass('active');
+      $.ajax({
+        type: "GET",
+        url: "/downloadseatingplanjson",
+        data: null
+      })
+      .done(function( response ) {
+         $('.progress-striped').removeClass('active');
+         alert(JSON.stringify(response));
+         if(response.status_code === 1){
+            alert( "Data Saved: " + response.message );
+            $('.alert').show();
+            $('.alert').addClass('alert-success');
+            $('.alert').append(response.message);
+         }
+         else{
+            alert( "Error: " + response.message);
+            $('.alert').show();
+            $('.alert').addClass('alert-error');
+            $('.alert').append(response.message);
+         }
+         
+      });
+      
+   });
+   $('#sync_agent_from_server').click(function(){
+      $('.progress-striped').addClass('active');
+      $.ajax({
+        type: "GET",
+        url: "/downloadagentjson",
+        data: null
+      })
+      .done(function( response ) {
+         $('.progress-striped').removeClass('active');
+         alert(JSON.stringify(response));
+         if(response.status_code === 1){
+            alert( "Data Saved: " + response.message );
+            $('.alert').show();
+            $('.alert').addClass('alert-success');
+            $('.alert').append(response.message);
+         }
+         else{
+            alert( "Error: " + response.message);
+            $('.alert').show();
+            $('.alert').addClass('alert-error');
+            $('.alert').append(response.message);
+         }
+         
+      });
+      
+   });
+   $('#sync_city_from_server').click(function(){
+      $('.progress-striped').addClass('active');
+      $.ajax({
+        type: "GET",
+        url: "/downloadcityjson",
+        data: null
+      })
+      .done(function( response ) {
+         $('.progress-striped').removeClass('active');
+         alert(JSON.stringify(response));
+         if(response.status_code === 1){
+            alert( "Data Saved: " + response.message );
+            $('.alert').show();
+            $('.alert').addClass('alert-success');
+            $('.alert').append(response.message);
+         }
+         else{
+            alert( "Error: " + response.message);
+            $('.alert').show();
+            $('.alert').addClass('alert-error');
+            $('.alert').append(response.message);
+         }
+         
+      });
+      
+   });
+   $('#sync_extradestination_from_server').click(function(){
+      $('.progress-striped').addClass('active');
+      $.ajax({
+        type: "GET",
+        url: "/downloadextradestinationjson",
+        data: null
+      })
+      .done(function( response ) {
+         $('.progress-striped').removeClass('active');
+         alert(JSON.stringify(response));
          if(response.status_code === 1){
             alert( "Data Saved: " + response.message );
             $('.alert').show();
@@ -124,16 +426,230 @@
       
    });
 
-   $('#sync_from_server').click(function(){
+   $('#sync_classes_from_server').click(function(){
       $('.progress-striped').addClass('active');
       $.ajax({
         type: "GET",
-        url: "/downloadjson",
+        url: "/downloadclassesjson",
         data: null
       })
       .done(function( response ) {
          $('.progress-striped').removeClass('active');
-         //alert(JSON.stringify(response));
+         alert(JSON.stringify(response));
+         if(response.status_code === 1){
+            alert( "Data Saved: " + response.message );
+            $('.alert').show();
+            $('.alert').addClass('alert-success');
+            $('.alert').append(response.message);
+         }
+         else{
+            alert( "Error: " + response.message);
+            $('.alert').show();
+            $('.alert').addClass('alert-error');
+            $('.alert').append(response.message);
+         }
+         
+      });
+      
+   });
+
+   $('#sync_agentcommission_from_server').click(function(){
+      $('.progress-striped').addClass('active');
+      $.ajax({
+        type: "GET",
+        url: "/downloadagentcommissionjson",
+        data: null
+      })
+      .done(function( response ) {
+         $('.progress-striped').removeClass('active');
+         alert(JSON.stringify(response));
+         if(response.status_code === 1){
+            alert( "Data Saved: " + response.message );
+            $('.alert').show();
+            $('.alert').addClass('alert-success');
+            $('.alert').append(response.message);
+         }
+         else{
+            alert( "Error: " + response.message);
+            $('.alert').show();
+            $('.alert').addClass('alert-error');
+            $('.alert').append(response.message);
+         }
+         
+      });
+      
+   });
+
+   $('#sync_closeseatinfo_from_server').click(function(){
+      $('.progress-striped').addClass('active');
+      $.ajax({
+        type: "GET",
+        url: "/downloadcloseseatinfojson",
+        data: null
+      })
+      .done(function( response ) {
+         $('.progress-striped').removeClass('active');
+         alert(JSON.stringify(response));
+         if(response.status_code === 1){
+            alert( "Data Saved: " + response.message );
+            $('.alert').show();
+            $('.alert').addClass('alert-success');
+            $('.alert').append(response.message);
+         }
+         else{
+            alert( "Error: " + response.message);
+            $('.alert').show();
+            $('.alert').addClass('alert-error');
+            $('.alert').append(response.message);
+         }
+         
+      });
+      
+   });
+
+   $('#sync_commissiontype_from_server').click(function(){
+      $('.progress-striped').addClass('active');
+      $.ajax({
+        type: "GET",
+        url: "/downloadcomissiontypejson",
+        data: null
+      })
+      .done(function( response ) {
+         $('.progress-striped').removeClass('active');
+         alert(JSON.stringify(response));
+         if(response.status_code === 1){
+            alert( "Data Saved: " + response.message );
+            $('.alert').show();
+            $('.alert').addClass('alert-success');
+            $('.alert').append(response.message);
+         }
+         else{
+            alert( "Error: " + response.message);
+            $('.alert').show();
+            $('.alert').addClass('alert-error');
+            $('.alert').append(response.message);
+         }
+         
+      });
+      
+   });
+
+   $('#sync_operatorgroup_from_server').click(function(){
+      $('.progress-striped').addClass('active');
+      $.ajax({
+        type: "GET",
+        url: "/downloadoperatorgroupjson",
+        data: null
+      })
+      .done(function( response ) {
+         $('.progress-striped').removeClass('active');
+         alert(JSON.stringify(response));
+         if(response.status_code === 1){
+            alert( "Data Saved: " + response.message );
+            $('.alert').show();
+            $('.alert').addClass('alert-success');
+            $('.alert').append(response.message);
+         }
+         else{
+            alert( "Error: " + response.message);
+            $('.alert').show();
+            $('.alert').addClass('alert-error');
+            $('.alert').append(response.message);
+         }
+         
+      });
+      
+   });
+
+   $('#sync_operatorgroupuser_from_server').click(function(){
+      $('.progress-striped').addClass('active');
+      $.ajax({
+        type: "GET",
+        url: "/downloadoperatorgroupuserjson",
+        data: null
+      })
+      .done(function( response ) {
+         $('.progress-striped').removeClass('active');
+         alert(JSON.stringify(response));
+         if(response.status_code === 1){
+            alert( "Data Saved: " + response.message );
+            $('.alert').show();
+            $('.alert').addClass('alert-success');
+            $('.alert').append(response.message);
+         }
+         else{
+            alert( "Error: " + response.message);
+            $('.alert').show();
+            $('.alert').addClass('alert-error');
+            $('.alert').append(response.message);
+         }
+         
+      });
+      
+   });
+
+   $('#sync_user_from_server').click(function(){
+      $('.progress-striped').addClass('active');
+      $.ajax({
+        type: "GET",
+        url: "/downloaduserjson",
+        data: null
+      })
+      .done(function( response ) {
+         $('.progress-striped').removeClass('active');
+         alert(JSON.stringify(response));
+         if(response.status_code === 1){
+            alert( "Data Saved: " + response.message );
+            $('.alert').show();
+            $('.alert').addClass('alert-success');
+            $('.alert').append(response.message);
+         }
+         else{
+            alert( "Error: " + response.message);
+            $('.alert').show();
+            $('.alert').addClass('alert-error');
+            $('.alert').append(response.message);
+         }
+         
+      });
+      
+   });
+   $('#sync_operator_from_server').click(function(){
+      $('.progress-striped').addClass('active');
+      $.ajax({
+        type: "GET",
+        url: "/downloadoperatorjson",
+        data: null
+      })
+      .done(function( response ) {
+         $('.progress-striped').removeClass('active');
+         alert(JSON.stringify(response));
+         if(response.status_code === 1){
+            alert( "Data Saved: " + response.message );
+            $('.alert').show();
+            $('.alert').addClass('alert-success');
+            $('.alert').append(response.message);
+         }
+         else{
+            alert( "Error: " + response.message);
+            $('.alert').show();
+            $('.alert').addClass('alert-error');
+            $('.alert').append(response.message);
+         }
+         
+      });
+      
+   });
+   $('#sync_seatinfo_from_server').click(function(){
+      $('.progress-striped').addClass('active');
+      $.ajax({
+        type: "GET",
+        url: "/downloadseatinfojson",
+        data: null
+      })
+      .done(function( response ) {
+         $('.progress-striped').removeClass('active');
+         alert(JSON.stringify(response));
          if(response.status_code === 1){
             alert( "Data Saved: " + response.message );
             $('.alert').show();

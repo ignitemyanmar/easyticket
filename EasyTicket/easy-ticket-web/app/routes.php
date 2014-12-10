@@ -103,6 +103,8 @@
 		Route::get('report/agentscredit',					'AgentCreditController@getCreditSale');
 		Route::get('report/agentcredit/{id}',				'AgentCreditController@getActionForm');
 		Route::get('report/agentcreditsales/{id}',			'AgentCreditController@getAgentCreditSaleList');
+
+		Route::get('report/agentpaymentslist/{id}',			'AgentCreditController@getAgentPaymentSaleList');
 		
 		Route::post('report/agentdeposit',					'AgentCreditController@postAgentDeposit');
 		Route::post('report/agentoldcredit',				'AgentCreditController@postAgentOldCredit');
@@ -552,13 +554,48 @@
 
 	});
 
-	Route::get('downloadjson', 				'SyncDatabaseController@downloadJsonfromServer');
-	Route::get('exportbusjson/{fname}', 	'SyncDatabaseController@exportBusOccurance');
-	Route::get('writetodatabase', 			'SyncDatabaseController@writeJsonToDatabase');
-	Route::get('uploadjson', 				'SyncDatabaseController@pushJsonToServer');
-	Route::get('downloadjson', 				'SyncDatabaseController@downloadJsonFromServer');
-	Route::get('readjson', 					'SyncDatabaseController@readJson');
-	Route::get('generateautoid/{prefix}', 	'ApiController@generateAutoID');
+	Route::get('downloadbusjson', 							'SyncDatabaseController@downloadBusJsonfromServer');
+	Route::get('downloadtripjson', 							'SyncDatabaseController@downloadTripJsonfromServer');
+	Route::get('downloadseatingplanjson', 					'SyncDatabaseController@downloadSeatingPlanJsonfromServer');
+	Route::get('downloadagentjson', 						'SyncDatabaseController@downloadAgentJsonfromServer');
+	Route::get('downloadcityjson', 							'SyncDatabaseController@downloadCityJsonfromServer');
+	Route::get('downloadextradestinationjson',				'SyncDatabaseController@downloadExtraDestinationJsonfromServer');
+	Route::get('downloadclassesjson',						'SyncDatabaseController@downloadClassesJsonfromServer');
+
+	Route::get('downloadagentcommissionjson',				'SyncDatabaseController@downloadAgentCommissionJsonfromServer');
+	Route::get('downloadcloseseatinfojson',					'SyncDatabaseController@downloadCloseSeatInfoJsonfromServer');
+	Route::get('downloadcomissiontypejson', 				'SyncDatabaseController@downloadCommissionTypeJsonfromServer');
+	Route::get('downloadoperatorgroupjson',					'SyncDatabaseController@downloadOperatorGroupJsonfromServer');
+	Route::get('downloadoperatorgroupuserjson',				'SyncDatabaseController@downloadOperatorGroupUserJsonfromServer');
+	Route::get('downloaduserjson',							'SyncDatabaseController@downloadUserJsonfromServer');
+	Route::get('downloadoperatorjson',						'SyncDatabaseController@downloadOperatorJsonfromServer');
+	Route::get('downloadseatinfojson',						'SyncDatabaseController@downloadSeatInfoJsonfromServer');
+
+	Route::get('exportbusjson/{id}/{fname}', 					'SyncDatabaseController@exportBusOccurance');
+	Route::get('exporttripjson/{id}/{fname}', 					'SyncDatabaseController@exportTrip');
+	Route::get('exportseatingplanjson/{id}/{fname}', 			'SyncDatabaseController@exportSeatingPlan');
+	Route::get('exportagentjson/{id}/{fname}', 					'SyncDatabaseController@exportAgent');
+	Route::get('exportcityjson/{id}/{fname}',					'SyncDatabaseController@exportCity');
+	Route::get('exportextradestinationjson/{id}/{fname}',		'SyncDatabaseController@exportExtraDestination');
+	Route::get('exportclassesjson/{id}/{fname}', 				'SyncDatabaseController@exportClasses');
+
+	Route::get('exportagentcommissionjson/{id}/{fname}', 		'SyncDatabaseController@exportAgentCommission');
+	Route::get('exportcloseseatinfojson/{id}/{fname}', 			'SyncDatabaseController@exportCloseSeatInfo');
+	Route::get('exportcommissiontypejson/{id}/{fname}', 		'SyncDatabaseController@exportCommissionType');
+	Route::get('exportoperatorgroupjson/{id}/{fname}', 			'SyncDatabaseController@exportOperatorGroup');
+	Route::get('exportoperatorgroupuserjson/{id}/{fname}', 		'SyncDatabaseController@exportOperatorGroupUser');
+	Route::get('exportuserjson/{id}/{fname}', 					'SyncDatabaseController@exportUser');
+	Route::get('exportoperatorjson/{id}/{fname}', 				'SyncDatabaseController@exportOperator');
+	Route::get('exportseatinfojson/{id}/{fname}', 				'SyncDatabaseController@exportSeatInfo');
+	
+
+	Route::get('writetodatabase', 							'SyncDatabaseController@writeJsonToDatabase');
+	
+	Route::get('uploadjson', 								'SyncDatabaseController@pushJsonToServer');
+	
+	Route::get('downloadjson', 								'SyncDatabaseController@downloadAllJsonfromServer');
+
+	Route::get('generateautoid/{prefix}', 					'ApiController@generateAutoID');
 
 	Route::get('404', function()
 	{

@@ -1,5 +1,6 @@
 @extends('../admin')
 @section('content')
+<link rel="stylesheet" href="../../../../css/jquery.dataTables.v1.10.4.css" />
 <style type="text/css">
    thead tr,thead tr td{border:none !important; color: #222;font-weight: bold; border-right: none !important;border-right-color:#fff; }
    h4,th,td,h3{font-family: "Zawgyi-One" !important;}
@@ -19,6 +20,14 @@
       .span4{ width: 33.3%;position: relative;float: left;}
    }
    #printable { display: none; }
+   table{border-top: 1px solid #ddd;}
+   tr.group td,
+   tr.group td:hover {
+       background: #ddd !important;
+   }
+   tbody td, thead th{border-right: 1px solid #ddd;}
+   .text-right{text-align: right !important;}
+   
 </style>
 <!-- BEGIN PAGE -->  
    <div class="page-content">
@@ -105,22 +114,27 @@
                               <table class="table table-striped table-advance table-hover" id="tblExport">
                                  <thead>
                                     <tr>
-                                       <td  colspan="14">
+                                       <td  colspan="13">
                                           <h3 align="center">Elite Express Public Company Limited</h3>
                                           <h4 align="center">{{$pagetitle}} အေသးစိတ္</h4>
                                        </td>
                                     </tr>
                                     <tr>
-                                       <td colspan="14"><b>Trips : 
-                                          @if(!$bus_id) 
-                                             [ {{$search['first_trip']}} ] @if($search['first_trip'] != $search['last_trip']) - [ {{$search['last_trip']}} ]  @endif
+                                       <td colspan="13"><b>Trips : 
+                                          @if(!$bus_id)
+                                            @if($search['from']) 
+                                             [ {{$search['first_trip']}} ] 
+                                            @else 
+                                              All Tirps
+                                            @endif
                                           @else 
                                              [ {{$search['first_trip']}} ] 
                                           @endif</b>
+
                                        </td>
                                     </tr>
                                     <tr>
-                                       <td colspan="14"><b>Date Of Report : 
+                                       <td colspan="13"><b>Sale Date : 
                                           @if(!$bus_id) 
                                              [ {{date('d/m/Y',strtotime($search['start_date']))}} ] - [ {{date('d/m/Y',strtotime($search['end_date'])) }}]
                                           @else 
@@ -131,7 +145,6 @@
                                     </tr>
                                     <tr class="table-bordered">
                                        <th class="span1">ဝယ္ယူ သည့္ေန႔</th>
-                                       <!-- <th class="span1"></th> -->
                                        <th>လက္မွတ္ No</th>
                                        <th>ခရီးစဥ္</th>
                                        <th>ထြက္ခြာ မည့္ ေန့ရက္ / အခ်ိန္</th>
@@ -146,16 +159,16 @@
                                        <th>စုုစုုေပါင္း</th>
                                     </tr>
                                  </thead>
-                                 <tbody class="table-bordered">
-                                    @if($response)
-                                       <?php 
-                                          $G_totalticket=0;
-                                          $G_totalamount=0;
-                                       ?> 
-                                       @foreach($response as $key=>$rows)
-                                          <tr>
+                                  @if($response)
+                                    <tbody class="table-bordered">
+                                      <?php 
+                                        $G_totalticket=0;
+                                        $G_totalamount=0;
+                                      ?> 
+                                      @foreach($response as $key=>$rows)
+                                          <!-- <tr>
                                              <td colspan="13"><h4>{{$key}}</h4></td>
-                                          </tr>
+                                          </tr> -->
                                           @if(count($rows)>0)
                                              <?php 
                                                 $totalticket=0;
@@ -164,10 +177,10 @@
                                              @foreach($rows as $result)
                                                 <tr>
                                                    <!-- <td></td> -->
-                                                   <td>{{date('d/m/Y',strtotime($result['departure_date']))}}</td>
+                                                   <td>{{date('d/m/Y',strtotime($result['order_date']))}}</td>
                                                    <td>{{$result['ticket_no']}}</td>
                                                    <td>{{$result['from_to']}}</td>
-                                                   <td>{{date('d/m/Y',strtotime($result['order_date']))}} <br>({{$result['time']}})</td>
+                                                   <td>{{date('d/m/Y',strtotime($result['departure_date']))}} <br>({{$result['time']}})</td>
                                                    <td>{{$result['classes']}}</td>
                                                    <td>
                                                       <div class="wordwrap">
@@ -187,28 +200,30 @@
                                                    $totalamount +=$result['total_amount'];
                                                 ?> 
                                              @endforeach
-                                             <tr>
+                                             <!-- <tr>
                                                 <th colspan="6">&nbsp;</th>
                                                 <th colspan="2">Sub Quantity</th>
                                                 <th>{{$totalticket}}</th>
                                                 <th colspan="2">Sub Total</th>
                                                 <th colspan="2" style="text-align:right;">{{$totalamount}}</th>
-                                             </tr>
+                                             </tr> -->
                                           @endif
                                           <?php 
                                              $G_totalticket +=$totalticket;
                                              $G_totalamount +=$totalamount;
                                           ?> 
-                                       @endforeach
-                                       <tr style="background:#ddd;">
-                                          <th colspan="6">&nbsp;</th>
-                                          <th colspan="2">Grand Quantity</th>
-                                          <th>{{$G_totalticket}}</th>
-                                          <th colspan="2">Grand Total</th>
-                                          <th colspan="2" style="text-align:right;">{{$G_totalamount}}</th>
-                                       </tr>
-                                    @endif
-                                 </tbody>
+                                      @endforeach
+                                    </tbody>
+                                    <tfoot>
+                                      <tr style="background:#ddd;">
+                                        <th colspan="6">&nbsp;</th>
+                                        <th colspan="2" class="text-right">Grand Quantity</th>
+                                        <th>: {{$G_totalticket}}</th>
+                                        <th colspan="3" class="text-right">Grand Total</th>
+                                        <th style="text-align:right;">: {{$G_totalamount}}</th>
+                                      </tr>
+                                    </tfoot>
+                                  @endif
                               </table>
                            </div>
                         </div>
@@ -220,8 +235,49 @@
       <!-- END PAGE CONTAINER-->
    </div>
 <!-- END PAGE -->  
+   <!-- 
    <script type="text/javascript" src="../../assets/data-tables/jquery.dataTables.js"></script>
+    -->
    <script type="text/javascript" src="../../../js/jquery.battatech.excelexport.min.js"></script>
+   <script type="text/javascript" src="../../../../js/jquery.dataTables.v1.10.4.min.js"></script>
+   <script type="text/javascript">
+      $(document).ready(function() {
+          var table = $('#tblExport').DataTable({
+             /* "columnDefs": [
+                  { "visible": false, "targets": 2 }
+              ],*/
+              "order": [[ 2, 'asc' ]],
+              "displayLength": 25,
+              "pagingType": "full_numbers",
+              "drawCallback": function ( settings ) {
+                  var api = this.api();
+                  var rows = api.rows( {page:'current'} ).nodes();
+                  var last=null;
+       
+                  api.column(2, {page:'current'} ).data().each( function ( group, i ) {
+                      if ( last !== group ) {
+                          $(rows).eq( i ).before(
+                              '<tr class="group"><td colspan="13">'+group+'</td></tr>'
+                          );
+       
+                          last = group;
+                      }
+                  } );
+              }
+          } );
+          // Order by the grouping
+          $('#tblExport tbody').on( 'click', 'tr.group', function () {
+              var currentOrder = table.order()[0];
+              if ( currentOrder[0] === 5 && currentOrder[1] === 'asc' ) {
+                  table.order( [ 2, 'desc' ] ).draw();
+              }
+              else {
+                  table.order( [ 2, 'asc' ] ).draw();
+              }
+          } );
+      } );
+   </script>
+   
    <script type="text/javascript">
       $(function() {
          $('.page-container').addClass('sidebar-closed');

@@ -2910,6 +2910,8 @@ class ApiController extends BaseController
     	$device_id		=Input::get('device_id');
     	$booking		=Input::get('booking') ? Input::get('booking') : 0;
     	$extra_dest_id  =Input::get('extra_dest_id') ? Input::get('extra_dest_id') : 0;
+    	$remark_type 	=Input::get('remark_type');
+		$remark 		=Input::get('remark');
 
     	if(!$sale_order_no || !$buyer_name  || !$phone){
     		$response['message']="Required fields are sale_order_no, buyer_name, address, phone.";
@@ -3024,6 +3026,8 @@ class ApiController extends BaseController
     		}
     		$objsaleorder->agent_commission=$total_commission;
     		$objsaleorder->booking = $booking;
+    		$objsaleorder->remark_type=$remark_type;
+    		$objsaleorder->remark 	  =$remark;
     		$objsaleorder->update();
 
     		//Payment Transaction

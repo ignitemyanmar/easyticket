@@ -8,25 +8,6 @@
             <!-- BEGIN PAGE HEADER-->   
                <div class="row-fluid">
                   <div class="span12">
-                     <!-- BEGIN STYLE CUSTOMIZER -->
-                     <div class="color-panel hidden-phone">
-                        <div class="color-mode-icons icon-color"></div>
-                        <div class="color-mode-icons icon-color-close"></div>
-                        <div class="color-mode">
-                           <p>THEME COLOR</p>
-                           <ul class="inline">
-                              <li class="color-black current color-default" data-style="default"></li>
-                              <li class="color-blue" data-style="blue"></li>
-                              <li class="color-brown" data-style="brown"></li>
-                              <li class="color-purple" data-style="purple"></li>
-                              <li class="color-white color-light" data-style="light"></li>
-                           </ul>
-                           <label class="hidden-phone">
-                           <input type="checkbox" class="header" checked value="" />
-                           <span class="color-mode-label">Fixed Header</span>
-                           </label>                    
-                        </div>
-                     </div>
                      <!-- END BEGIN STYLE CUSTOMIZER -->   
                      <h3 class="page-title">
                         အေရာင္းကုိယ္စားလွယ္မ်ား  အခ်က္အလက္မ်ား
@@ -60,6 +41,23 @@
                            </div>
                            <input type="hidden" name="operator_id" value="{{$operator_id}}">
                            <div class="portlet-body">
+                              <div class="row-fluid">
+                                 <div class="span6">
+                                    <div class="control-group">
+                                       <label class="control-label" for="name">Agent Group</label>
+                                       <div class="controls">
+                                          <select class="chosen span12" name="agentgroup_id">
+                                             <option value="0">None</option>
+                                             @foreach($agentgroup as $row)
+                                             <option value="{{$row->id}}">{{$row->name}}</option>
+                                             @endforeach
+                                          </select>
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+                              <div class="clear-fix">&nbsp;</div>
+
                               <div class="row-fluid">
                                  <div class="span6">
                                     <div class="control-group">
@@ -120,9 +118,8 @@
                                     <div class="control-group">
                                        <div class="controls">
                                        <label>
-                                          <input  name="owner" class="m-wrap span12" value="1" type="checkbox">Owner
+                                          <input  name="owner" class="span3" value="1" type="checkbox" style="float:left !important;margin-left:0;"><p style="padding-top:.7rem;">Owner</p>
                                        </label>
-
                                        </div>
                                     </div>
                                  </div>

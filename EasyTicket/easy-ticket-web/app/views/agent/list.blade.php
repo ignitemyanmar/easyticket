@@ -1,6 +1,9 @@
 @extends('../admin')
 @section('content')
    <link rel="stylesheet" href="assets/data-tables/DT_bootstrap.css" />
+   <style type="text/css">
+   tr.heading td{background: #E4F6F5 !important;}
+   </style>
    <link rel="shortcut icon" href="favicon.ico" />
    <!-- BEGIN PAGE -->
       <div class="page-content">
@@ -87,12 +90,12 @@
                               @endif
                               <table class="table table-striped table-hover table-bordered" id="sample_editable_1">
                                  <thead>
-                                       <th>အမည္</th>
-                                       <th>ဖုန္းနံပါတ္</th>
-                                       <th>လိပ္စာ</th>
-                                       <th>Owner</th>
-                                       <th>ျပင္ရန္</th>
-                                       <th>ဖ်က္ရန္</th>
+                                       <th class="span2">အမည္</th>
+                                       <th class="span2">ဖုန္းနံပါတ္</th>
+                                       <th class="span2">လိပ္စာ</th>
+                                       <th class="span2">Owner</th>
+                                       <th class="span1">ျပင္ရန္</th>
+                                       <th class="span1">ဖ်က္ရန္</th>
                                  </thead>
                                  <tbody>
                                     @if(count($response)==0)
@@ -100,19 +103,24 @@
                                     @else
                                     @endif
                                  
-                                    @foreach($response as $agent)
-                                                <tr>
-                                                   <td>{{$agent['name']}}</td>
-                                                   <td>{{$agent['phone']}}</td>
-                                                   <td>{{$agent['address']}}</td>
-                                                   <td>@if($agent['owner']==1) Owner @else - @endif</td>
-                                                   <td style="text-align:center;">
-                                                         <a href="/agent-update/{{ $agent['id'] }}"  class="btn green button-submit">ျပင္ရန္</a><br><br>
-                                                   </td>
-                                                   <td style="text-align:center;">
-                                                         <a href="deleteagent/{{ $agent['id'] }}"   class="btn green button-submit">ဖ်က္ရန္</a>
-                                                   </td>
-                                                </tr>
+                                    @foreach($response as $key=>$rows)
+                                       <tr class="heading">
+                                          <td colspan="6">{{$key}}</td>
+                                       </tr>
+                                       @foreach($rows as $agent)
+                                                   <tr>
+                                                      <td>{{$agent['name']}}</td>
+                                                      <td>{{$agent['phone']}}</td>
+                                                      <td><div class="wordwrap">{{$agent['address']}}</div></td>
+                                                      <td>@if($agent['owner']==1) Owner @else - @endif</td>
+                                                      <td style="text-align:center;">
+                                                            <a href="/agent-update/{{ $agent['id'] }}"  class="btn green">ျပင္ရန္</a><br><br>
+                                                      </td>
+                                                      <td style="text-align:center;">
+                                                            <a href="deleteagent/{{ $agent['id'] }}"   class="btn green">ဖ်က္ရန္</a>
+                                                      </td>
+                                                   </tr>
+                                       @endforeach
                                     @endforeach
                                     
                                  </tbody>
@@ -131,12 +139,5 @@
       </div>
       <!-- END PAGE --> 
    <script type="text/javascript" src="assets/data-tables/jquery.dataTables.js"></script>
-   <script type="text/javascript" src="assets/data-tables/DT_bootstrap.js"></script>
-   <script>
-      jQuery(document).ready(function() {       
-         // initiate layout and plugins
-         App.setPage("table_editable");
-         // App.init();
-      });
-   </script>
+   
 @stop

@@ -14,6 +14,7 @@ class AgentController extends BaseController
   	public function postAddagent()
     {
       $operator_id  =Input::get('operator_id');
+      $agentgroup_id=Input::get('agentgroup_id');
       $name         =Input::get('name');
       $phone        =Input::get('phone');
       $address      =Input::get('address');
@@ -27,7 +28,7 @@ class AgentController extends BaseController
         return Redirect::to('/agentlist')->with('message', $message);
       }
       $objagent           =new Agent();
-      $objagent->agentgroup_id=0;
+      $objagent->agentgroup_id=$agentgroup_id;
       $objagent->name         =$name;
       $objagent->phone        =$phone;
       $objagent->address        =$address;
@@ -53,18 +54,25 @@ class AgentController extends BaseController
        {
           $agentgroupname = AgentGroup::where('id','=',$agent['agentgroup_id'])->pluck('name');
           $commissionname = CommissionType::where('id','=',$agent['commission_id'])->pluck('name');
-        
-            $response[$i]['id']             = $agent['id'];
-            $response[$i]['agentgroup_id']  = $agentgroupname;
-            $response[$i]['name']           = $agent['name'];
-            $response[$i]['phone']          = $agent['phone'];
-            $response[$i]['address']        = $agent['address'];
-            $response[$i]['commission']     = $agent['commission'];
-            $response[$i]['commission_id']  = $commissionname;
-            $i++;
+          $response[$i]['id']             = $agent['id'];
+          $response[$i]['agentgroup_name']= $agentgroupname ? $agentgroupname : 'မရွိ';
+          $response[$i]['name']           = $agent['name'];
+          $response[$i]['phone']          = $agent['phone'];
+          $response[$i]['address']        = $agent['address'];
+          $response[$i]['commission']     = $agent['commission'];
+          $response[$i]['commission_id']  = $commissionname;
+          $i++;
         } 
+
+        $agent_group = array();
+        foreach($response AS $arr) {
+          $agent_group[$arr['agentgroup_name']][] = $arr->toarray();
+        }
+
+        ksort($agent_group);
+        // return Response::json($agent_group);
          return View::make('agent.list', array(
-        'response'    =>  $response,
+        'response'    =>  $agent_group,
         'obj_agent'     =>  $obj_agent,
         'totalCount'  =>  $totalCount,
         'message'   =>  ''
@@ -74,7 +82,8 @@ class AgentController extends BaseController
     
     public function getEditAgent($id)
     {
-      $obj_agent = Agent::find($id);
+        $agentgroup=AgentGroup::all();
+        $obj_agent = Agent::find($id);
         if(count($obj_agent) == 0 ){
             return Redirect::to('agentlist');
         }
@@ -87,20 +96,18 @@ class AgentController extends BaseController
         $agent['commission']    = $obj_agent->commission;
         $agent['owner']    = $obj_agent->owner;
 
-        $agentgroup        = AgentGroup::all();
         $comissiontype     = CommissionType::all();
        
         $response['agent']          = $agent;
-        $response['agentgroup']     = $agentgroup;
         $response['comissiontype']  = $comissiontype;
                 // return Response::json($response);
-        return View::make('agent.edit')->with('response', $response);
+        return View::make('agent.edit', array('response'=> $response,'agentgroup'=>$agentgroup));
     }
    
     public function postEditAgent($id)
     {
       $affectedRow = Agent::where('id','=',$id)->update(array(
-                    'agentgroup_id' => Input::get('agentgroup'),
+                    'agentgroup_id' => Input::get('agentgroup_id'),
                     'name'=>Input::get('name'),
                     'phone'=>Input::get('phone'),
                     'address'=>Input::get('address'),
@@ -118,12 +125,12 @@ class AgentController extends BaseController
       $message=array();
       if(!$check_exiting){
         $affectedRows1 = Agent::where('id','=',$id)->delete();
-        $message['status']=0;
+        $message['status']="0";
         $message['info']="Successfully delete.";
         return Redirect::to('/agentlist')->with('message', $message);
       }
-      $message['status']=1;
-      $message="This agent has transactions, so you can't delete.";
+      $message['status']="1";
+      $message['info']="This agent has transactions, so you can't delete.";
 
       return Redirect::to('/agentlist')->with('message', $message);
     }
@@ -133,6 +140,7 @@ class AgentController extends BaseController
       $todeleterecorts = Input::get('recordstoDelete');
       if(count($todeleterecorts)==0)
       {
+
         return Redirect::to("/agentlist");
       }
       foreach($todeleterecorts as $recid)

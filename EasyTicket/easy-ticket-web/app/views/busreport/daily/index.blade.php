@@ -1,11 +1,21 @@
 @extends('../admin')
 @section('content')
-{{HTML::style('../../css/jquery-ui.css')}}
+<!-- {{HTML::style('../../css/jquery-ui.css')}} -->
+<!-- BEGIN PAGE --> 
+<link rel="stylesheet" type="text/css" href="../../../../assets/bootstrap-datepicker/css/datepicker.css" />
+<link rel="stylesheet" href="../../../../css/jquery.dataTables.v1.10.4.css" />
+
 <style type="text/css">
-   .padding-10{padding: 5px 10px;}
-   .select2-container {min-width: 180px;}
-</style>
-<!-- BEGIN PAGE -->  
+   #tblExport_length select{width: 80px;}
+   tr.group td,
+   tr.group td:hover {
+       background: #ddd !important;
+   }
+   tfoot th{background: #ddd !important;}
+
+</style> 
+
+
    <div class="page-content">
       <!-- BEGIN PAGE CONTAINER-->
          <div class="container-fluid">
@@ -43,7 +53,7 @@
                         </div>
 
                         <div class="row-fluid search-default">
-                           <div class="span7">
+                           <div class="span8">
                                  <div class="btn-group" style="margin:11px;">
                                     <button class="btn green dropdown-toggle" data-toggle="dropdown">Tools <i class="icon-angle-down"></i>
                                     </button>
@@ -53,7 +63,7 @@
                                     </ul>
                                  </div>
                            </div>
-                           <div class="span5">
+                           <div class="span4">
                               <form class="form-search" action="/report/dailycarandadvancesale/search">
                                  <div class="chat-form">
                                     <div class="input-cont">   
@@ -64,7 +74,7 @@
                               </form>
                            </div>
                         </div>
-
+                        <div class="clear-fix">&nbsp;</div>
                         <div class="portlet-body" id="contents">
                            <table class="table table-striped table-bordered table-advance table-hover" id="tblExport">
                               <thead>
@@ -77,36 +87,41 @@
                                     <th>အခမဲ႕ လက္မွတ္ </th>
                                     <th>ေစ်းႏုန္း</th>
                                     <th>စုုစုုေပါင္း</th>
-                                    <th><a class="btn small green blue-stripe imagechange" id="" href="/report/dailycarandadvancesale/detail?date={{Session::get('search_daily_date')}}">အေသးစိတ္(All)</a></th>
+                                    <th><a class="btn small green blue-stripe imagechange" id="" href="/report/dailycarandadvancesale/detail?date={{date('Y-m-d', strtotime(Session::get('search_daily_date')))}}">အေသးစိတ္(All)</a></th>
                                  </tr>
                               </thead>
-                              <tbody>
                                  @if($dailyforbus)
-                                    <div id="jsonvalue" style="display:none;">{{json_encode($dailyforbus)}}</div>
-                                    <div id="dvjson"></div>
-                                    @foreach($dailyforbus as $result)
+                                    <tbody>
+                                       <div id="jsonvalue" style="display:none;">{{json_encode($dailyforbus)}}</div>
+                                       <div id="dvjson"></div>
+                                       @foreach($dailyforbus as $result)
+                                          <tr>
+                                             <td>{{date('d/m/Y',strtotime($result['departure_date']))}}</td>
+                                             <td>{{$result['from_to']}}</td>
+                                             <td>{{$result['time']}}</td>
+                                             <td>{{$result['class_name']}}</td>
+                                             <td>{{$result['sold_seat']}}</td>
+                                             <td>{{$result['free_ticket']}}</td>
+                                             <td>{{$result['local_price']}}</td>
+                                             <td>{{$result['total_amount']}}</td>
+                                             <td>
+                                                <a class="btn mini green-stripe imagechange" id="" href="/report/dailycarandadvancesale/detail?bus_id={{$result['bus_id']}}&date={{date('Y-m-d', strtotime(Session::get('search_daily_date')))}}">အေသးစိတ္ၾကည့္ရန္</a>
+                                             </td>
+                                          </tr>
+                                          <?php $dailyforbustotal +=$result['total_amount']; ?>
+                                       @endforeach
+
+                                          
+                                    </tbody>
+                                    <tfoot>
                                        <tr>
-                                          <td>{{date('d/m/Y',strtotime($result['departure_date']))}}</td>
-                                          <td>{{$result['from_to']}}</td>
-                                          <td>{{$result['time']}}</td>
-                                          <td>{{$result['class_name']}}</td>
-                                          <td>{{$result['sold_seat']}}</td>
-                                          <td>{{$result['free_ticket']}}</td>
-                                          <td>{{$result['local_price']}}</td>
-                                          <td>{{$result['total_amount']}}</td>
-                                          <td>
-                                             <a class="btn mini green-stripe imagechange" id="" href="/report/dailycarandadvancesale/detail?bus_id={{$result['bus_id']}}&date={{Session::get('search_daily_date')}}">အေသးစိတ္ၾကည့္ရန္</a>
-                                          </td>
-                                       </tr>
-                                       <?php $dailyforbustotal +=$result['total_amount']; ?>
-                                    @endforeach
-                                       <tr>
-                                          <td colspan="4">&nbsp;</td>
+                                          <th colspan="4">&nbsp;</th>
                                           <th colspan="4" class="" align="right">ယေန႕ေရာင္းရေငြစုစုေပါင္း</th>
                                           <th>: {{$dailyforbustotal}} KS</th>
                                        </tr>
+                                   </tfoot>
                                  @endif
-                              </tbody>
+                              
                            </table>
                         </div>
                      </div>
@@ -118,9 +133,52 @@
       <!-- END PAGE CONTAINER-->
    </div>
 <!-- END PAGE -->  
+   <!-- 
    <script type="text/javascript" src="../../assets/data-tables/jquery.dataTables.js"></script>
-   {{HTML::script('../../src/jquery-ui.js')}}
+    -->
+   <!-- {{HTML::script('../../src/jquery-ui.js')}} -->
    <script type="text/javascript" src="../../../js/jquery.battatech.excelexport.min.js"></script>
+   <script type="text/javascript" src="../../../../js/jquery.dataTables.v1.10.4.min.js"></script>
+
+   <script type="text/javascript" src="../../../../assets/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+   <script type="text/javascript">
+      $(document).ready(function() {
+          var table = $('#tblExport').DataTable({
+              "columnDefs": [
+                  // { "visible": false, "targets": 2 }
+              ],
+              "order": [[ 1, 'asc' ]],
+              "displayLength": 25,
+              "pagingType": "full_numbers",
+              "drawCallback": function ( settings ) {
+                  var api = this.api();
+                  var rows = api.rows( {page:'current'} ).nodes();
+                  var last=null;
+       
+                  api.column(1, {page:'current'} ).data().each( function ( group, i ) {
+                      if ( last !== group ) {
+                          $(rows).eq( i ).before(
+                              '<tr class="group"><td colspan="9">'+group+'</td></tr>'
+                          );
+       
+                          last = group;
+                      }
+                  } );
+              }
+          } );
+          // Order by the grouping
+          $('#tblExport tbody').on( 'click', 'tr.group', function () {
+              var currentOrder = table.order()[0];
+              if ( currentOrder[0] === 1 && currentOrder[1] === 'asc' ) {
+                  table.order( [ 1, 'desc' ] ).draw();
+              }
+              else {
+                  table.order( [ 1, 'asc' ] ).draw();
+              }
+          } );
+      } );
+   </script>
+
    <script type="text/javascript">
       $(function(){
          var date = new Date();

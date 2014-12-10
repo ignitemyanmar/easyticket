@@ -165,7 +165,7 @@
                 </li>
 
                 <li @if($currentroute=='rep') class="" @endif>
-                    <a href="/report/operator/trip/dateranges?operator_id={{$operator_id}}">
+                    <a href="/report/operator/trip/dateranges?operator_id={{$operator_id}}&&&agent_id=All">
                     <i class="icon-th-list"></i> 
                     <span class="title">အေရာင်းကုိယ်စားလှယ်နှင့် အေရာင်းစာရင်းများ</span>
                     </a>
@@ -211,6 +211,8 @@
                 </li>
 
                 @endif
+
+
                 <!-- 
                     <li @if($currentroute=='dai') class="has-sub " @else class="has-sub" @endif>
                         <a href="javascript:;">
@@ -258,6 +260,19 @@
                 </li> -->
                 <li @if($currentroute=='age') class="has-sub " @else class="has-sub" @endif>
                     <a href="javascript:;">
+                    <i class="icon-user"></i> 
+                    <span class="title">Agent Group</span>
+                    <span class="arrow "></span>
+                    </a>
+                    <ul class="sub">
+                        <li ><a href="/agentgroup/create">Agent Group Create</a></li>
+                        <li ><a href="/agentgrouplist">Agent Group List</a></li>
+                    </ul>
+                </li>
+                
+                
+                <li @if($currentroute=='age') class="has-sub " @else class="has-sub" @endif>
+                    <a href="javascript:;">
                     <i class="icon-th-list"></i> 
                     <span class="title">အေရာင်းကုိယ်စားလှယ်များ</span>
                     <span class="arrow "></span>
@@ -267,6 +282,8 @@
                         <li ><a href="/agentlist">အေရာင်းကုိယ်စားလှယ်များ</a></li>
                     </ul>
                 </li>
+
+
                 <li @if($currentroute=='ord') class="" @endif>
                     <a href="/orderlist">
                     <i class="icon-th-list"></i> 
@@ -333,12 +350,9 @@
                         <li ><a href="/seatplanlist">ခုံနံပါတ်များ</a></li>
                     </ul>
                 </li> 
-                <li @if($currentroute=='cli') class="" @endif>
-                    <a href="/client/sync">
-                    <i class="icon-th-list"></i> 
-                    <span class="title">Sync</span>
-                    </a>
-                </li>
+
+                
+                 
                 <!-- <li @if($currentroute=='sea') class=""@endif>
                     <a href="javascript:;">
                     <i class="icon-th-list"></i> 
@@ -346,17 +360,7 @@
                     </a>
                 </li>  -->
                 <!-- 
-                <li @if($currentroute=='age') class="has-sub " @else class="has-sub" @endif>
-                    <a href="javascript:;">
-                    <i class="icon-user"></i> 
-                    <span class="title">Agent Group</span>
-                    <span class="arrow "></span>
-                    </a>
-                    <ul class="sub">
-                        <li ><a href="/agentgroup/create">Agent Group Create</a></li>
-                        <li ><a href="/agentgrouplist">Agent Group List</a></li>
-                    </ul>
-                </li>
+               
                  -->
                 
                 <!-- 

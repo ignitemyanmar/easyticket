@@ -53,10 +53,6 @@
                                  <?php if($response): ?>
                                     <?php foreach($response as $result): ?>
                                        <tr>
-                                          <!-- <td><?php echo $result['bus_no']; ?></td>
-                                          <td><?php echo $result['trip']; ?></td>
-                                          <td><?php echo $result['class']; ?></td> 
-                                          <td><?php echo $result['departure_time']; ?></td>-->
                                           <td><div style="word-wrap: break-word;width:330px;"><?php echo $result['agent']; ?></div></td>
                                           <td><?php echo $result['sold_tickets']; ?></td>
                                           <td><?php echo $result['total_amount']; ?></td>
@@ -66,6 +62,11 @@
                                           </td>
                                        </tr>
                                     <?php endforeach; ?>
+                                    <tr>
+                                       <td>ဂိတ္ၾကီးအေရာင္း စုစုေပါင္း = <?php echo $total_sold['main_gate_total']; ?> က်ပ္</td>
+                                       <td colspan="2">ဂိတ္ခြဲအေရာင္း စုစုေပါင္း = <?php echo $total_sold['agent_gate_total']; ?> က်ပ္</td>
+                                       <td>အားလုံးစုစုေပါင္း = <?php echo $total_sold['grand_total']; ?> က်ပ္</td>
+                                    </tr>
                                  <?php endif; ?>
 
                               </tbody>

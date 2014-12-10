@@ -82,6 +82,30 @@
                               <div class="row-fluid">
                                  <div class="span6">
                                     <div class="control-group">
+                                       <label class="control-label" for="name">Ticket No</label>
+                                       <div class="controls">
+                                          <input name="ticket_no" type="text" required="required" class="m-wrap span12" id="ticket_no">
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+
+                              <div class="cleardiv">&nbsp;</div>
+                              <div class="row-fluid">
+                                 <div class="span6">
+                                    <div class="control-group">
+                                       <label class="control-label" for="name">Phone No</label>
+                                       <div class="controls">
+                                          <input name="phone" type="text" required="required" class="m-wrap span12" id="phone">
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+
+                              <div class="cleardiv">&nbsp;</div>
+                              <div class="row-fluid">
+                                 <div class="span6">
+                                    <div class="control-group">
                                        <label class="control-label" for="name">မှတ်ပုံတင် နံပါတ်</label>
                                        <div class="controls">
                                           <input name="customer_nrc" type="text" required="required" class="m-wrap span12" id="customer_nrc">
@@ -173,13 +197,13 @@
                                                             <div class="checkboxframe">
                                                                <label>
                                                                   <span></span>
-                                                                  <div class="fit-a {{$taken}} zawgyi-one" title="{{$rows['agent_name']}}" id="{{$rows['seat_no']}}">{{$rows['customer']['name']}}<br> {{$rows['customer']['phone']}}<br> {{$rows['customer']['nrc_no']}}<br> &nbsp;{{$rows['agent_name']}}</div>
+                                                                  <div class="fit-a {{$taken}} zawgyi-one" title="{{$rows['agent_name']}}" id="{{$rows['seat_no']}}">{{$rows['customer']['name']}}<br> {{$rows['customer']['phone']}}<br> {{$rows['ticket_no']}}<br> {{$rows['customer']['nrc_no']}}<br> &nbsp;{{$rows['agent_name']}}</div>
                                                                   <input type="hidden" value="{{$rows['price']}}" class="price{{$rows['seat_no']}}">
                                                                   <input type="hidden" value="{{$rows['seat_no']}}" class="seatno{{$rows['seat_no']}}">
                                                                </label>
                                                             </div>
                                                             <figcaption><br>
-                                                               <a href="/report/customers/update?saleitem_id={{$rows['customer']['saleitem_id']}}" style="text-align:center;padding-left:9px;" data-reveal-id="myModal" class="updatecustomer AyarWagaung" rel="{{$rows['customer']['name']}}" id="{{$rows['customer']['nrc_no']}}">ဝယ်သူ အချက်အလက် ြပင်ရန်</a>
+                                                               <a href="/report/customers/update?saleitem_id={{$rows['customer']['saleitem_id']}}" style="text-align:center;padding-left:9px;" data-reveal-id="myModal" class="updatecustomer AyarWagaung" rel="{{$rows['customer']['name']}}" id="{{$rows['customer']['nrc_no']}}" data-phone="{{$rows['customer']['phone']}}" data-ticketno="{{$rows['ticket_no']}}">ဝယ်သူ အချက်အလက် ြပင်ရန်</a>
                                                             </figcaption>
                                                          </figure>
                                                       </div>
@@ -301,9 +325,14 @@
             var link=this.href;
             var name=this.rel;
             var nrc=this.id;
+            var phone= $(this).data('phone');
+            var ticket_no= $(this).data('ticketno');
+            // alert(ticket_no);
             $('#customer_name').val(name);
             $('#customer_nrc').val(nrc);
-             document.getElementById('update-form').action=link;
+            $('#phone').val(phone);
+            $('#ticket_no').val(ticket_no);
+            document.getElementById('update-form').action=link;
             e.preventDefault();
          });
           $(document).foundation();

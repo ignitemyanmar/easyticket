@@ -3,6 +3,8 @@
 <style type="text/css">
    .padding-5{padding: 5px;}
 </style>
+{{HTML::style('../../assets/chosen-bootstrap/chosen/chosen.css')}}
+
 <!-- BEGIN PAGE -->  
    <div class="page-content">
       <!-- BEGIN PAGE CONTAINER-->
@@ -62,6 +64,24 @@
                               </div>
                            </div>
                            <div class="portlet-body">
+
+                              <div class="row-fluid">
+                                 <div class="span6">
+                                    <div class="control-group">
+                                       <label class="control-label" for="name">Agent Group</label>
+                                       <div class="controls">
+                                          <select class="chosen span12" name="agentgroup_id">
+                                             <option value="0">None</option>
+                                             @foreach($agentgroup as $row)
+                                             <option value="{{$row->id}}" @if($row->id== $response['agent']['agentgroup_id']) selected @endif >{{$row->name}}</option>
+                                             @endforeach
+                                          </select>
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+                              <div class="clear-fix">&nbsp;</div>
+
                               <div class="row-fluid">
                                  <div class="span6">
                                     <div class="control-group">
@@ -123,9 +143,8 @@
                                     <div class="control-group">
                                        <div class="controls">
                                        <label>
-                                          <input  name="owner" class="m-wrap span12" value="1" @if($response['agent']['owner']==1) checked="" @endif type="checkbox">Owner
+                                          <input  name="owner" class="span3" value="1" @if($response['agent']['owner']==1) checked="" @endif type="checkbox" style="float:left !important;margin-left:0;"><p style="padding-top:.7rem;">Owner</p>
                                        </label>
-
                                        </div>
                                     </div>
                                  </div>
@@ -147,5 +166,5 @@
       <!-- END PAGE CONTAINER-->
    </div>
 <!-- END PAGE -->  
-   <script type="text/javascript" src="../../assets/data-tables/jquery.dataTables.js"></script>
+   {{HTML::script('../../assets/chosen-bootstrap/chosen/chosen.jquery.min.js')}}
 @stop

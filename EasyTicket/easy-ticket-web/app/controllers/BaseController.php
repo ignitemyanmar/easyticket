@@ -8,9 +8,9 @@ class BaseController extends Controller {
 	 * @return void
 	 */
 	public $today = null;
+	public $operator_id = 0;
 	public function __construct(){
 		$this->Date = App::make('MyDate');
-		
 		$this->today= App::make('MyDate');
 		$bookingcount=SaleOrder::wherebooking(1)->whereorderdate($this->getDate())->count('id');
 		$currentroute=Route::getCurrentRoute()->getPath();
@@ -19,6 +19,8 @@ class BaseController extends Controller {
         Session::put('bookingcount', $bookingcount);
 
         $this->myGlob=App::make('myApp');
+
+        $this->operator_id = isset($this->myGlob->operator_id) ? $this->myGlob->operator_id : 0;
     }
 
     protected function getDate(){

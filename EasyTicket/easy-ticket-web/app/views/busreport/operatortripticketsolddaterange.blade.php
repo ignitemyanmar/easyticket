@@ -1,10 +1,19 @@
 @extends('../admin')
 @section('content')
-
-<link rel="stylesheet" href="../../../../assets/data-tables/DT_bootstrap.css" />
+<!-- <link rel="stylesheet" href="../../../../assets/data-tables/DT_bootstrap.css" /> -->
+<link rel="stylesheet" href="../../../../css/jquery.dataTables.v1.10.4.css" />
 <link rel="stylesheet" type="text/css" href="../../../../assets/chosen-bootstrap/chosen/chosen.css" />
 <link rel="stylesheet" type="text/css" href="../../../../assets/bootstrap-datepicker/css/datepicker.css" />
-
+<style type="text/css">
+   .footer-row th{background:#ddd !important;}
+   .title-row th{background:rgba(228, 246, 245, 1) !important;}
+   tr.group td,
+   tr.group td:hover {
+       background: #ddd !important;
+   }
+   #sample_editable_1_length select{width: 80px;}
+   .text-right{text-align:right !important;}
+</style>
 <!-- BEGIN PAGE -->  
    <div class="page-content">
       <!-- BEGIN PAGE CONTAINER-->
@@ -136,7 +145,7 @@
                                        <div class="row-fluid">
                                           <div class="span3">
                                              <div class="control-group">
-                                                <label class="control-label" for="startdate">အစေန့ေရွးရန် (မှ)</label>
+                                                <label class="control-label" for="startdate">ထွက်ခွာမည့် အစေန့ေရွးရန်</label>
                                                 <div class="controls">
                                                    <input id="startdate" name="start_date" class="m-wrap span12 m-ctrl-medium date-picker" size="16" type="text" value="{{$search['start_date']}}">
                                                 </div>
@@ -144,7 +153,7 @@
                                           </div>
                                           <div class="span3">
                                              <div class="control-group">
-                                                <label class="control-label" for="enddate">အဆုံးေန့ေရွးရန်(အထိ)</label>
+                                                <label class="control-label" for="enddate">ထွက်ခွာမည့် အဆုံးေန့ေရွးရန်</label>
                                                 <div class="controls">
                                                    <input id="enddate" name="end_date" class="m-wrap span12 m-ctrl-medium  date-picker" size="16" type="text" value="{{$search['end_date']}}">
                                                 </div>
@@ -214,7 +223,7 @@
                                           </div>
                                           <div class="span2">
                                              <div class="control-group">
-                                                <label class="control-label" for="startdate">အစေန့ေရွးရန် (မှ)</label>
+                                                <label class="control-label" for="startdate">ထွက်ခွာမည့် အစေန့ေရွးရန်</label>
                                                 <div class="controls">
                                                    <input id="startdate" name="start_date" class="m-wrap span12 m-ctrl-medium date-picker" size="16" type="text" value="{{$search['start_date']}}">
                                                 </div>
@@ -222,7 +231,7 @@
                                           </div>
                                           <div class="span2">
                                              <div class="control-group">
-                                                <label class="control-label" for="enddate">အဆုံးေန့ေရွးရန်(အထိ)</label>
+                                                <label class="control-label" for="enddate">ထွက်ခွာမည့် အဆုံးေန့ေရွးရန်</label>
                                                 <div class="controls">
                                                    <input id="enddate" name="end_date" class="m-wrap span12 m-ctrl-medium  date-picker" size="16" type="text" value="{{$search['end_date']}}">
                                                 </div>
@@ -255,9 +264,8 @@
                         
                         <div class="clear-fix">&nbsp;</div>
                         <div class="portlet-body">
-                           <table class="table table-striped table-bordered table-advance table-hover" id="tblExport">
+                           <table class="table table-striped table-bordered table-advance table-hover" id="sample_editable_1">
                               <thead>
-                                 
                                  <tr>
                                     <th>ဝယ္ယူသည့္ေန႔</th>
                                     @if($search['trips']!=1)
@@ -271,85 +279,102 @@
                                     <th>အခမဲ႕ လက္မွတ္ </th>
                                     <th>ေစ်းႏုန္း</th>
                                     <th>စုုစုုေပါင္း</th>
-                                    <th style="width:0;"><a class="btn small green blue-stripe imagechange" id="" href="/triplist/{{$search['start_date'].','.$search['end_date']}}/daily?f={{$search['from']}}&t={{$search['to']}}&a={{$search['agent_id']}}&agentrp={{$search['agent_rp']}}">အေသးစိတ္(All)</a></th>
+                                    <th style="width:0;"><a class="btn small green blue-stripe imagechange" id="" href="/triplist/{{$search['start_date'].','.$search['end_date']}}/daily?f={{$search['from']}}&t={{$search['to']}}&a={{$search['agent_id']}}&agentrp={{$search['agent_rp']}}&time={{$search['time']}}">အေသးစိတ္(All)</a></th>
                                  </tr>
                               </thead>
-                              <tbody>
                                  @if($response)
-                                    @if($search['agent_rp'])
-                                       <?php $columns=10; ?>
-                                    @else
-                                       <?php $columns=9;?>
+                                    <tbody>
+                                       @if($search['agent_rp'])
+                                          <?php $columns=10; ?>
+                                       @else
+                                          <?php $columns=9;?>
 
-                                    @endif
-                                    <!-- <div id="jsonvalue" style="display:none;">{{json_encode($response)}}</div> -->
-                                    <div id="dvjson"></div>
-                                    <?php $G_total_ticket=0; $G_total_amount=0; $G_free_ticket=0; ?>
-                                    @foreach($response as $key=>$rows)
-                                    
-                                    <tr><th style="background:rgba(228, 246, 245, 1) !important;" colspan="{{$columns}}" align="left">{{$key}}</th></tr>
-                                       <?php $total_ticket=0; $total_amount=0; $free_ticket=0; ?>
-                                       @if(count($rows)>0)
-                                          @foreach($rows as $result)
-                                             <tr>
-                                                <td>{{date('d/m/Y',strtotime($result['order_date']))}}</td>
-                                                @if($search['trips']!=1)
-                                                   <td><div class="wordwrap">{{$result['agent_name']}}</div></td>
-                                                @endif
-                                                <td>{{$result['from_to']}}</td>
-                                                <td>{{date('d/m/Y',strtotime($result['departure_date']))}} ({{$result['time']}})</td>
-                                                <!-- <td>{{$result['time']}}</td> -->
-                                                <td>{{$result['class_name']}}</td>
-                                                <td>{{$result['sold_seat']}}</td>
-                                                <td>{{$result['free_ticket']}}</td>
-                                                <td>{{$result['local_price']}}</td>
-                                                <td>{{$result['total_amount']}}</td>
-                                                <td>
-                                                   <a class="btn mini green-stripe imagechange" id="" href="/triplist/{{$result['order_date']}}/daily?bus_id={{$result['bus_id']}}&a={{$result['agent_id']}}&agentrp={{$search['agent_rp']}}">အေသးစိတ္ၾကည့္ရန္</a>
-                                                </td>
-                                             </tr>
-                                             <?php 
-                                                $total_ticket +=$result['sold_seat']; 
-                                                $total_amount+=$result['total_amount'];
-                                                $free_ticket+=$result['free_ticket'];
-                                             ?>
-                                          @endforeach
                                        @endif
-                                       <tr>
-                                          <th colspan="3"></th>
+                                       <!-- <div id="jsonvalue" style="display:none;">{{json_encode($response)}}</div> -->
+                                       <div id="dvjson"></div>
+                                       <?php $G_total_ticket=0; $G_total_amount=0; $G_free_ticket=0; ?>
+                                       @foreach($response as $key=>$rows)
+                                       
+                                       <!-- <tr class="title-row">
+                                          <th align="left">{{$key}}</th>
                                           @if($search['agent_rp'])
                                              <th>&nbsp;</th>
                                           @endif
-                                          <th>Sub Quantity</th>
-                                          <th>{{$total_ticket}}</th>
-                                          <th>Sub Free Ticket : {{$free_ticket}}</th>
-                                          <th>Sub Total</th>
-                                          <th>{{$total_amount}}</th>
                                           <th>&nbsp;</th>
-                                       </tr>
-                                       <?php 
-                                          $G_total_ticket +=$total_ticket; 
-                                          $G_total_amount +=$total_amount; 
-                                          $G_free_ticket +=$free_ticket; 
-                                       ?>
+                                          <th>&nbsp;</th>
+                                          <th>&nbsp;</th>
+                                          <th>&nbsp;</th>
+                                          <th>&nbsp;</th>
+                                          <th>&nbsp;</th>
+                                          <th>&nbsp;</th>
+                                          <th>&nbsp;</th>
+                                       </tr> -->
+                                          <?php $total_ticket=0; $total_amount=0; $free_ticket=0; ?>
+                                          @if(count($rows)>0)
+                                             @foreach($rows as $result)
+                                                <tr>
+                                                   <td>{{date('d/m/Y',strtotime($result['order_date']))}}</td>
+                                                   @if($search['trips']!=1)
+                                                      <td><div class="wordwrap">{{$result['agent_name']}}</div></td>
+                                                   @endif
+                                                   <td>{{$result['from_to']}}</td>
+                                                   <td>{{date('d/m/Y',strtotime($result['departure_date']))}} ({{$result['time']}})</td>
+                                                   <!-- <td>{{$result['time']}}</td> -->
+                                                   <td>{{$result['class_name']}}</td>
+                                                   <td>{{$result['sold_seat']}}</td>
+                                                   <td>{{$result['free_ticket']}}</td>
+                                                   <td>{{$result['local_price']}}</td>
+                                                   <td>{{$result['total_amount']}}</td>
+                                                   <td>
+                                                      <a class="btn mini green-stripe imagechange" id="" href="/triplist/{{$result['order_date']}}/daily?bus_id={{$result['bus_id']}}&a={{$result['agent_id']}}&agentrp={{$search['agent_rp']}}">အေသးစိတ္ၾကည့္ရန္</a>
+                                                   </td>
+                                                </tr>
+                                                <?php 
+                                                   $total_ticket +=$result['sold_seat']; 
+                                                   $total_amount+=$result['total_amount'];
+                                                   $free_ticket+=$result['free_ticket'];
+                                                ?>
+                                             @endforeach
+                                          @endif
+                                          <!-- <tr>
+                                             @if($search['agent_rp'])
+                                                <th>&nbsp;</th>
+                                             @endif
+                                             <th>&nbsp;</th>
+                                             <th>&nbsp;</th>
+                                             <th>&nbsp;</th>
+                                             <th>Sub Quantity</th>
+                                             <th>{{$total_ticket}}</th>
+                                             <th>Sub Free Ticket : {{$free_ticket}}</th>
+                                             <th>Sub Total</th>
+                                             <th>{{$total_amount}}</th>
+                                             <th>&nbsp;</th>
+                                          </tr> -->
+                                          <?php 
+                                             $G_total_ticket +=$total_ticket; 
+                                             $G_total_amount +=$total_amount; 
+                                             $G_free_ticket +=$free_ticket; 
+                                          ?>
 
-                                    @endforeach
+                                       @endforeach
                                        
-                                    <?php $columns=3;?>
-                                    @if($search['agent_rp'])
-                                       <?php $columns=4;?>
-                                    @endif
-                                    <tr style="background:#ddd;">
-                                       <th colspan="{{$columns}}"  style="background:#ddd;"></th>
-                                       <th style="background:#ddd;">Grand Quantity</th>
-                                       <th style="background:#ddd;">{{$G_total_ticket}}</th>
-                                       <th style="background:#ddd;">Grand Free Ticket : {{$G_free_ticket}}</th>
-                                       <th style="background:#ddd;">Grand Total</th>
-                                       <th style="background:#ddd;">{{$G_total_amount}}</th>
-                                       <th style="background:#ddd;">&nbsp;</th>
-                                    </tr>
+                                    </tbody>
+                                    <tfoot>
+                                       <tr class="footer-row">
+                                          @if($search['agent_rp'])
+                                             <th></th>
+                                          @endif
+                                          <!-- <th></th> -->
+                                          <th></th>
+                                          <th colspan="2" class="text-right">Grand Quantity</th>
+                                          <th>: {{$G_total_ticket}}</th>
+                                          <th colspan="2">Grand Free Ticket : {{$G_free_ticket}}</th>
+                                          <th colspan="2" class="text-right">Grand Total</th>
+                                          <th>: {{$G_total_amount}}</th>
+                                          <!-- <th>&nbsp;</th> -->
+                                       </tr>
+                                    </tfoot>
                                  @endif
-                              </tbody>
                            </table>
                         </div>
                      </div>
@@ -359,12 +384,57 @@
          </div>
    </div>
 <!-- END PAGE -->  
+   <!-- 
    <script type="text/javascript" src="../../../../assets/data-tables/jquery.dataTables.js"></script>
+    -->
+
    <script type="text/javascript" src="../../../../assets/chosen-bootstrap/chosen/chosen.jquery.min.js"></script>
    <script type="text/javascript" src="../../../../assets/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
    <script type="text/javascript" src="../../../../js/jquery.battatech.excelexport.min.js"></script>
+   <!-- 
+   <script type="text/javascript" src="../../../../assets/data-tables/DT_bootstrap.js"></script>
+    -->
+   <script type="text/javascript" src="../../../../js/jquery.dataTables.v1.10.4.min.js"></script>
+   <script type="text/javascript">
+      $(document).ready(function() {
+          var table = $('#sample_editable_1').DataTable({
+              "columnDefs": [
+                  // { "visible": false, "targets": 2 }
+              ],
+              "order": [[ 1, 'asc' ]],
+              "displayLength": 25,
+              "pagingType": "full_numbers",
+              "drawCallback": function ( settings ) {
+                  var api = this.api();
+                  var rows = api.rows( {page:'current'} ).nodes();
+                  var last=null;
+       
+                  api.column(1, {page:'current'} ).data().each( function ( group, i ) {
+                      if ( last !== group ) {
+                          $(rows).eq( i ).before(
+                              '<tr class="group"><td colspan="10">'+group+'</td></tr>'
+                          );
+       
+                          last = group;
+                      }
+                  } );
+              }
+          } );
+          // Order by the grouping
+          $('#sample_editable_1 tbody').on( 'click', 'tr.group', function () {
+              var currentOrder = table.order()[0];
+              if ( currentOrder[0] === 1 && currentOrder[1] === 'asc' ) {
+                  table.order( [ 1, 'desc' ] ).draw();
+              }
+              else {
+                  table.order( [ 1, 'asc' ] ).draw();
+              }
+          } );
+      } );
+   </script>
    <script type="text/javascript">
       $(function(){
+         // App.setPage("table_editable");
          $('.page-container').addClass('sidebar-closed');
          $('.chosen').chosen();
          tripallcombo($('#from').val());           
@@ -372,37 +442,11 @@
          $('#from').change(function(){
              tripallcombo($(this).val());           
          })
-
-         /*$("#btnExportExcel").click(function () {
-            var report_date=$('#report_date').val();
-            var filename=report_date+" Sale List";
-            var dataobject = $('#jsonvalue').html();
-            var dataobj =JSON.parse(dataobject);
-            var uri =$("#dvjson").btechco_excelexport({
-                containerid: "dvjson"
-                , datatype: $datatype.Json
-                , dataset: dataobj
-                , columns: [
-                    { headertext: "ဝယ္ယူသည့္ေန႔", datatype: "date", format: "xxxx,xx", datafield: "order_date", ishidden: false }
-                    { headertext: "ထြက္ခြာမည့္ေန ့ရက္", datatype: "date", format: "xxxx,xx", datafield: "departure_date", ishidden: false }
-                    , { headertext: "ခရီးစဥ္", datatype: "string", datafield: "from_to"}
-                    , { headertext: "ထြက္ခြာမည့္အခ်ိန္", datatype: "string", datafield: "time", ishidden: false }
-                    , { headertext: "ကားအမ်ိဴးအစား", datatype: "string", datafield: "class_name", ishidden: false }
-                    , { headertext: "ခုံအေရအတြက္", datatype: "string",  datafield: "sold_seat", ishidden: false }
-                    , { headertext: "အခမဲ႕ လက္မွတ္", datatype: "string",  datafield: "free_ticket", ishidden: false, }
-                    , { headertext: "ေစ်းႏုန္း", datatype: "string",  datafield: "local_price", ishidden: false, }
-                    , { headertext: "စုုစုုေပါင္း", datatype: "string",  datafield: "total_amount", ishidden: false }
-                ]
-               , returnUri: true
-            });
-            $(this).attr('download', filename+'.xls').attr('href', uri).attr('target', '_blank');
-         });*/
-
          $("#btnExportExcel").click(function () {
                var report_date=$('#report_date').val();
                var filename=report_date+" Sale List";
-               var uri =$("#tblExport").btechco_excelexport({
-                      containerid: "tblExport"
+               var uri =$("#sample_editable_1").btechco_excelexport({
+                      containerid: "sample_editable_1"
                      , datatype: $datatype.Table
                      , returnUri: true
                   });

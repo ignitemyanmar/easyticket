@@ -2,6 +2,7 @@
 	Class AgentCommission extends Eloquent 
 	{ 
 		protected $table = 'tbl_agent_commission';
+		protected $fillable = array('id','agent_id','trip_id','commission_id','commission');
 		public $timestamps = false;
 
 		public function agent(){

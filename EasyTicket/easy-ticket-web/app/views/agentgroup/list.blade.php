@@ -31,7 +31,7 @@
                      <!-- END BEGIN STYLE CUSTOMIZER -->    
                      <!-- BEGIN PAGE TITLE & BREADCRUMB-->        
                      <h3 class="page-title">
-                        Dashboard            
+                        အေရာင္းကုိယ္စားလွယ္ အုပ္စုမ်ား            
                         <small></small>
                      </h3>
                      <ul class="breadcrumb">
@@ -40,7 +40,7 @@
                            <a href="/">Home</a> 
                            <i class="icon-angle-right"></i>
                         </li>
-                        <li><a href="/dashboard">Dashboard</a></li>
+                        <li><a href="#">အေရာင္းကုိယ္စားလွယ္ အုပ္စုမ်ား</a></li>
                         
                      </ul>
                      <!-- END PAGE TITLE & BREADCRUMB-->
@@ -84,11 +84,12 @@
                               <table class="table table-striped table-hover table-bordered" id="sample_editable_1">
                                  <thead>
                                     <tr>
-                                       <th>Name</th>
-                                       <th>Phone</th>
-                                       <th>Address</th>
-                                       <th>Edit</th>
-                                       <th>Delete</th>
+                                       <th class="span10">Name</th>
+                                       <!-- <th class="span3">Phone</th> -->
+                                       <!-- <th class="span3">Address</th> -->
+                                       <th class="span1">Branches</th>
+                                       <th class="span1">Edit</th>
+                                       <th class="span1">Delete</th>
                                     </tr>
                                  </thead>
                                  <tbody>
@@ -100,13 +101,12 @@
                                     @foreach($response as $agent)
                                                 <tr>
                                                    <td>{{$agent['name']}}</td>
-                                                   <td>{{$agent['phone']}}</td>
-                                                   <td>{{$agent['address']}}</td>
+                                                   <td><a href="/agentgroupchildlist/{{ $agent['id'] }}"  class="btn green-stripe button-submit">View</a><br><br></td>
                                                    <td style="text-align:center;">
-                                                         <a href="/agent-update/{{ $agent['id'] }}"  class="btn green button-submit">Edit</a><br><br>
+                                                         <a href="/agent-update/{{ $agent['id'] }}"  class="btn blue-stripe button-submit">Edit</a><br><br>
                                                    </td>
                                                    <td style="text-align:center;">
-                                                         <a href="deleteagent/{{ $agent['id'] }}"   class="btn green button-submit">Delete</a>
+                                                         <a href="deleteagent/{{ $agent['id'] }}"   class="btn red-stripe button-submit">Delete</a>
                                                    </td>
                                                 </tr>
                                     @endforeach

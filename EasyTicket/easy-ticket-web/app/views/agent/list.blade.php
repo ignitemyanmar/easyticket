@@ -1,6 +1,16 @@
 @extends('../admin')
 @section('content')
-   <link rel="stylesheet" href="assets/data-tables/DT_bootstrap.css" />
+   <!-- <link rel="stylesheet" href="assets/data-tables/DT_bootstrap.css" /> -->
+   <link rel="stylesheet" href="../../../../css/jquery.dataTables.v1.10.4.css" />
+   <style type="text/css">
+      #tblExport_length select{width: 80px;}
+      tr.group td,
+      tr.group td:hover {
+          background: #ddd !important;
+      }
+      tfoot th{background: #ddd !important;}
+
+   </style> 
    <style type="text/css">
    tr.heading td{background: #E4F6F5 !important;}
    </style>
@@ -12,26 +22,6 @@
             <!-- BEGIN PAGE HEADER-->
                <div class="row-fluid">
                   <div class="span12">
-                     <!-- BEGIN STYLE CUSTOMIZER -->
-                     <div class="color-panel hidden-phone">
-                        <div class="color-mode-icons icon-color"></div>
-                        <div class="color-mode-icons icon-color-close"></div>
-                        <div class="color-mode">
-                           <p>THEME COLOR</p>
-                           <ul class="inline">
-                              <li class="color-black current color-default" data-style="default"></li>
-                              <li class="color-blue" data-style="blue"></li>
-                              <li class="color-brown" data-style="brown"></li>
-                              <li class="color-purple" data-style="purple"></li>
-                              <li class="color-white color-light" data-style="light"></li>
-                           </ul>
-                           <label class="hidden-phone">
-                           <input type="checkbox" class="header" checked value="" />
-                           <span class="color-mode-label">Fixed Header</span>
-                           </label>                   
-                        </div>
-                     </div>
-                     <!-- END BEGIN STYLE CUSTOMIZER -->    
                      <!-- BEGIN PAGE TITLE & BREADCRUMB-->        
                      <?php 
                         // $orderdate=$response[0]['departure_date']; 
@@ -88,12 +78,14 @@
                                     </div>
                                  @endif
                               @endif
-                              <table class="table table-striped table-hover table-bordered" id="sample_editable_1">
+                              <table class="table table-striped table-hover table-bordered" id="tblExport">
                                  <thead>
-                                       <th class="span2">အမည္</th>
-                                       <th class="span2">ဖုန္းနံပါတ္</th>
-                                       <th class="span2">လိပ္စာ</th>
-                                       <th class="span2">Owner</th>
+                                       <th>Group</th>
+                                       <th>အမည္</th>
+                                       <th>ဖုန္းနံပါတ္</th>
+                                       <th>လိပ္စာ</th>
+                                       <th>ေကာ္္မစ္ရွင္ ႏႈန္း</th>
+                                       <th>Owner</th>
                                        <th class="span1">ျပင္ရန္</th>
                                        <th class="span1">ဖ်က္ရန္</th>
                                  </thead>
@@ -104,22 +96,24 @@
                                     @endif
                                  
                                     @foreach($response as $key=>$rows)
-                                       <tr class="heading">
+                                       <!-- <tr class="heading">
                                           <td colspan="6">{{$key}}</td>
-                                       </tr>
+                                       </tr> -->
                                        @foreach($rows as $agent)
-                                                   <tr>
-                                                      <td>{{$agent['name']}}</td>
-                                                      <td>{{$agent['phone']}}</td>
-                                                      <td><div class="wordwrap">{{$agent['address']}}</div></td>
-                                                      <td>@if($agent['owner']==1) Owner @else - @endif</td>
-                                                      <td style="text-align:center;">
-                                                            <a href="/agent-update/{{ $agent['id'] }}"  class="btn green">ျပင္ရန္</a><br><br>
-                                                      </td>
-                                                      <td style="text-align:center;">
-                                                            <a href="deleteagent/{{ $agent['id'] }}"   class="btn green">ဖ်က္ရန္</a>
-                                                      </td>
-                                                   </tr>
+                                          <tr>
+                                             <td>{{$key}}</td>
+                                             <td>{{$agent['name']}}</td>
+                                             <td>{{$agent['phone']}}</td>
+                                             <td><div class="wordwrap">{{$agent['address']}}</div></td>
+                                             <td>{{$agent['commission']}} @if($agent['commission_id']==2) % @endif</td>
+                                             <td>@if($agent['owner']==1) Owner @else - @endif</td>
+                                             <td style="text-align:center;">
+                                                   <a href="/agent-update/{{ $agent['id'] }}"  class="btn green">ျပင္ရန္</a><br><br>
+                                             </td>
+                                             <td style="text-align:center;">
+                                                   <a href="deleteagent/{{ $agent['id'] }}"   class="btn green">ဖ်က္ရန္</a>
+                                             </td>
+                                          </tr>
                                        @endforeach
                                     @endforeach
                                     
@@ -130,14 +124,48 @@
                         <!-- END EXAMPLE TABLE PORTLET-->
                      </div>
                   </div>
-                  
                <!-- END PAGE -->
-               
             </div>
          </div>
          <!-- END PAGE CONTAINER-->    
       </div>
       <!-- END PAGE --> 
-   <script type="text/javascript" src="assets/data-tables/jquery.dataTables.js"></script>
-   
+   <script type="text/javascript" src="../../../../js/jquery.dataTables.v1.10.4.min.js"></script>
+   <script type="text/javascript">
+      $(document).ready(function() {
+          var table = $('#tblExport').DataTable({
+              "columnDefs": [
+                  { "visible": false, "targets": 0 }
+              ],
+              "order": [[ 0, 'asc' ]],
+              "displayLength": 25,
+              "pagingType": "full_numbers",
+              "drawCallback": function ( settings ) {
+                  var api = this.api();
+                  var rows = api.rows( {page:'current'} ).nodes();
+                  var last=null;
+       
+                  api.column(0, {page:'current'} ).data().each( function ( group, i ) {
+                      if ( last !== group ) {
+                          $(rows).eq( i ).before(
+                              '<tr class="group"><td colspan="7">'+group+'</td></tr>'
+                          );
+       
+                          last = group;
+                      }
+                  } );
+              }
+          } );
+          // Order by the grouping
+          $('#tblExport tbody').on( 'click', 'tr.group', function () {
+              var currentOrder = table.order()[0];
+              if ( currentOrder[0] === 0 && currentOrder[1] === 'asc' ) {
+                  table.order( [ 0, 'desc' ] ).draw();
+              }
+              else {
+                  table.order( [ 0, 'asc' ] ).draw();
+              }
+          } );
+      } );
+   </script>
 @stop

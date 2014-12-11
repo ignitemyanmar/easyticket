@@ -76,7 +76,7 @@
                                        <h3>Sync</h3>
                                     </div>
                                     <div class="modal-body">
-                                       <p>Please wait sync...</p>
+                                       <p>Please wait, we are transferring your data...</p>
                                        <div class="progress progress-striped progress-warning">
                                           <div style="width: 100%;" class="bar"></div>
                                        </div>
@@ -101,91 +101,97 @@
                                     <div class="controls">
                                        <span class="help-inline">Please click to Sync "Sync Bus Occourance" button.</span>
                                        <p>
-                                          <a class="btn blue big" id="sync_bus_from_server">Sync Bus Occourance <i class="m-icon-big-swapdown m-icon-white"></i></a>
+                                          <a href="#myModal1" role="button" data-toggle="modal" class="btn blue big" id="sync_bus_from_server">Sync Bus Occourance <i class="m-icon-big-swapdown m-icon-white"></i></a>
                                        </p>
                                     </div>
                                     <div class="controls">
                                        <span class="help-inline">Please click to Sync "Sync Trip" button.</span>
                                        <p>
-                                          <a class="btn blue big" id="sync_trip_from_server">Sync Trip <i class="m-icon-big-swapdown m-icon-white"></i></a>
+                                          <a href="#myModal1" role="button" data-toggle="modal" class="btn blue big" id="sync_trip_from_server">Sync Trip <i class="m-icon-big-swapdown m-icon-white"></i></a>
                                        </p>
                                     </div>
                                     <div class="controls">
                                        <span class="help-inline">Please click to Sync "Sync Seating Plan" button.</span>
                                        <p>
-                                          <a class="btn blue big" id="sync_seatingplan_from_server">Sync Seating Plan<i class="m-icon-big-swapdown m-icon-white"></i></a>
+                                          <a href="#myModal1" role="button" data-toggle="modal" class="btn blue big" id="sync_seatingplan_from_server">Sync Seating Plan<i class="m-icon-big-swapdown m-icon-white"></i></a>
                                        </p>
                                     </div>
                                     <div class="controls">
                                        <span class="help-inline">Please click to Sync "Sync Agent" button.</span>
                                        <p>
-                                          <a class="btn blue big" id="sync_agent_from_server">Sync Agent<i class="m-icon-big-swapdown m-icon-white"></i></a>
+                                          <a href="#myModal1" role="button" data-toggle="modal" class="btn blue big" id="sync_agent_from_server">Sync Agent<i class="m-icon-big-swapdown m-icon-white"></i></a>
                                        </p>
                                     </div>
                                     <div class="controls">
                                        <span class="help-inline">Please click to Sync "Sync City" button.</span>
                                        <p>
-                                          <a class="btn blue big" id="sync_city_from_server">Sync City<i class="m-icon-big-swapdown m-icon-white"></i></a>
+                                          <a href="#myModal1" role="button" data-toggle="modal" class="btn blue big" id="sync_city_from_server">Sync City<i class="m-icon-big-swapdown m-icon-white"></i></a>
                                        </p>
                                     </div>
                                     <div class="controls">
                                        <span class="help-inline">Please click to Sync "Sync Extra Destination" button.</span>
                                        <p>
-                                          <a class="btn blue big" id="sync_extradestination_from_server">Sync Extra Destination<i class="m-icon-big-swapdown m-icon-white"></i></a>
+                                          <a href="#myModal1" role="button" data-toggle="modal" class="btn blue big" id="sync_extradestination_from_server">Sync Extra Destination<i class="m-icon-big-swapdown m-icon-white"></i></a>
                                        </p>
                                     </div>
                                     <div class="controls">
                                        <span class="help-inline">Please click to Sync "Sync Bus Classes" button.</span>
                                        <p>
-                                          <a class="btn blue big" id="sync_classes_from_server">Sync Bus Classes <i class="m-icon-big-swapdown m-icon-white"></i></a>
+                                          <a href="#myModal1" role="button" data-toggle="modal" class="btn blue big" id="sync_classes_from_server">Sync Bus Classes <i class="m-icon-big-swapdown m-icon-white"></i></a>
                                        </p>
                                     </div>
                                     <div class="controls">
                                        <span class="help-inline">Please click to Sync "Sync Agent Commission" button.</span>
                                        <p>
-                                          <a class="btn blue big" id="sync_agentcommission_from_server">Sync Agent Commission <i class="m-icon-big-swapdown m-icon-white"></i></a>
+                                          <a href="#myModal1" role="button" data-toggle="modal" class="btn blue big" id="sync_agentcommission_from_server">Sync Agent Commission <i class="m-icon-big-swapdown m-icon-white"></i></a>
                                        </p>
                                     </div>
                                     <div class="controls">
                                        <span class="help-inline">Please click to Sync "Sync Close Seat Info" button.</span>
                                        <p>
-                                          <a class="btn blue big" id="sync_closeseatinfo_from_server">Sync Close Seat Info <i class="m-icon-big-swapdown m-icon-white"></i></a>
+                                          <a href="#myModal1" role="button" data-toggle="modal" class="btn blue big" id="sync_closeseatinfo_from_server">Sync Close Seat Info <i class="m-icon-big-swapdown m-icon-white"></i></a>
                                        </p>
                                     </div>
                                     <div class="controls">
                                        <span class="help-inline">Please click to Sync "Sync Commission Type" button.</span>
                                        <p>
-                                          <a class="btn blue big" id="sync_commissiontype_from_server">Sync Commission Type <i class="m-icon-big-swapdown m-icon-white"></i></a>
+                                          <a href="#myModal1" role="button" data-toggle="modal" class="btn blue big" id="sync_commissiontype_from_server">Sync Commission Type <i class="m-icon-big-swapdown m-icon-white"></i></a>
                                        </p>
                                     </div>
                                     <div class="controls">
                                        <span class="help-inline">Please click to Sync "Sync Operator Group" button.</span>
                                        <p>
-                                          <a class="btn blue big" id="sync_operatorgroup_from_server">Sync Operator Group <i class="m-icon-big-swapdown m-icon-white"></i></a>
+                                          <a href="#myModal1" role="button" data-toggle="modal" class="btn blue big" id="sync_operatorgroup_from_server">Sync Operator Group <i class="m-icon-big-swapdown m-icon-white"></i></a>
                                        </p>
                                     </div>
                                     <div class="controls">
                                        <span class="help-inline">Please click to Sync "Sync Operator Group User" button.</span>
                                        <p>
-                                          <a class="btn blue big" id="sync_operatorgroupuser_from_server">Sync Operator Group User <i class="m-icon-big-swapdown m-icon-white"></i></a>
+                                          <a href="#myModal1" role="button" data-toggle="modal" class="btn blue big" id="sync_operatorgroupuser_from_server">Sync Operator Group User <i class="m-icon-big-swapdown m-icon-white"></i></a>
                                        </p>
                                     </div>
                                     <div class="controls">
                                        <span class="help-inline">Please click to Sync "Sync User" button.</span>
                                        <p>
-                                          <a class="btn blue big" id="sync_user_from_server">Sync User <i class="m-icon-big-swapdown m-icon-white"></i></a>
+                                          <a href="#myModal1" role="button" data-toggle="modal" class="btn blue big" id="sync_user_from_server">Sync User <i class="m-icon-big-swapdown m-icon-white"></i></a>
                                        </p>
                                     </div>
                                     <div class="controls">
                                        <span class="help-inline">Please click to Sync "Sync Operator" button.</span>
                                        <p>
-                                          <a class="btn blue big" id="sync_operator_from_server">Sync Operator <i class="m-icon-big-swapdown m-icon-white"></i></a>
+                                          <a href="#myModal1" role="button" data-toggle="modal" class="btn blue big" id="sync_operator_from_server">Sync Operator <i class="m-icon-big-swapdown m-icon-white"></i></a>
                                        </p>
                                     </div>
                                     <div class="controls">
                                        <span class="help-inline">Please click to Sync "Sync Seat Info" button.</span>
                                        <p>
-                                          <a class="btn blue big" id="sync_seatinfo_from_server">Sync Seat Info <i class="m-icon-big-swapdown m-icon-white"></i></a>
+                                          <a href="#myModal1" role="button" data-toggle="modal" class="btn blue big" id="sync_seatinfo_from_server">Sync Seat Info <i class="m-icon-big-swapdown m-icon-white"></i></a>
+                                       </p>
+                                    </div>
+                                    <div class="controls">
+                                       <span class="help-inline">Please click to Sync "Sync Sale Order" button.</span>
+                                       <p>
+                                          <a href="#myModal1" role="button" data-toggle="modal" class="btn blue big" id="sync_saleorder_from_server">Sync Sale Order <i class="m-icon-big-swapdown m-icon-white"></i></a>
                                        </p>
                                     </div>
                                  </div>
@@ -219,7 +225,6 @@
       })
       .done(function( response ) {
          $('.progress-striped').removeClass('active');
-         alert(JSON.stringify(response));
          if(response.status_code === 1){
             alert( "Data Saved: " + response.message );
             $('.alert').show();
@@ -227,12 +232,16 @@
             $('.alert').append(response.message);
             $('#myModal1').modal('hide');
          }
-         else{
+         else if(response.status_code === 0){
             alert( "Error: " + response.message);
             $('.alert').show();
             $('.alert').addClass('alert-error');
             $('.alert').append(response.message);
             $('#myModal1').modal('hide');
+         }else{
+            alert(JSON.stringify(response));
+            $('#myModal1').modal('hide');
+            
          }
          
       });
@@ -247,7 +256,6 @@
       })
       .done(function( response ) {
          $('.progress-striped').removeClass('active');
-         alert(JSON.stringify(response));
          if(response.status_code === 1){
             alert( "Data Saved: " + response.message );
             $('.alert').show();
@@ -255,12 +263,16 @@
             $('.alert').append(response.message);
             $('#myModal1').modal('hide');
          }
-         else{
+         else if(response.status_code === 0){
             alert( "Error: " + response.message);
             $('.alert').show();
             $('.alert').addClass('alert-error');
             $('.alert').append(response.message);
             $('#myModal1').modal('hide');
+         }else{
+            alert(JSON.stringify(response));
+            $('#myModal1').modal('hide');
+
          }
          
       });
@@ -278,18 +290,25 @@
       })
       .done(function( response ) {
          $('.progress-striped').removeClass('active');
-         alert(JSON.stringify(response));
+         //alert(JSON.stringify(response));
          if(response.status_code === 1){
             alert( "Data Saved: " + response.message );
             $('.alert').show();
             $('.alert').addClass('alert-success');
             $('.alert').append(response.message);
+            $('#myModal1').modal('hide');
          }
-         else{
+         else if(response.status_code === 0){
             alert( "Error: " + response.message);
             $('.alert').show();
             $('.alert').addClass('alert-error');
             $('.alert').append(response.message);
+            $('#myModal1').modal('hide');
+
+         }else{
+            alert(JSON.stringify(response));
+            $('#myModal1').modal('hide');
+
          }
          
       });
@@ -304,18 +323,26 @@
       })
       .done(function( response ) {
          $('.progress-striped').removeClass('active');
-         alert(JSON.stringify(response));
+         //alert(JSON.stringify(response));
          if(response.status_code === 1){
             alert( "Data Saved: " + response.message );
             $('.alert').show();
             $('.alert').addClass('alert-success');
             $('.alert').append(response.message);
+            $('#myModal1').modal('hide');
+
          }
-         else{
+         else if(response.status_code === 0){
             alert( "Error: " + response.message);
             $('.alert').show();
             $('.alert').addClass('alert-error');
             $('.alert').append(response.message);
+            $('#myModal1').modal('hide');
+
+         }else{
+            alert(JSON.stringify(response));
+            $('#myModal1').modal('hide');
+
          }
          
       });
@@ -330,18 +357,25 @@
       })
       .done(function( response ) {
          $('.progress-striped').removeClass('active');
-         alert(JSON.stringify(response));
+         //alert(JSON.stringify(response));
          if(response.status_code === 1){
             alert( "Data Saved: " + response.message );
             $('.alert').show();
             $('.alert').addClass('alert-success');
             $('.alert').append(response.message);
+            $('#myModal1').modal('hide');
+
          }
-         else{
+         else if(response.status_code === 0){
             alert( "Error: " + response.message);
             $('.alert').show();
             $('.alert').addClass('alert-error');
             $('.alert').append(response.message);
+            $('#myModal1').modal('hide');
+
+         }else{
+            alert(JSON.stringify(response));
+            $('#myModal1').modal('hide');
          }
          
       });
@@ -356,18 +390,26 @@
       })
       .done(function( response ) {
          $('.progress-striped').removeClass('active');
-         alert(JSON.stringify(response));
+         //alert(JSON.stringify(response));
          if(response.status_code === 1){
             alert( "Data Saved: " + response.message );
             $('.alert').show();
             $('.alert').addClass('alert-success');
             $('.alert').append(response.message);
+            $('#myModal1').modal('hide');
+
          }
-         else{
+         else if(response.status_code === 0){
             alert( "Error: " + response.message);
             $('.alert').show();
             $('.alert').addClass('alert-error');
             $('.alert').append(response.message);
+            $('#myModal1').modal('hide');
+
+         }else{
+            alert(JSON.stringify(response));
+            $('#myModal1').modal('hide');
+
          }
          
       });
@@ -382,18 +424,26 @@
       })
       .done(function( response ) {
          $('.progress-striped').removeClass('active');
-         alert(JSON.stringify(response));
+         //alert(JSON.stringify(response));
          if(response.status_code === 1){
             alert( "Data Saved: " + response.message );
             $('.alert').show();
             $('.alert').addClass('alert-success');
             $('.alert').append(response.message);
+            $('#myModal1').modal('hide');
+
          }
-         else{
+         else if(response.status_code === 0){
             alert( "Error: " + response.message);
             $('.alert').show();
             $('.alert').addClass('alert-error');
             $('.alert').append(response.message);
+            $('#myModal1').modal('hide');
+
+         }else{
+            alert(JSON.stringify(response));
+            $('#myModal1').modal('hide');
+
          }
          
       });
@@ -408,18 +458,26 @@
       })
       .done(function( response ) {
          $('.progress-striped').removeClass('active');
-         alert(JSON.stringify(response));
+         //alert(JSON.stringify(response));
          if(response.status_code === 1){
             alert( "Data Saved: " + response.message );
             $('.alert').show();
             $('.alert').addClass('alert-success');
             $('.alert').append(response.message);
+            $('#myModal1').modal('hide');
+
          }
-         else{
+         else if(response.status_code === 0){
             alert( "Error: " + response.message);
             $('.alert').show();
             $('.alert').addClass('alert-error');
             $('.alert').append(response.message);
+            $('#myModal1').modal('hide');
+
+         }else{
+            alert(JSON.stringify(response));
+            $('#myModal1').modal('hide');
+
          }
          
       });
@@ -435,18 +493,26 @@
       })
       .done(function( response ) {
          $('.progress-striped').removeClass('active');
-         alert(JSON.stringify(response));
+         //alert(JSON.stringify(response));
          if(response.status_code === 1){
             alert( "Data Saved: " + response.message );
             $('.alert').show();
             $('.alert').addClass('alert-success');
             $('.alert').append(response.message);
+            $('#myModal1').modal('hide');
+
          }
-         else{
+         else if(response.status_code === 0){
             alert( "Error: " + response.message);
             $('.alert').show();
             $('.alert').addClass('alert-error');
             $('.alert').append(response.message);
+            $('#myModal1').modal('hide');
+
+         }else{
+            alert(JSON.stringify(response));
+            $('#myModal1').modal('hide');
+
          }
          
       });
@@ -462,18 +528,26 @@
       })
       .done(function( response ) {
          $('.progress-striped').removeClass('active');
-         alert(JSON.stringify(response));
+         //alert(JSON.stringify(response));
          if(response.status_code === 1){
             alert( "Data Saved: " + response.message );
             $('.alert').show();
             $('.alert').addClass('alert-success');
             $('.alert').append(response.message);
+            $('#myModal1').modal('hide');
+
          }
-         else{
+         else if(response.status_code === 0){
             alert( "Error: " + response.message);
             $('.alert').show();
             $('.alert').addClass('alert-error');
             $('.alert').append(response.message);
+            $('#myModal1').modal('hide');
+
+         }else{
+            alert(JSON.stringify(response));
+            $('#myModal1').modal('hide');
+
          }
          
       });
@@ -489,18 +563,26 @@
       })
       .done(function( response ) {
          $('.progress-striped').removeClass('active');
-         alert(JSON.stringify(response));
+         //alert(JSON.stringify(response));
          if(response.status_code === 1){
             alert( "Data Saved: " + response.message );
             $('.alert').show();
             $('.alert').addClass('alert-success');
             $('.alert').append(response.message);
+            $('#myModal1').modal('hide');
+
          }
-         else{
+         else if(response.status_code === 0){
             alert( "Error: " + response.message);
             $('.alert').show();
             $('.alert').addClass('alert-error');
             $('.alert').append(response.message);
+            $('#myModal1').modal('hide');
+
+         }else{
+            alert(JSON.stringify(response));
+            $('#myModal1').modal('hide');
+
          }
          
       });
@@ -516,18 +598,26 @@
       })
       .done(function( response ) {
          $('.progress-striped').removeClass('active');
-         alert(JSON.stringify(response));
+         //alert(JSON.stringify(response));
          if(response.status_code === 1){
             alert( "Data Saved: " + response.message );
             $('.alert').show();
             $('.alert').addClass('alert-success');
             $('.alert').append(response.message);
+            $('#myModal1').modal('hide');
+
          }
-         else{
+         else if(response.status_code === 0){
             alert( "Error: " + response.message);
             $('.alert').show();
             $('.alert').addClass('alert-error');
             $('.alert').append(response.message);
+            $('#myModal1').modal('hide');
+
+         }else{
+            alert(JSON.stringify(response));
+            $('#myModal1').modal('hide');
+
          }
          
       });
@@ -543,18 +633,26 @@
       })
       .done(function( response ) {
          $('.progress-striped').removeClass('active');
-         alert(JSON.stringify(response));
+         //alert(JSON.stringify(response));
          if(response.status_code === 1){
             alert( "Data Saved: " + response.message );
             $('.alert').show();
             $('.alert').addClass('alert-success');
             $('.alert').append(response.message);
+            $('#myModal1').modal('hide');
+
          }
-         else{
+         else if(response.status_code === 0){
             alert( "Error: " + response.message);
             $('.alert').show();
             $('.alert').addClass('alert-error');
             $('.alert').append(response.message);
+            $('#myModal1').modal('hide');
+
+         }else{
+            alert(JSON.stringify(response));
+            $('#myModal1').modal('hide');
+
          }
          
       });
@@ -570,18 +668,26 @@
       })
       .done(function( response ) {
          $('.progress-striped').removeClass('active');
-         alert(JSON.stringify(response));
+         //alert(JSON.stringify(response));
          if(response.status_code === 1){
             alert( "Data Saved: " + response.message );
             $('.alert').show();
             $('.alert').addClass('alert-success');
             $('.alert').append(response.message);
+            $('#myModal1').modal('hide');
+
          }
-         else{
+         else if(response.status_code === 0){
             alert( "Error: " + response.message);
             $('.alert').show();
             $('.alert').addClass('alert-error');
             $('.alert').append(response.message);
+            $('#myModal1').modal('hide');
+
+         }else{
+            alert(JSON.stringify(response));
+            $('#myModal1').modal('hide');
+
          }
          
       });
@@ -597,18 +703,26 @@
       })
       .done(function( response ) {
          $('.progress-striped').removeClass('active');
-         alert(JSON.stringify(response));
+         //alert(JSON.stringify(response));
          if(response.status_code === 1){
             alert( "Data Saved: " + response.message );
             $('.alert').show();
             $('.alert').addClass('alert-success');
             $('.alert').append(response.message);
+            $('#myModal1').modal('hide');
+
          }
-         else{
+         else if(response.status_code === 0){
             alert( "Error: " + response.message);
             $('.alert').show();
             $('.alert').addClass('alert-error');
             $('.alert').append(response.message);
+            $('#myModal1').modal('hide');
+
+         }else{
+            alert(JSON.stringify(response));
+            $('#myModal1').modal('hide');
+
          }
          
       });
@@ -623,18 +737,25 @@
       })
       .done(function( response ) {
          $('.progress-striped').removeClass('active');
-         alert(JSON.stringify(response));
+         //alert(JSON.stringify(response));
          if(response.status_code === 1){
             alert( "Data Saved: " + response.message );
             $('.alert').show();
             $('.alert').addClass('alert-success');
             $('.alert').append(response.message);
-         }
-         else{
+            $('#myModal1').modal('hide');
+
+         }else if(response.status_code === 0){
             alert( "Error: " + response.message);
             $('.alert').show();
             $('.alert').addClass('alert-error');
             $('.alert').append(response.message);
+            $('#myModal1').modal('hide');
+
+         }else{
+            alert(JSON.stringify(response));
+            $('#myModal1').modal('hide');
+
          }
          
       });
@@ -649,18 +770,60 @@
       })
       .done(function( response ) {
          $('.progress-striped').removeClass('active');
-         alert(JSON.stringify(response));
+         //alert(JSON.stringify(response));
          if(response.status_code === 1){
             alert( "Data Saved: " + response.message );
             $('.alert').show();
             $('.alert').addClass('alert-success');
             $('.alert').append(response.message);
+            $('#myModal1').modal('hide');
+
          }
-         else{
+         else if(response.status_code === 0){
             alert( "Error: " + response.message);
             $('.alert').show();
             $('.alert').addClass('alert-error');
             $('.alert').append(response.message);
+            $('#myModal1').modal('hide');
+
+         }else{
+            alert(JSON.stringify(response));
+            $('#myModal1').modal('hide');
+
+         }
+         
+      });
+      
+   });
+   $('#sync_saleorder_from_server').click(function(){
+      $('.progress-striped').addClass('active');
+      $.ajax({
+        type: "GET",
+        url: "/downloadsaleorderjson",
+        data: null
+      })
+      .done(function( response ) {
+         $('.progress-striped').removeClass('active');
+         //alert(JSON.stringify(response));
+         if(response.status_code === 1){
+            alert( "Data Saved: " + response.message );
+            $('.alert').show();
+            $('.alert').addClass('alert-success');
+            $('.alert').append(response.message);
+            $('#myModal1').modal('hide');
+
+         }
+         else if(response.status_code === 0){
+            alert( "Error: " + response.message);
+            $('.alert').show();
+            $('.alert').addClass('alert-error');
+            $('.alert').append(response.message);
+            $('#myModal1').modal('hide');
+
+         }else{
+            alert(JSON.stringify(response));
+            $('#myModal1').modal('hide');
+
          }
          
       });

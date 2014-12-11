@@ -121,7 +121,9 @@
                                              <select name="trip_id" class="m-wrap span12 chosen">
                                                 <?php if($trips): ?>
                                                    <?php foreach($trips as $row): ?>
-                                                      <option value="<?php echo $row->id; ?>"><?php echo $row->from_city->name.'-'.$row->to_city->name; ?> (<?php echo $row->busclass->name .'==>'.$row->time; ?>)</option>
+                                                      <?php if($row->from_city && $row->to_city && $row->busclass): ?>
+                                                         <option value="<?php echo $row->id; ?>"><?php echo $row->from_city->name.'-'.$row->to_city->name; ?> (<?php echo $row->busclass->name .'==>'.$row->time; ?>)</option>
+                                                      <?php endif; ?>
                                                    <?php endforeach; ?>
                                                 <?php endif; ?>
                                              </select>

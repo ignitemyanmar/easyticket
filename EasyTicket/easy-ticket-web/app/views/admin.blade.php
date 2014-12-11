@@ -258,18 +258,7 @@
                         <li ><a href="/operatorlist">ကားဂိတ်များ</a></li>
                     </ul>
                 </li> -->
-                <li @if($currentroute=='age') class="has-sub " @else class="has-sub" @endif>
-                    <a href="javascript:;">
-                    <i class="icon-user"></i> 
-                    <span class="title">Agent Group</span>
-                    <span class="arrow "></span>
-                    </a>
-                    <ul class="sub">
-                        <li ><a href="/agentgroup/create">Agent Group Create</a></li>
-                        <li ><a href="/agentgrouplist">Agent Group List</a></li>
-                    </ul>
-                </li>
-                
+                               
                 
                 <li @if($currentroute=='age') class="has-sub " @else class="has-sub" @endif>
                     <a href="javascript:;">
@@ -278,6 +267,8 @@
                     <span class="arrow "></span>
                     </a>
                     <ul class="sub">
+                        <li ><a href="/agentgroup/create">Agent Group Create</a></li>
+                        <li ><a href="/agentgrouplist">Agent Group List</a></li>
                         <li ><a href="/agents/create">အေရာင်းကုိယ်စားလှယ် အသစ်ထည့်သွင်းြခင်း</a></li>
                         <li ><a href="/agentlist">အေရာင်းကုိယ်စားလှယ်များ</a></li>
                     </ul>
@@ -350,7 +341,12 @@
                         <li ><a href="/seatplanlist">ခုံနံပါတ်များ</a></li>
                     </ul>
                 </li> 
-
+                <li @if($currentroute=='cli') class="" @endif>
+                    <a href="/client/sync">
+                    <i class="icon-th-list"></i> 
+                    <span class="title">Sync</span>
+                    </a>
+                </li>
                 
                  
                 <!-- <li @if($currentroute=='sea') class=""@endif>

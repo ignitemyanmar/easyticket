@@ -13,17 +13,46 @@ class SyncDatabaseController extends BaseController
 	}
 
 	/**
-	* Upload from Clent.
+	* Upload Sale Order from Clent.
 	*/
  	public function pushJsonToServer(){
-		$fileName = 'today-sale-order.json';
+		$fileName = 'client-'.$this->operatorgroup_id.'-today-sale-order.json';
 		$fromFile = $this->getFile($fileName);
 		$toFile	  = $this->remote_file_dir.$fileName;
 		if($this->exportSaleOrderJson($fileName)){
 			if($this->upload($fromFile, $toFile)){
-				$curl = curl_init( "http://easyticket.com.mm/writetodatabase" );
+				$curl = curl_init( $this->domain."/writetodatabase/".$fileName );
 				curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 				$response = curl_exec( $curl );
+				if($response){
+					$this->pushPaymentJsonToServer();
+					return Response::json(json_decode($response));
+				}else{
+					$response['status_code']  = 0; // 0 is error.
+					$response['message'] = "Can't import data!.";
+					return Response::json($response);
+				}
+			}
+		}else{
+			$response['status_code']  = 0; // 0 is error.
+			$response['message'] = "Can't export data!.";
+			return Response::json($response);
+		}
+		
+	}
+	/**
+	* Upload Sale Order from Clent.
+	*/
+ 	public function pushPaymentJsonToServer(){
+		$fileName = 'client-'.$this->operatorgroup_id.'-today-payment.json';
+		$fromFile = $this->getFile($fileName);
+		$toFile	  = $this->remote_file_dir.$fileName;
+		if($this->exportPaymentJson($fileName)){
+			if($this->upload($fromFile, $toFile)){
+				$curl = curl_init( $this->domain."/writepaymentjson/".$fileName );
+				curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
+				$response = curl_exec( $curl );
+				dd($response);
 				if($response){
 					return Response::json(json_decode($response));
 				}else{
@@ -41,13 +70,22 @@ class SyncDatabaseController extends BaseController
 	}
 	/**
 	 * To Import Data
-	 * @/writetodatabase
+	 * @/writetodatabase/{fname}
 	 */
-	public function writeJsonToDatabase(){
-		$fileName = 'today-sale-order.json';
+	public function writeJsonToDatabase($fileName){
 		$importSaleOrder = $this->importSaleOrderJson($fileName);
 		return $importSaleOrder;
 	}
+
+	/**
+	 * To Import Data
+	 * @/writepaymentjson/{fname}
+	 */
+	public function writePaymentJsonToDatabase($fileName){
+		$importPayment = $this->importPaymentJson($fileName);
+		return $importPayment;
+	}
+	
 
 	/**
 	 * To Sync All from Server
@@ -70,6 +108,7 @@ class SyncDatabaseController extends BaseController
 		$this->downloadAgentJsonfromServer();
 		$this->downloadAgentCommissionJsonfromServer();
 		$this->downloadCommissionTypeJsonfromServer();
+		$this->downloadSaleOrderJsonfromServer();
 
 		$response['status_code']  = 1;
 		$response['message'] = "Successfully snyc!.";
@@ -81,26 +120,27 @@ class SyncDatabaseController extends BaseController
 	 * To Sync Bus from Server
 	 */
 	public function downloadBusJsonfromServer(){
-		$fileName = 'bus-occurance.json';
+		$fileName = 'client-'.$this->operatorgroup_id.'-bus-occurance.json';
 		$toFile = $this->getFile($fileName);
 		$fromFile = $this->remote_file_dir.$fileName;
 
 		$curl = curl_init( $this->domain."/exportbusjson/".$this->operator_id."/".$fileName );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
-
-		if($response){
+		if($response == "true"){
 			if($this->download($fromFile, $toFile)){
 				$importData = $this->importBusOccurance($fileName);
 				if($importData){
 					return Response::json($importData);
 				}
 			}else{
+				$response = array();
 				$response['status_code']  = 0; // 0 is error.
 				$response['message'] = "Can't download from server!.";
 				return Response::json($response);
 			}
 		}else{
+			$response = array();
 			$response['status_code']  = 0; // 0 is error.
 			$response['message'] = "Can't export data from server!.";
 			return Response::json($response);
@@ -110,7 +150,7 @@ class SyncDatabaseController extends BaseController
 	 * To Sync Trip from Server
 	 */
 	public function downloadTripJsonfromServer(){
-		$fileName = 'trip.json';
+		$fileName = 'client-'.$this->operatorgroup_id.'-trip.json';
 		$toFile = $this->getFile($fileName);
 		$fromFile = $this->remote_file_dir.$fileName;
 		
@@ -118,18 +158,20 @@ class SyncDatabaseController extends BaseController
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		
-		if($response){
+		if($response == "true"){
 			if($this->download($fromFile, $toFile)){
 				$importData = $this->importTrip($fileName);
 				if($importData){
 					return Response::json($importData);
 				}
 			}else{
+				$response = array();
 				$response['status_code']  = 0; // 0 is error.
 				$response['message'] = "Can't download from server!.";
 				return Response::json($response);
 			}
 		}else{
+			$response = array();
 			$response['status_code']  = 0; // 0 is error.
 			$response['message'] = "Can't export data from server!.";
 			return Response::json($response);
@@ -139,7 +181,7 @@ class SyncDatabaseController extends BaseController
 	 * To Sync Seating Plan from Server
 	 */
 	public function downloadSeatingPlanJsonfromServer(){
-		$fileName = 'seating-plan.json';
+		$fileName = 'client-'.$this->operatorgroup_id.'-seating-plan.json';
 		$toFile = $this->getFile($fileName);
 		$fromFile = $this->remote_file_dir.$fileName;
 
@@ -147,18 +189,20 @@ class SyncDatabaseController extends BaseController
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 
-		if($response){
+		if($response == "true"){
 			if($this->download($fromFile, $toFile)){
 				$importData = $this->importSeatingPlan($fileName);
 				if($importData){
 					return Response::json($importData);
 				}
 			}else{
+				$response = array();
 				$response['status_code']  = 0; // 0 is error.
 				$response['message'] = "Can't download from server!.";
 				return Response::json($response);
 			}
 		}else{
+			$response = array();
 			$response['status_code']  = 0; // 0 is error.
 			$response['message'] = "Can't export data from server!.";
 			return Response::json($response);
@@ -168,25 +212,27 @@ class SyncDatabaseController extends BaseController
 	 * To Sync Agent from Server
 	 */
 	public function downloadAgentJsonfromServer(){
-		$fileName = 'agent.json';
+		$fileName = 'client-'.$this->operatorgroup_id.'-agent.json';
 		$toFile = $this->getFile($fileName);
 		$fromFile = $this->remote_file_dir.$fileName;
 
 		$curl = curl_init( $this->domain."/exportagentjson/".$this->operator_id."/".$fileName );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
-		if($response){
+		if($response == "true"){
 			if($this->download($fromFile, $toFile)){
 				$importData = $this->importAgent($fileName);
 				if($importData){
 					return Response::json($importData);
 				}
 			}else{
+				$response = array();
 				$response['status_code']  = 0; // 0 is error.
 				$response['message'] = "Can't download from server!.";
 				return Response::json($response);
 			}
 		}else{
+			$response = array();
 			$response['status_code']  = 0; // 0 is error.
 			$response['message'] = "Can't export data from server!.";
 			return Response::json($response);
@@ -196,25 +242,27 @@ class SyncDatabaseController extends BaseController
 	 * To Sync City from Server
 	 */
 	public function downloadCityJsonfromServer(){
-		$fileName = 'city.json';
+		$fileName = 'client-'.$this->operatorgroup_id.'-city.json';
 		$toFile = $this->getFile($fileName);
 		$fromFile = $this->remote_file_dir.$fileName;
 
 		$curl = curl_init( $this->domain."/exportcityjson/".$this->operator_id."/".$fileName );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
-		if($response){
+		if($response == "true"){
 			if($this->download($fromFile, $toFile)){
 				$importData = $this->importCity($fileName);
 				if($importData){
 					return Response::json($importData);
 				}
 			}else{
+				$response = array();
 				$response['status_code']  = 0; // 0 is error.
 				$response['message'] = "Can't download from server!.";
 				return Response::json($response);
 			}
 		}else{
+			$response = array();
 			$response['status_code']  = 0; // 0 is error.
 			$response['message'] = "Can't export data from server!.";
 			return Response::json($response);
@@ -224,25 +272,27 @@ class SyncDatabaseController extends BaseController
 	 * To Sync Extra Destination from Server
 	 */
 	public function downloadExtraDestinationJsonfromServer(){
-		$fileName = 'extradestination.json';
+		$fileName = 'client-'.$this->operatorgroup_id.'-extradestination.json';
 		$toFile = $this->getFile($fileName);
 		$fromFile = $this->remote_file_dir.$fileName;
 
 		$curl = curl_init( $this->domain."/exportextradestinationjson/".$this->operator_id."/".$fileName );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
-		if($response){
+		if($response == "true"){
 			if($this->download($fromFile, $toFile)){
 				$importData = $this->importExtraDestination($fileName);
 				if($importData){
 					return Response::json($importData);
 				}
 			}else{
+				$response = array();
 				$response['status_code']  = 0; // 0 is error.
 				$response['message'] = "Can't download from server!.";
 				return Response::json($response);
 			}
 		}else{
+			$response = array();
 			$response['status_code']  = 0; // 0 is error.
 			$response['message'] = "Can't export data from server!.";
 			return Response::json($response);
@@ -252,25 +302,27 @@ class SyncDatabaseController extends BaseController
 	 * To Sync Classes from Server
 	 */
 	public function downloadClassesJsonfromServer(){
-		$fileName = 'bus-classes.json';
+		$fileName = 'client-'.$this->operatorgroup_id.'-bus-classes.json';
 		$toFile = $this->getFile($fileName);
 		$fromFile = $this->remote_file_dir.$fileName;
 
 		$curl = curl_init( $this->domain."/exportclassesjson/".$this->operator_id."/".$fileName );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
-		if($response){
+		if($response == "true"){
 			if($this->download($fromFile, $toFile)){
 				$importData = $this->importClasses($fileName);
 				if($importData){
 					return Response::json($importData);
 				}
 			}else{
+				$response = array();
 				$response['status_code']  = 0; // 0 is error.
 				$response['message'] = "Can't download from server!.";
 				return Response::json($response);
 			}
 		}else{
+			$response = array();
 			$response['status_code']  = 0; // 0 is error.
 			$response['message'] = "Can't export data from server!.";
 			return Response::json($response);
@@ -280,25 +332,27 @@ class SyncDatabaseController extends BaseController
 	 * To Sync AgentCommission from Server
 	 */
 	public function downloadAgentCommissionJsonfromServer(){
-		$fileName = 'agentcommission.json';
+		$fileName = 'client-'.$this->operatorgroup_id.'-agentcommission.json';
 		$toFile = $this->getFile($fileName);
 		$fromFile = $this->remote_file_dir.$fileName;
 
 		$curl = curl_init( $this->domain."/exportagentcommissionjson/".$this->operator_id."/".$fileName );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
-		if($response){
+		if($response == "true"){
 			if($this->download($fromFile, $toFile)){
 				$importData = $this->importAgentCommission($fileName);
 				if($importData){
 					return Response::json($importData);
 				}
 			}else{
+				$response = array();
 				$response['status_code']  = 0; // 0 is error.
 				$response['message'] = "Can't download from server!.";
 				return Response::json($response);
 			}
 		}else{
+			$response = array();
 			$response['status_code']  = 0; // 0 is error.
 			$response['message'] = "Can't export data from server!.";
 			return Response::json($response);
@@ -308,25 +362,27 @@ class SyncDatabaseController extends BaseController
 	 * To Sync CloseSeatInfo from Server
 	 */
 	public function downloadCloseSeatInfoJsonfromServer(){
-		$fileName = 'closeseatinfo.json';
+		$fileName = 'client-'.$this->operatorgroup_id.'-closeseatinfo.json';
 		$toFile = $this->getFile($fileName);
 		$fromFile = $this->remote_file_dir.$fileName;
 
 		$curl = curl_init( $this->domain."/exportcloseseatinfojson/".$this->operator_id."/".$fileName );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
-		if($response){
+		if($response == "true"){
 			if($this->download($fromFile, $toFile)){
 				$importData = $this->importCloseSeatInfo($fileName);
 				if($importData){
 					return Response::json($importData);
 				}
 			}else{
+				$response = array();
 				$response['status_code']  = 0; // 0 is error.
 				$response['message'] = "Can't download from server!.";
 				return Response::json($response);
 			}
 		}else{
+			$response = array();
 			$response['status_code']  = 0; // 0 is error.
 			$response['message'] = "Can't export data from server!.";
 			return Response::json($response);
@@ -336,25 +392,27 @@ class SyncDatabaseController extends BaseController
 	 * To Sync CommissionType from Server
 	 */
 	public function downloadCommissionTypeJsonfromServer(){
-		$fileName = 'commissiontype.json';
+		$fileName = 'client-'.$this->operatorgroup_id.'-commissiontype.json';
 		$toFile = $this->getFile($fileName);
 		$fromFile = $this->remote_file_dir.$fileName;
 
 		$curl = curl_init( $this->domain."/exportcommissiontypejson/".$this->operator_id."/".$fileName );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
-		if($response){
+		if($response == "true"){
 			if($this->download($fromFile, $toFile)){
 				$importData = $this->importCommissionType($fileName);
 				if($importData){
 					return Response::json($importData);
 				}
 			}else{
+				$response = array();
 				$response['status_code']  = 0; // 0 is error.
 				$response['message'] = "Can't download from server!.";
 				return Response::json($response);
 			}
 		}else{
+			$response = array();
 			$response['status_code']  = 0; // 0 is error.
 			$response['message'] = "Can't export data from server!.";
 			return Response::json($response);
@@ -364,25 +422,27 @@ class SyncDatabaseController extends BaseController
 	 * To Sync OperatorGroup from Server
 	 */
 	public function downloadOperatorGroupJsonfromServer(){
-		$fileName = 'operatorgroup.json';
+		$fileName = 'client-'.$this->operatorgroup_id.'-operatorgroup.json';
 		$toFile = $this->getFile($fileName);
 		$fromFile = $this->remote_file_dir.$fileName;
 
 		$curl = curl_init( $this->domain."/exportoperatorgroupjson/".$this->operator_id."/".$fileName );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
-		if($response){
+		if($response == "true"){
 			if($this->download($fromFile, $toFile)){
 				$importData = $this->importOperatorGroup($fileName);
 				if($importData){
 					return Response::json($importData);
 				}
 			}else{
+				$response = array();
 				$response['status_code']  = 0; // 0 is error.
 				$response['message'] = "Can't download from server!.";
 				return Response::json($response);
 			}
 		}else{
+			$response = array();
 			$response['status_code']  = 0; // 0 is error.
 			$response['message'] = "Can't export data from server!.";
 			return Response::json($response);
@@ -392,25 +452,27 @@ class SyncDatabaseController extends BaseController
 	 * To Sync OperatorGroupUser from Server
 	 */
 	public function downloadOperatorGroupUserJsonfromServer(){
-		$fileName = 'operatorgroupuser.json';
+		$fileName = 'client-'.$this->operatorgroup_id.'-operatorgroupuser.json';
 		$toFile = $this->getFile($fileName);
 		$fromFile = $this->remote_file_dir.$fileName;
 
 		$curl = curl_init( $this->domain."/exportoperatorgroupuserjson/".$this->operator_id."/".$fileName );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
-		if($response){
+		if($response == "true"){
 			if($this->download($fromFile, $toFile)){
 				$importData = $this->importOperatorGroupUser($fileName);
 				if($importData){
 					return Response::json($importData);
 				}
 			}else{
+				$response = array();
 				$response['status_code']  = 0; // 0 is error.
 				$response['message'] = "Can't download from server!.";
 				return Response::json($response);
 			}
 		}else{
+			$response = array();
 			$response['status_code']  = 0; // 0 is error.
 			$response['message'] = "Can't export data from server!.";
 			return Response::json($response);
@@ -420,25 +482,27 @@ class SyncDatabaseController extends BaseController
 	 * To Sync User from Server
 	 */
 	public function downloadUserJsonfromServer(){
-		$fileName = 'user.json';
+		$fileName = 'client-'.$this->operatorgroup_id.'-user.json';
 		$toFile = $this->getFile($fileName);
 		$fromFile = $this->remote_file_dir.$fileName;
 
 		$curl = curl_init( $this->domain."/exportuserjson/".$this->operator_id."/".$fileName );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
-		if($response){
+		if($response == "true"){
 			if($this->download($fromFile, $toFile)){
 				$importData = $this->importUser($fileName);
 				if($importData){
 					return Response::json($importData);
 				}
 			}else{
+				$response = array();
 				$response['status_code']  = 0; // 0 is error.
 				$response['message'] = "Can't download from server!.";
 				return Response::json($response);
 			}
 		}else{
+			$response = array();
 			$response['status_code']  = 0; // 0 is error.
 			$response['message'] = "Can't export data from server!.";
 			return Response::json($response);
@@ -448,25 +512,27 @@ class SyncDatabaseController extends BaseController
 	 * To Sync Operator from Server
 	 */
 	public function downloadOperatorJsonfromServer(){
-		$fileName = 'operator.json';
+		$fileName = 'client-'.$this->operatorgroup_id.'-operator.json';
 		$toFile = $this->getFile($fileName);
 		$fromFile = $this->remote_file_dir.$fileName;
 
 		$curl = curl_init( $this->domain."/exportoperatorjson/".$this->operator_id."/".$fileName );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
-		if($response){
+		if($response == "true"){
 			if($this->download($fromFile, $toFile)){
 				$importData = $this->importOperator($fileName);
 				if($importData){
 					return Response::json($importData);
 				}
 			}else{
+				$response = array();
 				$response['status_code']  = 0; // 0 is error.
 				$response['message'] = "Can't download from server!.";
 				return Response::json($response);
 			}
 		}else{
+			$response = array();
 			$response['status_code']  = 0; // 0 is error.
 			$response['message'] = "Can't export data from server!.";
 			return Response::json($response);
@@ -476,25 +542,57 @@ class SyncDatabaseController extends BaseController
 	 * To Sync SeatInfo from Server
 	 */
 	public function downloadSeatInfoJsonfromServer(){
-		$fileName = 'seatinfo.json';
+		$fileName = 'client-'.$this->operatorgroup_id.'-seatinfo.json';
 		$toFile = $this->getFile($fileName);
 		$fromFile = $this->remote_file_dir.$fileName;
 
 		$curl = curl_init( $this->domain."/exportseatinfojson/".$this->operator_id."/".$fileName );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
-		if($response){
+		if($response == "true"){
 			if($this->download($fromFile, $toFile)){
 				$importData = $this->importSeatInfo($fileName);
 				if($importData){
 					return Response::json($importData);
 				}
 			}else{
+				$response = array();
 				$response['status_code']  = 0; // 0 is error.
 				$response['message'] = "Can't download from server!.";
 				return Response::json($response);
 			}
 		}else{
+			$response = array();
+			$response['status_code']  = 0; // 0 is error.
+			$response['message'] = "Can't export data from server!.";
+			return Response::json($response);
+		}
+	}
+	/**
+	 * To Sync SaleOrder from Server
+	 */
+	public function downloadSaleOrderJsonfromServer(){
+		$fileName = 'client-'.$this->operatorgroup_id.'-today-sale-order.json';
+		$toFile = $this->getFile($fileName);
+		$fromFile = $this->remote_file_dir.$fileName;
+
+		$curl = curl_init( $this->domain."/exportsaleorderjson/".$this->operator_id."/".$fileName );
+		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
+		$response = curl_exec( $curl );
+		if($response == "true"){
+			if($this->download($fromFile, $toFile)){
+				$importData = $this->importSaleOrderJson($fileName);
+				if($importData){
+					return Response::json($importData);
+				}
+			}else{
+				$response = array();
+				$response['status_code']  = 0; // 0 is error.
+				$response['message'] = "Can't download from server!.";
+				return Response::json($response);
+			}
+		}else{
+			$response = array();
 			$response['status_code']  = 0; // 0 is error.
 			$response['message'] = "Can't export data from server!.";
 			return Response::json($response);
@@ -505,9 +603,26 @@ class SyncDatabaseController extends BaseController
 	 * @/exportbusjson/{id}/{fname}
 	 */
 	public function exportBusOccurance($operator_id,$fileName){
-		$end_days_in_month=cal_days_in_month(CAL_GREGORIAN,date('m'),date('Y'));
-		$busOccurance = BusOccurance::where('departure_date','>=',date('Y-m',strtotime($this->getDate())).'-01')
-										->where('departure_date','<=',date('Y-m',strtotime($this->getDate())).'-'.$end_days_in_month)
+		$startDate	  = $this->getDate();
+		$endDate 	  = date('Y-m-d',strtotime($this->getDate() . ' + 30 day'));
+		$sync 		  = Sync::wherename($fileName)->first(); // To Check/Update Latest Sync Date.
+		if($sync){
+			if($sync->last_updated_date == $this->getDate())
+				return "false"; // Already Syn for Today.
+			$startDate 	  = $sync->last_sync_date; // To Get Data that Not Sync.
+			$sync->last_updated_date = $this->getDate();
+			$sync->last_sync_date = $endDate;
+			$sync->update();
+		}else{
+			$sync 						= new Sync();
+			$sync->name 				= $fileName;
+			$sync->last_updated_date 	= $this->getDate();
+			$sync->last_sync_date 		= $endDate;
+			$sync->save();
+		}
+		 
+		$busOccurance = BusOccurance::where('departure_date','>=',$startDate)
+										->where('departure_date','<=',$endDate)
 										->get()->toarray();
 		if($busOccurance){
 			$this->saveFile($fileName, $busOccurance);
@@ -1150,14 +1265,29 @@ class SyncDatabaseController extends BaseController
 	}
 	/**
 	 * To Export Sale Transaction Data
+	 * @/exportsaleorderjson/{id}/{fname}
 	 */
 	public function exportSaleOrderJson($fileName){
-		$saleOrders 	= SaleOrder::with('saleitems')->where('created_at','Like','%'.$this->getDate().'%')->get()->toarray();
+		$startDate	  = $this->getDate();
+		$sync 		  = Sync::wherename($fileName)->first(); // To Check/Update Latest Sync Date.
+		if($sync){
+			$startDate 	  = $sync->last_sync_date; // To Get Data that Not Sync.
+			$sync->last_updated_date = $this->getDate();
+			$sync->last_sync_date = $this->getDate();
+			$sync->update();
+		}else{
+			$sync 						= new Sync();
+			$sync->name 				= $fileName;
+			$sync->last_updated_date 	= $this->getDate();
+			$sync->last_sync_date 		= $this->getDate();
+			$sync->save();
+		}
+		$saleOrders 	= SaleOrder::with('saleitems')->where('created_at','>=', $startDate)->get()->toarray();
 		if($saleOrders){
 			$this->saveFile($fileName, $saleOrders);
-			return true;
+			return "true";
 		}else{
-			return false;
+			return "false";
 		}
 		
 	}
@@ -1219,9 +1349,9 @@ class SyncDatabaseController extends BaseController
 		$agentDeposits 	= AgentDeposit::where('created_at','Like','%'.$this->getDate().'%')->get()->toarray();
 		if($agentDeposits){
 			$this->saveFile($fileName, $agentDeposits);
-			return true;
+			return "true";
 		}else{
-			return false;
+			return "false";
 		}
 		
 	}
@@ -1326,7 +1456,7 @@ class SyncDatabaseController extends BaseController
 			if($conn_id){
 				// upload a file
 				if (ftp_put($conn_id, $toFile, $fromFile, FTP_ASCII)) {
-				 	return true;
+					return true;
 				} else {
 				 	return false;
 				}

@@ -1,7 +1,14 @@
 <?php
+/*
+  Add New Agent
+  Store Agent
+  Agent List
+*/
 class AgentController extends BaseController
 {
-	public function getAddagent()
+	
+    // Add New Agent
+    public function getAddagent()
   	{   
 	  	$agent =Agent::all();
 	  	$agentgroup = AgentGroup::all();
@@ -11,6 +18,7 @@ class AgentController extends BaseController
 	  	return View::make('agent.add',array('agent'=>$agent,'agentgroup'=>$agentgroup,'commission'=>$commission, 'operator_id'=> $operator_id));
   	}
 
+    // Store Agent
   	public function postAddagent()
     {
       $operator_id  =Input::get('operator_id');
@@ -42,11 +50,13 @@ class AgentController extends BaseController
       $message['info']="Successfully insert agent.";
       return Redirect::to('/agentlist')->with('message', $message);
     }
+
+    // Agent List
   	public function showAgentList()
   	{
       $user_id    =Auth::user()->id;
       $operator_id=OperatorGroup::whereuser_id($user_id)->pluck('operator_id');
-      $response   = $obj_agent = Agent::whereoperator_id($operator_id)->orderBy('id','desc')->get();
+      $response   = $obj_agent = Agent::whereoperator_id($operator_id)->orderBy('id','desc')->orderBy('name','asc')->get();
       $allagent   = Agent::all();
       $totalCount = count($allagent);
       $i=0;
@@ -55,12 +65,13 @@ class AgentController extends BaseController
           $agentgroupname = AgentGroup::where('id','=',$agent['agentgroup_id'])->pluck('name');
           $commissionname = CommissionType::where('id','=',$agent['commission_id'])->pluck('name');
           $response[$i]['id']             = $agent['id'];
-          $response[$i]['agentgroup_name']= $agentgroupname ? $agentgroupname : 'မရွိ';
+          $response[$i]['agentgroup_name']= $agentgroupname ? $agentgroupname : 'None';
           $response[$i]['name']           = $agent['name'];
           $response[$i]['phone']          = $agent['phone'];
           $response[$i]['address']        = $agent['address'];
           $response[$i]['commission']     = $agent['commission'];
-          $response[$i]['commission_id']  = $commissionname;
+          $response[$i]['commission_id']  = $agent['commission_id'];
+          $response[$i]['commission_type']  = $commissionname;
           $i++;
         } 
 

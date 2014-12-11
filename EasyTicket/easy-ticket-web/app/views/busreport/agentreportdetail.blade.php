@@ -217,8 +217,8 @@
                                         <th colspan="6">&nbsp;</th>
                                         <th colspan="2" class="text-right">Grand Quantity</th>
                                         <th>: {{$G_totalticket}}</th>
-                                        <th colspan="3" class="text-right">Grand Total</th>
-                                        <th style="text-align:right;">: {{$G_totalamount}}</th>
+                                        <th colspan="2" class="text-right">Grand Total</th>
+                                        <th colspan="2" style="text-align:left;">: {{$G_totalamount}}</th>
                                       </tr>
                                     </tfoot>
                                   @endif

@@ -12,6 +12,7 @@
    }
    #sample_editable_1_length select{width: 80px;}
    .text-right{text-align:right !important;}
+   .loader{background: url('../../../img/loader.gif');}
 </style>
 <!-- BEGIN PAGE -->  
    <div class="page-content">
@@ -85,12 +86,31 @@
                                  <form action="/report/operator/trip/dateranges" method="get" class="horizontal-form">
                                     <?php if($search['trips']!=1): ?>
                                        <div class="row-fluid">
-                                          <div class="span6 responsive">
+                                          <div class="span3">
+                                             <input type="hidden" value="<?php echo $search['trips']; ?>" name="trips">
+                                             <input type="hidden" value="<?php echo $search['operator_id']; ?>" name="operator_id">
+                                             <div class="control-group">
+                                                <label class="control-label" for="from">Agent Group</label>
+                                                <div class="controls">
+                                                   <select name="agentgroup" class="m-wrap span12 chosen" id="agentgroup">
+                                                      <option value="All">All</option>
+                                                      <?php if($search['agentgroup']): ?>
+                                                         <?php foreach($search['agentgroup'] as $rows): ?>
+                                                            <option value="<?php echo $rows['id']; ?>" <?php if($rows['id']==$search['agentgroup_id']): ?> selected <?php endif; ?>><?php echo $rows['name']; ?></option>
+                                                         <?php endforeach; ?>
+                                                      <?php endif; ?>
+                                                   </select>
+                                                </div>
+                                                
+                                             </div>
+                                          </div>
+
+                                          <div class="span3 responsive">
                                              <input type="hidden" value="<?php echo $search['operator_id']; ?>" name="operator_id">
                                              <div class="control-group">
                                                 <label class="control-label" for="from">ဂိတ်ခွဲများ</label>
-                                                <div class="controls">
-                                                   <select name="agent_id" class="m-wrap span10 chosen">
+                                                <div class="controls" id="agent_id">
+                                                   <select name="agent_id" class="m-wrap span12 chosen">
                                                       <option value="All">All</option>
                                                       <?php if($search['agent']): ?>
                                                          <?php foreach($search['agent'] as $row): ?>
@@ -99,8 +119,11 @@
                                                       <?php endif; ?>
                                                    </select>
                                                 </div>
+                                                <!-- <span id="loading" class="loader">&nbsp;</span> -->
+
                                              </div>
                                           </div>
+
                                           <div class="span3">
                                              <input type="hidden" value="<?php echo $search['trips']; ?>" name="trips">
                                              <input type="hidden" value="<?php echo $search['operator_id']; ?>" name="operator_id">
@@ -119,6 +142,7 @@
                                                 
                                              </div>
                                           </div>
+
                                           <div class="span3">
                                              <div class="control-group">
                                                 <label class="control-label" for="to">ေရာက်ၡိသည့်ြမို့ ေရွးရန်</label>
@@ -131,10 +155,12 @@
                                                       <?php endif; ?>
                                                    </select>
                                                 </div>
-                                                <div class="controls"  id='to_all' style="display:none;">
-                                                   <select name="to_all" class="m-wrap span12 chosen">
-                                                      <option value="0">All</option>
-                                                   </select>
+                                                <div class="controls">
+                                                   <div id='to_all' style="display:none;">
+                                                      <select name="to_all" class="m-wrap span12 chosen">
+                                                         <option value="0">All</option>
+                                                      </select>
+                                                   </div>
                                                 </div>
                                              </div>
                                           </div>
@@ -278,7 +304,7 @@
                                     <th>အခမဲ႕ လက္မွတ္ </th>
                                     <th>ေစ်းႏုန္း</th>
                                     <th>စုုစုုေပါင္း</th>
-                                    <th style="width:0;"><a class="btn small green blue-stripe imagechange" id="" href="/triplist/<?php echo $search['start_date'].','.$search['end_date']; ?>/daily?f=<?php echo $search['from']; ?>&t=<?php echo $search['to']; ?>&a=<?php echo $search['agent_id']; ?>&agentrp=<?php echo $search['agent_rp']; ?>&time=<?php echo $search['time']; ?>">အေသးစိတ္(All)</a></th>
+                                    <th style="width:0;"><a class="btn small green blue-stripe imagechange" id="" href="/triplist/<?php echo $search['start_date'].','.$search['end_date']; ?>/daily?f=<?php echo $search['from']; ?>&t=<?php echo $search['to']; ?>&agentgroup=<?php echo $search['agentgroup_id']; ?>&a=<?php echo $search['agent_id']; ?>&agentrp=<?php echo $search['agent_rp']; ?>&time=<?php echo $search['time']; ?>">အေသးစိတ္(All)</a></th>
                                  </tr>
                               </thead>
                                  <?php if($response): ?>
@@ -293,7 +319,6 @@
                                        <div id="dvjson"></div>
                                        <?php $G_total_ticket=0; $G_total_amount=0; $G_free_ticket=0; ?>
                                        <?php foreach($response as $key=>$rows): ?>
-                                       
                                        <!-- <tr class="title-row">
                                           <th align="left"><?php echo $key; ?></th>
                                           <?php if($search['agent_rp']): ?>
@@ -461,7 +486,29 @@
             $('#to').show();
             $('#to_all').hide();
          }
+         $('chosen').chosen();
       }
+
+      $('#agentgroup').change(function(){
+         var agentgroup_id=$(this).val();
+         if(agentgroup_id=="All")
+         {
+            agentgroup_id=0;
+         }
+         var result='<select name="agent_id" class="m-wrap span12 chosen">';
+               result+='<option value="All">All</option>';
+         $('#agent_id').html('');
+         $('#agent_id').addClass('loader');
+         $.get('/agentbranches/'+agentgroup_id,function(data){
+            for(var i=0; i<data.length; i++){
+               result +='<option value="'+data[i].id+'">'+data[i].name+'</option>';
+            }
+            result +='</select>';
+            $('#agent_id').removeClass('loader');
+            $('#agent_id').html(result);
+            $('.chosen').chosen();
+         });
+      });
    </script>
 <?php $__env->stopSection(); ?>
 <?php echo $__env->make('../admin', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

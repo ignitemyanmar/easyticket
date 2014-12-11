@@ -137,9 +137,8 @@
     -->
    <!-- <?php echo HTML::script('../../src/jquery-ui.js'); ?> -->
    <script type="text/javascript" src="../../../js/jquery.battatech.excelexport.min.js"></script>
-   <script type="text/javascript" src="../../../../js/jquery.dataTables.v1.10.4.min.js"></script>
-
    <script type="text/javascript" src="../../../../assets/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+   <script type="text/javascript" src="../../../../js/jquery.dataTables.v1.10.4.min.js"></script>
    <script type="text/javascript">
       $(document).ready(function() {
           var table = $('#tblExport').DataTable({

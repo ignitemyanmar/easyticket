@@ -13,6 +13,7 @@
    }
    #sample_editable_1_length select{width: 80px;}
    .text-right{text-align:right !important;}
+   .loader{background: url('../../../img/loader.gif');}
 </style>
 <!-- BEGIN PAGE -->  
    <div class="page-content">
@@ -86,12 +87,31 @@
                                  <form action="/report/operator/trip/dateranges" method="get" class="horizontal-form">
                                     @if($search['trips']!=1)
                                        <div class="row-fluid">
-                                          <div class="span6 responsive">
+                                          <div class="span3">
+                                             <input type="hidden" value="{{$search['trips']}}" name="trips">
+                                             <input type="hidden" value="{{$search['operator_id']}}" name="operator_id">
+                                             <div class="control-group">
+                                                <label class="control-label" for="from">Agent Group</label>
+                                                <div class="controls">
+                                                   <select name="agentgroup" class="m-wrap span12 chosen" id="agentgroup">
+                                                      <option value="All">All</option>
+                                                      @if($search['agentgroup'])
+                                                         @foreach($search['agentgroup'] as $rows)
+                                                            <option value="{{$rows['id']}}" @if($rows['id']==$search['agentgroup_id']) selected @endif>{{$rows['name']}}</option>
+                                                         @endforeach
+                                                      @endif
+                                                   </select>
+                                                </div>
+                                                
+                                             </div>
+                                          </div>
+
+                                          <div class="span3 responsive">
                                              <input type="hidden" value="{{$search['operator_id']}}" name="operator_id">
                                              <div class="control-group">
                                                 <label class="control-label" for="from">ဂိတ်ခွဲများ</label>
-                                                <div class="controls">
-                                                   <select name="agent_id" class="m-wrap span10 chosen">
+                                                <div class="controls" id="agent_id">
+                                                   <select name="agent_id" class="m-wrap span12 chosen">
                                                       <option value="All">All</option>
                                                       @if($search['agent'])
                                                          @foreach($search['agent'] as $row)
@@ -100,8 +120,11 @@
                                                       @endif
                                                    </select>
                                                 </div>
+                                                <!-- <span id="loading" class="loader">&nbsp;</span> -->
+
                                              </div>
                                           </div>
+
                                           <div class="span3">
                                              <input type="hidden" value="{{$search['trips']}}" name="trips">
                                              <input type="hidden" value="{{$search['operator_id']}}" name="operator_id">
@@ -120,6 +143,7 @@
                                                 
                                              </div>
                                           </div>
+
                                           <div class="span3">
                                              <div class="control-group">
                                                 <label class="control-label" for="to">ေရာက်ၡိသည့်ြမို့ ေရွးရန်</label>
@@ -132,10 +156,12 @@
                                                       @endif
                                                    </select>
                                                 </div>
-                                                <div class="controls"  id='to_all' style="display:none;">
-                                                   <select name="to_all" class="m-wrap span12 chosen">
-                                                      <option value="0">All</option>
-                                                   </select>
+                                                <div class="controls">
+                                                   <div id='to_all' style="display:none;">
+                                                      <select name="to_all" class="m-wrap span12 chosen">
+                                                         <option value="0">All</option>
+                                                      </select>
+                                                   </div>
                                                 </div>
                                              </div>
                                           </div>
@@ -279,7 +305,7 @@
                                     <th>အခမဲ႕ လက္မွတ္ </th>
                                     <th>ေစ်းႏုန္း</th>
                                     <th>စုုစုုေပါင္း</th>
-                                    <th style="width:0;"><a class="btn small green blue-stripe imagechange" id="" href="/triplist/{{$search['start_date'].','.$search['end_date']}}/daily?f={{$search['from']}}&t={{$search['to']}}&a={{$search['agent_id']}}&agentrp={{$search['agent_rp']}}&time={{$search['time']}}">အေသးစိတ္(All)</a></th>
+                                    <th style="width:0;"><a class="btn small green blue-stripe imagechange" id="" href="/triplist/{{$search['start_date'].','.$search['end_date']}}/daily?f={{$search['from']}}&t={{$search['to']}}&agentgroup={{$search['agentgroup_id']}}&a={{$search['agent_id']}}&agentrp={{$search['agent_rp']}}&time={{$search['time']}}">အေသးစိတ္(All)</a></th>
                                  </tr>
                               </thead>
                                  @if($response)
@@ -294,7 +320,6 @@
                                        <div id="dvjson"></div>
                                        <?php $G_total_ticket=0; $G_total_amount=0; $G_free_ticket=0; ?>
                                        @foreach($response as $key=>$rows)
-                                       
                                        <!-- <tr class="title-row">
                                           <th align="left">{{$key}}</th>
                                           @if($search['agent_rp'])
@@ -462,6 +487,28 @@
             $('#to').show();
             $('#to_all').hide();
          }
+         $('chosen').chosen();
       }
+
+      $('#agentgroup').change(function(){
+         var agentgroup_id=$(this).val();
+         if(agentgroup_id=="All")
+         {
+            agentgroup_id=0;
+         }
+         var result='<select name="agent_id" class="m-wrap span12 chosen">';
+               result+='<option value="All">All</option>';
+         $('#agent_id').html('');
+         $('#agent_id').addClass('loader');
+         $.get('/agentbranches/'+agentgroup_id,function(data){
+            for(var i=0; i<data.length; i++){
+               result +='<option value="'+data[i].id+'">'+data[i].name+'</option>';
+            }
+            result +='</select>';
+            $('#agent_id').removeClass('loader');
+            $('#agent_id').html(result);
+            $('.chosen').chosen();
+         });
+      });
    </script>
 @stop

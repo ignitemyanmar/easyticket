@@ -316,13 +316,16 @@ class ReportController extends BaseController
 	public function getTripslistreportOperator()
 	{
 		$report_info 			=array();
-		$operator_id  			=Input::get('operator_id');
-		$agent_id  				=Input::get('agent_id') ? Input::get('agent_id') : 0;
+		$operator_id  			=$this->myGlob->operator_id;
+		$agent_status=$agent_id	=Input::get('agent_id') ? Input::get('agent_id') : 0;
 		$trips  				=Input::get('trips'); //for agent report or not
 		$search=array();
 		$search['agent_rp']		=$agent_id ? 1 : 0;
 		if($agent_id=="All")
 			$agent_id='';
+
+		
+
 		$from  					=Input::get('from');
 		$to  					=Input::get('to');
 		$start_date  			=Input::get('start_date') ? Input::get('start_date') : $this->getDate();
@@ -438,10 +441,67 @@ class ReportController extends BaseController
     	if($trip_ids)
     		$order_ids=SaleItem::wherein('trip_id',$trip_ids)->where('departure_date','>=',$start_date)->where('departure_date','<=',$end_date)->groupBy('order_id')->lists('order_id');
 		
+
 		
     	// return Response::json($order_ids);
+    	
+    	
+
     	if($order_ids)
-			if($agent_id !=0){
+    	{	
+    		/******************************************************************************** 
+			*	For agent report by agent group and branches OR don't have branch agent
+    		***/
+				$agentgroup_id 			=Input::get('agentgroup');
+				if($agentgroup_id=="All")
+					$agentgroup_id=0;
+				$arr_agent_id			=array();
+
+				if($agentgroup_id && $agent_id)
+				{
+					$sale_item = SaleItem::wherein('order_id', $order_ids)
+									->selectRaw('order_id, count(*) as sold_seat, trip_id, price, foreign_price, departure_date, busoccurance_id, SUM(free_ticket) as free_ticket, agent_id')
+									->whereagent_id($agent_id)
+									->groupBy('order_id')->orderBy('departure_date','asc')->get();	
+				}
+				elseif(!$agentgroup_id && $agent_id)
+				{
+					$sale_item = SaleItem::wherein('order_id', $order_ids)
+									->selectRaw('order_id, count(*) as sold_seat, trip_id, price, foreign_price, departure_date, busoccurance_id, SUM(free_ticket) as free_ticket, agent_id')
+									->whereagent_id($agent_id)
+									->groupBy('order_id')->orderBy('departure_date','asc')->get();	
+				}
+				elseif($agentgroup_id && !$agent_id)
+				{
+					$arr_agent_id=Agent::whereagentgroup_id($agentgroup_id)->lists('id');
+	    			
+	    			$order_ids2=array();
+	    			if($arr_agent_id)
+	    				$order_ids2=SaleItem::wherein('agent_id',$arr_agent_id)->where('departure_date','>=',$start_date)->where('departure_date','<=',$end_date)->groupBy('order_id')->lists('order_id');
+	    			// for unique orderids for all agent branches
+	    			$order_id_list=array_intersect($order_ids, $order_ids2);
+	    			// dd($order_id_list);
+					if($order_id_list)
+						$sale_item = SaleItem::wherein('order_id', $order_id_list)
+									->selectRaw('order_id, count(*) as sold_seat, trip_id, price, foreign_price, departure_date, busoccurance_id, SUM(free_ticket) as free_ticket, agent_id')
+									// ->whereagent_id($agent_id)
+									->groupBy('order_id')->orderBy('departure_date','asc')->get();	
+				}
+			/***
+			*	End For agent report by agent group and branches OR don't have branch agent
+    		*********************************************************************************/
+			
+			/******************************************************************* 
+			* for Trip report 
+			*/
+				else
+				{
+					$sale_item = SaleItem::wherein('order_id', $order_ids)
+									->selectRaw('order_id, count(*) as sold_seat, trip_id, price, foreign_price, departure_date, busoccurance_id, SUM(free_ticket) as free_ticket, agent_id')
+									->groupBy('order_id')->orderBy('departure_date','asc')->get();
+				}
+
+    		/*if($agent_id !=0){
 				$sale_item = SaleItem::wherein('order_id', $order_ids)
 								->selectRaw('order_id, count(*) as sold_seat, trip_id, price, foreign_price, departure_date, busoccurance_id, SUM(free_ticket) as free_ticket, agent_id')
 								->whereagent_id($agent_id)
@@ -450,8 +510,8 @@ class ReportController extends BaseController
 				$sale_item = SaleItem::wherein('order_id', $order_ids)
 								->selectRaw('order_id, count(*) as sold_seat, trip_id, price, foreign_price, departure_date, busoccurance_id, SUM(free_ticket) as free_ticket, agent_id')
 								->groupBy('order_id')->orderBy('departure_date','asc')->get();
-			}
-    	// return Response::json($sale_item);
+			}*/
+    	}
 			
 		$lists = array();
 		foreach ($sale_item as $rows) {
@@ -512,15 +572,16 @@ class ReportController extends BaseController
 			}
 		}
 
-		
+		$agentgroup=array();
+    	$agentgroup=AgentGroup::whereoperator_id($operator_id)->get();
+		$search['agentgroup']=$agentgroup;
+
     	$cities=array();
     	$cities=$this->getCitiesByoperatorId($operator_id);
-    	
 		$search['cities']=$cities;
 		
 		$times=array();
 		$times=$this->getTime($operator_id, $from, $to);
-		
 		$search['times']=$times;
 
 		$search['operator_id']=$operator_id;
@@ -530,14 +591,21 @@ class ReportController extends BaseController
 		$search['time']=$departure_time;
 		$search['start_date']=$start_date;
 		$search['end_date']=$end_date;
+		$search['agentgroup_id']=Input::get('agentgroup');
 		$search['agent_id']=$agent_id;
 
-		$agent=Agent::whereoperator_id($operator_id)->get();
+
+		if($search['agentgroup_id'] && $search['agentgroup_id'] !='All')
+			$agent=Agent::whereagentgroup_id($search['agentgroup_id'])->get();
+		else
+			$agent=Agent::whereoperator_id($operator_id)->get();
+
 		$search['agent']=$agent;
-		// return Response::json($stack);
 		
+		// sorting result
 		$response=$this->msort($stack,array("departure_date","time"), $sort_flags=SORT_REGULAR,$order=SORT_ASC);
 		
+		// grouping
 		if($search['agent_rp']==1){
 			$tripandorderdategroup = array();
 			foreach ($response AS $arr) {
@@ -556,6 +624,8 @@ class ReportController extends BaseController
 		// return Response::json($tripandorderdategroup);
 		return View::make('busreport.operatortripticketsolddaterange', array('response'=>$tripandorderdategroup, 'search'=>$search));
 	}
+
+
 
 	//Trip report by order date detail
 	// Agent report by order date detail
@@ -658,8 +728,60 @@ class ReportController extends BaseController
 				if($trip_ids)
 			    		$order_ids=SaleItem::wherein('trip_id',$trip_ids)->where('departure_date','>=',$start_date)->where('departure_date','<=',$end_date)->groupBy('order_id')->lists('order_id');
 				
+				/******************************************************************************** 
+				*	For agent report by agent group and branches OR don't have branch agent
+	    		***/
+					$agentgroup_id 			=Input::get('agentgroup');
+					if($agentgroup_id=="All")
+						$agentgroup_id=0;
+					$arr_agent_id			=array();
 
-				if($agent_id){
+					if($agentgroup_id && $agent_id)
+					{
+						$sale_order = SaleOrder::wherein('id',$order_ids)->with('saleitems')->whereHas('saleitems',function($query) use ($agent_id){
+											$query->whereagent_id($agent_id);
+										})
+    									->get();
+					}
+					elseif(!$agentgroup_id && $agent_id)
+					{
+						$sale_order = SaleOrder::wherein('id',$order_ids)->with('saleitems')->whereHas('saleitems',function($query) use ($agent_id){
+											$query->whereagent_id($agent_id);
+										})
+    									->get();
+					}
+					elseif($agentgroup_id && !$agent_id)
+					{
+						$arr_agent_id=Agent::whereagentgroup_id($agentgroup_id)->lists('id');
+		    			
+		    			$order_ids2=array();
+		    			if($arr_agent_id)
+		    				$order_ids2=SaleItem::wherein('agent_id',$arr_agent_id)->where('departure_date','>=',$start_date)->where('departure_date','<=',$end_date)->groupBy('order_id')->lists('order_id');
+		    			// for unique orderids for all agent branches
+		    			$order_id_list=array_intersect($order_ids, $order_ids2);
+		    			// dd($order_id_list);
+						if($order_id_list)
+							$sale_order = SaleOrder::wherein('id',$order_id_list)->with('saleitems')->get();
+							/*$sale_item = SaleItem::wherein('order_id', $order_id_list)
+										->selectRaw('order_id, count(*) as sold_seat, trip_id, price, foreign_price, departure_date, busoccurance_id, SUM(free_ticket) as free_ticket, agent_id')
+										// ->whereagent_id($agent_id)
+										->groupBy('order_id')->orderBy('departure_date','asc')->get();	*/
+					}
+				/***
+				*	End For agent report by agent group and branches OR don't have branch agent
+	    		*********************************************************************************/
+				
+				/******************************************************************* 
+				* for Trip report 
+				*/
+
+					else{
+						$sale_order = SaleOrder::wherein('id',$order_ids)->with('saleitems')->whereHas('saleitems',function($query){
+											})
+	    									->get();	
+					}
+
+				/*if($agent_id){
 					$sale_order = SaleOrder::wherein('id',$order_ids)->with('saleitems')->whereHas('saleitems',function($query) use ($agent_id){
 											$query->whereagent_id($agent_id);
 										})
@@ -668,7 +790,7 @@ class ReportController extends BaseController
 					$sale_order = SaleOrder::wherein('id',$order_ids)->with('saleitems')->whereHas('saleitems',function($query){
 										})
     									->get();	
-				}
+				}*/
 			}
 			// return Response::json($sale_order);
 	    	$lists = array();
@@ -802,6 +924,12 @@ class ReportController extends BaseController
 
 	}
 
+
+	public function AgentBranches($id)
+	{
+		$response=Agent::whereagentgroup_id($id)->get(array('id','name'));
+		return Response::json($response);
+	}
 
 	//Trip list by date range agent
 	public function getTripslistdaterangeAgent(){

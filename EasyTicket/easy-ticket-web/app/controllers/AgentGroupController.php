@@ -1,7 +1,7 @@
 <?php
 class AgentGroupController extends BaseController
 {
-	public function getAddagentgroup()
+	   public function getAddagentgroup()
   	{   
 	  	// $agent =Agent::all();
 	  	// $agentgroup = AgentGroup::all();
@@ -16,14 +16,24 @@ class AgentGroupController extends BaseController
       $result = $objagentgroup->save();
       return Redirect::to('/agentgrouplist');
   	}
+   
 
   	public function showAgentgroupList()
   	{
-      $objagentgroup = AgentGroup::paginate(12);
+      $objagentgroup = AgentGroup::orderBy('id','desc')->get();
+      // return Response::json($objagentgroup);
       $response = $objagentgroup;
       $totalcount = AgentGroup::count();
       return View::make('agentgroup.list',array('response'=>$response,'totalcount'=>$totalcount));
   	}
+
+    public function AgentGroupChildList($id)
+    {
+      $response=Agent::whereagentgroup_id($id)->get();
+      $groupname=AgentGroup::whereid($id)->pluck('name');
+      // return Response::json($agentlist);
+      return View::make('agentgroup.childlist', array('response'=> $response, 'groupname'=>$groupname));
+    }
 
     public function getEditAgentgroup($id)
     {

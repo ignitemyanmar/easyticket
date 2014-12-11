@@ -9,6 +9,8 @@ class BaseController extends Controller {
 	 */
 	public $today = null;
 	public $operator_id = 0;
+	public $operatorgroup_id = 0;
+	public $client_ip = "";
 	public function __construct(){
 		$this->Date = App::make('MyDate');
 		$this->today= App::make('MyDate');
@@ -21,6 +23,9 @@ class BaseController extends Controller {
         $this->myGlob=App::make('myApp');
 
         $this->operator_id = isset($this->myGlob->operator_id) ? $this->myGlob->operator_id : 0;
+        $this->operatorgroup_id = isset($this->myGlob->operatorgroup_id) ? $this->myGlob->operatorgroup_id : 0;
+
+        $this->client_ip = $_SERVER['REMOTE_ADDR'];
     }
 
     protected function getDate(){

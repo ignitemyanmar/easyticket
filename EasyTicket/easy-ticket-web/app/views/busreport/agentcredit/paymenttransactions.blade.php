@@ -72,8 +72,8 @@
                                              <?php 
                                                 $amount=($row['price']-$row['commission']) * $row['total_ticket'];
                                              ?>
-                                                <td>{{$row['deposit_date']}}</td>
-                                                <td>{{ $row['pay_date']}}</td>
+                                                <td>{{date('d/m/Y',strtotime($row['deposit_date']))}}</td>
+                                                <td>{{date('d/m/Y',strtotime($row['pay_date']))}}</td>
                                                 <td>{{ $row['payment']}} </td>
                                                 <td>{{ $row['total_ticket_amt']+ $row['debit']}}</td>
                                                 <td>{{$row['balance']}}</td>

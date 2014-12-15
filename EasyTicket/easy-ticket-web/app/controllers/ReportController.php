@@ -572,6 +572,7 @@ class ReportController extends BaseController
 			}
 		}
 
+		$search['agentgroup']="";
 		$agentgroup=array();
     	$agentgroup=AgentGroup::whereoperator_id($operator_id)->get();
 		$search['agentgroup']=$agentgroup;
@@ -591,7 +592,7 @@ class ReportController extends BaseController
 		$search['time']=$departure_time;
 		$search['start_date']=$start_date;
 		$search['end_date']=$end_date;
-		$search['agentgroup_id']=Input::get('agentgroup');
+		$search['agentgroup_id']=Input::get('agentgroup')? Input::get('agentgroup') : 0;
 		$search['agent_id']=$agent_id;
 
 
@@ -656,11 +657,20 @@ class ReportController extends BaseController
 			//for only one transaction
 	    	if($bus_id){
 	    		if($agent_id){
-	    			$sale_order = SaleOrder::with('saleitems')->whereHas('saleitems',function($query) use ($bus_id , $agent_id){
+	    			if($agentrp){
+	    				$sale_order = SaleOrder::with('saleitems')->whereHas('saleitems',function($query) use ($bus_id , $agent_id){
     										$query->wherebusoccurance_id($bus_id)->whereagent_id($agent_id);
     									})->where('orderdate','=',$date)
     									->where('operator_id','=',$operator_id)
+    									->get();	
+	    			}else{
+	    				$sale_order = SaleOrder::with('saleitems')->whereHas('saleitems',function($query) use ($bus_id , $agent_id){
+    										$query->wherebusoccurance_id($bus_id);
+    									})->where('orderdate','=',$date)
+    									->where('operator_id','=',$operator_id)
     									->get();
+	    			}
+	    			
 	    		}else{
 	    			$sale_order = SaleOrder::with('saleitems')->whereHas('saleitems',function($query) use ($bus_id){
     											$query->wherebusoccurance_id($bus_id);
@@ -916,6 +926,9 @@ class ReportController extends BaseController
 			$search['start_date']=$start_date;
 			$search['end_date']=$end_date;
 			$search['agent_rp']=Input::get('agentrp');
+
+			$search['agent_name']=Agent::whereid(Input::get('a'))->pluck('name');
+			$search['agentgroup_name']=AgentGroup::whereid(Input::get('agentgroup'))->pluck('name');
 			// return Response::json($search);
 			if(Input::get('agentrp'))
 	    		return View::make('busreport.agentreportdetail', array('response'=>$tripandclassgroup,'bus_id'=>$bus_id,'search'=>$search));	

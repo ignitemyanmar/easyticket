@@ -19,12 +19,28 @@ class SyncDatabaseController extends BaseController
 		$fileName = 'client-'.$this->operatorgroup_id.'-today-sale-order.json';
 		$fromFile = $this->getFile($fileName);
 		$toFile	  = $this->remote_file_dir.$fileName;
-		if($this->exportSaleOrderJson($fileName)){
+		$startDate	  = $this->getSysDateTime();
+		$sync 		  = Sync::wherename($fileName)->first(); // To Check/Update Latest Sync Date.
+		if($sync){
+			$startDate 	  = $sync->last_sync_date; // To Get Data that Not Sync.
+		}else{
+			$sync 						= new Sync();
+			$sync->name 				= $fileName;
+			$sync->last_updated_date 	= $this->getSysDateTime();
+			$sync->last_sync_date 		= $this->getSysDateTime();
+			$sync->save();
+			$startDate = "0000-00-00 00:00:00";
+		}
+		if($this->exportSaleOrderJson($this->operatorgroup_id,$fileName,$startDate) == "true"){
 			if($this->upload($fromFile, $toFile)){
 				$curl = curl_init( $this->domain."/writetodatabase/".$fileName );
 				curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 				$response = curl_exec( $curl );
 				if($response){
+					$sync = Sync::wherename($fileName)->first();
+					$sync->last_updated_date = $this->getSysDateTime();
+					$sync->last_sync_date = $this->getSysDateTime();
+					$sync->update();
 					$this->pushPaymentJsonToServer();
 					return Response::json(json_decode($response));
 				}else{
@@ -47,13 +63,28 @@ class SyncDatabaseController extends BaseController
 		$fileName = 'client-'.$this->operatorgroup_id.'-today-payment.json';
 		$fromFile = $this->getFile($fileName);
 		$toFile	  = $this->remote_file_dir.$fileName;
-		if($this->exportPaymentJson($fileName)){
+		$startDate	  = $this->getSysDateTime();
+		$sync 		  = Sync::wherename($fileName)->first(); // To Check/Update Latest Sync Date.
+		if($sync){
+			$startDate 	  = $sync->last_sync_date; // To Get Data that Not Sync.
+		}else{
+			$sync 						= new Sync();
+			$sync->name 				= $fileName;
+			$sync->last_updated_date 	= $this->getSysDateTime();
+			$sync->last_sync_date 		= $this->getSysDateTime();
+			$sync->save();
+			$startDate = "0000-00-00 00:00:00";
+		}
+		if($this->exportPaymentJson($this->operatorgroup_id,$fileName,$startDate)  == "true"){
 			if($this->upload($fromFile, $toFile)){
 				$curl = curl_init( $this->domain."/writepaymentjson/".$fileName );
 				curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 				$response = curl_exec( $curl );
-				dd($response);
 				if($response){
+					$sync = Sync::wherename($fileName)->first();
+					$sync->last_updated_date = $this->getSysDateTime();
+					$sync->last_sync_date = $this->getSysDateTime();
+					$sync->update();
 					return Response::json(json_decode($response));
 				}else{
 					$response['status_code']  = 0; // 0 is error.
@@ -109,6 +140,7 @@ class SyncDatabaseController extends BaseController
 		$this->downloadAgentCommissionJsonfromServer();
 		$this->downloadCommissionTypeJsonfromServer();
 		$this->downloadSaleOrderJsonfromServer();
+		$this->downloadPaymentJsonfromServer();
 
 		$response['status_code']  = 1;
 		$response['message'] = "Successfully snyc!.";
@@ -153,8 +185,16 @@ class SyncDatabaseController extends BaseController
 		$fileName = 'client-'.$this->operatorgroup_id.'-trip.json';
 		$toFile = $this->getFile($fileName);
 		$fromFile = $this->remote_file_dir.$fileName;
+
+		$syncDatetime = 0;
+		$datetime = Trip::orderBy('created_at','desc')->limit(1)->pluck('created_at');
+		if($datetime){
+			$syncDatetime = $datetime;
+		}else{
+			$syncDatetime = "0000-00-00 00:00:00";
+		}
 		
-		$curl = curl_init( $this->domain."/exporttripjson/".$this->operator_id."/".$fileName );
+		$curl = curl_init( $this->domain."/exporttripjson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		
@@ -184,8 +224,15 @@ class SyncDatabaseController extends BaseController
 		$fileName = 'client-'.$this->operatorgroup_id.'-seating-plan.json';
 		$toFile = $this->getFile($fileName);
 		$fromFile = $this->remote_file_dir.$fileName;
+		$syncDatetime = 0;
+		$datetime = SeatingPlan::orderBy('created_at','desc')->limit(1)->pluck('created_at');
+		if($datetime){
+			$syncDatetime = $datetime;
+		}else{
+			$syncDatetime = "0000-00-00 00:00:00";
+		}
 
-		$curl = curl_init( $this->domain."/exportseatingplanjson/".$this->operator_id."/".$fileName );
+		$curl = curl_init( $this->domain."/exportseatingplanjson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 
@@ -215,8 +262,15 @@ class SyncDatabaseController extends BaseController
 		$fileName = 'client-'.$this->operatorgroup_id.'-agent.json';
 		$toFile = $this->getFile($fileName);
 		$fromFile = $this->remote_file_dir.$fileName;
+		$syncDatetime = 0;
+		$datetime = Agent::orderBy('created_at','desc')->limit(1)->pluck('created_at');
+		if($datetime){
+			$syncDatetime = $datetime;
+		}else{
+			$syncDatetime = "0000-00-00 00:00:00";
+		}
 
-		$curl = curl_init( $this->domain."/exportagentjson/".$this->operator_id."/".$fileName );
+		$curl = curl_init( $this->domain."/exportagentjson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		if($response == "true"){
@@ -245,8 +299,15 @@ class SyncDatabaseController extends BaseController
 		$fileName = 'client-'.$this->operatorgroup_id.'-city.json';
 		$toFile = $this->getFile($fileName);
 		$fromFile = $this->remote_file_dir.$fileName;
+		$syncDatetime = 0;
+		$datetime = City::orderBy('created_at','desc')->limit(1)->pluck('created_at');
+		if($datetime){
+			$syncDatetime = $datetime;
+		}else{
+			$syncDatetime = "0000-00-00 00:00:00";
+		}
 
-		$curl = curl_init( $this->domain."/exportcityjson/".$this->operator_id."/".$fileName );
+		$curl = curl_init( $this->domain."/exportcityjson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		if($response == "true"){
@@ -275,8 +336,15 @@ class SyncDatabaseController extends BaseController
 		$fileName = 'client-'.$this->operatorgroup_id.'-extradestination.json';
 		$toFile = $this->getFile($fileName);
 		$fromFile = $this->remote_file_dir.$fileName;
+		$syncDatetime = 0;
+		$datetime = ExtraDestination::orderBy('created_at','desc')->limit(1)->pluck('created_at');
+		if($datetime){
+			$syncDatetime = $datetime;
+		}else{
+			$syncDatetime = "0000-00-00 00:00:00";
+		}
 
-		$curl = curl_init( $this->domain."/exportextradestinationjson/".$this->operator_id."/".$fileName );
+		$curl = curl_init( $this->domain."/exportextradestinationjson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		if($response == "true"){
@@ -305,8 +373,14 @@ class SyncDatabaseController extends BaseController
 		$fileName = 'client-'.$this->operatorgroup_id.'-bus-classes.json';
 		$toFile = $this->getFile($fileName);
 		$fromFile = $this->remote_file_dir.$fileName;
-
-		$curl = curl_init( $this->domain."/exportclassesjson/".$this->operator_id."/".$fileName );
+		$syncDatetime = 0;
+		$datetime = Classes::orderBy('created_at','desc')->limit(1)->pluck('created_at');
+		if($datetime){
+			$syncDatetime = $datetime;
+		}else{
+			$syncDatetime = "0000-00-00 00:00:00";
+		}
+		$curl = curl_init( $this->domain."/exportclassesjson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		if($response == "true"){
@@ -335,8 +409,15 @@ class SyncDatabaseController extends BaseController
 		$fileName = 'client-'.$this->operatorgroup_id.'-agentcommission.json';
 		$toFile = $this->getFile($fileName);
 		$fromFile = $this->remote_file_dir.$fileName;
+		$syncDatetime = 0;
+		$datetime = AgentCommission::orderBy('created_at','desc')->limit(1)->pluck('created_at');
+		if($datetime){
+			$syncDatetime = $datetime;
+		}else{
+			$syncDatetime = "0000-00-00 00:00:00";
+		}
 
-		$curl = curl_init( $this->domain."/exportagentcommissionjson/".$this->operator_id."/".$fileName );
+		$curl = curl_init( $this->domain."/exportagentcommissionjson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		if($response == "true"){
@@ -365,8 +446,15 @@ class SyncDatabaseController extends BaseController
 		$fileName = 'client-'.$this->operatorgroup_id.'-closeseatinfo.json';
 		$toFile = $this->getFile($fileName);
 		$fromFile = $this->remote_file_dir.$fileName;
+		$syncDatetime = 0;
+		$datetime = CloseSeatInfo::orderBy('created_at','desc')->limit(1)->pluck('created_at');
+		if($datetime){
+			$syncDatetime = $datetime;
+		}else{
+			$syncDatetime = "0000-00-00 00:00:00";
+		}
 
-		$curl = curl_init( $this->domain."/exportcloseseatinfojson/".$this->operator_id."/".$fileName );
+		$curl = curl_init( $this->domain."/exportcloseseatinfojson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		if($response == "true"){
@@ -395,8 +483,15 @@ class SyncDatabaseController extends BaseController
 		$fileName = 'client-'.$this->operatorgroup_id.'-commissiontype.json';
 		$toFile = $this->getFile($fileName);
 		$fromFile = $this->remote_file_dir.$fileName;
+		$syncDatetime = 0;
+		$datetime = CommissionType::orderBy('created_at','desc')->limit(1)->pluck('created_at');
+		if($datetime){
+			$syncDatetime = $datetime;
+		}else{
+			$syncDatetime = "0000-00-00 00:00:00";
+		}
 
-		$curl = curl_init( $this->domain."/exportcommissiontypejson/".$this->operator_id."/".$fileName );
+		$curl = curl_init( $this->domain."/exportcommissiontypejson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		if($response == "true"){
@@ -425,8 +520,14 @@ class SyncDatabaseController extends BaseController
 		$fileName = 'client-'.$this->operatorgroup_id.'-operatorgroup.json';
 		$toFile = $this->getFile($fileName);
 		$fromFile = $this->remote_file_dir.$fileName;
-
-		$curl = curl_init( $this->domain."/exportoperatorgroupjson/".$this->operator_id."/".$fileName );
+		$syncDatetime = 0;
+		$datetime = OperatorGroup::orderBy('created_at','desc')->limit(1)->pluck('created_at');
+		if($datetime){
+			$syncDatetime = $datetime;
+		}else{
+			$syncDatetime = "0000-00-00 00:00:00";
+		}	
+		$curl = curl_init( $this->domain."/exportoperatorgroupjson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		if($response == "true"){
@@ -455,8 +556,15 @@ class SyncDatabaseController extends BaseController
 		$fileName = 'client-'.$this->operatorgroup_id.'-operatorgroupuser.json';
 		$toFile = $this->getFile($fileName);
 		$fromFile = $this->remote_file_dir.$fileName;
+		$syncDatetime = 0;
+		$datetime = OperatorGroupUser::orderBy('created_at','desc')->limit(1)->pluck('created_at');
+		if($datetime){
+			$syncDatetime = $datetime;
+		}else{
+			$syncDatetime = "0000-00-00 00:00:00";
+		}	
 
-		$curl = curl_init( $this->domain."/exportoperatorgroupuserjson/".$this->operator_id."/".$fileName );
+		$curl = curl_init( $this->domain."/exportoperatorgroupuserjson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		if($response == "true"){
@@ -485,8 +593,14 @@ class SyncDatabaseController extends BaseController
 		$fileName = 'client-'.$this->operatorgroup_id.'-user.json';
 		$toFile = $this->getFile($fileName);
 		$fromFile = $this->remote_file_dir.$fileName;
-
-		$curl = curl_init( $this->domain."/exportuserjson/".$this->operator_id."/".$fileName );
+		$syncDatetime = 0;
+		$datetime = User::orderBy('created_at','desc')->limit(1)->pluck('created_at');
+		if($datetime){
+			$syncDatetime = $datetime;
+		}else{
+			$syncDatetime = "0000-00-00 00:00:00";
+		}
+		$curl = curl_init( $this->domain."/exportuserjson/".$this->operator_id."/".$fileName."/".$syncDatetime);
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		if($response == "true"){
@@ -515,8 +629,14 @@ class SyncDatabaseController extends BaseController
 		$fileName = 'client-'.$this->operatorgroup_id.'-operator.json';
 		$toFile = $this->getFile($fileName);
 		$fromFile = $this->remote_file_dir.$fileName;
-
-		$curl = curl_init( $this->domain."/exportoperatorjson/".$this->operator_id."/".$fileName );
+		$syncDatetime = 0;
+		$datetime = Operator::orderBy('created_at','desc')->limit(1)->pluck('created_at');
+		if($datetime){
+			$syncDatetime = $datetime;
+		}else{
+			$syncDatetime = "0000-00-00 00:00:00";
+		}
+		$curl = curl_init( $this->domain."/exportoperatorjson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		if($response == "true"){
@@ -545,8 +665,14 @@ class SyncDatabaseController extends BaseController
 		$fileName = 'client-'.$this->operatorgroup_id.'-seatinfo.json';
 		$toFile = $this->getFile($fileName);
 		$fromFile = $this->remote_file_dir.$fileName;
-
-		$curl = curl_init( $this->domain."/exportseatinfojson/".$this->operator_id."/".$fileName );
+		$syncDatetime = 0;
+		$datetime = SeatInfo::orderBy('created_at','desc')->limit(1)->pluck('created_at');
+		if($datetime){
+			$syncDatetime = $datetime;
+		}else{
+			$syncDatetime = "0000-00-00 00:00:00";
+		}
+		$curl = curl_init( $this->domain."/exportseatinfojson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		if($response == "true"){
@@ -575,8 +701,14 @@ class SyncDatabaseController extends BaseController
 		$fileName = 'client-'.$this->operatorgroup_id.'-today-sale-order.json';
 		$toFile = $this->getFile($fileName);
 		$fromFile = $this->remote_file_dir.$fileName;
-
-		$curl = curl_init( $this->domain."/exportsaleorderjson/".$this->operator_id."/".$fileName );
+		$syncDatetime = 0;
+		$datetime = SaleOrder::orderBy('created_at','desc')->limit(1)->pluck('created_at');
+		if($datetime){
+			$syncDatetime = $datetime;
+		}else{
+			$syncDatetime = "0000-00-00 00:00:00";
+		}		
+		$curl = curl_init( $this->domain."/exportsaleorderjson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		if($response == "true"){
@@ -599,24 +731,61 @@ class SyncDatabaseController extends BaseController
 		}
 	}
 	/**
+	 * To Sync Payment from Server
+	 */
+	public function downloadPaymentJsonfromServer(){
+		$fileName = 'client-'.$this->operatorgroup_id.'-today-payment.json';
+		$toFile = $this->getFile($fileName);
+		$fromFile = $this->remote_file_dir.$fileName;
+		$syncDatetime = 0;
+		$datetime = AgentDeposit::orderBy('created_at','desc')->limit(1)->pluck('created_at');
+		if($datetime){
+			$syncDatetime = $datetime;
+		}else{
+			$syncDatetime = "0000-00-00 00:00:00";
+		}	
+
+		$curl = curl_init( $this->domain."/exportpaymentjson/".$this->operator_id."/".$fileName."/".$syncDatetime );
+		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
+		$response = curl_exec( $curl );
+		if($response == "true"){
+			if($this->download($fromFile, $toFile)){
+				$importData = $this->importPaymentJson($fileName);
+				if($importData){
+					return Response::json($importData);
+				}
+			}else{
+				$response = array();
+				$response['status_code']  = 0; // 0 is error.
+				$response['message'] = "Can't download from server!.";
+				return Response::json($response);
+			}
+		}else{
+			$response = array();
+			$response['status_code']  = 0; // 0 is error.
+			$response['message'] = "Can't export data from server!.";
+			return Response::json($response);
+		}
+	}
+	/**
 	 * To Export BusOccourence Data
-	 * @/exportbusjson/{id}/{fname}
+	 * @/exportbusjson/{id}/{fname}/{date}
 	 */
 	public function exportBusOccurance($operator_id,$fileName){
-		$startDate	  = $this->getDate();
-		$endDate 	  = date('Y-m-d',strtotime($this->getDate() . ' + 30 day'));
+		$startDate	  = $this->getSysDateTime();
+		$endDate 	  = date('Y-m-d H:i:s',strtotime($this->getSysDateTime() . ' + 30 day'));
 		$sync 		  = Sync::wherename($fileName)->first(); // To Check/Update Latest Sync Date.
 		if($sync){
-			if($sync->last_updated_date == $this->getDate())
+			if(substr($sync->last_updated_date,0,10) == $this->getSysDate())
 				return "false"; // Already Syn for Today.
 			$startDate 	  = $sync->last_sync_date; // To Get Data that Not Sync.
-			$sync->last_updated_date = $this->getDate();
+			$sync->last_updated_date = $this->getSysDateTime();
 			$sync->last_sync_date = $endDate;
 			$sync->update();
 		}else{
 			$sync 						= new Sync();
 			$sync->name 				= $fileName;
-			$sync->last_updated_date 	= $this->getDate();
+			$sync->last_updated_date 	= $this->getSysDateTime();
 			$sync->last_sync_date 		= $endDate;
 			$sync->save();
 		}
@@ -650,6 +819,7 @@ class SyncDatabaseController extends BaseController
 						array_push($errorBus, $rows->toarray());
 					}
 				}else{
+					BusOccurance::whereid($rows['id'])->update($rows);
 					array_push($duplicateBus, $busOccuran->toarray());
 				}
 			}
@@ -663,10 +833,25 @@ class SyncDatabaseController extends BaseController
 	}
 	/**
 	 * To Export Trip Data.
-	 * @'/exporttripjson/{id}/{fname}'
+	 * @'/exporttripjson/{id}/{fname}/{date}'
 	 */
-	public function exportTrip($operator_id,$fileName){
-		$trips = Trip::where('operator_id','=',$operator_id)->get()->toarray();
+	public function exportTrip($operator_id,$fileName,$startDate){
+		/*$startDate	  = $this->getSysDateTime();
+		$sync 		  = Sync::wherename($fileName)->first(); // To Check/Update Latest Sync Date.
+		if($sync){
+			$startDate 	  = $sync->last_sync_date; // To Get Data that Not Sync.
+			$sync->last_updated_date = $this->getSysDateTime();
+			$sync->last_sync_date = $this->getSysDateTime();
+			$sync->update();
+		}else{
+			$sync 						= new Sync();
+			$sync->name 				= $fileName;
+			$sync->last_updated_date 	= $this->getSysDateTime();
+			$sync->last_sync_date 		= $this->getSysDateTime();
+			$sync->save();
+			$startDate = "0000-00-00 00:00:00";
+		}*/
+		$trips = Trip::where('operator_id','=',$operator_id)->where('created_at','>=',$startDate)->orwhere('updated_at','>=',$startDate)->get()->toarray();
 		if($trips){
 			$this->saveFile($fileName, $trips);
 			return "true";
@@ -693,6 +878,7 @@ class SyncDatabaseController extends BaseController
 						array_push($errorTrip, $rows->toarray());
 					}
 				}else{
+					Trip::whereid($rows['id'])->update($rows);
 					array_push($duplicateTrip, $trip->toarray());
 				}
 			}
@@ -706,10 +892,25 @@ class SyncDatabaseController extends BaseController
 	}
 	/**
 	 * To Export SeatingPlan Data.
-	 * @/exportseatingplanjson/{id}/{fname}
+	 * @/exportseatingplanjson/{id}/{fname}/{date}
 	 */
-	public function exportSeatingPlan($operator_id,$fileName){
-		$seatingPlans = SeatingPlan::whereoperator_id($operator_id)->get()->toarray();
+	public function exportSeatingPlan($operator_id,$fileName,$startDate){
+		/*$startDate	  = $this->getSysDateTime();
+		$sync 		  = Sync::wherename($fileName)->first(); // To Check/Update Latest Sync Date.
+		if($sync){
+			$startDate 	  = $sync->last_sync_date; // To Get Data that Not Sync.
+			$sync->last_updated_date = $this->getSysDateTime();
+			$sync->last_sync_date = $this->getSysDateTime();
+			$sync->update();
+		}else{
+			$sync 						= new Sync();
+			$sync->name 				= $fileName;
+			$sync->last_updated_date 	= $this->getSysDateTime();
+			$sync->last_sync_date 		= $this->getSysDateTime();
+			$sync->save();
+			$startDate = "0000-00-00 00:00:00";
+		}*/
+		$seatingPlans = SeatingPlan::whereoperator_id($operator_id)->where('created_at','>=',$startDate)->orwhere('updated_at','>=',$startDate)->get()->toarray();
 		if($seatingPlans){
 			$this->saveFile($fileName, $seatingPlans);
 			return "true";
@@ -736,6 +937,7 @@ class SyncDatabaseController extends BaseController
 						array_push($errorSeatingPlan, $rows->toarray());
 					}
 				}else{
+					SeatingPlan::whereid($rows['id'])->update($rows);
 					array_push($duplicateSeatingPlan, $seatingPlan->toarray());
 				}
 			}
@@ -749,10 +951,25 @@ class SyncDatabaseController extends BaseController
 	}
 	/**
 	 * To Export Agent Data.
-	 * @/exportagentjson/{id}/{fname}
+	 * @/exportagentjson/{id}/{fname}/{date}
 	 */
-	public function exportAgent($operator_id,$fileName){
-		$Agents = Agent::whereoperator_id($operator_id)->get()->toarray();
+	public function exportAgent($operator_id,$fileName,$startDate){
+		/*$startDate	  = $this->getSysDateTime();
+		$sync 		  = Sync::wherename($fileName)->first(); // To Check/Update Latest Sync Date.
+		if($sync){
+			$startDate 	  = $sync->last_sync_date; // To Get Data that Not Sync.
+			$sync->last_updated_date = $this->getSysDateTime();
+			$sync->last_sync_date = $this->getSysDateTime();
+			$sync->update();
+		}else{
+			$sync 						= new Sync();
+			$sync->name 				= $fileName;
+			$sync->last_updated_date 	= $this->getSysDateTime();
+			$sync->last_sync_date 		= $this->getSysDateTime();
+			$sync->save();
+			$startDate = "0000-00-00 00:00:00";
+		}*/
+		$Agents = Agent::whereoperator_id($operator_id)->where('created_at','>=',$startDate)->orwhere('updated_at','>=',$startDate)->get()->toarray();
 		if($Agents){
 			$this->saveFile($fileName, $Agents);
 			return "true";
@@ -779,6 +996,7 @@ class SyncDatabaseController extends BaseController
 						array_push($errorAgent, $rows->toarray());
 					}
 				}else{
+					Agent::whereid($rows['id'])->update($rows);
 					array_push($duplicateAgent, $Agent->toarray());
 				}
 			}
@@ -792,10 +1010,25 @@ class SyncDatabaseController extends BaseController
 	}
 	/**
 	 * To Export City Data.
-	 * @/exportcityjson/{id}/{fname}
+	 * @/exportcityjson/{id}/{fname}/{date}
 	 */
-	public function exportCity($operator_id,$fileName){
-		$Citys = City::all()->toarray();
+	public function exportCity($operator_id,$fileName,$startDate){
+		/*$startDate	  = $this->getSysDateTime();
+		$sync 		  = Sync::wherename($fileName)->first(); // To Check/Update Latest Sync Date.
+		if($sync){
+			$startDate 	  = $sync->last_sync_date; // To Get Data that Not Sync.
+			$sync->last_updated_date = $this->getSysDateTime();
+			$sync->last_sync_date = $this->getSysDateTime();
+			$sync->update();
+		}else{
+			$sync 						= new Sync();
+			$sync->name 				= $fileName;
+			$sync->last_updated_date 	= $this->getSysDateTime();
+			$sync->last_sync_date 		= $this->getSysDateTime();
+			$sync->save();
+			$startDate = "0000-00-00 00:00:00";
+		}*/
+		$Citys = City::where('created_at','>=',$startDate)->orwhere('updated_at','>=',$startDate)->get()->toarray();
 		if($Citys){
 			$this->saveFile($fileName, $Citys);
 			return "true";
@@ -822,6 +1055,7 @@ class SyncDatabaseController extends BaseController
 						array_push($errorCity, $rows->toarray());
 					}
 				}else{
+					City::whereid($rows['id'])->update($rows);
 					array_push($duplicateCity, $City->toarray());
 				}
 			}
@@ -835,10 +1069,25 @@ class SyncDatabaseController extends BaseController
 	}
 	/**
 	 * To Export ExtraDestination Data.
-	 * @/exportextradestinationjson/{id}/{fname}
+	 * @/exportextradestinationjson/{id}/{fname}/{date}
 	 */
-	public function exportExtraDestination($operator_id,$fileName){
-		$ExtraDestinations = ExtraDestination::all()->toarray();
+	public function exportExtraDestination($operator_id,$fileName,$startDate){
+		/*$startDate	  = $this->getSysDateTime();
+		$sync 		  = Sync::wherename($fileName)->first(); // To Check/Update Latest Sync Date.
+		if($sync){
+			$startDate 	  = $sync->last_sync_date; // To Get Data that Not Sync.
+			$sync->last_updated_date = $this->getSysDateTime();
+			$sync->last_sync_date = $this->getSysDateTime();
+			$sync->update();
+		}else{
+			$sync 						= new Sync();
+			$sync->name 				= $fileName;
+			$sync->last_updated_date 	= $this->getSysDateTime();
+			$sync->last_sync_date 		= $this->getSysDateTime();
+			$sync->save();
+			$startDate = "0000-00-00 00:00:00";
+		}*/
+		$ExtraDestinations = ExtraDestination::where('created_at','>=',$startDate)->orwhere('updated_at','>=',$startDate)->get()->toarray();
 		if($ExtraDestinations){
 			$this->saveFile($fileName, $ExtraDestinations);
 			return "true";
@@ -865,6 +1114,7 @@ class SyncDatabaseController extends BaseController
 						array_push($errorExtraDestination, $rows->toarray());
 					}
 				}else{
+					ExtraDestination::whereid($rows['id'])->update($rows);
 					array_push($duplicateExtraDestination, $ExtraDestination->toarray());
 				}
 			}
@@ -878,10 +1128,25 @@ class SyncDatabaseController extends BaseController
 	}
 	/**
 	 * To Export Classes Data.
-	 * @/exportclassesjson/{id}/{fname}
+	 * @/exportclassesjson/{id}/{fname}/{date}
 	 */
-	public function exportClasses($operator_id,$fileName){
-		$Classess = Classes::whereoperator_id($operator_id)->get()->toarray();
+	public function exportClasses($operator_id,$fileName,$startDate){
+		/*$startDate	  = $this->getSysDateTime();
+		$sync 		  = Sync::wherename($fileName)->first(); // To Check/Update Latest Sync Date.
+		if($sync){
+			$startDate 	  = $sync->last_sync_date; // To Get Data that Not Sync.
+			$sync->last_updated_date = $this->getSysDateTime();
+			$sync->last_sync_date = $this->getSysDateTime();
+			$sync->update();
+		}else{
+			$sync 						= new Sync();
+			$sync->name 				= $fileName;
+			$sync->last_updated_date 	= $this->getSysDateTime();
+			$sync->last_sync_date 		= $this->getSysDateTime();
+			$sync->save();
+			$startDate = "0000-00-00 00:00:00";
+		}*/
+		$Classess = Classes::whereoperator_id($operator_id)->where('created_at','>=',$startDate)->orwhere('updated_at','>=',$startDate)->get()->toarray();
 		if($Classess){
 			$this->saveFile($fileName, $Classess);
 			return "true";
@@ -908,6 +1173,7 @@ class SyncDatabaseController extends BaseController
 						array_push($errorClasses, $rows->toarray());
 					}
 				}else{
+					Classes::whereid($rows['id'])->update($rows);
 					array_push($duplicateClasses, $Classes->toarray());
 				}
 			}
@@ -921,10 +1187,25 @@ class SyncDatabaseController extends BaseController
 	}
 	/**
 	 * To Export AgentCommission Data.
-	 * @/exportagentcommissionjson/{id}/{fname}
+	 * @/exportagentcommissionjson/{id}/{fname}/{date}
 	 */
-	public function exportAgentCommission($operator_id,$fileName){
-		$AgentCommissions = AgentCommission::all()->toarray();
+	public function exportAgentCommission($operator_id,$fileName,$startDate){
+		/*$startDate	  = $this->getSysDateTime();
+		$sync 		  = Sync::wherename($fileName)->first(); // To Check/Update Latest Sync Date.
+		if($sync){
+			$startDate 	  = $sync->last_sync_date; // To Get Data that Not Sync.
+			$sync->last_updated_date = $this->getSysDateTime();
+			$sync->last_sync_date = $this->getSysDateTime();
+			$sync->update();
+		}else{
+			$sync 						= new Sync();
+			$sync->name 				= $fileName;
+			$sync->last_updated_date 	= $this->getSysDateTime();
+			$sync->last_sync_date 		= $this->getSysDateTime();
+			$sync->save();
+			$startDate = "0000-00-00 00:00:00";
+		}*/
+		$AgentCommissions = AgentCommission::where('created_at','>=',$startDate)->orwhere('updated_at','>=',$startDate)->get()->toarray();
 		if($AgentCommissions){
 			$this->saveFile($fileName, $AgentCommissions);
 			return "true";
@@ -951,6 +1232,7 @@ class SyncDatabaseController extends BaseController
 						array_push($errorAgentCommission, $rows->toarray());
 					}
 				}else{
+					AgentCommission::whereid($rows['id'])->update($rows);
 					array_push($duplicateAgentCommission, $AgentCommission->toarray());
 				}
 			}
@@ -964,10 +1246,25 @@ class SyncDatabaseController extends BaseController
 	}
 	/**
 	 * To Export CloseSeatInfo Data.
-	 * @/exportcloseseatinfojson/{id}/{fname}
+	 * @/exportcloseseatinfojson/{id}/{fname}/{date}
 	 */
-	public function exportCloseSeatInfo($operator_id,$fileName){
-		$CloseSeatInfos = CloseSeatInfo::all()->toarray();
+	public function exportCloseSeatInfo($operator_id,$fileName,$startDate){
+		/*$startDate	  = $this->getSysDateTime();
+		$sync 		  = Sync::wherename($fileName)->first(); // To Check/Update Latest Sync Date.
+		if($sync){
+			$startDate 	  = $sync->last_sync_date; // To Get Data that Not Sync.
+			$sync->last_updated_date = $this->getSysDateTime();
+			$sync->last_sync_date = $this->getSysDateTime();
+			$sync->update();
+		}else{
+			$sync 						= new Sync();
+			$sync->name 				= $fileName;
+			$sync->last_updated_date 	= $this->getSysDateTime();
+			$sync->last_sync_date 		= $this->getSysDateTime();
+			$sync->save();
+			$startDate = "0000-00-00 00:00:00";
+		}*/
+		$CloseSeatInfos = CloseSeatInfo::where('created_at','>=',$startDate)->orwhere('updated_at','>=',$startDate)->get()->toarray();
 		if($CloseSeatInfos){
 			$this->saveFile($fileName, $CloseSeatInfos);
 			return "true";
@@ -994,6 +1291,7 @@ class SyncDatabaseController extends BaseController
 						array_push($errorCloseSeatInfo, $rows->toarray());
 					}
 				}else{
+					CloseSeatInfo::whereid($rows['id'])->update($rows);
 					array_push($duplicateCloseSeatInfo, $CloseSeatInfo->toarray());
 				}
 			}
@@ -1007,10 +1305,25 @@ class SyncDatabaseController extends BaseController
 	}
 	/**
 	 * To Export CommissionType Data.
-	 * @/exportcommissiontypejson/{id}/{fname}
+	 * @/exportcommissiontypejson/{id}/{fname}/{date}
 	 */
-	public function exportCommissionType($operator_id,$fileName){
-		$CommissionTypes = CommissionType::all()->toarray();
+	public function exportCommissionType($operator_id,$fileName,$startDate){
+		/*$startDate	  = $this->getSysDateTime();
+		$sync 		  = Sync::wherename($fileName)->first(); // To Check/Update Latest Sync Date.
+		if($sync){
+			$startDate 	  = $sync->last_sync_date; // To Get Data that Not Sync.
+			$sync->last_updated_date = $this->getSysDateTime();
+			$sync->last_sync_date = $this->getSysDateTime();
+			$sync->update();
+		}else{
+			$sync 						= new Sync();
+			$sync->name 				= $fileName;
+			$sync->last_updated_date 	= $this->getSysDateTime();
+			$sync->last_sync_date 		= $this->getSysDateTime();
+			$sync->save();
+			$startDate = "0000-00-00 00:00:00";
+		}*/
+		$CommissionTypes = CommissionType::where('created_at','>=',$startDate)->orwhere('updated_at','>=',$startDate)->get()->toarray();
 		if($CommissionTypes){
 			$this->saveFile($fileName, $CommissionTypes);
 			return "true";
@@ -1037,6 +1350,7 @@ class SyncDatabaseController extends BaseController
 						array_push($errorCommissionType, $rows->toarray());
 					}
 				}else{
+					CommissionType::whereid($rows['id'])->update($rows);
 					array_push($duplicateCommissionType, $CommissionType->toarray());
 				}
 			}
@@ -1050,10 +1364,25 @@ class SyncDatabaseController extends BaseController
 	}
 	/**
 	 * To Export OperatorGroup Data.
-	 * @/exportoperatorgroupjson/{id}/{fname}
+	 * @/exportoperatorgroupjson/{id}/{fname}/{date}
 	 */
-	public function exportOperatorGroup($operator_id,$fileName){
-		$OperatorGroups = OperatorGroup::whereoperator_id($operator_id)->get()->toarray();
+	public function exportOperatorGroup($operator_id,$fileName,$startDate){
+		/*$startDate	  = $this->getSysDateTime();
+		$sync 		  = Sync::wherename($fileName)->first(); // To Check/Update Latest Sync Date.
+		if($sync){
+			$startDate 	  = $sync->last_sync_date; // To Get Data that Not Sync.
+			$sync->last_updated_date = $this->getSysDateTime();
+			$sync->last_sync_date = $this->getSysDateTime();
+			$sync->update();
+		}else{
+			$sync 						= new Sync();
+			$sync->name 				= $fileName;
+			$sync->last_updated_date 	= $this->getSysDateTime();
+			$sync->last_sync_date 		= $this->getSysDateTime();
+			$sync->save();
+			$startDate = "0000-00-00 00:00:00";
+		}*/
+		$OperatorGroups = OperatorGroup::whereoperator_id($operator_id)->where('created_at','>=',$startDate)->orwhere('updated_at','>=',$startDate)->get()->toarray();
 		if($OperatorGroups){
 			$this->saveFile($fileName, $OperatorGroups);
 			return "true";
@@ -1080,6 +1409,7 @@ class SyncDatabaseController extends BaseController
 						array_push($errorOperatorGroup, $rows->toarray());
 					}
 				}else{
+					OperatorGroup::whereid($rows['id'])->update($rows);
 					array_push($duplicateOperatorGroup, $OperatorGroup->toarray());
 				}
 			}
@@ -1093,10 +1423,25 @@ class SyncDatabaseController extends BaseController
 	}
 	/**
 	 * To Export OperatorGroupUser Data.
-	 * @/exportoperatorgroupuserjson/{id}/{fname}
+	 * @/exportoperatorgroupuserjson/{id}/{fname}/{date}
 	 */
-	public function exportOperatorGroupUser($operator_id,$fileName){
-		$OperatorGroupUsers = OperatorGroupUser::whereoperator_id($operator_id)->get()->toarray();
+	public function exportOperatorGroupUser($operator_id,$fileName,$startDate){
+		/*$startDate	  = $this->getSysDateTime();
+		$sync 		  = Sync::wherename($fileName)->first(); // To Check/Update Latest Sync Date.
+		if($sync){
+			$startDate 	  = $sync->last_sync_date; // To Get Data that Not Sync.
+			$sync->last_updated_date = $this->getSysDateTime();
+			$sync->last_sync_date = $this->getSysDateTime();
+			$sync->update();
+		}else{
+			$sync 						= new Sync();
+			$sync->name 				= $fileName;
+			$sync->last_updated_date 	= $this->getSysDateTime();
+			$sync->last_sync_date 		= $this->getSysDateTime();
+			$sync->save();
+			$startDate = "0000-00-00 00:00:00";
+		}*/
+		$OperatorGroupUsers = OperatorGroupUser::whereoperator_id($operator_id)->where('created_at','>=',$startDate)->orwhere('updated_at','>=',$startDate)->get()->toarray();
 		if($OperatorGroupUsers){
 			$this->saveFile($fileName, $OperatorGroupUsers);
 			return "true";
@@ -1123,6 +1468,7 @@ class SyncDatabaseController extends BaseController
 						array_push($errorOperatorGroupUser, $rows->toarray());
 					}
 				}else{
+					OperatorGroupUser::whereid($rows['id'])->update($rows);
 					array_push($duplicateOperatorGroupUser, $OperatorGroupUser->toarray());
 				}
 			}
@@ -1136,10 +1482,25 @@ class SyncDatabaseController extends BaseController
 	}
 	/**
 	 * To Export User Data.
-	 * @/exportuserjson/{id}/{fname}
+	 * @/exportuserjson/{id}/{fname}/{date}
 	 */
-	public function exportUser($operator_id,$fileName){
-		$Users = User::all()->toarray();
+	public function exportUser($operator_id,$fileName,$startDate){
+		/*$startDate	  = $this->getSysDateTime();
+		$sync 		  = Sync::wherename($fileName)->first(); // To Check/Update Latest Sync Date.
+		if($sync){
+			$startDate 	  = $sync->last_sync_date; // To Get Data that Not Sync.
+			$sync->last_updated_date = $this->getSysDateTime();
+			$sync->last_sync_date = $this->getSysDateTime();
+			$sync->update();
+		}else{
+			$sync 						= new Sync();
+			$sync->name 				= $fileName;
+			$sync->last_updated_date 	= $this->getSysDateTime();
+			$sync->last_sync_date 		= $this->getSysDateTime();
+			$sync->save();
+			$startDate = "0000-00-00 00:00:00";
+		}*/
+		$Users = User::where('created_at','>=',$startDate)->orwhere('updated_at','>=',$startDate)->get()->toarray();
 		if($Users){
 			$this->saveFile($fileName, $Users);
 			return "true";
@@ -1166,6 +1527,7 @@ class SyncDatabaseController extends BaseController
 						array_push($errorUser, $rows->toarray());
 					}
 				}else{
+					User::whereid($rows['id'])->update($rows);
 					array_push($duplicateUser, $User->toarray());
 				}
 			}
@@ -1179,10 +1541,25 @@ class SyncDatabaseController extends BaseController
 	}
 	/**
 	 * To Export Operator Data.
-	 * @/exportoperatorjson/{id}/{fname}
+	 * @/exportoperatorjson/{id}/{fname}/{date}
 	 */
-	public function exportOperator($operator_id,$fileName){
-		$Operators = Operator::all()->toarray();
+	public function exportOperator($operator_id,$fileName,$startDate){
+		/*$startDate	  = $this->getSysDateTime();
+		$sync 		  = Sync::wherename($fileName)->first(); // To Check/Update Latest Sync Date.
+		if($sync){
+			$startDate 	  = $sync->last_sync_date; // To Get Data that Not Sync.
+			$sync->last_updated_date = $this->getSysDateTime();
+			$sync->last_sync_date = $this->getSysDateTime();
+			$sync->update();
+		}else{
+			$sync 						= new Sync();
+			$sync->name 				= $fileName;
+			$sync->last_updated_date 	= $this->getSysDateTime();
+			$sync->last_sync_date 		= $this->getSysDateTime();
+			$sync->save();
+			$startDate = "0000-00-00 00:00:00";
+		}*/
+		$Operators = Operator::where('created_at','>=',$startDate)->orwhere('updated_at','>=',$startDate)->get()->toarray();
 		if($Operators){
 			$this->saveFile($fileName, $Operators);
 			return "true";
@@ -1209,6 +1586,7 @@ class SyncDatabaseController extends BaseController
 						array_push($errorOperator, $rows->toarray());
 					}
 				}else{
+					Operator::whereid($rows['id'])->update($rows);
 					array_push($duplicateOperator, $Operator->toarray());
 				}
 			}
@@ -1222,10 +1600,25 @@ class SyncDatabaseController extends BaseController
 	}
 	/**
 	 * To Export SeatInfo Data.
-	 * @/exportseatinfojson/{id}/{fname}
+	 * @/exportseatinfojson/{id}/{fname}/{date}
 	 */
-	public function exportSeatInfo($operator_id,$fileName){
-		$SeatInfos = SeatInfo::all()->toarray();
+	public function exportSeatInfo($operator_id,$fileName,$startDate){
+		/*$startDate	  = $this->getSysDateTime();
+		$sync 		  = Sync::wherename($fileName)->first(); // To Check/Update Latest Sync Date.
+		if($sync){
+			$startDate 	  = $sync->last_sync_date; // To Get Data that Not Sync.
+			$sync->last_updated_date = $this->getSysDateTime();
+			$sync->last_sync_date = $this->getSysDateTime();
+			$sync->update();
+		}else{
+			$sync 						= new Sync();
+			$sync->name 				= $fileName;
+			$sync->last_updated_date 	= $this->getSysDateTime();
+			$sync->last_sync_date 		= $this->getSysDateTime();
+			$sync->save();
+			$startDate = "0000-00-00 00:00:00";
+		}*/
+		$SeatInfos = SeatInfo::where('created_at','>=',$startDate)->orwhere('updated_at','>=',$startDate)->get()->toarray();
 		if($SeatInfos){
 			$this->saveFile($fileName, $SeatInfos);
 			return "true";
@@ -1252,6 +1645,7 @@ class SyncDatabaseController extends BaseController
 						array_push($errorSeatInfo, $rows->toarray());
 					}
 				}else{
+					SeatInfo::whereid($rows['id'])->update($rows);
 					array_push($duplicateSeatInfo, $SeatInfo->toarray());
 				}
 			}
@@ -1265,24 +1659,25 @@ class SyncDatabaseController extends BaseController
 	}
 	/**
 	 * To Export Sale Transaction Data
-	 * @/exportsaleorderjson/{id}/{fname}
+	 * @/exportsaleorderjson/{id}/{fname}/{date}
 	 */
-	public function exportSaleOrderJson($fileName){
-		$startDate	  = $this->getDate();
+	public function exportSaleOrderJson($operator_id,$fileName,$startDate){
+		/*$startDate	  = $this->getSysDateTime();
 		$sync 		  = Sync::wherename($fileName)->first(); // To Check/Update Latest Sync Date.
 		if($sync){
 			$startDate 	  = $sync->last_sync_date; // To Get Data that Not Sync.
-			$sync->last_updated_date = $this->getDate();
-			$sync->last_sync_date = $this->getDate();
+			$sync->last_updated_date = $this->getSysDateTime();
+			$sync->last_sync_date = $this->getSysDateTime();
 			$sync->update();
 		}else{
 			$sync 						= new Sync();
 			$sync->name 				= $fileName;
-			$sync->last_updated_date 	= $this->getDate();
-			$sync->last_sync_date 		= $this->getDate();
+			$sync->last_updated_date 	= $this->getSysDateTime();
+			$sync->last_sync_date 		= $this->getSysDateTime();
 			$sync->save();
-		}
-		$saleOrders 	= SaleOrder::with('saleitems')->where('created_at','>=', $startDate)->get()->toarray();
+			$startDate = "0000-00-00 00:00:00";
+		}*/
+		$saleOrders 	= SaleOrder::with('saleitems')->where('created_at','>=',$startDate)->orwhere('updated_at','>=',$startDate)->get()->toarray();
 		if($saleOrders){
 			$this->saveFile($fileName, $saleOrders);
 			return "true";
@@ -1306,12 +1701,11 @@ class SyncDatabaseController extends BaseController
 			foreach ($saleOrders as $rows) {
 				$saleOrder = SaleOrder::whereid($rows['id'])->first();
 				if(!$saleOrder){
-					$newSaleOrder = $rows;
-					$saleOrder = SaleOrder::create($newSaleOrder);
+					$saleOrder = SaleOrder::create($rows);
 					if($saleOrder){
 						array_push($successSaleOrders, $saleOrder->toarray());
 						foreach ($rows['saleitems'] as $row) {
-							$saleItem = SaleItem::whereid($row['id'])->whereorder_id($row['order_id'])->first();
+							$saleItem = SaleItem::whereorder_id($row['order_id'])->whereseat_no($row['seat_no'])->first();
 							if(!$saleItem){
 								$saleItem = SaleItem::create($row);
 								if($saleItem){
@@ -1328,7 +1722,31 @@ class SyncDatabaseController extends BaseController
 					}
 					
 				}else{
-					array_push($duplicateSaleOrders, $saleOrder->toarray());
+					$saleorder_item = $rows;
+					unset($saleorder_item['device_id']);
+					unset($saleorder_item['saleitems']);
+					$saleOrder = SaleOrder::whereid($rows['id'])->where('updated_at','<',$rows['updated_at'])->update($saleorder_item);
+					if($saleOrder){
+						array_push($successSaleOrders, $saleOrder);
+						foreach ($rows['saleitems'] as $row) {
+							unset($row['device_id']);
+							$saleItem = SaleItem::whereorder_id($row['order_id'])->whereseat_no($row['seat_no'])->first();
+							if(!$saleItem){
+								$saleItem = SaleItem::create($row);
+								if($saleItem){
+									array_push($successSaleItems, $saleItem);
+								}else{
+									array_push($errorSaleItems, $row);
+								}
+							}else{
+								SaleItem::whereorder_id($row['order_id'])->whereseat_no($row['seat_no'])->update($row);
+								array_push($duplicateSaleItems, $saleItem);
+							}
+						}
+					}else{
+						array_push($errorSaleOrders, $rows);
+					}
+					array_push($duplicateSaleOrders, $saleOrder);
 				}
 			}
 			$response['status_code']  = 1; // 1 is success.
@@ -1340,13 +1758,33 @@ class SyncDatabaseController extends BaseController
 			$response["successSaleOrders"] = $successSaleOrders;
 			$response["successSaleItems"] = $successSaleItems;
 			return $response;
+		}else{
+			$response['status_code']  = 0;
+			$response['message'] = "Empty value from your uploaded file.";
+			return $response;
 		}
 	}
 	/**
 	 * To Export Payment Transaction Data
+	 * @/exportpaymentjson/{id}/{fname}/{date}
 	 */
-	public function exportPaymentJson($fileName){
-		$agentDeposits 	= AgentDeposit::where('created_at','Like','%'.$this->getDate().'%')->get()->toarray();
+	public function exportPaymentJson($operator_id,$fileName,$startDate){
+		/*$startDate	  = $this->getSysDateTime();
+		$sync 		  = Sync::wherename($fileName)->first(); // To Check/Update Latest Sync Date.
+		if($sync){
+			$startDate 	  = $sync->last_sync_date; // To Get Data that Not Sync.
+			$sync->last_updated_date = $this->getSysDateTime();
+			$sync->last_sync_date = $this->getSysDateTime();
+			$sync->update();
+		}else{
+			$sync 						= new Sync();
+			$sync->name 				= $fileName;
+			$sync->last_updated_date 	= $this->getSysDateTime();
+			$sync->last_sync_date 		= $this->getSysDateTime();
+			$sync->save();
+			$startDate = "0000-00-00 00:00:00";
+		}*/
+		$agentDeposits 	= AgentDeposit::where('created_at','>=',$startDate)->orwhere('updated_at','>=',$startDate)->get()->toarray();
 		if($agentDeposits){
 			$this->saveFile($fileName, $agentDeposits);
 			return "true";
@@ -1442,10 +1880,8 @@ class SyncDatabaseController extends BaseController
 				return false;
 			}
 		} catch (Exception $e) {
-			return $e;
+			dd($e);
 		}
-		
-		
 	}
 	/**
 	 * To Upload Data to Server.
@@ -1464,7 +1900,7 @@ class SyncDatabaseController extends BaseController
 			// close the connection
 			ftp_close($conn_id);
 		} catch (Exception $e) {
-			return $e;
+			dd($e);
 		}
 		
 	}
@@ -1485,7 +1921,7 @@ class SyncDatabaseController extends BaseController
 			// close the connection
 			ftp_close($conn_id);
 		} catch (Exception $e) {
-			return $e;
+			dd($e);
 		}
 	}
 	/**
@@ -1496,4 +1932,5 @@ class SyncDatabaseController extends BaseController
 		$jsonArr = json_decode($jsonString,true);
 		return $jsonArr;
 	}
+
 }

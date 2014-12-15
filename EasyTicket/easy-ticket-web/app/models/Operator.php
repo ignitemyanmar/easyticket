@@ -3,6 +3,5 @@
 	{ 
 		protected $table = 'tbl_operator';
 		protected $fillable = array('id','name','address','phone','user_id');
-		public $timestamps = false;
 	}
 ?>

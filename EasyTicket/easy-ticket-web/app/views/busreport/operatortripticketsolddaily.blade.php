@@ -21,8 +21,8 @@
    }
    #printable { display: none; }
    table{border-top: 1px solid #ddd;}
-   tr.group td,
-   tr.group td:hover {
+   tr.group th,
+   tr.group th:hover {
        background: #ddd !important;
    }
    tbody td, thead th{border-right: 1px solid #ddd;}
@@ -180,7 +180,7 @@
                                                    <td>{{date('d/m/Y',strtotime($result['order_date']))}}</td>
                                                    <td>{{$result['ticket_no']}}</td>
                                                    <td>{{$result['from_to']}}</td>
-                                                   <td>{{date('d/m/Y',strtotime($result['departure_date']))}} <br>({{$result['time']}})</td>
+                                                   <td>{{date('d/m/Y',strtotime($result['departure_date']))}} ({{$result['time']}})</td>
                                                    <td>{{$result['classes']}}</td>
                                                    <td>
                                                       <div class="wordwrap">
@@ -219,8 +219,8 @@
                                         <th colspan="6">&nbsp;</th>
                                         <th colspan="2" class="text-right">Grand Quantity</th>
                                         <th>: {{$G_totalticket}}</th>
-                                        <th colspan="3" class="text-right">Grand Total</th>
-                                        <th style="text-align:right;">: {{$G_totalamount}}</th>
+                                        <th colspan="3" class="text-right">Grand Total :</th>
+                                        <th style="text-align:right;">{{$G_totalamount}}</th>
                                       </tr>
                                     </tfoot>
                                   @endif
@@ -257,7 +257,7 @@
                   api.column(2, {page:'current'} ).data().each( function ( group, i ) {
                       if ( last !== group ) {
                           $(rows).eq( i ).before(
-                              '<tr class="group"><td colspan="13">'+group+'</td></tr>'
+                              '<tr class="group"><th colspan="13">'+group+'</th></tr>'
                           );
        
                           last = group;

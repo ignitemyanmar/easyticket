@@ -11,6 +11,7 @@ class BaseController extends Controller {
 	public $operator_id = 0;
 	public $operatorgroup_id = 0;
 	public $client_ip = "";
+
 	public function __construct(){
 		$this->Date = App::make('MyDate');
 		$this->today= App::make('MyDate');
@@ -34,6 +35,14 @@ class BaseController extends Controller {
 
     protected function getDateTime(){
     	return $this->today;
+    }
+
+    protected function getSysDateTime(){
+    	return date("Y-m-d H:i:s");
+    }
+
+    protected function getSysDate(){
+    	return date("Y-m-d");
     }
 
 	protected function setupLayout()

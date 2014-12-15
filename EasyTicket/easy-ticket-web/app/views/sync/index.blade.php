@@ -804,7 +804,7 @@
       })
       .done(function( response ) {
          $('.progress-striped').removeClass('active');
-         //alert(JSON.stringify(response));
+         alert(JSON.stringify(response));
          if(response.status_code === 1){
             alert( "Data Saved: " + response.message );
             $('.alert').show();

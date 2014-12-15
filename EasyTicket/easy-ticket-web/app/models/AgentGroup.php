@@ -2,6 +2,6 @@
 	Class AgentGroup extends Eloquent 
 	{ 
 		protected $table = 'tbl_agentgroup';
-		public $timestamps = false;
+		protected $fillable = array('id','name','operator_id');
 	}
 ?>

@@ -1,7 +1,13 @@
 @extends('../admin')
 @section('content')
    <link rel="stylesheet" href="../../css/reveal.css" />
-   <link rel="stylesheet" href="../../assets/data-tables/DT_bootstrap.css" />
+<link rel="stylesheet" href="../../../../css/jquery.dataTables.v1.10.4.css" />
+<style type="text/css">
+   .heading th{background: #E4F6F5 !important; }
+   .subheading th{background: #ddd !important; }
+</style>
+
+   <!-- <link rel="stylesheet" href="../../assets/data-tables/DT_bootstrap.css" /> -->
    <link rel="shortcut icon" href="favicon.ico" />
    <!-- BEGIN PAGE -->
       <div class="page-content">
@@ -100,7 +106,7 @@
                                  </div>
                               </div>
                               <form action="/report/agentcreditspayment" method="post" id="paymentform">
-                              <table class="table table-striped table-hover table-bordered" id="sample_editable_1">
+                              <table class="table table-striped table-hover table-bordered" id="tblExport">
                                  <thead>
                                     <tr>
                                        @if($parameter['cash_status']==2)
@@ -115,15 +121,23 @@
                                        <th>ခုံအေရအတြက္</th>
                                        <th>ရွင္းႏႈန္း</th>
                                        <th>အေၾကြး / ေပးျပီး</th>
-                                       <th>%ႏုတ္ျပီးစုစုေပါင္း</th>
+                                       <th>%ႏုတ္ျပီး စုစုေပါင္း</th>
                                     </tr>
                                  </thead>
                                  <tbody>
                                        @if($response)
                                           <?php $columns=9; ?>  
                                           @foreach($response as $key=>$value)
-                                             <tr>
-                                                <th colspan="{{$columns}}" style="background:#E4F6F5 !important;">{{$key}}</th>
+                                             <tr class="heading">
+                                                <th style="background:#E4F6F5 !important;">{{date('d/m/Y', strtotime($key))}}</th>
+                                                <th></th>
+                                                <th></th>
+                                                <th></th>
+                                                <th></th>
+                                                <th></th>
+                                                <th></th>
+                                                <th></th>
+                                                <th></th>
                                              </tr>
                                              <?php $subtotal=0; ?>
                                              @foreach($value as $row)
@@ -140,7 +154,7 @@
                                                       </td>
                                                    @endif
                                                    <td>{{ $row['id']}}</td>
-                                                   <td>{{$row['orderdate']}}</td>
+                                                   <td>{{date('d/m/Y', strtotime($row['orderdate']))}}</td>
                                                    <td>{{ $row['trip']}} ({{$row['class']}})</td>
                                                    <td>{{ date('d/m/Y', strtotime($row['departure_date']))}} [{{$row['departure_time']}}]</td>
                                                    <td>{{$row['total_ticket']}}</td>
@@ -150,8 +164,15 @@
                                                 </tr>
                                                 <?php $subtotal +=($row['price']-$row['commission']) * $row['total_ticket']; ?>
                                              @endforeach
-                                             <tr>
-                                                <th colspan="{{$columns-1}}" style="background: #ddd !important;text-align:right !important;">Sub Total :</th>
+                                             <tr class="subheading">
+                                                <th></th>
+                                                <th></th>
+                                                <th></th>
+                                                <th></th>
+                                                <th></th>
+                                                <th></th>
+                                                <th></th>
+                                                <th style="background: #ddd !important;text-align:right !important;">Sub Total</th>
                                                 <th align="left" style="background: #ddd !important;">{{$subtotal}}</th>
                                              </tr>
                                           @endforeach
@@ -208,9 +229,12 @@
          <!-- END PAGE CONTAINER-->    
       </div>
       <!-- END PAGE --> 
-   <script type="text/javascript" src="../../assets/data-tables/jquery.dataTables.js"></script>
-   <script type="text/javascript" src="../../assets/data-tables/DT_bootstrap.js"></script>
+  
+  
    <script type="text/javascript" src="../../js/foundation.min.js"></script>
+   
+    <script type="text/javascript" src="../../assets/data-tables/jquery.dataTables.js"></script>
+   <script type="text/javascript" src="../../assets/data-tables/DT_bootstrap.js"></script>
    <script>
       $(document).foundation();
       jQuery(document).ready(function() {       
@@ -219,6 +243,9 @@
          // App.init();
       });
    </script>
+
+
+
    <script type="text/javascript">
    $(function(){
          $('#hdpayment').val(0);

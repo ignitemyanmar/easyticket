@@ -7,8 +7,8 @@
 <style type="text/css">
    .footer-row th{background:#ddd !important;}
    .title-row th{background:rgba(228, 246, 245, 1) !important;}
-   tr.group td,
-   tr.group td:hover {
+   tr.group th,
+   tr.group th:hover {
        background: #ddd !important;
    }
    #sample_editable_1_length select{width: 80px;}
@@ -95,7 +95,7 @@
                                                 <div class="controls">
                                                    <select name="agentgroup" class="m-wrap span12 chosen" id="agentgroup">
                                                       <option value="All">All</option>
-                                                      @if($search['agentgroup'])
+                                                      @if(isset($search['agentgroup']))
                                                          @foreach($search['agentgroup'] as $rows)
                                                             <option value="{{$rows['id']}}" @if($rows['id']==$search['agentgroup_id']) selected @endif>{{$rows['name']}}</option>
                                                          @endforeach
@@ -299,9 +299,8 @@
                                     @endif
                                     <th>ခရီးစဥ္</th>
                                     <th>ထြက္ခြာမည့္ေန ့ရက္ / အခ်ိန္</th>
-                                    <!-- <th>ထြက္ခြာမည့္အခ်ိန္</th> -->
                                     <th>ကားအမ်ိဴးအစား</th>
-                                    <th>ခုံအေရအတြက္</th>
+                                    <th>ခုံအေရ အတြက္</th>
                                     <th>အခမဲ႕ လက္မွတ္ </th>
                                     <th>ေစ်းႏုန္း</th>
                                     <th>စုုစုုေပါင္း</th>
@@ -390,12 +389,12 @@
                                              <th></th>
                                           @endif
                                           <!-- <th></th> -->
-                                          <th></th>
                                           <th colspan="2" class="text-right">Grand Quantity</th>
                                           <th>: {{$G_total_ticket}}</th>
                                           <th colspan="2">Grand Free Ticket : {{$G_free_ticket}}</th>
-                                          <th colspan="2" class="text-right">Grand Total</th>
-                                          <th>: {{$G_total_amount}}</th>
+                                          <th colspan="2" class="text-right">Grand Total :</th>
+                                          <th>{{$G_total_amount}}</th>
+                                          <th></th>
                                           <!-- <th>&nbsp;</th> -->
                                        </tr>
                                     </tfoot>
@@ -437,7 +436,7 @@
                   api.column(1, {page:'current'} ).data().each( function ( group, i ) {
                       if ( last !== group ) {
                           $(rows).eq( i ).before(
-                              '<tr class="group"><td colspan="10">'+group+'</td></tr>'
+                              '<tr class="group"><th colspan="10">'+group+'</th></tr>'
                           );
        
                           last = group;

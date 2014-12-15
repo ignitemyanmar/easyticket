@@ -1,9 +1,8 @@
 @extends('../admin')
 @section('content')
-   <link rel="stylesheet" href="../../css/reveal.css" />
-<link rel="stylesheet" type="text/css" href="../../assets/chosen-bootstrap/chosen/chosen.css" />
+   <link rel="stylesheet" type="text/css" href="../../assets/chosen-bootstrap/chosen/chosen.css" />
    <link rel="stylesheet" href="../../assets/data-tables/DT_bootstrap.css" />
-   <link rel="shortcut icon" href="favicon.ico" />
+   <link rel="stylesheet" href="../../css/reveal.css" />
    <!-- BEGIN PAGE -->
       <div class="page-content">
          <!-- BEGIN PAGE CONTAINER-->
@@ -11,26 +10,6 @@
             <!-- BEGIN PAGE HEADER-->
                <div class="row-fluid">
                   <div class="span12">
-                     <!-- BEGIN STYLE CUSTOMIZER -->
-                     <div class="color-panel hidden-phone">
-                        <div class="color-mode-icons icon-color"></div>
-                        <div class="color-mode-icons icon-color-close"></div>
-                        <div class="color-mode">
-                           <p>THEME COLOR</p>
-                           <ul class="inline">
-                              <li class="color-black current color-default" data-style="default"></li>
-                              <li class="color-blue" data-style="blue"></li>
-                              <li class="color-brown" data-style="brown"></li>
-                              <li class="color-purple" data-style="purple"></li>
-                              <li class="color-white color-light" data-style="light"></li>
-                           </ul>
-                           <label class="hidden-phone">
-                           <input type="checkbox" class="header" checked value="" />
-                           <span class="color-mode-label">Fixed Header</span>
-                           </label>                   
-                        </div>
-                     </div>
-                     <!-- END BEGIN STYLE CUSTOMIZER -->    
                      <!-- BEGIN PAGE TITLE & BREADCRUMB-->        
                      <h3 class="page-title">
                         အေရာင္းကုိယ္စားလွယ္ ႏွင့္ အေၾကြးစာရင္းမ်ား          
@@ -65,6 +44,7 @@
                                        <input type="hidden" class="span9" name="agent_id" value="{{$response['id']}}">
                                        <input type="text" class="span9" name="credit">
                                     </div>
+                                 </div>
 
                                  <div class="row-fluid">
                                     <div class="span12">
@@ -92,6 +72,7 @@
                                        <input type="hidden" class="span9" name="agent_id" value="{{$response['id']}}">
                                        <input type="text" class="span9" name="deposit">
                                     </div>
+                                 </div>
 
                                  <div class="row-fluid">
                                     <div class="span12">
@@ -137,10 +118,10 @@
                                  <div class="clear">&nbsp;</div>
                                  <div class="row-fluid">
                                     <div class="span4">
-                                       <label><input type="radio" class="span9" value="2" name="commission_id">Percentage</label>
+                                       <label><input type="radio" class="span4" value="2" name="commission_id">Percentage</label>
                                     </div>
                                     <div class="span4">
-                                       <label><input type="radio" class="span9" value="1" name="commission_id">Fixed</label>
+                                       <label><input type="radio" class="span4" value="1" name="commission_id">Fixed</label>
                                     </div>
                                  </div>
 

@@ -73,7 +73,14 @@ class OrderController extends \BaseController {
 	 */
 	public function destroy($id)
 	{
-		SaleOrder::whereid($id)->delete();
+		$saleOrder = SaleOrder::with('saleitems')->whereid($id)->first();
+		if($saleOrder){
+			SaleOrder::whereid($id)->delete();
+			DeleteSaleOrder::create($saleOrder);
+			foreach ($saleOrder->saleitems as $rows) {
+				DeleteSaleItem::create($rows);
+			}
+		}
 		$message="Successfully delete order.";
 		return Redirect::to('orderlist')->with('message',$message);
 	}

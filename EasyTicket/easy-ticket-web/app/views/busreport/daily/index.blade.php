@@ -79,11 +79,11 @@
                            <table class="table table-striped table-bordered table-advance table-hover" id="tblExport">
                               <thead>
                                  <tr>
-                                    <th>ထြက္ခြာမည့္ေန ့ရက္</th>
+                                    <th>ထြက္ခြာ မည့္ေန ့ရက္</th>
                                     <th>ခရီးစဥ္</th>
-                                    <th>ထြက္ခြာမည့္အခ်ိန္</th>
+                                    <th>ထြက္ခြာမည့္ အခ်ိန္</th>
                                     <th>ကားအမ်ိဴးအစား</th>
-                                    <th>ခုံအေရအတြက္</th>
+                                    <th>ခုံအေရ အတြက္</th>
                                     <th>အခမဲ႕ လက္မွတ္ </th>
                                     <th>ေစ်းႏုန္း</th>
                                     <th>စုုစုုေပါင္း</th>

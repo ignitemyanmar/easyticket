@@ -49,7 +49,7 @@ public class OrderListViewAdapter extends BaseAdapter {
 			holder = (ViewHolder) convertView.getTag();
 		}
 		
-		holder.name.setText(getItem(position).getAgent().toString());
+		holder.name.setText(getItem(position).getAgent());
 		holder.trip.setText(getItem(position).getTrip().toString());
 		holder.date.setText(getItem(position).getOrderdate().toString());
 		holder.total_ticket.setText("Total Ticket: "+getItem(position).getTotalTicket().toString());

@@ -55,6 +55,7 @@ import com.ignite.mm.ticketing.sqlite.database.model.Agent;
 import com.ignite.mm.ticketing.sqlite.database.model.AgentList;
 import com.ignite.mm.ticketing.sqlite.database.model.ConfirmSeat;
 import com.ignite.mm.ticketing.sqlite.database.model.ExtraCity;
+import com.ignite.mm.ticketing.sqlite.database.model.RemarkType;
 import com.smk.custom.view.CustomTextView;
 import com.smk.skalertmessage.SKToastMessage;
 import com.smk.skconnectiondetector.SKConnectionDetector;
@@ -94,6 +95,8 @@ public class NRCActivity extends BaseSherlockActivity {
 	private Integer NotifyBooking;
 	private TextView actionBarNoti;
 	private EditText edt_remark;
+	private Spinner sp_remark_type;
+	private Integer selectedRemarkType;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -139,6 +142,7 @@ public class NRCActivity extends BaseSherlockActivity {
 		rdo_local = (RadioButton) findViewById(R.id.rdo_local);
 		extra_city_container = (LinearLayout) findViewById(R.id.extra_city_container);
 		sp_extra_city = (Spinner) findViewById(R.id.sp_extra_city);
+		sp_remark_type = (Spinner) findViewById(R.id.sp_remark_type);
 		edt_remark = (EditText) findViewById(R.id.edt_remark);
 		
 		nrcFormat = new ArrayList<String>();
@@ -155,6 +159,18 @@ public class NRCActivity extends BaseSherlockActivity {
 		nrcFormat.add("12/MaAhaPa(N) ");
 		nrcFormat.add("13/MaAhaPa(N) ");
 		nrcFormat.add("14/MaAhaPa(N) ");
+		
+		List<String> remarkTypes = new ArrayList<String>();
+		remarkTypes.add("မွတ္ခ်က္ အမ်ိဳးအစား  ေရြးရန္");
+		remarkTypes.add("လမ္းၾကိဳ");
+		remarkTypes.add("ေတာင္းရန္");
+		remarkTypes.add("ခုံေရြ႕ရန္");
+		remarkTypes.add("Date Chanage ရန္");
+		remarkTypes.add("စည္းဖ်က္");
+		
+		ArrayAdapter<String> remarkAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, remarkTypes);
+		sp_remark_type.setAdapter(remarkAdapter);
+		sp_remark_type.setOnItemSelectedListener(remarkTypeSelectedListener);
 		
 		nrcListAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, nrcFormat);
 		edt_nrc_no.setAdapter(nrcListAdapter);
@@ -233,6 +249,21 @@ public class NRCActivity extends BaseSherlockActivity {
 		
 	}
 	
+	private OnItemSelectedListener remarkTypeSelectedListener = new OnItemSelectedListener() {
+
+		public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2,
+				long arg3) {
+			// TODO Auto-generated method stub
+			selectedRemarkType = arg2;
+			
+		}
+
+		public void onNothingSelected(AdapterView<?> arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+	};
+	
 	private void getExtraDestination(){
 		NetworkEngine.getInstance().getExtraDestination(AppLoginUser.getAccessToken(), BusOccurence, new Callback<List<ExtraCity>>() {
 			
@@ -308,6 +339,8 @@ public class NRCActivity extends BaseSherlockActivity {
 		params.add(new BasicNameValuePair("order_date",working_date));
 		params.add(new BasicNameValuePair("remark",edt_remark.getText().toString()));
 		params.add(new BasicNameValuePair("booking","0"));
+		params.add(new BasicNameValuePair("remark_type",selectedRemarkType.toString()));
+		params.add(new BasicNameValuePair("remark",edt_remark.getText().toString()));
 		params.add(new BasicNameValuePair("extra_dest_id",ExtraCityID.toString()));
 		params.add(new BasicNameValuePair("device_id",DeviceUtil.getInstance(this).getID()));
 		params.add(new BasicNameValuePair("access_token", accessToken));
@@ -427,44 +460,47 @@ public class NRCActivity extends BaseSherlockActivity {
 	@Override
 	public void onBackPressed() {
 		// TODO Auto-generated method stub
-		AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-		alertDialog.setMessage("Are you sure to exit?");
-	
-		alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+		if(Intents.equals("booking")){
+			finish();
+		}else{
+			AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+			alertDialog.setMessage("Are you sure to exit?");
+		
+			alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+				
+				public void onClick(DialogInterface dialog, int which) {
+					// TODO Auto-generated method stub
+					if(SKConnectionDetector.getInstance(NRCActivity.this).isConnectingToInternet()){
+						SharedPreferences pref = getApplicationContext()
+								.getSharedPreferences("User", Activity.MODE_PRIVATE);
+						String accessToken = pref.getString("access_token", null);
+						Log.i("","Hello OrderNo: "+ SaleOrderNo);
+						NetworkEngine.getInstance().deleteSaleOrder( accessToken, SaleOrderNo, new Callback<JSONObject>() {
+							
+							public void success(JSONObject arg0, Response arg1) {
+								// TODO Auto-generated method stub
+								Log.i("","Hello Response: "+ arg0.toString());
+							}
+							
+							public void failure(RetrofitError arg0) {
+								// TODO Auto-generated method stub
+							}
+						});
+					}				
+					finish();
+				}
+			});
 			
-			public void onClick(DialogInterface dialog, int which) {
-				// TODO Auto-generated method stub
-				if(SKConnectionDetector.getInstance(NRCActivity.this).isConnectingToInternet()){
-					SharedPreferences pref = getApplicationContext()
-							.getSharedPreferences("User", Activity.MODE_PRIVATE);
-					String accessToken = pref.getString("access_token", null);
-					Log.i("","Hello OrderNo: "+ SaleOrderNo);
-					NetworkEngine.getInstance().deleteSaleOrder( accessToken, SaleOrderNo, new Callback<JSONObject>() {
-						
-						public void success(JSONObject arg0, Response arg1) {
-							// TODO Auto-generated method stub
-							Log.i("","Hello Response: "+ arg0.toString());
-						}
-						
-						public void failure(RetrofitError arg0) {
-							// TODO Auto-generated method stub
+			alertDialog.setNegativeButton("NO",
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog,	int which) {
+							dialog.cancel();
+							return;
 						}
 					});
-				}				
-				finish();
-			}
-		});
-		
-		alertDialog.setNegativeButton("NO",
-				new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog,	int which) {
-						dialog.cancel();
-						return;
-					}
-				});
-		
-		alertDialog.show();
-		
+			
+			alertDialog.show();
+		}
 		//super.onBackPressed();
 		
 	}

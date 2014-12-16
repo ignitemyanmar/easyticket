@@ -135,16 +135,30 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical" >
             </LinearLayout>
-
+
             <com.smk.custom.view.CustomTextView
                 android:id="@+id/textView4"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="အ ေၾကာင္း အ ရာ တစ္ခုခု ေရးရန္"
+                android:text="မွတ္ခ်က္ အ မ်ိဳး အ စား (Remark Type)"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:visibility="gone" />
+                android:visibility="visible" />
+
+            <Spinner
+                android:id="@+id/sp_remark_type"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp" />
 
+            <com.smk.custom.view.CustomTextView
+                android:id="@+id/customTextView1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="မွတ္ခ်က္ (Remark)"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
             <com.smk.custom.view.CustomEditText
                 android:id="@+id/edt_remark"
                 android:layout_width="match_parent"
@@ -153,7 +167,7 @@
                 android:ems="10"
                 android:inputType="textMultiLine"
                 android:minLines="3"
-                android:visibility="gone" >
+                android:visibility="visible" >
 
             </com.smk.custom.view.CustomEditText>
 

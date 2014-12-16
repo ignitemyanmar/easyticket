@@ -24,7 +24,7 @@ public class CreditOrder {
 	@Expose
 	private String operator;
 	@Expose
-	private Object agent;
+	private String agent;
 	@Expose
 	private String trip;
 	@SerializedName("total_ticket")
@@ -93,11 +93,11 @@ public class CreditOrder {
 	this.operator = operator;
 	}
 	
-	public Object getAgent() {
+	public String getAgent() {
 	return agent;
 	}
 	
-	public void setAgent(Object agent) {
+	public void setAgent(String agent) {
 	this.agent = agent;
 	}
 	

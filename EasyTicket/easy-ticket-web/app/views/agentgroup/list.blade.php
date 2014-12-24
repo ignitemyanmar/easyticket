@@ -106,7 +106,7 @@
                                                          <a href="/agent-update/{{ $agent['id'] }}"  class="btn blue-stripe button-submit">Edit</a><br><br>
                                                    </td>
                                                    <td style="text-align:center;">
-                                                         <a href="deleteagent/{{ $agent['id'] }}"   class="btn red-stripe button-submit">Delete</a>
+                                                         <a href="deleteagentgroup/{{ $agent['id'] }}"   class="btn red-stripe button-submit">Delete</a>
                                                    </td>
                                                 </tr>
                                     @endforeach

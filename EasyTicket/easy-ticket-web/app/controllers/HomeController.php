@@ -232,7 +232,6 @@ class HomeController extends \BaseController {
 							}))
 							->get();
 		$agents=Agent::whereoperator_id($operator_id)->get();
-		// return Response::json($seat_list);
     	return View::make('bus.chooseseat', array('response'=>$seat_list, 'related_bus'=>$buslist, 'operatorgroup'=>$operatorgroup, 'agents'=>$agents));
 	}
 
@@ -250,11 +249,8 @@ class HomeController extends \BaseController {
     	$seat_liststring=Input::get('seat_list');
     	$booking=Input::get('booking');
     	$agent_id=Input::get('agent_id');
-
-    	if(!$operator_id || !$from_city || !$to_city || !$seat_liststring){
-    		$response['message']='Required fields are operator_id, from_city, to_city and seat_lsit';
-    		return Response::json($response);
-    	}
+    	$customer_name=Input::get('customer_name') ? Input::get('customer_name') : "";
+    	$phone_no=Input::get('phone_no') ? Input::get('phone_no') : "";
 
     	$seat_list=json_decode($seat_liststring);
     	if(count($seat_list)<1){
@@ -275,10 +271,20 @@ class HomeController extends \BaseController {
     	$device_id='*'.Hash::make($device_id);
     	// $device_id=Input::get('device_id') ? 1: '';
     	$canbuy=0;
+    	$departure_datetime ='';
     	foreach ($seat_list as $rows) {
     		$busoccuranceid=$rows->busoccurance_id;
     		$seat_plan_id=BusOccurance::whereid($busoccuranceid)->pluck('seat_plan_id');
     		$departure_date = BusOccurance::whereid($busoccuranceid)->pluck('departure_date');
+    		$departure_time = BusOccurance::whereid($busoccuranceid)->pluck('departure_time');
+    		/*
+    		 * Calculate Departure Datetime;
+    		 */
+    			$datetime = $departure_date." ".substr($departure_time, 0, 8);
+    			$strdate  = strtotime($datetime);
+    			$strdate  = $strdate - (60*60);
+    			$departure_datetime = date("Y-m-d H:i:s", $strdate);
+
     		$objseatinfo=SeatInfo::whereseat_plan_id($seat_plan_id)->whereseat_no($rows->seat_no)->first();
     		$chkstatus=SaleItem::wherebusoccurance_id($busoccuranceid)->whereseat_no($rows->seat_no)->first();
     		$canbuy=true;
@@ -306,14 +312,18 @@ class HomeController extends \BaseController {
     		    $can_buy=true;
     			$group_operator_id=$this->myGlob->operatorgroup_id;
     			$objsaleorder=new SaleOrder();
-    			$max_order_id = $objsaleorder->id 			= $this->generateAutoID($group_operator_id);
-	    		$objsaleorder->orderdate=date('Y-m-d');
+    			$max_order_id =$objsaleorder->id= $this->generateAutoID($group_operator_id);
+	    		$objsaleorder->orderdate 		=$this->Date;
 	    		$objsaleorder->departure_date 	= $departure_date;
-	    		$objsaleorder->operator_id=$operator_id;
-	    		$objsaleorder->agent_id=$agent_id ? $agent_id : 0;
-	    		$objsaleorder->booking=$booking ? $booking : 0;
-	    		$objsaleorder->expired_at=$expired_date;
-	    		$objsaleorder->device_id=$device_id;
+	    		$objsaleorder->departure_datetime= $departure_datetime;
+	    		$objsaleorder->name 		 	= $customer_name;
+	    		$objsaleorder->phone 	 		= $phone_no;
+	    		$objsaleorder->operator_id 		=$operator_id;
+	    		$objsaleorder->agent_id 		=$agent_id ? $agent_id : 0;
+	    		$objsaleorder->booking 			=$booking ? $booking : 0;
+	    		$objsaleorder->expired_at 		=$expired_date;
+	    		$objsaleorder->device_id 		=$device_id;
+	    		$objsaleorder->user_id 			=Auth::user()->id;
 	    		$objsaleorder->save();
 	    		$totalamount=0;
 	    		foreach ($available_seats as $rows) {
@@ -329,6 +339,8 @@ class HomeController extends \BaseController {
 		    			$busoccurance					=BusOccurance::whereid($rows['busoccurance_id'])->first();
 		    			$objsaleitems->seat_no			=$rows['seat_no'];
 		    			$objsaleitems->device_id		=$device_id;
+		    			$objsaleitems->name				=$customer_name;
+		    			$objsaleitems->phone			=$phone_no;
 		    			$objsaleitems->operator			=$operator_id;
 		    			if($busoccurance){
 		    				$objsaleitems->trip_id			=$busoccurance->trip_id;
@@ -379,7 +391,7 @@ class HomeController extends \BaseController {
     }
 
 	public function postOrder(){
-		$now_date = date("Y-m-d H:i:s");
+		$now_date = $this->getDateTime();
 		$currentDate = strtotime($now_date);
 		$futureDate = $currentDate+(60*15);//add 15 minutes for expired_time;
 		$expired_date = date("Y-m-d H:i:s", $futureDate);
@@ -442,7 +454,7 @@ class HomeController extends \BaseController {
 	    		$objsaleorder=new SaleOrder();
 	    		$order_id=$objsaleorder->id = $this->generateAutoID($group_operator_id);
 	    		// dd($this->generateAutoID($group_operator_id));
-	    		$objsaleorder->orderdate=date('Y-m-d');
+	    		$objsaleorder->orderdate=$this->Date;
 	    		$objsaleorder->departure_date=$departure_date;
 	    		$objsaleorder->agent_id=$agent_id;
 	    		$objsaleorder->operator_id=$operator_id;
@@ -476,14 +488,18 @@ class HomeController extends \BaseController {
 		$operator_id=$this->myGlob->operator_id;
 		$agents=Agent::whereoperator_id($operator_id)->get();
 		$objexendcity=array();
+		$customer_name="";
+		$phone_no="";
 		if($objsaleitems){
 			foreach ($objsaleitems as $ticket) {
 				$temp['id']				=$ticket['id'];
 				$temp['sale_order_no']	=$ticket['order_id'];
 				$temp['agent_id']		=$ticket['agent_id'];
 				$temp['seat_no']		=$ticket['seat_no'];
+				$customer_name			=$ticket['name'];
+				$phone_no				=$ticket['phone'];
 				$temp['busoccurance_id']=$ticket['busoccurance_id'];
-				$operator_id=$temp['operator_id']	=$ticket['operator'];
+				$operator_id=$temp['operator_id']=$ticket['operator'];
 				$temp['operator']		=Operator::whereid($ticket['operator'])->pluck('name');
 				$objbus 				=BusOccurance::whereid($ticket['busoccurance_id'])->first();
 				$trip_id=$objbus->trip_id;
@@ -506,140 +522,13 @@ class HomeController extends \BaseController {
 				$tickets[]				=$temp;
 			}
 		}
-		return View::make('bus.cartview', array('response'=> $tickets, 'objorder'=>$objorder, 'agents'=>$agents, 'objexendcity'=>$objexendcity));
+		$customer=array();
+		$customer['customer_name']=$customer_name;
+		$customer['phone_no']=$phone_no;
+		return View::make('bus.cartview', array('response'=> $tickets, 'objorder'=>$objorder, 'agents'=>$agents, 'objexendcity'=>$objexendcity,'customer'=>$customer));
 	}
 
-	/*public function checkout(){
-		$agent_id 		=Input::get('agent_id');
-		$sale_order_no 	=Input::get('sale_order_no');
-		$buyer_name 	=Input::get('buyer_name');
-		$address 		=Input::get('address');
-		$nationality 	=Input::get('nationality');
-		$phone 			=Input::get('phone');
-		$nrc_no 		=Input::get('nrc');
-		$booking 		=0;
-		$cash_credit 	=Input::get('cash_credit');
-		$today=date('Y-m-d');
-		$oldsale 		=Input::get('oldsale');
-		$solddate 		=Input::get('solddate');
-		$extra_dest_id  =Input::get('extra_dest_id') ? Input::get('extra_dest_id') : 0;
-		$orderdate      =$today;
-		if($oldsale){
-			$orderdate       =$solddate ? $solddate : $today;
-		}
-
-		$seat_no 		=Input::get('seat_no');
-		$busoccurance_id=Input::get('busoccurance_id');
-		$ticket_no		=Input::get('ticket_no');
-		$totalticket=count($ticket_no);
-		$foc=array();
-		for($i=1; $i<=$totalticket; $i++){
-			$foc[] 			=Input::get('foc'.$i) ? Input::get('foc'.$i) : 0;
-		}
-    		$objsaleorder=SaleOrder::find($sale_order_no);
-    		if(!$objsaleorder){return Redirect::to('/');}
-    		$objsaleorder->orderdate=$orderdate;
-    		$objsaleorder->agent_id=$agent_id;
-    		$objsaleorder->name=$buyer_name;
-    		$objsaleorder->nrc_no=$nrc_no;
-    		$objsaleorder->phone=$phone;
-    		$objsaleorder->nationality=$nationality;
-    		$objsaleorder->booking=$booking;
-    		$objsaleorder->cash_credit=$cash_credit;
-    		
-    		$i=0;
-    		$totalamount=0;
-    		$busoccuranceid=0;
-    		$commission=0;
-    		foreach ($seat_no as $seatno) {
-    			$objsaleitems=SaleItem::whereorder_id($sale_order_no)->whereseat_no($seatno)->wherebusoccurance_id($busoccurance_id[$i])->first();
-    			if($objsaleorder && $objsaleitems){
-    				if($i==0){
-	    				$busoccuranceid=$busoccurance_id[$i];
-	    				$objagent_commission=AgentCommission::whereagent_id($agent_id)->wheretrip_id($objsaleitems->trip_id)->first();
-	    				if($objagent_commission){
-	    					if($objagent_commission->commission_id==1){
-	    						$commission=$objagent_commission->commission;
-	    					}else{
-	    						if($nationality=='local'){
-				    				$commission +=($objsaleitems->price * $objagent_commission->commission) / 100;
-				    			}else{
-				    				$commission +=($objsaleitems->foreign_price * $objagent_commission->commission) / 100;
-				    			}
-	    					}
-	    				}
-	    				$commission=$commission * count($seat_no);
-
-	    				if($commission==0){
-	    					$tripcommission=Trip::whereid($objsaleitems->trip_id)->pluck('commission');
-	    					$commission= $tripcommission * count($seat_no);
-	    				}
-	    			}
-
-	    			if($extra_dest_id != 0){
-						$extra_destination 					= ExtraDestination::whereid($extra_dest_id)->first();
-						$objsaleitems->extra_destination_id = $extra_dest_id;
-						$objsaleitems->price 				= $extra_destination->local_price;
-						$objsaleitems->foreign_price 		= $extra_destination->foreign_price;
-						$objsaleitems->extra_city_id		= $extra_destination->city_id;
-					}
-					$objsaleitems->order_id 		=$sale_order_no;
-	    			$objsaleitems->agent_id 		=$agent_id;
-	    			$objsaleitems->busoccurance_id 	=$busoccurance_id[$i];
-	    			$objsaleitems->seat_no			=$seatno;
-	    			$objsaleitems->name				=$buyer_name;
-	    			$objsaleitems->nrc_no			=$nrc_no;
-	    			$objsaleitems->ticket_no		=$ticket_no[$i];
-	    			$objsaleitems->free_ticket		=$foc[$i];
-	    			$objsaleitems->update();	
-				
-	    			if($nationality=='local'){
-	    				$totalamount +=$objsaleitems->price;
-	    			}else{
-	    				$totalamount +=$objsaleitems->foreign_price;	
-	    			}
-    			}
-    			$i++;
-    		}
-			$objsaleorder->departure_date=BusOccurance::whereid($busoccuranceid)->pluck('departure_date');
-    		$objsaleorder->total_amount=$totalamount;
-    		$objsaleorder->agent_commission=$commission;
-    		$objsaleorder->update();	
-    		
-
-    		//Payment Transaction
-    		if($booking == 0){
-    			$total_amount 				= $objsaleorder->total_amount - $objsaleorder->agent_commission;
-    			$objdepositpayment_trans	= new AgentDeposit();
-	    		$objdepositpayment_trans->agent_id 	 		= $objsaleorder->agent_id;
-	    		$objdepositpayment_trans->operator_id		= $objsaleorder->operator_id;
-	    		$objdepositpayment_trans->total_ticket_amt	= $total_amount;
-	    		$today 										= date("Y-m-d");
-	    		$objdepositpayment_trans->pay_date			= $today;
-	    		$objdepositpayment_trans->payment 			= 0;
-	    		$agentdeposit 				= AgentDeposit::whereagent_id($objsaleorder->agent_id)->whereoperator_id($objsaleorder->operator_id)->orderBy('id','desc')->first();
-	    		if($agentdeposit){
-	    			$objdepositpayment_trans->deposit 		= $agentdeposit->balance;
-	    			$objdepositpayment_trans->balance 		= $agentdeposit->balance - $total_amount;
-	    		}else{
-	    			$objdepositpayment_trans->deposit 		= 0;
-	    			$objdepositpayment_trans->balance 		= 0 - $total_amount;
-	    		}  		
-	    		$objdepositpayment_trans->debit 			= 0;
-	    		$objdepositpayment_trans->save();
-
-	    		$saleOrder = SaleOrder::whereid($objsaleorder->id)->first();
-	    		if($saleOrder){
-	    			$saleOrder->cash_credit = 1;
-	    			$saleOrder->update();
-	    		}
-	    		
-    		}
-
-    	$message="Success.";
-    	return Redirect::to('/')->with('message',$message);
-	}*/
-
+	
 	public function checkout(){
 		$agent_id 		=Input::get('agent_id');
 		$sale_order_no 	=Input::get('sale_order_no');
@@ -650,7 +539,7 @@ class HomeController extends \BaseController {
 		$nrc_no 		=Input::get('nrc');
 		$booking 		=0;
 		$cash_credit 	=Input::get('cash_credit');
-		$today=date('Y-m-d');
+		$today			=$this->Date;
 		$oldsale 		=Input::get('oldsale');
 		$solddate 		=Input::get('solddate');
 		$extra_dest_id  =Input::get('extra_dest_id') ? Input::get('extra_dest_id') : 0;
@@ -736,6 +625,7 @@ class HomeController extends \BaseController {
     			$i++;
     		}
 			$objsaleorder->departure_date=BusOccurance::whereid($busoccuranceid)->pluck('departure_date');
+    		$objsaleorder->departure_datetime=$objsaleorder->departure_date;
     		$objsaleorder->total_amount=$totalamount;
     		$objsaleorder->agent_commission=$commission;
     		$objsaleorder->remark_type=$remark_type;
@@ -752,6 +642,8 @@ class HomeController extends \BaseController {
 	    		$objdepositpayment_trans->total_ticket_amt	= $total_amount;
 	    		$today 										= date("Y-m-d");
 	    		$objdepositpayment_trans->pay_date			= $today;
+	    		$objdepositpayment_trans->order_ids			= '["'.$objsaleorder->id.'"]';
+
 	    		$objdepositpayment_trans->payment 			= 0;
 	    		$agentdeposit 				= AgentDeposit::whereagent_id($objsaleorder->agent_id)->whereoperator_id($objsaleorder->operator_id)->orderBy('id','desc')->first();
 	    		if($agentdeposit){
@@ -766,7 +658,7 @@ class HomeController extends \BaseController {
 
 	    		$saleOrder = SaleOrder::whereid($objsaleorder->id)->first();
 	    		if($saleOrder){
-	    			$saleOrder->cash_credit = 1;
+	    			$saleOrder->cash_credit = 2;
 	    			$saleOrder->update();
 	    		}
 	    		

@@ -246,8 +246,12 @@ class TripController extends \BaseController {
 	 */
 	public function destroy($id)
 	{
-		Trip::whereid($id)->delete();
-		BusOccurance::wheretrip_id($id)->delete();
+		$trip = Trip::whereid($id)->first();
+		if($trip){
+			Trip::whereid($id)->delete();
+			BusOccurance::wheretrip_id($id)->delete();
+			DeleteTrip::create($trip->toarray());
+		}
 		return Redirect::to('trip-list')->with('message','Successfully delete trip.');
 	}
 

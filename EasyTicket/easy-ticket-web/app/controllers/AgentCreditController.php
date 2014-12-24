@@ -173,7 +173,7 @@ class AgentCreditController extends \BaseController {
     /**
     *  Agent Credit List
     */
-    public function getCreditSaleMOD()
+    public function getCreditSale()
     {
         $operator_id=$this->myGlob->operator_id;
         $objagentlist=Agent::whereoperator_id($operator_id)->orderBy('name')->get();

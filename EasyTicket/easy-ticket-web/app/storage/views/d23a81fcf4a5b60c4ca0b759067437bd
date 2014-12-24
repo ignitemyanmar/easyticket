@@ -26,6 +26,11 @@
 	      background: url('../../img/loader.gif') no-repeat;
 	  	}
 	  	.fit-a div{font-family: "Zawgyi-One" !important;}
+	  	#booking{margin-bottom: 0 !important;}
+	  	#agents{display:none;background:#eee;overflow:hidden;margin-top:0;padding-top:1rem;}
+	  	body .ui-tooltip {
+			font: bold 14px "Zawgyi-One", Sans-Serif;
+		}
 	</style>
 	<div class="large-12 columns">
 		<br>
@@ -138,32 +143,37 @@
 						</tbody>
 					</table>
 						
-					<div class="row">
-						<div class="large-12 columns nopadding">
+					<div class="row" style="background:#4BFFFF;padding-top: .5rem;">
+						<div class="large-12 columns">
 							<label><input type="checkbox" value="1" name="booking" id='booking'><b> Booking တင္ရန္</b></label>
 						</div>
 					</div>
-
-					<div class="row" style="display:none;" id="agents">
-						<div class="large-12 columns nopadding"><b>အေရာင္းကုိယ္စားလွယ္ ေရြးရန္</b></div>
+					<div class="row" id="agents">
+						<div class="large-12 columns"><b>အေရာင္းကုိယ္စားလွယ္ ေရြးရန္</b></div>
 						<div class="clear">&nbsp;</div>
-						<div class="large-12 columns nopadding">
+						<div class="large-12 columns">
 							<select name="agent_id" id="agent_id">
 								<?php foreach($agents as $row): ?>
 									<option value="<?php echo $row->id; ?>"><?php echo $row->name; ?></option>
 								<?php endforeach; ?>
 							</select>
 						</div>
+
+						<div class="clear">&nbsp;</div>
+						<div class="large-12 columns"><label>ဝယ္သူအမည္</label><input type="text" name="customer_name" id="customer_name"></div>
+						<div class="large-12 columns"><label>ဖုန္းနံပါတ္</label><input type="text" name="phone_no" id="phone_no"></div>
 					</div>
 					<div class="clear">&nbsp;</div>
 
 
 					<div class="large-12 columns nopadding">  
 						<div id="warning" style="display:none;"></div>
-					    <input type="button" class="btn1" value="Order" style="border:1px solid #ccc;padding:7px 24px;" id='order'> 
+					    <div class="large-12 columns nopadding"><b style="color:#555;">Sub Total:</b> <span id='totalamount'>0</span> KS </div>
+					    <div class="clear"></div>
+
+					    <input type="button" class="button btn1" value="လက္မွတ္ မွာယူရန္" style="border:1px solid #ccc;padding:0.875rem 1.75rem 0.9375rem;" id='order'> 
 					    <div class="indicator right">&nbsp;</div>
 					    <input type="hidden" value="0" id='total' style="text-align:right">
-					    <div><br><b>Sub Total: </b><span id='totalamount'>0</span> KS </div>
 					    
 					</div>
 					<div style="border-bottom:4px dotted #333;">&nbsp;</div>
@@ -249,6 +259,8 @@
 				var to=$('#to').val();
 				var departure_date=$('#departure_date').val();
 				var departure_time=$('#departure_time').val();
+				var customer_name=$('#customer_name').val();
+				var phone_no=$('#phone_no').val();
 				var access_token=$('#access_token').val();
 				var booking=$('#booking:checked').val();
 
@@ -277,6 +289,8 @@
 		        			date:departure_date,
 		        			time:departure_time,
 		        			class_id:class_id,
+		        			customer_name:customer_name,
+		        			phone_no:phone_no,
 		        			booking:booking,
 		        			access_token:access_token}
 		        }).done(function(result){

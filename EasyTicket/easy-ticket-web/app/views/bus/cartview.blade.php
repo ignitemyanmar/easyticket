@@ -136,7 +136,7 @@
 									<div class="row">
 										<div class="large-4 columns">ဝယ္သူ အမည္</div>
 										<div class="large-8 columns">
-											<input type="text" name="buyer_name" required>
+											<input type="text" name="buyer_name" value="{{$customer['customer_name']}}" required>
 										</div>
 									</div>
 									<div class="row">
@@ -154,7 +154,7 @@
 									<div class="row">
 										<div class="large-4 columns">ဖုန္းနံပါတ္</div>
 										<div class="large-8 columns">
-											<input type="text" name="phone" required>
+											<input type="text" name="phone" value="{{$customer['phone_no']}}" required>
 										</div>
 									</div>
 
@@ -172,13 +172,12 @@
 										</div>
 									</div>
 
-									<div class="row">
+									<div class="row" id="remark">
 										<div class="large-4 columns">မွတ္ခ်က္ (Remark)</div>
 										<div class="large-8 columns">
-											<textarea name="remark"></textarea>
+											<textarea name="remark" id="remarktext"></textarea>
 										</div>
 									</div>
-									
 
 									<div class="row">
 										<div class="large-12 columns">
@@ -248,8 +247,6 @@
 			    });
 			}
 
-
-
 			/*window.onbeforeunload = function(evt)   
 		    {   
 			    if (typeof evt == 'undefined')    
@@ -301,12 +298,31 @@
 					$("#solddate").hide();
 				}
 			});
+			
+			//init remark type show hide
+			var remarktype=$('#remark_type').val();
+			remarkinfo(remarktype);
+
+			//Handle show hide remark text box
+			$('#remark_type').change(function(){
+				var type=$(this).val();
+				remarkinfo(type);
+			})
 		});
 		function setsameticketno(obj){
 			var ticketno=obj.value;
 			$('.ticket_no').each(function(){
 				$(this).val(ticketno);
 			})
+		}
+
+		function remarkinfo(type){
+			if(type !=0){
+				$('#remark').show();
+			}else{
+				$('#remark').hide();
+				$('#remarktext').val('');
+			}
 		}
 	</script>
 @stop

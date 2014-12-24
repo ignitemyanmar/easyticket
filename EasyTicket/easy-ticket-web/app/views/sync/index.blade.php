@@ -76,7 +76,7 @@
                                        <h3>Sync</h3>
                                     </div>
                                     <div class="modal-body">
-                                       <p>Please wait, we are transferring your data...</p>
+                                       <p>Please wait, we are transferring your data...[<span id="uploaded"></span>]</p>
                                        <div class="progress progress-striped progress-warning">
                                           <div style="width: 100%;" class="bar"></div>
                                        </div>
@@ -90,6 +90,12 @@
                                        <span class="help-inline">Please click to Sync "Today Sale Order" button.</span>
                                        <p>
                                           <a  href="#myModal1" role="button" data-toggle="modal" class="btn green big" id="sync_to_server">Sync Today Sale Order <i class="m-icon-big-swapup m-icon-white"></i></a></div>
+                                       </p>
+                                    </div>
+                                    <div class="controls">
+                                       <span class="help-inline">Please click to Sync "Test Upload" button.</span>
+                                       <p>
+                                          <a  href="#myModal1" role="button" data-toggle="modal" class="btn green big" id="test_upload">Test Upload<i class="m-icon-big-swapup m-icon-white"></i></a></div>
                                        </p>
                                     </div>
                                     <div class="controls">
@@ -111,6 +117,12 @@
                                        </p>
                                     </div>
                                     <div class="controls">
+                                       <span class="help-inline">Please click to Sync "Sync Deleted Trip" button.</span>
+                                       <p>
+                                          <a href="#myModal1" role="button" data-toggle="modal" class="btn blue big" id="sync_del_trip_from_server">Sync Deleted Trip <i class="m-icon-big-swapdown m-icon-white"></i></a>
+                                       </p>
+                                    </div>
+                                    <div class="controls">
                                        <span class="help-inline">Please click to Sync "Sync Seating Plan" button.</span>
                                        <p>
                                           <a href="#myModal1" role="button" data-toggle="modal" class="btn blue big" id="sync_seatingplan_from_server">Sync Seating Plan<i class="m-icon-big-swapdown m-icon-white"></i></a>
@@ -120,6 +132,12 @@
                                        <span class="help-inline">Please click to Sync "Sync Agent" button.</span>
                                        <p>
                                           <a href="#myModal1" role="button" data-toggle="modal" class="btn blue big" id="sync_agent_from_server">Sync Agent<i class="m-icon-big-swapdown m-icon-white"></i></a>
+                                       </p>
+                                    </div>
+                                    <div class="controls">
+                                       <span class="help-inline">Please click to Sync "Sync Agent Group" button.</span>
+                                       <p>
+                                          <a href="#myModal1" role="button" data-toggle="modal" class="btn blue big" id="sync_agentgroup_from_server">Sync Agent Group<i class="m-icon-big-swapdown m-icon-white"></i></a>
                                        </p>
                                     </div>
                                     <div class="controls">
@@ -192,6 +210,12 @@
                                        <span class="help-inline">Please click to Sync "Sync Sale Order" button.</span>
                                        <p>
                                           <a href="#myModal1" role="button" data-toggle="modal" class="btn blue big" id="sync_saleorder_from_server">Sync Sale Order <i class="m-icon-big-swapdown m-icon-white"></i></a>
+                                       </p>
+                                    </div>
+                                    <div class="controls">
+                                       <span class="help-inline">Please click to Sync "Sync Deleted Sale Order" button.</span>
+                                       <p>
+                                          <a href="#myModal1" role="button" data-toggle="modal" class="btn blue big" id="sync_del_saleorder_from_server">Sync Deleted Sale Order <i class="m-icon-big-swapdown m-icon-white"></i></a>
                                        </p>
                                     </div>
                                  </div>
@@ -348,6 +372,40 @@
       });
       
    });
+   $('#sync_del_trip_from_server').click(function(){
+      $('.progress-striped').addClass('active');
+      $.ajax({
+        type: "GET",
+        url: "/downloaddeletetripjson",
+        data: null
+      })
+      .done(function( response ) {
+         $('.progress-striped').removeClass('active');
+         //alert(JSON.stringify(response));
+         if(response.status_code === 1){
+            alert( "Data Saved: " + response.message );
+            $('.alert').show();
+            $('.alert').addClass('alert-success');
+            $('.alert').append(response.message);
+            $('#myModal1').modal('hide');
+
+         }
+         else if(response.status_code === 0){
+            alert( "Error: " + response.message);
+            $('.alert').show();
+            $('.alert').addClass('alert-error');
+            $('.alert').append(response.message);
+            $('#myModal1').modal('hide');
+
+         }else{
+            alert(JSON.stringify(response));
+            $('#myModal1').modal('hide');
+
+         }
+         
+      });
+      
+   });
    $('#sync_seatingplan_from_server').click(function(){
       $('.progress-striped').addClass('active');
       $.ajax({
@@ -386,6 +444,40 @@
       $.ajax({
         type: "GET",
         url: "/downloadagentjson",
+        data: null
+      })
+      .done(function( response ) {
+         $('.progress-striped').removeClass('active');
+         //alert(JSON.stringify(response));
+         if(response.status_code === 1){
+            alert( "Data Saved: " + response.message );
+            $('.alert').show();
+            $('.alert').addClass('alert-success');
+            $('.alert').append(response.message);
+            $('#myModal1').modal('hide');
+
+         }
+         else if(response.status_code === 0){
+            alert( "Error: " + response.message);
+            $('.alert').show();
+            $('.alert').addClass('alert-error');
+            $('.alert').append(response.message);
+            $('#myModal1').modal('hide');
+
+         }else{
+            alert(JSON.stringify(response));
+            $('#myModal1').modal('hide');
+
+         }
+         
+      });
+      
+   });
+   $('#sync_agentgroup_from_server').click(function(){
+      $('.progress-striped').addClass('active');
+      $.ajax({
+        type: "GET",
+        url: "/downloadagentgroupjson",
         data: null
       })
       .done(function( response ) {
@@ -804,7 +896,7 @@
       })
       .done(function( response ) {
          $('.progress-striped').removeClass('active');
-         alert(JSON.stringify(response));
+         //alert(JSON.stringify(response));
          if(response.status_code === 1){
             alert( "Data Saved: " + response.message );
             $('.alert').show();
@@ -826,6 +918,55 @@
 
          }
          
+      });
+      
+   });
+   $('#sync_del_saleorder_from_server').click(function(){
+      $('.progress-striped').addClass('active');
+      $.ajax({
+        type: "GET",
+        url: "/downloaddeletesaleorderjson",
+        data: null
+      })
+      .done(function( response ) {
+         $('.progress-striped').removeClass('active');
+         //alert(JSON.stringify(response));
+         if(response.status_code === 1){
+            alert( "Data Saved: " + response.message );
+            $('.alert').show();
+            $('.alert').addClass('alert-success');
+            $('.alert').append(response.message);
+            $('#myModal1').modal('hide');
+
+         }
+         else if(response.status_code === 0){
+            alert( "Error: " + response.message);
+            $('.alert').show();
+            $('.alert').addClass('alert-error');
+            $('.alert').append(response.message);
+            $('#myModal1').modal('hide');
+
+         }else{
+            alert(JSON.stringify(response));
+            $('#myModal1').modal('hide');
+
+         }
+         
+      });
+      
+   });
+
+   $('#test_upload').click(function(){
+      $('.progress-striped').addClass('active');
+      $.ajax({
+        type: "GET",
+        url: "/testupload",
+        data: null
+      })
+      .done(function( response ) {
+         alert(JSON.stringify(response));
+         var data = jQuery.parseJSON(response);
+         $('#uploaded').html(data.uploaded_size);
       });
       
    });

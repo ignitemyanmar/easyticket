@@ -1,5 +1,5 @@
 <?php
-	Class SaleItem extends Eloquent 
+	Class DeleteSaleItem extends Eloquent 
 	{ 
 		protected $table = 'tbl_del_saleitem';
 		public $timestamps = false;
@@ -7,7 +7,7 @@
 
 		public function order(){
 			// return $this->belongsToMany('SaleOrder','SaleItem','busoccurance_id');
-			return $this->hasOne('SaleOrder', 'order_id');	
+			return $this->hasOne('DeleteSaleOrder', 'order_id');	
 			//return $this->belongsTo('SaleOrder', 'order_id');
 		}
 	}

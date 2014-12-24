@@ -53,7 +53,7 @@
                               <div class="actions">
                               </div>
                            </div>
-                           <div class="row-fluid search-default">
+                           <!-- <div class="row-fluid search-default">
                                  <form action="/report/agentscredits/search" method="get">
                                        <div class="span2">
                                           <div class="control-group">
@@ -112,7 +112,6 @@
                                                    @endif
                                                 </select>
                                              </div>
-                                             <!-- <span id="loading" class="loader">&nbsp;</span> -->
 
                                           </div>
                                        </div>
@@ -123,7 +122,7 @@
                                        <input type="hidden" value="{{$search['end_date'].' to '. $search['end_date']}}" id="report_date">
                                        <button type="submit" class="btn green pull-right">Search &nbsp; <i class="m-icon-swapright m-icon-white"></i></button>
                                  </form>
-                           </div>
+                           </div> -->
                            <div class="clear-fix">&nbsp;</div>
 
                            <div class="portlet-body">
@@ -146,7 +145,7 @@
                                        <th>Receivable</th>
                                        <th>Receipt</th>
                                        <th class="span3">Closing Balance</th>
-                                       <th><a class="btn small green blue-stripe" href="/report/transactiondetail/group/{{$search['agentgroup_id']}}?agent_id={{$search['agent_id']}}">Detail All</a></th>
+                                       <th><a class="btn small green blue-stripe" href="/report/agentcreditlist/paymentdetail/{{$search['agent_id']}}?&agentgroup_id={{$search['agentgroup_id']}}&start_date={{$search['start_date']}}&end_date={{$search['end_date']}}">Detail All</a></th>
                                     </tr>
                                  </thead>
                                        @if($response)
@@ -158,16 +157,17 @@
                                              ?>
                                              @foreach($response as $rows)
                                                 @foreach($rows['transactions'] as $row)
+                                                      <?php $pay_date=date('d-m-Y',strtotime($row['pay_date'])); ?>
                                                       <tr>
                                                          <td>{{$rows['name']}}</td>
                                                          <td>{{$rows['group_header']}}</td>
-                                                         <td>{{$row['pay_date']}}</td>
+                                                         <td>{{$pay_date}}</td>
                                                          <td><span @if($row['opening_balance'] < 0) class='noti' @endif>{{str_replace("-","",$row['opening_balance'])}}</span></td>
                                                          <td>{{$row['receivable']}}</td>
                                                          <td>{{$row['receipt']}}</td>
                                                          <td><span @if($row['closing_balance'] < 0) class="noti" @endif>{{str_replace("-","",$row['closing_balance'])}} </span></td>
                                                          <td>
-                                                            <a class="btn mini green-stripe" href="/report/agentcredit/{{$rows['id']}}">အေသးစိတ္ၾကည့္မည္</a>
+                                                            <a class="btn mini green-stripe" href="/report/agentcreditlist/paymentdetail/{{$rows['id']}}?start_date={{$pay_date}}&end_date=All">အေသးစိတ္ၾကည့္မည္</a>
                                                          </td>
                                                       </tr>
                                                 @endforeach

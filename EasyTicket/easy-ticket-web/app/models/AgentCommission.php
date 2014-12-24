@@ -2,7 +2,7 @@
 	Class AgentCommission extends Eloquent 
 	{ 
 		protected $table = 'tbl_agent_commission';
-		protected $fillable = array('id','agent_id','trip_id','commission_id','commission');
+		protected $fillable = array('id','agent_id','trip_id','commission_id','commission','created_at','updated_at');
 
 		public function agent(){
 			return $this->belongsTo('Agent','agent_id');

@@ -328,6 +328,53 @@ class UserController extends BaseController
 
   }
 
-  
+  public function index(){
+    $user_ids=array();
+    $user_id=OperatorGroup::whereoperator_id($this->myGlob->operator_id)->lists('user_id');
+
+    $user_id_group=OperatorGroupUser::whereoperator_id($this->myGlob->operator_id)->lists('user_id');
+    $user_ids=array_unique(array_merge($user_id, $user_id_group));
+
+    $response=array();
+    if($user_ids){
+      $response=User::wherein('id', $user_ids)->get(); 
+      if($response){
+        foreach ($response as $key => $rows) {
+          if($rows->role==8){
+            $role="Manager";
+          }elseif($rows->role==4){
+            $role="Supervisor";
+          }else{
+            $role="Staff";
+          }
+          
+          $operatorgroup_id=OperatorGroupUser::whereuser_id($rows->id)->pluck('operatorgroup_id');
+          if($operatorgroup_id){
+            $groupuser_id=OperatorGroup::whereid($operatorgroup_id)->pluck('user_id');
+            $operator_groupname=User::whereid($groupuser_id)->pluck('name');
+          }else{
+            $operator_groupname="-";
+          }
+
+          $response[$key]['operator_groupname']=$operator_groupname;
+          $response[$key]['header']=$role;
+        }
+      } 
+    }
+    // return Response::json($response);
+
+    return View::make('user.list', array('response'=>$response));
+  }
+
+  public function create(){
+    $response=array();
+    return View::make('user.add', array('response'=>$response));
+  }
+
+  public function destroy(){
+    $message['status']=1;
+    $message['info']="Successfully delete one record.";
+    return Redirect::to('user-list')->with('message', $message);
+  }  
 
 }

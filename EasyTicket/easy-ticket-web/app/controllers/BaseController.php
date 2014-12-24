@@ -15,7 +15,7 @@ class BaseController extends Controller {
 	public function __construct(){
 		$this->Date = App::make('MyDate');
 		$this->today= App::make('MyDate');
-		$bookingcount=SaleOrder::wherebooking(1)->whereorderdate($this->getDate())->count('id');
+		$bookingcount=SaleOrder::wherebooking(1)->where('departure_date','=',$this->getDate())->count('id');
 		$currentroute=Route::getCurrentRoute()->getPath();
 		if($currentroute=='departure-times'){
 		}

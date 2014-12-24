@@ -19,7 +19,8 @@ a:hover, a:focus{text-decoration: none; color:#222;}
     position: relative;
     list-style: none;
 }
-.page-sidebar > ul > li a, .page-sidebar,span i, label, .total{font-family: "Ayar Wagaung";}
+.page-sidebar > ul > li a, .page-sidebar,span i,label, .total{font-family: "Ayar Wagaung";}
+.controls label, .addnew-form label{font-family: "Zawgyi-One" !important;}
 
 #contents .trip_info li {
     min-height: 30px;

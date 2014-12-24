@@ -76,9 +76,9 @@ class OrderController extends \BaseController {
 		$saleOrder = SaleOrder::with('saleitems')->whereid($id)->first();
 		if($saleOrder){
 			SaleOrder::whereid($id)->delete();
-			DeleteSaleOrder::create($saleOrder);
+			DeleteSaleOrder::create($saleOrder->toarray());
 			foreach ($saleOrder->saleitems as $rows) {
-				DeleteSaleItem::create($rows);
+				DeleteSaleItem::create($rows->toarray());
 			}
 		}
 		$message="Successfully delete order.";
@@ -86,7 +86,14 @@ class OrderController extends \BaseController {
 	}
 
 	public function deleteNotConfirmOrder($id){
-		SaleOrder::whereid($id)->where('name','=','')->where('total_amount','=','')->delete();
+		$saleOrder = SaleOrder::whereid($id)->where('name','=','')->where('total_amount','=','')->first();
+		if($saleOrder){
+			SaleOrder::whereid($id)->where('name','=','')->where('total_amount','=','')->delete();
+			DeleteSaleOrder::create($saleOrder->toarray());
+			foreach ($saleOrder->saleitems as $rows) {
+				DeleteSaleItem::create($rows->toarray());
+			}
+		}
 		$message="Successfully delete order.";
 		return Redirect::to('orderlist')->with('message',$message);
 	}

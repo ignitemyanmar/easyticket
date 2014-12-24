@@ -58,7 +58,7 @@
                                  <form action="/report/agentscredits/search" method="get">
                                        <div class="span2">
                                           <div class="control-group">
-                                             <label class="control-label">All Date</label>
+                                             <label class="control-label">Choose Date Range</label>
                                              <div class="controls">
                                                 <select name="cbodate" class="chosen span12" id='alldate'>
                                                    <option value="All" @if($search['datestatus']=="All") selected @endif>All</option>
@@ -104,6 +104,7 @@
                                           <div class="control-group">
                                              <label class="control-label" for="from">ဂိတ်ခွဲများ</label>
                                              <div class="controls" id="agent_id">
+                                                <input type="hidden" value="{{$search['agent_id']}}" id="hdagent_id">
                                                 <select name="agent_id" class="m-wrap span12 chosen">
                                                    <option value="All">All</option>
                                                    @if($search['agent'])
@@ -146,41 +147,28 @@
                                        <th>Receivable</th>
                                        <th>Receipt</th>
                                        <th class="span3">Closing Balance</th>
-                                       <!-- <th><a class="btn small green blue-stripe" href="/report/agentcreditsales/group">အေသးစိတ္ All</a></th> -->
-                                       <th><a class="btn small green blue-stripe" href="#">အေသးစိတ္ All</a></th>
+                                       <th><a class="btn small green blue-stripe" href="/report/agentcreditlist/group/{{$search['agentgroup_id']}}?&agent_id={{$search['agent_id']}}&start_date={{$search['start_date']}}&end_date={{$search['end_date']}}">အေသးစိတ္ All</a></th>
                                     </tr>
                                  </thead>
                                        @if($response)
                                        <tbody>
-                                          @foreach($response as $key=>$rows)
-                                             <!-- <tr class="group">
-                                                <th>{{$key}}</th>
-                                                <th></th>
-                                                <th></th>
-                                                <th></th>
-                                                <th></th>
-                                                <th></th>
-                                                <th></th>
-                                             </tr> -->
-                                             <?php  
-                                                $topayamount =0;
-                                                $topaycredit =0;
-                                                $grandtotalcredit=0;
-                                             ?>
-                                             @foreach($rows as $row)
+                                          @if(count($response)>0)
+                                             @foreach($response as $row)
+                                                @if($row['receipt'] || $row['receivable'])
                                                 <tr>
                                                    <td>{{$row['name']}}</td>
                                                    <td>{{$row['groupheader']}}</td>
-                                                   <td>{{$row['opening_balance']}}</td>
+                                                   <td><span @if($row['opening_balance'] < 0) class="noti" @endif> {{str_replace('-','',$row['opening_balance'])}} </span></td>
                                                    <td>{{$row['receivable']}}</td>
                                                    <td>{{$row['receipt']}}</td>
                                                    <td><span @if($row['closing_balance'] < 0)  class="noti" @endif>{{str_replace('-',"",$row['closing_balance'])}}</span></td>
                                                    <td>
-                                                      <a class="btn mini green-stripe" href="/report/agentcreditlist/group/{{$row['agentgroup_id']}}?agent_id={{$row['id']}}">အေသးစိတ္ၾကည့္မည္</a>
+                                                      <a class="btn mini green-stripe" href="/report/agentcreditlist/group/{{$row['agentgroup_id']}}?agent_id={{$row['id']}}&start_date={{$search['start_date']}}&end_date={{$search['end_date']}}">အေသးစိတ္ၾကည့္မည္</a>
                                                    </td>
                                                 </tr>
+                                                @endif
                                              @endforeach
-                                          @endforeach
+                                          @endif
                                        </tbody>
                                        @endif
                                        
@@ -205,7 +193,11 @@
    
    <script type="text/javascript">
       $(document).ready(function() {
-          var table = $('#tblExport').DataTable({
+         var agentgroup_id=$('#agentgroup').val();
+         if(agentgroup_id)
+            loadagentbranches(agentgroup_id);
+
+         var table = $('#tblExport').DataTable({
               "columnDefs": [
                   {
                         "targets": [ 1 ],
@@ -232,9 +224,9 @@
 
                }
 
-          } );
+         } );
           // Order by the grouping
-          $('#tblExport tbody').on( 'click', 'tr.group', function () {
+         $('#tblExport tbody').on( 'click', 'tr.group', function () {
               var currentOrder = table.order()[0];
               if ( currentOrder[0] === 1 && currentOrder[1] === 'asc' ) {
                   table.order( [ 1, 'desc' ] ).draw();
@@ -242,7 +234,7 @@
               else {
                   table.order( [ 1, 'asc' ] ).draw();
               }
-          } );
+         } );
 
 
          var datestatus=$('#alldate').val();
@@ -259,6 +251,13 @@
          $('chosen').chosen();
          $('#agentgroup').change(function(){
             var agentgroup_id=$(this).val();
+            loadagentbranches(agentgroup_id);
+            
+         });
+      } );
+
+      function loadagentbranches(agentgroup_id){
+            var hdagent_id=$('#hdagent_id').val();
             if(agentgroup_id=="All")
             {
                agentgroup_id=0;
@@ -268,22 +267,29 @@
             $('#agent_id').html('');
             $('#agent_id').addClass('loader');
             $.get('/agentbranches/'+agentgroup_id,function(data){
+               var selected='';
                for(var i=0; i<data.length; i++){
-                  result +='<option value="'+data[i].id+'">'+data[i].name+'</option>';
+
+                  if(hdagent_id==data[i].id)
+                     selected="selected";
+                  else
+                     selected="";
+                  result +='<option value="'+data[i].id+'" '+selected +'>'+data[i].name+'</option>';
                }
                result +='</select>';
                $('#agent_id').removeClass('loader');
                $('#agent_id').html(result);
                $('.chosen').chosen();
             });
-         });
-      } );
+      }
 
       function checkdatestatus(datestatus)
       {
          if(datestatus=="All"){
             $('#daterange').hide();
             $('#daterange1').hide();
+            $('#startdate').val("All");
+            $('#enddate').val("All");
          }else{
             $('#daterange').show();
             $('#daterange1').show();

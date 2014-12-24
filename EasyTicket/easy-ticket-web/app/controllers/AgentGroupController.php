@@ -11,10 +11,19 @@ class AgentGroupController extends BaseController
   	public function postAddagentgroup()
   	{
       $name = Input::get('agentgroup');
+      $checkexisting=AgentGroup::wherename($name)->first();
+      if($checkexisting){
+        $message['status']=0;
+        $message['info']="This record is already exit.";
+        return Redirect::to('/agentgrouplist')->with('message', $message);
+      }
+
       $objagentgroup = new AgentGroup();
       $objagentgroup->name=$name;
       $result = $objagentgroup->save();
-      return Redirect::to('/agentgrouplist');
+      $message['status']=1;
+      $message['info']="Successfully save one record.";
+      return Redirect::to('/agentgrouplist')->with('message', $message);
   	}
    
 
@@ -75,6 +84,13 @@ class AgentGroupController extends BaseController
         $allagentgroup = AgentGroup::all();
         $totalcount = count($allagentgroup);
         return View::make('agentgroup.list')->with('agentgroup',$agentgroup)->with('totalcount',$totalcount)->with('response',$response);
+    }
+
+    public function destroy($id){
+      AgentGroup::whereid($id)->delete();
+      $message['status']=0;
+      $message['info']="Successfully delete one record.";
+       return Redirect::to("/agentgrouplist")->with('message', $message);
     }
     
 }

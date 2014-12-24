@@ -100,7 +100,17 @@
 		Route::get('report/booking/comfirm/{id}',			'BookingController@getBookingComfirm');
 
 
-		Route::get('report/agentscredit',					'AgentCreditController@getCreditSale');
+		Route::get('report/agentscredit',						'CreditController@index');
+		Route::get('report/agentscredits/search',				'CreditController@index');
+		Route::get('report/agentcreditlist/group/{id}',			'CreditController@second');
+		Route::get('report/agentcreditlist/paymentdetail/{id}',	'CreditController@detail');
+		
+		// Route::get('report/agentscredits/search',			'AgentCreditController@getCreditSearch');
+
+		/*Route::get('report/agentcreditlist/group/{id}',			'AgentCreditController@getAgentGroupCredit');
+		Route::get('report/agentcreditlist/paymentdetail/{id}',	'AgentCreditController@getAgentTransactionDetail');
+		*/// Route::get('report/agentcreditlist/nongroup/{id}',	'AgentCreditController@getAgentCredit');
+		
 		Route::get('report/agentcredit/{id}',				'AgentCreditController@getActionForm');
 		Route::get('report/agentcreditsales/{id}',			'AgentCreditController@getAgentCreditSaleList');
 
@@ -135,6 +145,7 @@
 		Route::post('addagentgroup',			'AgentGroupController@postAddagentgroup');
 		Route::get('agentgrouplist',	    	'AgentGroupController@showAgentgroupList');
 		Route::get('agentgroupchildlist/{id}',	'AgentGroupController@AgentGroupChildList');
+		Route::get('deleteagentgroup',	    	'AgentGroupController@destroy');
 		
 		Route::get('agentbranches/{id}',		'ReportController@AgentBranches');
 
@@ -258,6 +269,21 @@
 		Route::get('seatplandetail/{id}/seat_plan_id',		'SeatPlanController@getSeatPlanDetail');
 
 		Route::get('seatplan/update/{planid}',     		'SeatPlanController@getEdit');
+
+		Route::get('permission',				'PermissionController@index');
+		Route::get('permission-create',			'PermissionController@create');
+		Route::post('premission-create',		'PermissionController@store');
+		Route::get('permission-edit/{id}',		'PermissionController@edit');
+		Route::post('permission-update/{id}',	'PermissionController@update');
+		Route::get('permission-delete/{id}',	'PermissionController@destroy');
+
+		Route::get('user-list',					'UserController@index');
+		Route::get('user-create',				'UserController@create');
+		Route::post('user-create',				'UserController@store');
+		Route::get('user-edit/{id}',			'UserController@edit');
+		Route::get('user-update/{id}',			'UserController@update');
+		Route::get('user-delete/{id}',			'UserController@destroy');
+
 
 	});
 
@@ -560,8 +586,10 @@
 
 	Route::get('downloadbusjson', 							'SyncDatabaseController@downloadBusJsonfromServer');
 	Route::get('downloadtripjson', 							'SyncDatabaseController@downloadTripJsonfromServer');
+	Route::get('downloaddeletetripjson', 					'SyncDatabaseController@downloadDeleteTripJsonfromServer');
 	Route::get('downloadseatingplanjson', 					'SyncDatabaseController@downloadSeatingPlanJsonfromServer');
 	Route::get('downloadagentjson', 						'SyncDatabaseController@downloadAgentJsonfromServer');
+	Route::get('downloadagentgroupjson', 					'SyncDatabaseController@downloadAgentGroupJsonfromServer');
 	Route::get('downloadcityjson', 							'SyncDatabaseController@downloadCityJsonfromServer');
 	Route::get('downloadextradestinationjson',				'SyncDatabaseController@downloadExtraDestinationJsonfromServer');
 	Route::get('downloadclassesjson',						'SyncDatabaseController@downloadClassesJsonfromServer');
@@ -575,11 +603,14 @@
 	Route::get('downloadoperatorjson',						'SyncDatabaseController@downloadOperatorJsonfromServer');
 	Route::get('downloadseatinfojson',						'SyncDatabaseController@downloadSeatInfoJsonfromServer');
 	Route::get('downloadsaleorderjson',						'SyncDatabaseController@downloadSaleOrderJsonfromServer');
+	Route::get('downloaddeletesaleorderjson',				'SyncDatabaseController@downloadDeleteSaleOrderJsonfromServer');
 
-	Route::get('exportbusjson/{id}/{fname}', 							'SyncDatabaseController@exportBusOccurance');
+	Route::get('exportbusjson/{id}/{fname}/{date}',						'SyncDatabaseController@exportBusOccurance');
 	Route::get('exporttripjson/{id}/{fname}/{date}', 					'SyncDatabaseController@exportTrip');
+	Route::get('exportdeletetripjson/{id}/{fname}/{date}',				'SyncDatabaseController@exportDeleteTrip');
 	Route::get('exportseatingplanjson/{id}/{fname}/{date}', 			'SyncDatabaseController@exportSeatingPlan');
 	Route::get('exportagentjson/{id}/{fname}/{date}', 					'SyncDatabaseController@exportAgent');
+	Route::get('exportagengrouptjson/{id}/{fname}/{date}', 				'SyncDatabaseController@exportAgentGroup');
 	Route::get('exportcityjson/{id}/{fname}/{date}',					'SyncDatabaseController@exportCity');
 	Route::get('exportextradestinationjson/{id}/{fname}/{date}',		'SyncDatabaseController@exportExtraDestination');
 	Route::get('exportclassesjson/{id}/{fname}/{date}', 				'SyncDatabaseController@exportClasses');
@@ -592,6 +623,7 @@
 	Route::get('exportoperatorjson/{id}/{fname}/{date}', 				'SyncDatabaseController@exportOperator');
 	Route::get('exportseatinfojson/{id}/{fname}/{date}', 				'SyncDatabaseController@exportSeatInfo');
 	Route::get('exportsaleorderjson/{id}/{fname}/{date}', 				'SyncDatabaseController@exportSaleOrderJson');
+	Route::get('exportdeletesaleorderjson/{id}/{fname}/{date}', 		'SyncDatabaseController@exportDeleteSaleOrderJson');
 	Route::get('exportpaymentjson/{id}/{fname}/{date}', 				'SyncDatabaseController@exportPaymentJson');
 	
 
@@ -605,7 +637,8 @@
 
 	Route::get('generateautoid/{prefix}', 					'ApiController@generateAutoID');
 
-	Route::get('test/{fname}', 								'SyncDatabaseController@importSaleOrderJson');
+	Route::get('test/{fname}', 								'SyncDatabaseController@importDeleteSaleOrderJson');
+	Route::get('testupload', 								'SyncDatabaseController@uploadtest');
 
 
 	Route::get('404', function()

@@ -2686,15 +2686,13 @@ class ApiController extends BaseController
     	 */
 	    	$operator_id 			= Input::get('operator_id');
 	    	$agent_id 				= Input::get('agent_id');
+	    	$name 	 				= Input::get('name');
+	    	$phone  				= Input::get('phone');
 	    	$seat_liststring 		= Input::get('seat_list');
 	    	$group_operator_id 		= Input::get('group_operator_id') ? Input::get('group_operator_id') : 0;
 	    	$booking 				= Input::get('booking');
 	    	$device_id				= Input::get('device_id');
-	    	//$date=Input::get('date');
-	    	//$time=Input::get('time');
-	    	//$from_city=Input::get('from_city');
-	    	//$to_city=Input::get('to_city');
-	    	//$order_type=Input::get('order_type');
+	  
     	
     	/*
     	 * Check Required Field.
@@ -2785,6 +2783,8 @@ class ApiController extends BaseController
 	    		$objsaleorder->departure_date 		= $departure_datetime;
 	    		$objsaleorder->departure_datetime 	= $departure_datetime;
 	    		$objsaleorder->agent_id 			= $agent_id ? $agent_id : 0;
+	    		$objsaleorder->name 	 			= $name;
+	    		$objsaleorder->phone 	 			= $phone;
 	    		$objsaleorder->operator_id 			= $operator_id;
 	    		$objsaleorder->expired_at 			= $expired_date;
 	    		$objsaleorder->device_id 			= $device_id;
@@ -2799,6 +2799,8 @@ class ApiController extends BaseController
 							$objsaleitems					=new SaleItem();
 			    			$objsaleitems->order_id 		=$order_auto_id;
 			    			$objsaleitems->busoccurance_id 	=$busoccuranceinfo->id;
+			    			$objsaleitems->name 		 	=$name;
+			    			$objsaleitems->phone 		 	=$phone;
 			    			$objsaleitems->class_id			=$busoccuranceinfo->classes;
 			    			$objsaleitems->trip_id 		 	=$busoccuranceinfo->trip_id;
 			    			$objsaleitems->from 		 	=$busoccuranceinfo->from;
@@ -2806,6 +2808,7 @@ class ApiController extends BaseController
 			    			$objsaleitems->seat_no			=$rows['seat_no'];
 			    			$objsaleitems->device_id		=$device_id;
 			    			$objsaleitems->operator			=$operator_id;
+			    			$objsaleitems->agent_id 		= $agent_id ? $agent_id : 0;
 			    			$objsaleitems->price			=$busoccuranceinfo->price;
 			    			$objsaleitems->foreign_price	=$busoccuranceinfo->foreign_price;
 			    			$objsaleitems->departure_date	=$departure_datetime;
@@ -8677,7 +8680,7 @@ class ApiController extends BaseController
     }
 
     public function getNotiBooking(){
-    	$today = Input::get('date') ? Input::get('date') : $this->today;
+    	$today = Input::get('date') ? Input::get('date') : $this->getDate();
     	$booking_count = SaleOrder::where('departure_date','=',$today)->wherebooking(1)->count();
    		return Response::json($booking_count);
     }

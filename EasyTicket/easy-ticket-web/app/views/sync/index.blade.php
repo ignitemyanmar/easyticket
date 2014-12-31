@@ -301,7 +301,6 @@
       progressUploadCallback();
    }
 
-
    $('#sync_from_server').click(function(){
       $('.progress-striped').addClass('active');
       $.ajax({
@@ -334,18 +333,11 @@
       });
       
    });
-   /**
-    * Sync from Server
+   /*
+    * jqXHR Response Callback
     */
-   $('#sync_bus_from_server').click(function(){
-      $('.progress-striped').addClass('active');
-      $.ajax({
-        type: "GET",
-        url: "/downloadbusjson",
-        data: null
-      })
-      .done(function( response ) {
-         $('.progress-striped').removeClass('active');
+   var jqxhrResponse = function(response){
+      $('.progress-striped').removeClass('active');
          //alert(JSON.stringify(response));
          if(response.status_code === 1){
             $('.alert').removeClass('alert-success alert-error');
@@ -369,628 +361,289 @@
          if(progressDownloadInterval) {
             clearInterval(progressDownloadInterval);
          }
-         
+   }
+   /**
+    * Sync from Server
+    */
+   $('#sync_bus_from_server').click(function(){
+      syncBusOccourence();
+   });
+   var syncBusOccourence = function(){
+      $.ajax({
+        type: "GET",
+        url: "/downloadbusjson",
+        data: null
+      })
+      .done(function( response ) {
+         jqxhrResponse(response);         
       });
       progressDownloadCallback();
-      
-   });
+   }
    $('#sync_trip_from_server').click(function(){
-      $('.progress-striped').addClass('active');
+      syncTrip();      
+   });
+   var syncTrip = function(){
       $.ajax({
         type: "GET",
         url: "/downloadtripjson",
         data: null
       })
       .done(function( response ) {
-         $('.progress-striped').removeClass('active');
-         //alert(JSON.stringify(response));
-         if(response.status_code === 1){
-            alert( "Data Saved: " + response.message );
-            $('.alert').show();
-            $('.alert').addClass('alert-success');
-            $('.alert').append(response.message);
-            $('#myModal1').modal('hide');
-
-         }
-         else if(response.status_code === 0){
-            alert( "Error: " + response.message);
-            $('.alert').show();
-            $('.alert').addClass('alert-error');
-            $('.alert').append(response.message);
-            $('#myModal1').modal('hide');
-
-         }else{
-            alert(JSON.stringify(response));
-            $('#myModal1').modal('hide');
-
-         }
-         
+         jqxhrResponse(response);         
       });
-      
-   });
+      progressDownloadCallback();
+   }
    $('#sync_del_trip_from_server').click(function(){
-      $('.progress-striped').addClass('active');
+      syncDeleteTrip();      
+   });
+   var syncDeleteTrip = function(){
       $.ajax({
         type: "GET",
         url: "/downloaddeletetripjson",
         data: null
       })
       .done(function( response ) {
-         $('.progress-striped').removeClass('active');
-         //alert(JSON.stringify(response));
-         if(response.status_code === 1){
-            alert( "Data Saved: " + response.message );
-            $('.alert').show();
-            $('.alert').addClass('alert-success');
-            $('.alert').append(response.message);
-            $('#myModal1').modal('hide');
-
-         }
-         else if(response.status_code === 0){
-            alert( "Error: " + response.message);
-            $('.alert').show();
-            $('.alert').addClass('alert-error');
-            $('.alert').append(response.message);
-            $('#myModal1').modal('hide');
-
-         }else{
-            alert(JSON.stringify(response));
-            $('#myModal1').modal('hide');
-
-         }
-         
+         jqxhrResponse(response);         
       });
-      
-   });
+      progressDownloadCallback();
+   }
    $('#sync_seatingplan_from_server').click(function(){
-      $('.progress-striped').addClass('active');
+      syncSeatingPlan();      
+   });
+   var syncSeatingPlan = function(){
       $.ajax({
         type: "GET",
         url: "/downloadseatingplanjson",
         data: null
       })
       .done(function( response ) {
-         $('.progress-striped').removeClass('active');
-         //alert(JSON.stringify(response));
-         if(response.status_code === 1){
-            alert( "Data Saved: " + response.message );
-            $('.alert').show();
-            $('.alert').addClass('alert-success');
-            $('.alert').append(response.message);
-            $('#myModal1').modal('hide');
-
-         }
-         else if(response.status_code === 0){
-            alert( "Error: " + response.message);
-            $('.alert').show();
-            $('.alert').addClass('alert-error');
-            $('.alert').append(response.message);
-            $('#myModal1').modal('hide');
-
-         }else{
-            alert(JSON.stringify(response));
-            $('#myModal1').modal('hide');
-         }
-         
+         jqxhrResponse(response);         
       });
-      
-   });
+      progressDownloadCallback();
+   }
    $('#sync_agent_from_server').click(function(){
-      $('.progress-striped').addClass('active');
+      syncAgent();      
+   });
+   var syncAgent = function(){
       $.ajax({
         type: "GET",
         url: "/downloadagentjson",
         data: null
       })
       .done(function( response ) {
-         $('.progress-striped').removeClass('active');
-         //alert(JSON.stringify(response));
-         if(response.status_code === 1){
-            alert( "Data Saved: " + response.message );
-            $('.alert').show();
-            $('.alert').addClass('alert-success');
-            $('.alert').append(response.message);
-            $('#myModal1').modal('hide');
-
-         }
-         else if(response.status_code === 0){
-            alert( "Error: " + response.message);
-            $('.alert').show();
-            $('.alert').addClass('alert-error');
-            $('.alert').append(response.message);
-            $('#myModal1').modal('hide');
-
-         }else{
-            alert(JSON.stringify(response));
-            $('#myModal1').modal('hide');
-
-         }
-         
+         jqxhrResponse(response);         
       });
-      
-   });
+      progressDownloadCallback();
+   }
    $('#sync_agentgroup_from_server').click(function(){
-      $('.progress-striped').addClass('active');
+      syncAgentGroup();      
+   });
+   var syncAgentGroup = function(){
       $.ajax({
         type: "GET",
         url: "/downloadagentgroupjson",
         data: null
       })
       .done(function( response ) {
-         $('.progress-striped').removeClass('active');
-         //alert(JSON.stringify(response));
-         if(response.status_code === 1){
-            alert( "Data Saved: " + response.message );
-            $('.alert').show();
-            $('.alert').addClass('alert-success');
-            $('.alert').append(response.message);
-            $('#myModal1').modal('hide');
-
-         }
-         else if(response.status_code === 0){
-            alert( "Error: " + response.message);
-            $('.alert').show();
-            $('.alert').addClass('alert-error');
-            $('.alert').append(response.message);
-            $('#myModal1').modal('hide');
-
-         }else{
-            alert(JSON.stringify(response));
-            $('#myModal1').modal('hide');
-
-         }
-         
+         jqxhrResponse(response);         
       });
-      
-   });
+      progressDownloadCallback();
+   }
    $('#sync_city_from_server').click(function(){
-      $('.progress-striped').addClass('active');
+      syncCity();      
+   });
+   var syncCity = function(){
       $.ajax({
         type: "GET",
         url: "/downloadcityjson",
         data: null
       })
       .done(function( response ) {
-         $('.progress-striped').removeClass('active');
-         //alert(JSON.stringify(response));
-         if(response.status_code === 1){
-            alert( "Data Saved: " + response.message );
-            $('.alert').show();
-            $('.alert').addClass('alert-success');
-            $('.alert').append(response.message);
-            $('#myModal1').modal('hide');
-
-         }
-         else if(response.status_code === 0){
-            alert( "Error: " + response.message);
-            $('.alert').show();
-            $('.alert').addClass('alert-error');
-            $('.alert').append(response.message);
-            $('#myModal1').modal('hide');
-
-         }else{
-            alert(JSON.stringify(response));
-            $('#myModal1').modal('hide');
-
-         }
-         
+         jqxhrResponse(response);         
       });
-      
-   });
+      progressDownloadCallback();
+   }
    $('#sync_extradestination_from_server').click(function(){
-      $('.progress-striped').addClass('active');
+      syncExtraDestination();      
+   });
+
+   var syncExtraDestination = function(){
       $.ajax({
         type: "GET",
         url: "/downloadextradestinationjson",
         data: null
       })
       .done(function( response ) {
-         $('.progress-striped').removeClass('active');
-         //alert(JSON.stringify(response));
-         if(response.status_code === 1){
-            alert( "Data Saved: " + response.message );
-            $('.alert').show();
-            $('.alert').addClass('alert-success');
-            $('.alert').append(response.message);
-            $('#myModal1').modal('hide');
-
-         }
-         else if(response.status_code === 0){
-            alert( "Error: " + response.message);
-            $('.alert').show();
-            $('.alert').addClass('alert-error');
-            $('.alert').append(response.message);
-            $('#myModal1').modal('hide');
-
-         }else{
-            alert(JSON.stringify(response));
-            $('#myModal1').modal('hide');
-
-         }
-         
+         jqxhrResponse(response);         
       });
-      
-   });
+      progressDownloadCallback();
+   }
 
    $('#sync_classes_from_server').click(function(){
-      $('.progress-striped').addClass('active');
+      syncClasses();
+   });
+
+   var syncClasses = function(){
       $.ajax({
         type: "GET",
         url: "/downloadclassesjson",
         data: null
       })
       .done(function( response ) {
-         $('.progress-striped').removeClass('active');
-         //alert(JSON.stringify(response));
-         if(response.status_code === 1){
-            alert( "Data Saved: " + response.message );
-            $('.alert').show();
-            $('.alert').addClass('alert-success');
-            $('.alert').append(response.message);
-            $('#myModal1').modal('hide');
-
-         }
-         else if(response.status_code === 0){
-            alert( "Error: " + response.message);
-            $('.alert').show();
-            $('.alert').addClass('alert-error');
-            $('.alert').append(response.message);
-            $('#myModal1').modal('hide');
-
-         }else{
-            alert(JSON.stringify(response));
-            $('#myModal1').modal('hide');
-
-         }
-         
+         jqxhrResponse(response);         
       });
-      
-   });
+      progressDownloadCallback();
+   }
 
    $('#sync_agentcommission_from_server').click(function(){
-      $('.progress-striped').addClass('active');
+      syncAgentCommission();      
+   });
+
+   var syncAgentCommission = function(){
       $.ajax({
         type: "GET",
         url: "/downloadagentcommissionjson",
         data: null
       })
       .done(function( response ) {
-         $('.progress-striped').removeClass('active');
-         //alert(JSON.stringify(response));
-         if(response.status_code === 1){
-            alert( "Data Saved: " + response.message );
-            $('.alert').show();
-            $('.alert').addClass('alert-success');
-            $('.alert').append(response.message);
-            $('#myModal1').modal('hide');
-
-         }
-         else if(response.status_code === 0){
-            alert( "Error: " + response.message);
-            $('.alert').show();
-            $('.alert').addClass('alert-error');
-            $('.alert').append(response.message);
-            $('#myModal1').modal('hide');
-
-         }else{
-            alert(JSON.stringify(response));
-            $('#myModal1').modal('hide');
-
-         }
-         
+         jqxhrResponse(response);         
       });
-      
-   });
+      progressDownloadCallback();
+   }
 
    $('#sync_closeseatinfo_from_server').click(function(){
-      $('.progress-striped').addClass('active');
+      syncCloseSeatInfo();      
+   });
+   var syncCloseSeatInfo = function(){
       $.ajax({
         type: "GET",
         url: "/downloadcloseseatinfojson",
         data: null
       })
       .done(function( response ) {
-         $('.progress-striped').removeClass('active');
-         //alert(JSON.stringify(response));
-         if(response.status_code === 1){
-            alert( "Data Saved: " + response.message );
-            $('.alert').show();
-            $('.alert').addClass('alert-success');
-            $('.alert').append(response.message);
-            $('#myModal1').modal('hide');
-
-         }
-         else if(response.status_code === 0){
-            alert( "Error: " + response.message);
-            $('.alert').show();
-            $('.alert').addClass('alert-error');
-            $('.alert').append(response.message);
-            $('#myModal1').modal('hide');
-
-         }else{
-            alert(JSON.stringify(response));
-            $('#myModal1').modal('hide');
-
-         }
-         
+         jqxhrResponse(response);         
       });
-      
-   });
+      progressDownloadCallback();
+   }
 
    $('#sync_commissiontype_from_server').click(function(){
-      $('.progress-striped').addClass('active');
+      syncCommissionType();      
+   });
+
+   var syncCommissionType = function(){
       $.ajax({
         type: "GET",
         url: "/downloadcomissiontypejson",
         data: null
       })
       .done(function( response ) {
-         $('.progress-striped').removeClass('active');
-         //alert(JSON.stringify(response));
-         if(response.status_code === 1){
-            alert( "Data Saved: " + response.message );
-            $('.alert').show();
-            $('.alert').addClass('alert-success');
-            $('.alert').append(response.message);
-            $('#myModal1').modal('hide');
-
-         }
-         else if(response.status_code === 0){
-            alert( "Error: " + response.message);
-            $('.alert').show();
-            $('.alert').addClass('alert-error');
-            $('.alert').append(response.message);
-            $('#myModal1').modal('hide');
-
-         }else{
-            alert(JSON.stringify(response));
-            $('#myModal1').modal('hide');
-
-         }
-         
+         jqxhrResponse(response);         
       });
-      
-   });
+      progressDownloadCallback();
+   }
 
    $('#sync_operatorgroup_from_server').click(function(){
-      $('.progress-striped').addClass('active');
+      syncOperatorGroup();      
+   });
+
+   var syncOperatorGroup = function(){
       $.ajax({
         type: "GET",
         url: "/downloadoperatorgroupjson",
         data: null
       })
       .done(function( response ) {
-         $('.progress-striped').removeClass('active');
-         //alert(JSON.stringify(response));
-         if(response.status_code === 1){
-            alert( "Data Saved: " + response.message );
-            $('.alert').show();
-            $('.alert').addClass('alert-success');
-            $('.alert').append(response.message);
-            $('#myModal1').modal('hide');
-
-         }
-         else if(response.status_code === 0){
-            alert( "Error: " + response.message);
-            $('.alert').show();
-            $('.alert').addClass('alert-error');
-            $('.alert').append(response.message);
-            $('#myModal1').modal('hide');
-
-         }else{
-            alert(JSON.stringify(response));
-            $('#myModal1').modal('hide');
-
-         }
-         
+         jqxhrResponse(response);         
       });
-      
-   });
+      progressDownloadCallback();
+   }
 
    $('#sync_operatorgroupuser_from_server').click(function(){
-      $('.progress-striped').addClass('active');
+      syncOperatorGroupUser();      
+   });
+
+   var syncOperatorGroupUser = function(){
       $.ajax({
         type: "GET",
         url: "/downloadoperatorgroupuserjson",
         data: null
       })
       .done(function( response ) {
-         $('.progress-striped').removeClass('active');
-         //alert(JSON.stringify(response));
-         if(response.status_code === 1){
-            alert( "Data Saved: " + response.message );
-            $('.alert').show();
-            $('.alert').addClass('alert-success');
-            $('.alert').append(response.message);
-            $('#myModal1').modal('hide');
-
-         }
-         else if(response.status_code === 0){
-            alert( "Error: " + response.message);
-            $('.alert').show();
-            $('.alert').addClass('alert-error');
-            $('.alert').append(response.message);
-            $('#myModal1').modal('hide');
-
-         }else{
-            alert(JSON.stringify(response));
-            $('#myModal1').modal('hide');
-
-         }
-         
+         jqxhrResponse(response);         
       });
-      
-   });
+      progressDownloadCallback();
+   }
 
    $('#sync_user_from_server').click(function(){
-      $('.progress-striped').addClass('active');
+      syncUser();      
+   });
+   var syncUser = function(){
       $.ajax({
         type: "GET",
         url: "/downloaduserjson",
         data: null
       })
       .done(function( response ) {
-         $('.progress-striped').removeClass('active');
-         //alert(JSON.stringify(response));
-         if(response.status_code === 1){
-            alert( "Data Saved: " + response.message );
-            $('.alert').show();
-            $('.alert').addClass('alert-success');
-            $('.alert').append(response.message);
-            $('#myModal1').modal('hide');
-
-         }
-         else if(response.status_code === 0){
-            alert( "Error: " + response.message);
-            $('.alert').show();
-            $('.alert').addClass('alert-error');
-            $('.alert').append(response.message);
-            $('#myModal1').modal('hide');
-
-         }else{
-            alert(JSON.stringify(response));
-            $('#myModal1').modal('hide');
-
-         }
-         
+         jqxhrResponse(response);         
       });
-      
-   });
+      progressDownloadCallback();
+   }
    $('#sync_operator_from_server').click(function(){
-      $('.progress-striped').addClass('active');
+      syncOperator();      
+   });
+   var syncOperator = function(){
       $.ajax({
         type: "GET",
         url: "/downloadoperatorjson",
         data: null
       })
       .done(function( response ) {
-         $('.progress-striped').removeClass('active');
-         //alert(JSON.stringify(response));
-         if(response.status_code === 1){
-            alert( "Data Saved: " + response.message );
-            $('.alert').show();
-            $('.alert').addClass('alert-success');
-            $('.alert').append(response.message);
-            $('#myModal1').modal('hide');
-
-         }else if(response.status_code === 0){
-            alert( "Error: " + response.message);
-            $('.alert').show();
-            $('.alert').addClass('alert-error');
-            $('.alert').append(response.message);
-            $('#myModal1').modal('hide');
-
-         }else{
-            alert(JSON.stringify(response));
-            $('#myModal1').modal('hide');
-
-         }
-         
+         jqxhrResponse(response);         
       });
-      
-   });
+      progressDownloadCallback();
+   }
    $('#sync_seatinfo_from_server').click(function(){
-      $('.progress-striped').addClass('active');
+      syncSeatInfo();      
+   });
+   var syncSeatInfo = function(){
       $.ajax({
         type: "GET",
         url: "/downloadseatinfojson",
         data: null
       })
       .done(function( response ) {
-         $('.progress-striped').removeClass('active');
-         //alert(JSON.stringify(response));
-         if(response.status_code === 1){
-            alert( "Data Saved: " + response.message );
-            $('.alert').show();
-            $('.alert').addClass('alert-success');
-            $('.alert').append(response.message);
-            $('#myModal1').modal('hide');
-
-         }
-         else if(response.status_code === 0){
-            alert( "Error: " + response.message);
-            $('.alert').show();
-            $('.alert').addClass('alert-error');
-            $('.alert').append(response.message);
-            $('#myModal1').modal('hide');
-
-         }else{
-            alert(JSON.stringify(response));
-            $('#myModal1').modal('hide');
-
-         }
-         
+         jqxhrResponse(response);         
       });
-      
-   });
+      progressDownloadCallback();
+   }
    $('#sync_saleorder_from_server').click(function(){
-      $('.progress-striped').addClass('active');
+      syncSaleOrder();      
+   });
+   var syncSaleOrder = function(){
       $.ajax({
         type: "GET",
         url: "/downloadsaleorderjson",
         data: null
       })
       .done(function( response ) {
-         $('.progress-striped').removeClass('active');
-         //alert(JSON.stringify(response));
-         if(response.status_code === 1){
-            alert( "Data Saved: " + response.message );
-            $('.alert').show();
-            $('.alert').addClass('alert-success');
-            $('.alert').append(response.message);
-            $('#myModal1').modal('hide');
-
-         }
-         else if(response.status_code === 0){
-            alert( "Error: " + response.message);
-            $('.alert').show();
-            $('.alert').addClass('alert-error');
-            $('.alert').append(response.message);
-            $('#myModal1').modal('hide');
-
-         }else{
-            alert(JSON.stringify(response));
-            $('#myModal1').modal('hide');
-
-         }
-         
+         jqxhrResponse(response);         
       });
-      
-   });
+      progressDownloadCallback();
+   }
    $('#sync_del_saleorder_from_server').click(function(){
-      $('.progress-striped').addClass('active');
+      syncDeleteSaleOrder();      
+   });
+   var syncDeleteSaleOrder = function(){
       $.ajax({
         type: "GET",
         url: "/downloaddeletesaleorderjson",
         data: null
       })
       .done(function( response ) {
-         $('.progress-striped').removeClass('active');
-         //alert(JSON.stringify(response));
-         if(response.status_code === 1){
-            alert( "Data Saved: " + response.message );
-            $('.alert').show();
-            $('.alert').addClass('alert-success');
-            $('.alert').append(response.message);
-            $('#myModal1').modal('hide');
-
-         }
-         else if(response.status_code === 0){
-            alert( "Error: " + response.message);
-            $('.alert').show();
-            $('.alert').addClass('alert-error');
-            $('.alert').append(response.message);
-            $('#myModal1').modal('hide');
-
-         }else{
-            alert(JSON.stringify(response));
-            $('#myModal1').modal('hide');
-
-         }
-         
+         jqxhrResponse(response);         
       });
-      
-   });
+      progressDownloadCallback();
+   }
 
    var progressUploadInterval
 

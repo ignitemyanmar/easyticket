@@ -21,7 +21,7 @@ class AgentController extends BaseController
     // Store Agent
   	public function postAddagent()
     {
-      $operator_id  =Input::get('operator_id');
+      $operator_id  =$this->myGlob->operator_id;
       $agentgroup_id=Input::get('agentgroup_id');
       $name         =Input::get('name');
       $phone        =Input::get('phone');
@@ -54,7 +54,6 @@ class AgentController extends BaseController
     // Agent List
   	public function showAgentList()
   	{
-      $user_id    =Auth::user()->id;
       $operator_id=$this->myGlob->operator_id;
       $response   = $obj_agent = Agent::whereoperator_id($operator_id)->orderBy('id','desc')->orderBy('name','asc')->get();
       $allagent   = Agent::all();

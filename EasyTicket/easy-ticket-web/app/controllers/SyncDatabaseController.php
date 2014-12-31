@@ -205,6 +205,9 @@ class SyncDatabaseController extends BaseController
 				$response = array();
 				$response['message'] = "Importing your downloaded data...";
 				$this->saveFile('progress', $response);
+				$response = array();
+				$response['message'] = "Importing your downloaded data...";
+				$this->saveFile('progress', $response);
 				$importData = $this->importBusOccurance($fileName);
 				$this->deleteFile('progress');
 				if($importData){
@@ -239,14 +242,20 @@ class SyncDatabaseController extends BaseController
 		}else{
 			$syncDatetime = 0;
 		}
-		
+
+		$response['message'] = "Exporting from Server...";
+		$this->saveFile('progress', $response);
 		$curl = curl_init( $this->domain."/exporttripjson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 
 		if($response == "true"){
-			if($this->download($fromFile, $toFile)){
+			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile))){
+				$response = array();
+				$response['message'] = "Importing your downloaded data...";
+				$this->saveFile('progress', $response);
 				$importData = $this->importTrip($fileName);
+				$this->deleteFile('progress');
 				if($importData){
 					return Response::json($importData);
 				}
@@ -279,14 +288,19 @@ class SyncDatabaseController extends BaseController
 		}else{
 			$syncDatetime = 0;
 		}
-		
+		$response['message'] = "Exporting from Server...";
+		$this->saveFile('progress', $response);
 		$curl = curl_init( $this->domain."/exportdeletetripjson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 
 		if($response == "true"){
-			if($this->download($fromFile, $toFile)){
+			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile))){
+				$response = array();
+				$response['message'] = "Importing your downloaded data...";
+				$this->saveFile('progress', $response);
 				$importData = $this->importDeleteTrip($fileName);
+				$this->deleteFile('progress');
 				if($importData){
 					return Response::json($importData);
 				}
@@ -318,13 +332,18 @@ class SyncDatabaseController extends BaseController
 		}else{
 			$syncDatetime = 0;
 		}
-
+		$response['message'] = "Exporting from Server...";
+		$this->saveFile('progress', $response);
 		$curl = curl_init( $this->domain."/exportseatingplanjson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		if($response == "true"){
-			if($this->download($fromFile, $toFile)){
+			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile))){
+				$response = array();
+				$response['message'] = "Importing your downloaded data...";
+				$this->saveFile('progress', $response);
 				$importData = $this->importSeatingPlan($fileName);
+				$this->deleteFile('progress');
 				if($importData){
 					return Response::json($importData);
 				}
@@ -356,13 +375,18 @@ class SyncDatabaseController extends BaseController
 		}else{
 			$syncDatetime = 0;
 		}
-
+		$response['message'] = "Exporting from Server...";
+		$this->saveFile('progress', $response);
 		$curl = curl_init( $this->domain."/exportagentjson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		if($response == "true"){
-			if($this->download($fromFile, $toFile)){
+			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile))){
+				$response = array();
+				$response['message'] = "Importing your downloaded data...";
+				$this->saveFile('progress', $response);
 				$importData = $this->importAgent($fileName);
+				$this->deleteFile('progress');
 				if($importData){
 					return Response::json($importData);
 				}
@@ -394,13 +418,18 @@ class SyncDatabaseController extends BaseController
 		}else{
 			$syncDatetime = 0;
 		}
-
+		$response['message'] = "Exporting from Server...";
+		$this->saveFile('progress', $response);
 		$curl = curl_init( $this->domain."/exportagentgroupjson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		if($response == "true"){
-			if($this->download($fromFile, $toFile)){
+			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile))){
+				$response = array();
+				$response['message'] = "Importing your downloaded data...";
+				$this->saveFile('progress', $response);
 				$importData = $this->importAgentGroup($fileName);
+				$this->deleteFile('progress');
 				if($importData){
 					return Response::json($importData);
 				}
@@ -432,13 +461,19 @@ class SyncDatabaseController extends BaseController
 		}else{
 			$syncDatetime = 0;
 		}
-
+		$syncDatetime = 0; #To Remove It
+		$response['message'] = "Exporting from Server...";
+		$this->saveFile('progress', $response);
 		$curl = curl_init( $this->domain."/exportcityjson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		if($response == "true"){
-			if($this->download($fromFile, $toFile)){
+			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile))){
+				$response = array();
+				$response['message'] = "Importing your downloaded data...";
+				$this->saveFile('progress', $response);
 				$importData = $this->importCity($fileName);
+				$this->deleteFile('progress');
 				if($importData){
 					return Response::json($importData);
 				}
@@ -470,13 +505,19 @@ class SyncDatabaseController extends BaseController
 		}else{
 			$syncDatetime = 0;
 		}
-
+		$syncDatetime = 0; #To Remove It
+		$response['message'] = "Exporting from Server...";
+		$this->saveFile('progress', $response);
 		$curl = curl_init( $this->domain."/exportextradestinationjson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		if($response == "true"){
-			if($this->download($fromFile, $toFile)){
+			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile))){
+				$response = array();
+				$response['message'] = "Importing your downloaded data...";
+				$this->saveFile('progress', $response);
 				$importData = $this->importExtraDestination($fileName);
+				$this->deleteFile('progress');
 				if($importData){
 					return Response::json($importData);
 				}
@@ -508,12 +549,19 @@ class SyncDatabaseController extends BaseController
 		}else{
 			$syncDatetime = 0;
 		}
+		$syncDatetime = 0; #To Remove It
+		$response['message'] = "Exporting from Server...";
+		$this->saveFile('progress', $response);
 		$curl = curl_init( $this->domain."/exportclassesjson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		if($response == "true"){
-			if($this->download($fromFile, $toFile)){
+			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile))){
+				$response = array();
+				$response['message'] = "Importing your downloaded data...";
+				$this->saveFile('progress', $response);
 				$importData = $this->importClasses($fileName);
+				$this->deleteFile('progress');
 				if($importData){
 					return Response::json($importData);
 				}
@@ -545,13 +593,19 @@ class SyncDatabaseController extends BaseController
 		}else{
 			$syncDatetime = 0;
 		}
-
+		$syncDatetime = 0; #To Remove It
+		$response['message'] = "Exporting from Server...";
+		$this->saveFile('progress', $response);
 		$curl = curl_init( $this->domain."/exportagentcommissionjson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		if($response == "true"){
-			if($this->download($fromFile, $toFile)){
+			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile))){
+				$response = array();
+				$response['message'] = "Importing your downloaded data...";
+				$this->saveFile('progress', $response);
 				$importData = $this->importAgentCommission($fileName);
+				$this->deleteFile('progress');
 				if($importData){
 					return Response::json($importData);
 				}
@@ -583,13 +637,19 @@ class SyncDatabaseController extends BaseController
 		}else{
 			$syncDatetime = 0;
 		}
-
+		$syncDatetime = 0; #To Remove It
+		$response['message'] = "Exporting from Server...";
+		$this->saveFile('progress', $response);
 		$curl = curl_init( $this->domain."/exportcloseseatinfojson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		if($response == "true"){
-			if($this->download($fromFile, $toFile)){
+			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile))){
+				$response = array();
+				$response['message'] = "Importing your downloaded data...";
+				$this->saveFile('progress', $response);
 				$importData = $this->importCloseSeatInfo($fileName);
+				$this->deleteFile('progress');
 				if($importData){
 					return Response::json($importData);
 				}
@@ -621,13 +681,19 @@ class SyncDatabaseController extends BaseController
 		}else{
 			$syncDatetime = 0;
 		}
-
+		$syncDatetime = 0; #To Remove It
+		$response['message'] = "Exporting from Server...";
+		$this->saveFile('progress', $response);
 		$curl = curl_init( $this->domain."/exportcommissiontypejson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		if($response == "true"){
-			if($this->download($fromFile, $toFile)){
+			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile))){
+				$response = array();
+				$response['message'] = "Importing your downloaded data...";
+				$this->saveFile('progress', $response);
 				$importData = $this->importCommissionType($fileName);
+				$this->deleteFile('progress');
 				if($importData){
 					return Response::json($importData);
 				}
@@ -659,12 +725,19 @@ class SyncDatabaseController extends BaseController
 		}else{
 			$syncDatetime = 0;
 		}	
+		$syncDatetime = 0; #To Remove It
+		$response['message'] = "Exporting from Server...";
+		$this->saveFile('progress', $response);
 		$curl = curl_init( $this->domain."/exportoperatorgroupjson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		if($response == "true"){
-			if($this->download($fromFile, $toFile)){
+			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile))){
+				$response = array();
+				$response['message'] = "Importing your downloaded data...";
+				$this->saveFile('progress', $response);
 				$importData = $this->importOperatorGroup($fileName);
+				$this->deleteFile('progress');
 				if($importData){
 					return Response::json($importData);
 				}
@@ -696,13 +769,19 @@ class SyncDatabaseController extends BaseController
 		}else{
 			$syncDatetime = 0;
 		}	
-
+		$syncDatetime = 0; #To Remove It
+		$response['message'] = "Exporting from Server...";
+		$this->saveFile('progress', $response);
 		$curl = curl_init( $this->domain."/exportoperatorgroupuserjson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		if($response == "true"){
-			if($this->download($fromFile, $toFile)){
+			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile))){
+				$response = array();
+				$response['message'] = "Importing your downloaded data...";
+				$this->saveFile('progress', $response);
 				$importData = $this->importOperatorGroupUser($fileName);
+				$this->deleteFile('progress');
 				if($importData){
 					return Response::json($importData);
 				}
@@ -734,12 +813,19 @@ class SyncDatabaseController extends BaseController
 		}else{
 			$syncDatetime = 0;
 		}
+		$syncDatetime = 0; #To Remove It
+		$response['message'] = "Exporting from Server...";
+		$this->saveFile('progress', $response);
 		$curl = curl_init( $this->domain."/exportuserjson/".$this->operator_id."/".$fileName."/".$syncDatetime);
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		if($response == "true"){
-			if($this->download($fromFile, $toFile)){
+			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile))){
+				$response = array();
+				$response['message'] = "Importing your downloaded data...";
+				$this->saveFile('progress', $response);
 				$importData = $this->importUser($fileName);
+				$this->deleteFile('progress');
 				if($importData){
 					return Response::json($importData);
 				}
@@ -771,12 +857,19 @@ class SyncDatabaseController extends BaseController
 		}else{
 			$syncDatetime = 0;
 		}
+		$syncDatetime = 0; #To Remove It
+		$response['message'] = "Exporting from Server...";
+		$this->saveFile('progress', $response);
 		$curl = curl_init( $this->domain."/exportoperatorjson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		if($response == "true"){
-			if($this->download($fromFile, $toFile)){
+			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile))){
+				$response = array();
+				$response['message'] = "Importing your downloaded data...";
+				$this->saveFile('progress', $response);
 				$importData = $this->importOperator($fileName);
+				$this->deleteFile('progress');
 				if($importData){
 					return Response::json($importData);
 				}
@@ -808,12 +901,19 @@ class SyncDatabaseController extends BaseController
 		}else{
 			$syncDatetime = 0;
 		}
+		$syncDatetime = 0; #To Remove It
+		$response['message'] = "Exporting from Server...";
+		$this->saveFile('progress', $response);
 		$curl = curl_init( $this->domain."/exportseatinfojson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		if($response == "true"){
-			if($this->download($fromFile, $toFile)){
+			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile))){
+				$response = array();
+				$response['message'] = "Importing your downloaded data...";
+				$this->saveFile('progress', $response);
 				$importData = $this->importSeatInfo($fileName);
+				$this->deleteFile('progress');
 				if($importData){
 					return Response::json($importData);
 				}
@@ -844,13 +944,20 @@ class SyncDatabaseController extends BaseController
 			$syncDatetime = str_replace(' ', '%20', $datetime);
 		}else{
 			$syncDatetime = 0;
-		}		
+		}	
+		$syncDatetime = 0; #To Remove It	
+		$response['message'] = "Exporting from Server...";
+		$this->saveFile('progress', $response);
 		$curl = curl_init( $this->domain."/exportsaleorderjson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		if($response == "true"){
-			if($this->download($fromFile, $toFile)){
+			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile))){
+				$response = array();
+				$response['message'] = "Importing your downloaded data...";
+				$this->saveFile('progress', $response);
 				$importData = $this->importSaleOrderJson($fileName);
+				$this->deleteFile('progress');
 				if($importData){
 					return Response::json($importData);
 				}
@@ -881,13 +988,20 @@ class SyncDatabaseController extends BaseController
 			$syncDatetime = str_replace(' ', '%20', $datetime);
 		}else{
 			$syncDatetime = 0;
-		}		
+		}	
+		$syncDatetime = 0; #To Remove It	
+		$response['message'] = "Exporting from Server...";
+		$this->saveFile('progress', $response);
 		$curl = curl_init( $this->domain."/exportdeletesaleorderjson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		if($response == "true"){
-			if($this->download($fromFile, $toFile)){
+			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile))){
+				$response = array();
+				$response['message'] = "Importing your downloaded data...";
+				$this->saveFile('progress', $response);
 				$importData = $this->importDeleteSaleOrderJson($fileName);
+				$this->deleteFile('progress');
 				if($importData){
 					return Response::json($importData);
 				}else{
@@ -924,13 +1038,19 @@ class SyncDatabaseController extends BaseController
 		}else{
 			$syncDatetime = 0;
 		}	
-
+		$syncDatetime = 0; #To Remove It
+		$response['message'] = "Exporting from Server...";
+		$this->saveFile('progress', $response);
 		$curl = curl_init( $this->domain."/exportpaymentjson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		if($response == "true"){
-			if($this->download($fromFile, $toFile)){
+			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile))){
+				$response = array();
+				$response['message'] = "Importing your downloaded data...";
+				$this->saveFile('progress', $response);
 				$importData = $this->importPaymentJson($fileName);
+				$this->deleteFile('progress');
 				if($importData){
 					return Response::json($importData);
 				}
@@ -983,6 +1103,7 @@ class SyncDatabaseController extends BaseController
 				$duplicateBus 	= array();
 				$successBus 	= array();
 				$errorBus 		= array();
+				$i = 0;
 				foreach ($busOccurance as $rows) {
 					$busOccuran = BusOccurance::whereid($rows['id'])->first();
 					if(!$busOccuran){
@@ -996,6 +1117,11 @@ class SyncDatabaseController extends BaseController
 						BusOccurance::whereid($rows['id'])->update($rows);
 						array_push($duplicateBus, $busOccuran->toarray());
 					}
+					$progress['message'] = "Importing [$fileName] to Database.";
+					$progress['file_url'] = "";
+					$progress['total_size'] = count($busOccurance) * 1024;
+					$progress['file_lenght'] = $i++ * 1024;
+					$this->saveFile('progress', $progress);
 				}
 				$response['status_code'] = 1; //1 is success;
 				$response['message']	 = 'Successfully your import data.';
@@ -1022,6 +1148,7 @@ class SyncDatabaseController extends BaseController
 		}
 		if($trips){
 			$this->saveFile($fileName, $trips);
+			$this->createZip($this->getFile(str_replace('.json', '.zip', $fileName)), $fileName, $this->getFile($fileName));
 			return "true";
 		}else{
 			return "false";
@@ -1031,31 +1158,45 @@ class SyncDatabaseController extends BaseController
 	 * To Import Trip Data.
 	 */
 	public function importTrip($fileName){
-		$trips = $this->readJson($fileName);
-		if($trips){
-			$duplicateTrip 	= array();
-			$successTrip 	= array();
-			$errorTrip 		= array();
-			foreach ($trips as $rows) {
-				$trip = Trip::whereid($rows['id'])->first();
-				if(!$trip){
-					$trip = Trip::create($rows);
-					if($trip){
-						array_push($successTrip, $trip->toarray());
+		$zip = new ZipArchive;
+		$res = $zip->open($this->getFile(str_replace('.json', '.zip', $fileName)));
+		if ($res) {
+			$zip->extractTo($this->local_file_dir);
+			$zip->close();
+			$trips = $this->readJson($fileName);
+			if($trips){
+				$duplicateTrip 	= array();
+				$successTrip 	= array();
+				$errorTrip 		= array();
+				$i = 0;
+				foreach ($trips as $rows) {
+					$trip = Trip::whereid($rows['id'])->first();
+					if(!$trip){
+						$trip = Trip::create($rows);
+						if($trip){
+							array_push($successTrip, $trip->toarray());
+						}else{
+							array_push($errorTrip, $rows->toarray());
+						}
 					}else{
-						array_push($errorTrip, $rows->toarray());
+						Trip::whereid($rows['id'])->update($rows);
+						array_push($duplicateTrip, $trip->toarray());
 					}
-				}else{
-					Trip::whereid($rows['id'])->update($rows);
-					array_push($duplicateTrip, $trip->toarray());
+					$progress['message'] = "Importing [$fileName] to Database.";
+					$progress['file_url'] = "";
+					$progress['total_size'] = count($trips) * 1024;
+					$progress['file_lenght'] = $i++ * 1024;
+					$this->saveFile('progress', $progress);
 				}
+				$response['status_code'] = 1; //1 is success;
+				$response['message']	 = 'Successfully your import data.';
+				$response['duplicateTrip']= $duplicateTrip;
+				$response['errorTrip']	 = $errorTrip;
+				$response['successTrip']  = $successTrip;
+				return $response;
 			}
-			$response['status_code'] = 1; //1 is success;
-			$response['message']	 = 'Successfully your import data.';
-			$response['duplicateTrip']= $duplicateTrip;
-			$response['errorTrip']	 = $errorTrip;
-			$response['successTrip']  = $successTrip;
-			return $response;
+		}else{
+			dd('Cann\'t unzip your file.');
 		}
 	}
 	/**
@@ -1071,6 +1212,7 @@ class SyncDatabaseController extends BaseController
 		}
 		if($DeleteTrips){
 			$this->saveFile($fileName, $DeleteTrips);
+			$this->createZip($this->getFile(str_replace('.json', '.zip', $fileName)), $fileName, $this->getFile($fileName));
 			return "true";
 		}else{
 			return "false";
@@ -1080,37 +1222,51 @@ class SyncDatabaseController extends BaseController
 	 * To Import DeleteTrip Data.
 	 */
 	public function importDeleteTrip($fileName){
-		$DeleteTrips = $this->readJson($fileName);
-		if($DeleteTrips){
-			$duplicateDeleteTrip 	= array();
-			$successDeleteTrip 	= array();
-			$errorDeleteTrip 		= array();
-			foreach ($DeleteTrips as $rows) {
-				if(Trip::whereid($rows['id'])->first())
-					Trip::whereid($rows['id'])->delete();
+		$zip = new ZipArchive;
+		$res = $zip->open($this->getFile(str_replace('.json', '.zip', $fileName)));
+		if ($res) {
+			$zip->extractTo($this->local_file_dir);
+			$zip->close();
+			$DeleteTrips = $this->readJson($fileName);
+			if($DeleteTrips){
+				$duplicateDeleteTrip 	= array();
+				$successDeleteTrip 	= array();
+				$errorDeleteTrip 		= array();
+				$i = 0;
+				foreach ($DeleteTrips as $rows) {
+					if(Trip::whereid($rows['id'])->first())
+						Trip::whereid($rows['id'])->delete();
 
-				if(BusOccurance::wheretrip_id($rows['id'])->first())
-					BusOccurance::wheretrip_id($rows['id'])->delete();
+					if(BusOccurance::wheretrip_id($rows['id'])->first())
+						BusOccurance::wheretrip_id($rows['id'])->delete();
 
-				$DeleteTrip = DeleteTrip::whereid($rows['id'])->first();
-				if(!$DeleteTrip){
-					$DeleteTrip = DeleteTrip::create($rows);
-					if($DeleteTrip){
-						array_push($successDeleteTrip, $DeleteTrip->toarray());
+					$DeleteTrip = DeleteTrip::whereid($rows['id'])->first();
+					if(!$DeleteTrip){
+						$DeleteTrip = DeleteTrip::create($rows);
+						if($DeleteTrip){
+							array_push($successDeleteTrip, $DeleteTrip->toarray());
+						}else{
+							array_push($errorDeleteTrip, $rows->toarray());
+						}
 					}else{
-						array_push($errorDeleteTrip, $rows->toarray());
+						DeleteTrip::whereid($rows['id'])->update($rows);
+						array_push($duplicateDeleteTrip, $DeleteTrip->toarray());
 					}
-				}else{
-					DeleteTrip::whereid($rows['id'])->update($rows);
-					array_push($duplicateDeleteTrip, $DeleteTrip->toarray());
+					$progress['message'] = "Importing [$fileName] to Database.";
+					$progress['file_url'] = "";
+					$progress['total_size'] = count($DeleteTrips) * 1024;
+					$progress['file_lenght'] = $i++ * 1024;
+					$this->saveFile('progress', $progress);
 				}
+				$response['status_code'] = 1; //1 is success;
+				$response['message']	 = 'Successfully your import data.';
+				$response['duplicateDeleteTrip']= $duplicateDeleteTrip;
+				$response['errorDeleteTrip']	 = $errorDeleteTrip;
+				$response['successDeleteTrip']  = $successDeleteTrip;
+				return $response;
 			}
-			$response['status_code'] = 1; //1 is success;
-			$response['message']	 = 'Successfully your import data.';
-			$response['duplicateDeleteTrip']= $duplicateDeleteTrip;
-			$response['errorDeleteTrip']	 = $errorDeleteTrip;
-			$response['successDeleteTrip']  = $successDeleteTrip;
-			return $response;
+		}else{
+			dd('Cann\'t unzip your file.');
 		}
 	}
 	/**
@@ -1126,6 +1282,7 @@ class SyncDatabaseController extends BaseController
 		}
 		if($seatingPlans){
 			$this->saveFile($fileName, $seatingPlans);
+			$this->createZip($this->getFile(str_replace('.json', '.zip', $fileName)), $fileName, $this->getFile($fileName));
 			return "true";
 		}else{
 			return "false";
@@ -1135,31 +1292,46 @@ class SyncDatabaseController extends BaseController
 	 * To Import SeatingPlan Data.
 	 */
 	public function importSeatingPlan($fileName){
-		$seatingPlans = $this->readJson($fileName);
-		if($seatingPlans){
-			$duplicateSeatingPlan 	= array();
-			$successSeatingPlan 	= array();
-			$errorSeatingPlan 		= array();
-			foreach ($seatingPlans as $rows) {
-				$seatingPlan = SeatingPlan::whereid($rows['id'])->first();
-				if(!$seatingPlan){
-					$seatingPlan = SeatingPlan::create($rows);
-					if($seatingPlan){
-						array_push($successSeatingPlan, $seatingPlan->toarray());
+		$zip = new ZipArchive;
+		$res = $zip->open($this->getFile(str_replace('.json', '.zip', $fileName)));
+		if ($res) {
+			$zip->extractTo($this->local_file_dir);
+			$zip->close();
+			$seatingPlans = $this->readJson($fileName);
+			if($seatingPlans){
+				$duplicateSeatingPlan 	= array();
+				$successSeatingPlan 	= array();
+				$errorSeatingPlan 		= array();
+				$i = 0;
+				foreach ($seatingPlans as $rows) {
+					$seatingPlan = SeatingPlan::whereid($rows['id'])->first();
+					if(!$seatingPlan){
+						$seatingPlan = SeatingPlan::create($rows);
+						if($seatingPlan){
+							array_push($successSeatingPlan, $seatingPlan->toarray());
+						}else{
+							array_push($errorSeatingPlan, $rows->toarray());
+						}
 					}else{
-						array_push($errorSeatingPlan, $rows->toarray());
+						SeatingPlan::whereid($rows['id'])->update($rows);
+						array_push($duplicateSeatingPlan, $seatingPlan->toarray());
 					}
-				}else{
-					SeatingPlan::whereid($rows['id'])->update($rows);
-					array_push($duplicateSeatingPlan, $seatingPlan->toarray());
+
+					$progress['message'] = "Importing [$fileName] to Database.";
+					$progress['file_url'] = "";
+					$progress['total_size'] = count($seatingPlans) * 1024;
+					$progress['file_lenght'] = $i++ * 1024;
+					$this->saveFile('progress', $progress);
 				}
+				$response['status_code'] = 1; //1 is success;
+				$response['message']	 = 'Successfully your import data.';
+				$response['duplicateSeatingPlan']= $duplicateSeatingPlan;
+				$response['errorSeatingPlan']	 = $errorSeatingPlan;
+				$response['successSeatingPlan']  = $successSeatingPlan;
+				return $response;
 			}
-			$response['status_code'] = 1; //1 is success;
-			$response['message']	 = 'Successfully your import data.';
-			$response['duplicateSeatingPlan']= $duplicateSeatingPlan;
-			$response['errorSeatingPlan']	 = $errorSeatingPlan;
-			$response['successSeatingPlan']  = $successSeatingPlan;
-			return $response;
+		}else{
+			dd('Cann\'t unzip your file.');
 		}
 	}
 	/**
@@ -1175,6 +1347,7 @@ class SyncDatabaseController extends BaseController
 		
 		if($Agents){
 			$this->saveFile($fileName, $Agents);
+			$this->createZip($this->getFile(str_replace('.json', '.zip', $fileName)), $fileName, $this->getFile($fileName));
 			return "true";
 		}else{
 			return "false";
@@ -1184,31 +1357,45 @@ class SyncDatabaseController extends BaseController
 	 * To Import Agent Data.
 	 */
 	public function importAgent($fileName){
-		$Agents = $this->readJson($fileName);
-		if($Agents){
-			$duplicateAgent 	= array();
-			$successAgent 		= array();
-			$errorAgent 		= array();
-			foreach ($Agents as $rows) {
-				$Agent = Agent::whereid($rows['id'])->first();
-				if(!$Agent){
-					$Agent = Agent::create($rows);
-					if($Agent){
-						array_push($successAgent, $Agent->toarray());
+		$zip = new ZipArchive;
+		$res = $zip->open($this->getFile(str_replace('.json', '.zip', $fileName)));
+		if ($res) {
+			$zip->extractTo($this->local_file_dir);
+			$zip->close();
+			$Agents = $this->readJson($fileName);
+			if($Agents){
+				$duplicateAgent 	= array();
+				$successAgent 		= array();
+				$errorAgent 		= array();
+				$i = 0;
+				foreach ($Agents as $rows) {
+					$Agent = Agent::whereid($rows['id'])->first();
+					if(!$Agent){
+						$Agent = Agent::create($rows);
+						if($Agent){
+							array_push($successAgent, $Agent->toarray());
+						}else{
+							array_push($errorAgent, $rows->toarray());
+						}
 					}else{
-						array_push($errorAgent, $rows->toarray());
+						Agent::whereid($rows['id'])->update($rows);
+						array_push($duplicateAgent, $Agent->toarray());
 					}
-				}else{
-					Agent::whereid($rows['id'])->update($rows);
-					array_push($duplicateAgent, $Agent->toarray());
+					$progress['message'] = "Importing [$fileName] to Database.";
+					$progress['file_url'] = "";
+					$progress['total_size'] = count($Agents) * 1024;
+					$progress['file_lenght'] = $i++ * 1024;
+					$this->saveFile('progress', $progress);
 				}
+				$response['status_code'] = 1; //1 is success;
+				$response['message']	 = 'Successfully your import data.';
+				$response['duplicateAgent']= $duplicateAgent;
+				$response['errorAgent']	 = $errorAgent;
+				$response['successAgent']  = $successAgent;
+				return $response;
 			}
-			$response['status_code'] = 1; //1 is success;
-			$response['message']	 = 'Successfully your import data.';
-			$response['duplicateAgent']= $duplicateAgent;
-			$response['errorAgent']	 = $errorAgent;
-			$response['successAgent']  = $successAgent;
-			return $response;
+		}else{
+			dd('Cann\'t unzip your file.');
 		}
 	}
 	/**
@@ -1224,6 +1411,7 @@ class SyncDatabaseController extends BaseController
 		}
 		if($AgentGroups){
 			$this->saveFile($fileName, $AgentGroups);
+			$this->createZip($this->getFile(str_replace('.json', '.zip', $fileName)), $fileName, $this->getFile($fileName));
 			return "true";
 		}else{
 			return "false";
@@ -1233,31 +1421,45 @@ class SyncDatabaseController extends BaseController
 	 * To Import AgentGroup Data.
 	 */
 	public function importAgentGroup($fileName){
-		$AgentGroups = $this->readJson($fileName);
-		if($AgentGroups){
-			$duplicateAgentGroup 	= array();
-			$successAgentGroup		= array();
-			$errorAgentGroup 		= array();
-			foreach ($AgentGroups as $rows) {
-				$AgentGroup = AgentGroup::whereid($rows['id'])->first();
-				if(!$AgentGroup){
-					$AgentGroup = AgentGroup::create($rows);
-					if($AgentGroup){
-						array_push($successAgentGroup, $AgentGroup->toarray());
+		$zip = new ZipArchive;
+		$res = $zip->open($this->getFile(str_replace('.json', '.zip', $fileName)));
+		if ($res) {
+			$zip->extractTo($this->local_file_dir);
+			$zip->close();
+			$AgentGroups = $this->readJson($fileName);
+			if($AgentGroups){
+				$duplicateAgentGroup 	= array();
+				$successAgentGroup		= array();
+				$errorAgentGroup 		= array();
+				$i = 0;
+				foreach ($AgentGroups as $rows) {
+					$AgentGroup = AgentGroup::whereid($rows['id'])->first();
+					if(!$AgentGroup){
+						$AgentGroup = AgentGroup::create($rows);
+						if($AgentGroup){
+							array_push($successAgentGroup, $AgentGroup->toarray());
+						}else{
+							array_push($errorAgentGroup, $rows->toarray());
+						}
 					}else{
-						array_push($errorAgentGroup, $rows->toarray());
+						AgentGroup::whereid($rows['id'])->update($rows);
+						array_push($duplicateAgentGroup, $AgentGroup->toarray());
 					}
-				}else{
-					AgentGroup::whereid($rows['id'])->update($rows);
-					array_push($duplicateAgentGroup, $AgentGroup->toarray());
+					$progress['message'] = "Importing [$fileName] to Database.";
+					$progress['file_url'] = "";
+					$progress['total_size'] = count($AgentGroups) * 1024;
+					$progress['file_lenght'] = $i++ * 1024;
+					$this->saveFile('progress', $progress);
 				}
+				$response['status_code'] = 1; //1 is success;
+				$response['message']	 = 'Successfully your import data.';
+				$response['duplicateAgentGroup']= $duplicateAgentGroup;
+				$response['errorAgentGroup']	 = $errorAgentGroup;
+				$response['successAgentGroup']  = $successAgentGroup;
+				return $response;
 			}
-			$response['status_code'] = 1; //1 is success;
-			$response['message']	 = 'Successfully your import data.';
-			$response['duplicateAgentGroup']= $duplicateAgentGroup;
-			$response['errorAgentGroup']	 = $errorAgentGroup;
-			$response['successAgentGroup']  = $successAgentGroup;
-			return $response;
+		}else{
+			dd('Cann\'t unzip your file.');
 		}
 	}
 
@@ -1284,31 +1486,45 @@ class SyncDatabaseController extends BaseController
 	 * To Import City Data.
 	 */
 	public function importCity($fileName){
-		$Citys = $this->readJson($fileName);
-		if($Citys){
-			$duplicateCity 	= array();
-			$successCity 	= array();
-			$errorCity 		= array();
-			foreach ($Citys as $rows) {
-				$City = City::whereid($rows['id'])->first();
-				if(!$City){
-					$City = City::create($rows);
-					if($City){
-						array_push($successCity, $City->toarray());
+		$zip = new ZipArchive;
+		$res = $zip->open($this->getFile(str_replace('.json', '.zip', $fileName)));
+		if ($res) {
+			$zip->extractTo($this->local_file_dir);
+			$zip->close();
+			$Citys = $this->readJson($fileName);
+			if($Citys){
+				$duplicateCity 	= array();
+				$successCity 	= array();
+				$errorCity 		= array();
+				$i = 0;
+				foreach ($Citys as $rows) {
+					$City = City::whereid($rows['id'])->first();
+					if(!$City){
+						$City = City::create($rows);
+						if($City){
+							array_push($successCity, $City->toarray());
+						}else{
+							array_push($errorCity, $rows->toarray());
+						}
 					}else{
-						array_push($errorCity, $rows->toarray());
+						City::whereid($rows['id'])->update($rows);
+						array_push($duplicateCity, $City->toarray());
 					}
-				}else{
-					City::whereid($rows['id'])->update($rows);
-					array_push($duplicateCity, $City->toarray());
+					$progress['message'] = "Importing [$fileName] to Database.";
+					$progress['file_url'] = "";
+					$progress['total_size'] = count($Citys) * 1024;
+					$progress['file_lenght'] = $i++ * 1024;
+					$this->saveFile('progress', $progress);
 				}
+				$response['status_code'] = 1; //1 is success;
+				$response['message']	 = 'Successfully your import data.';
+				$response['duplicateCity']= $duplicateCity;
+				$response['errorCity']	 = $errorCity;
+				$response['successCity']  = $successCity;
+				return $response;
 			}
-			$response['status_code'] = 1; //1 is success;
-			$response['message']	 = 'Successfully your import data.';
-			$response['duplicateCity']= $duplicateCity;
-			$response['errorCity']	 = $errorCity;
-			$response['successCity']  = $successCity;
-			return $response;
+		}else{
+			dd('Cann\'t unzip your file.');
 		}
 	}
 	/**
@@ -1324,6 +1540,7 @@ class SyncDatabaseController extends BaseController
 		}
 		if($ExtraDestinations){
 			$this->saveFile($fileName, $ExtraDestinations);
+			$this->createZip($this->getFile(str_replace('.json', '.zip', $fileName)), $fileName, $this->getFile($fileName));
 			return "true";
 		}else{
 			return "false";
@@ -1333,31 +1550,45 @@ class SyncDatabaseController extends BaseController
 	 * To Import ExtraDestination Data.
 	 */
 	public function importExtraDestination($fileName){
-		$ExtraDestinations = $this->readJson($fileName);
-		if($ExtraDestinations){
-			$duplicateExtraDestination 	= array();
-			$successExtraDestination 	= array();
-			$errorExtraDestination 		= array();
-			foreach ($ExtraDestinations as $rows) {
-				$ExtraDestination = ExtraDestination::whereid($rows['id'])->first();
-				if(!$ExtraDestination){
-					$ExtraDestination = ExtraDestination::create($rows);
-					if($ExtraDestination){
-						array_push($successExtraDestination, $ExtraDestination->toarray());
+		$zip = new ZipArchive;
+		$res = $zip->open($this->getFile(str_replace('.json', '.zip', $fileName)));
+		if ($res) {
+			$zip->extractTo($this->local_file_dir);
+			$zip->close();
+			$ExtraDestinations = $this->readJson($fileName);
+			if($ExtraDestinations){
+				$duplicateExtraDestination 	= array();
+				$successExtraDestination 	= array();
+				$errorExtraDestination 		= array();
+				$i = 0;
+				foreach ($ExtraDestinations as $rows) {
+					$ExtraDestination = ExtraDestination::whereid($rows['id'])->first();
+					if(!$ExtraDestination){
+						$ExtraDestination = ExtraDestination::create($rows);
+						if($ExtraDestination){
+							array_push($successExtraDestination, $ExtraDestination->toarray());
+						}else{
+							array_push($errorExtraDestination, $rows->toarray());
+						}
 					}else{
-						array_push($errorExtraDestination, $rows->toarray());
+						ExtraDestination::whereid($rows['id'])->update($rows);
+						array_push($duplicateExtraDestination, $ExtraDestination->toarray());
 					}
-				}else{
-					ExtraDestination::whereid($rows['id'])->update($rows);
-					array_push($duplicateExtraDestination, $ExtraDestination->toarray());
+					$progress['message'] = "Importing [$fileName] to Database.";
+					$progress['file_url'] = "";
+					$progress['total_size'] = count($ExtraDestinations) * 1024;
+					$progress['file_lenght'] = $i++ * 1024;
+					$this->saveFile('progress', $progress);
 				}
+				$response['status_code'] = 1; //1 is success;
+				$response['message']	 = 'Successfully your import data.';
+				$response['duplicateExtraDestination']= $duplicateExtraDestination;
+				$response['errorExtraDestination']	 = $errorExtraDestination;
+				$response['successExtraDestination']  = $successExtraDestination;
+				return $response;
 			}
-			$response['status_code'] = 1; //1 is success;
-			$response['message']	 = 'Successfully your import data.';
-			$response['duplicateExtraDestination']= $duplicateExtraDestination;
-			$response['errorExtraDestination']	 = $errorExtraDestination;
-			$response['successExtraDestination']  = $successExtraDestination;
-			return $response;
+		}else{
+			dd('Cann\'t unzip your file.');
 		}
 	}
 	/**
@@ -1373,6 +1604,7 @@ class SyncDatabaseController extends BaseController
 		}
 		if($Classess){
 			$this->saveFile($fileName, $Classess);
+			$this->createZip($this->getFile(str_replace('.json', '.zip', $fileName)), $fileName, $this->getFile($fileName));
 			return "true";
 		}else{
 			return "false";
@@ -1382,31 +1614,45 @@ class SyncDatabaseController extends BaseController
 	 * To Import Classes Data.
 	 */
 	public function importClasses($fileName){
-		$Classess = $this->readJson($fileName);
-		if($Classess){
-			$duplicateClasses 	= array();
-			$successClasses 	= array();
-			$errorClasses 		= array();
-			foreach ($Classess as $rows) {
-				$Classes = Classes::whereid($rows['id'])->first();
-				if(!$Classes){
-					$Classes = Classes::create($rows);
-					if($Classes){
-						array_push($successClasses, $Classes->toarray());
+		$zip = new ZipArchive;
+		$res = $zip->open($this->getFile(str_replace('.json', '.zip', $fileName)));
+		if ($res) {
+			$zip->extractTo($this->local_file_dir);
+			$zip->close();
+			$Classess = $this->readJson($fileName);
+			if($Classess){
+				$duplicateClasses 	= array();
+				$successClasses 	= array();
+				$errorClasses 		= array();
+				$i = 0;
+				foreach ($Classess as $rows) {
+					$Classes = Classes::whereid($rows['id'])->first();
+					if(!$Classes){
+						$Classes = Classes::create($rows);
+						if($Classes){
+							array_push($successClasses, $Classes->toarray());
+						}else{
+							array_push($errorClasses, $rows->toarray());
+						}
 					}else{
-						array_push($errorClasses, $rows->toarray());
+						Classes::whereid($rows['id'])->update($rows);
+						array_push($duplicateClasses, $Classes->toarray());
 					}
-				}else{
-					Classes::whereid($rows['id'])->update($rows);
-					array_push($duplicateClasses, $Classes->toarray());
+					$progress['message'] = "Importing [$fileName] to Database.";
+					$progress['file_url'] = "";
+					$progress['total_size'] = count($Classess) * 1024;
+					$progress['file_lenght'] = $i++ * 1024;
+					$this->saveFile('progress', $progress);
 				}
+				$response['status_code'] = 1; //1 is success;
+				$response['message']	 = 'Successfully your import data.';
+				$response['duplicateClasses']= $duplicateClasses;
+				$response['errorClasses']	 = $errorClasses;
+				$response['successClasses']  = $successClasses;
+				return $response;
 			}
-			$response['status_code'] = 1; //1 is success;
-			$response['message']	 = 'Successfully your import data.';
-			$response['duplicateClasses']= $duplicateClasses;
-			$response['errorClasses']	 = $errorClasses;
-			$response['successClasses']  = $successClasses;
-			return $response;
+		}else{
+			dd('Cann\'t unzip your file.');
 		}
 	}
 	/**
@@ -1422,6 +1668,7 @@ class SyncDatabaseController extends BaseController
 		}
 		if($AgentCommissions){
 			$this->saveFile($fileName, $AgentCommissions);
+			$this->createZip($this->getFile(str_replace('.json', '.zip', $fileName)), $fileName, $this->getFile($fileName));
 			return "true";
 		}else{
 			return "false";
@@ -1431,31 +1678,46 @@ class SyncDatabaseController extends BaseController
 	 * To Import AgentCommission Data.
 	 */
 	public function importAgentCommission($fileName){
-		$AgentCommissions = $this->readJson($fileName);
-		if($AgentCommissions){
-			$duplicateAgentCommission 	= array();
-			$successAgentCommission 	= array();
-			$errorAgentCommission 		= array();
-			foreach ($AgentCommissions as $rows) {
-				$AgentCommission = AgentCommission::whereid($rows['id'])->first();
-				if(!$AgentCommission){
-					$AgentCommission = AgentCommission::create($rows);
-					if($AgentCommission){
-						array_push($successAgentCommission, $AgentCommission->toarray());
+		$zip = new ZipArchive;
+		$res = $zip->open($this->getFile(str_replace('.json', '.zip', $fileName)));
+		if ($res) {
+			$zip->extractTo($this->local_file_dir);
+			$zip->close();
+			$AgentCommissions = $this->readJson($fileName);
+			if($AgentCommissions){
+				$duplicateAgentCommission 	= array();
+				$successAgentCommission 	= array();
+				$errorAgentCommission 		= array();
+				$i = 0;
+				foreach ($AgentCommissions as $rows) {
+					$AgentCommission = AgentCommission::whereid($rows['id'])->first();
+					if(!$AgentCommission){
+						$AgentCommission = AgentCommission::create($rows);
+						if($AgentCommission){
+							array_push($successAgentCommission, $AgentCommission->toarray());
+						}else{
+							array_push($errorAgentCommission, $rows->toarray());
+						}
 					}else{
-						array_push($errorAgentCommission, $rows->toarray());
+						AgentCommission::whereid($rows['id'])->update($rows);
+						array_push($duplicateAgentCommission, $AgentCommission->toarray());
 					}
-				}else{
-					AgentCommission::whereid($rows['id'])->update($rows);
-					array_push($duplicateAgentCommission, $AgentCommission->toarray());
+					$progress['message'] = "Importing [$fileName] to Database.";
+					$progress['file_url'] = "";
+					$progress['total_size'] = count($AgentCommissions) * 1024;
+					$progress['file_lenght'] = $i++ * 1024;
+					$this->saveFile('progress', $progress);
+					
 				}
+				$response['status_code'] = 1; //1 is success;
+				$response['message']	 = 'Successfully your import data.';
+				$response['duplicateAgentCommission']= $duplicateAgentCommission;
+				$response['errorAgentCommission']	 = $errorAgentCommission;
+				$response['successAgentCommission']  = $successAgentCommission;
+				return $response;
 			}
-			$response['status_code'] = 1; //1 is success;
-			$response['message']	 = 'Successfully your import data.';
-			$response['duplicateAgentCommission']= $duplicateAgentCommission;
-			$response['errorAgentCommission']	 = $errorAgentCommission;
-			$response['successAgentCommission']  = $successAgentCommission;
-			return $response;
+		}else{
+			dd('Cann\'t unzip your file');
 		}
 	}
 	/**
@@ -1471,6 +1733,7 @@ class SyncDatabaseController extends BaseController
 		}
 		if($CloseSeatInfos){
 			$this->saveFile($fileName, $CloseSeatInfos);
+			$this->createZip($this->getFile(str_replace('.json', '.zip', $fileName)), $fileName, $this->getFile($fileName));
 			return "true";
 		}else{
 			return "false";
@@ -1480,31 +1743,45 @@ class SyncDatabaseController extends BaseController
 	 * To Import CloseSeatInfo Data.
 	 */
 	public function importCloseSeatInfo($fileName){
-		$CloseSeatInfos = $this->readJson($fileName);
-		if($CloseSeatInfos){
-			$duplicateCloseSeatInfo 	= array();
-			$successCloseSeatInfo 	= array();
-			$errorCloseSeatInfo 		= array();
-			foreach ($CloseSeatInfos as $rows) {
-				$CloseSeatInfo = CloseSeatInfo::whereid($rows['id'])->first();
-				if(!$CloseSeatInfo){
-					$CloseSeatInfo = CloseSeatInfo::create($rows);
-					if($CloseSeatInfo){
-						array_push($successCloseSeatInfo, $CloseSeatInfo->toarray());
+		$zip = new ZipArchive;
+		$res = $zip->open($this->getFile(str_replace('.json', '.zip', $fileName)));
+		if ($res) {
+			$zip->extractTo($this->local_file_dir);
+			$zip->close();
+			$CloseSeatInfos = $this->readJson($fileName);
+			if($CloseSeatInfos){
+				$duplicateCloseSeatInfo 	= array();
+				$successCloseSeatInfo 	= array();
+				$errorCloseSeatInfo 		= array();
+				$i = 0;
+				foreach ($CloseSeatInfos as $rows) {
+					$CloseSeatInfo = CloseSeatInfo::whereid($rows['id'])->first();
+					if(!$CloseSeatInfo){
+						$CloseSeatInfo = CloseSeatInfo::create($rows);
+						if($CloseSeatInfo){
+							array_push($successCloseSeatInfo, $CloseSeatInfo->toarray());
+						}else{
+							array_push($errorCloseSeatInfo, $rows->toarray());
+						}
 					}else{
-						array_push($errorCloseSeatInfo, $rows->toarray());
+						CloseSeatInfo::whereid($rows['id'])->update($rows);
+						array_push($duplicateCloseSeatInfo, $CloseSeatInfo->toarray());
 					}
-				}else{
-					CloseSeatInfo::whereid($rows['id'])->update($rows);
-					array_push($duplicateCloseSeatInfo, $CloseSeatInfo->toarray());
+					$progress['message'] = "Importing [$fileName] to Database.";
+					$progress['file_url'] = "";
+					$progress['total_size'] = count($CloseSeatInfos) * 1024;
+					$progress['file_lenght'] = $i++ * 1024;
+					$this->saveFile('progress', $progress);
 				}
+				$response['status_code'] = 1; //1 is success;
+				$response['message']	 = 'Successfully your import data.';
+				$response['duplicateCloseSeatInfo']= $duplicateCloseSeatInfo;
+				$response['errorCloseSeatInfo']	 = $errorCloseSeatInfo;
+				$response['successCloseSeatInfo']  = $successCloseSeatInfo;
+				return $response;
 			}
-			$response['status_code'] = 1; //1 is success;
-			$response['message']	 = 'Successfully your import data.';
-			$response['duplicateCloseSeatInfo']= $duplicateCloseSeatInfo;
-			$response['errorCloseSeatInfo']	 = $errorCloseSeatInfo;
-			$response['successCloseSeatInfo']  = $successCloseSeatInfo;
-			return $response;
+		}else{
+			dd('Cann\'t unzip your file');
 		}
 	}
 	/**
@@ -1522,6 +1799,7 @@ class SyncDatabaseController extends BaseController
 		}
 		if($CommissionTypes){
 			$this->saveFile($fileName, $CommissionTypes);
+			$this->createZip($this->getFile(str_replace('.json', '.zip', $fileName)), $fileName, $this->getFile($fileName));
 			return "true";
 		}else{
 			return "false";
@@ -1531,31 +1809,45 @@ class SyncDatabaseController extends BaseController
 	 * To Import CommissionType Data.
 	 */
 	public function importCommissionType($fileName){
-		$CommissionTypes = $this->readJson($fileName);
-		if($CommissionTypes){
-			$duplicateCommissionType 	= array();
-			$successCommissionType 	= array();
-			$errorCommissionType 		= array();
-			foreach ($CommissionTypes as $rows) {
-				$CommissionType = CommissionType::whereid($rows['id'])->first();
-				if(!$CommissionType){
-					$CommissionType = CommissionType::create($rows);
-					if($CommissionType){
-						array_push($successCommissionType, $CommissionType->toarray());
+		$zip = new ZipArchive;
+		$res = $zip->open($this->getFile(str_replace('.json', '.zip', $fileName)));
+		if ($res) {
+			$zip->extractTo($this->local_file_dir);
+			$zip->close();
+			$CommissionTypes = $this->readJson($fileName);
+			if($CommissionTypes){
+				$duplicateCommissionType 	= array();
+				$successCommissionType 	= array();
+				$errorCommissionType 		= array();
+				$i = 0;
+				foreach ($CommissionTypes as $rows) {
+					$CommissionType = CommissionType::whereid($rows['id'])->first();
+					if(!$CommissionType){
+						$CommissionType = CommissionType::create($rows);
+						if($CommissionType){
+							array_push($successCommissionType, $CommissionType->toarray());
+						}else{
+							array_push($errorCommissionType, $rows->toarray());
+						}
 					}else{
-						array_push($errorCommissionType, $rows->toarray());
+						CommissionType::whereid($rows['id'])->update($rows);
+						array_push($duplicateCommissionType, $CommissionType->toarray());
 					}
-				}else{
-					CommissionType::whereid($rows['id'])->update($rows);
-					array_push($duplicateCommissionType, $CommissionType->toarray());
+					$progress['message'] = "Importing [$fileName] to Database.";
+					$progress['file_url'] = "";
+					$progress['total_size'] = count($CommissionTypes) * 1024;
+					$progress['file_lenght'] = $i++ * 1024;
+					$this->saveFile('progress', $progress);
 				}
+				$response['status_code'] = 1; //1 is success;
+				$response['message']	 = 'Successfully your import data.';
+				$response['duplicateCommissionType']= $duplicateCommissionType;
+				$response['errorCommissionType']	 = $errorCommissionType;
+				$response['successCommissionType']  = $successCommissionType;
+				return $response;
 			}
-			$response['status_code'] = 1; //1 is success;
-			$response['message']	 = 'Successfully your import data.';
-			$response['duplicateCommissionType']= $duplicateCommissionType;
-			$response['errorCommissionType']	 = $errorCommissionType;
-			$response['successCommissionType']  = $successCommissionType;
-			return $response;
+		}else{
+			dd('Cann\'t unzip your file.');
 		}
 	}
 	/**
@@ -1573,6 +1865,7 @@ class SyncDatabaseController extends BaseController
 		}
 		if($OperatorGroups){
 			$this->saveFile($fileName, $OperatorGroups);
+			$this->createZip($this->getFile(str_replace('.json', '.zip', $fileName)), $fileName, $this->getFile($fileName));
 			return "true";
 		}else{
 			return "false";
@@ -1582,31 +1875,45 @@ class SyncDatabaseController extends BaseController
 	 * To Import OperatorGroup Data.
 	 */
 	public function importOperatorGroup($fileName){
-		$OperatorGroups = $this->readJson($fileName);
-		if($OperatorGroups){
-			$duplicateOperatorGroup 	= array();
-			$successOperatorGroup 	= array();
-			$errorOperatorGroup 		= array();
-			foreach ($OperatorGroups as $rows) {
-				$OperatorGroup = OperatorGroup::whereid($rows['id'])->first();
-				if(!$OperatorGroup){
-					$OperatorGroup = OperatorGroup::create($rows);
-					if($OperatorGroup){
-						array_push($successOperatorGroup, $OperatorGroup->toarray());
+		$zip = new ZipArchive;
+		$res = $zip->open($this->getFile(str_replace('.json', '.zip', $fileName)));
+		if ($res) {
+			$zip->extractTo($this->local_file_dir);
+			$zip->close();
+			$OperatorGroups = $this->readJson($fileName);
+			if($OperatorGroups){
+				$duplicateOperatorGroup 	= array();
+				$successOperatorGroup 	= array();
+				$errorOperatorGroup 		= array();
+				$i = 0;
+				foreach ($OperatorGroups as $rows) {
+					$OperatorGroup = OperatorGroup::whereid($rows['id'])->first();
+					if(!$OperatorGroup){
+						$OperatorGroup = OperatorGroup::create($rows);
+						if($OperatorGroup){
+							array_push($successOperatorGroup, $OperatorGroup->toarray());
+						}else{
+							array_push($errorOperatorGroup, $rows->toarray());
+						}
 					}else{
-						array_push($errorOperatorGroup, $rows->toarray());
+						OperatorGroup::whereid($rows['id'])->update($rows);
+						array_push($duplicateOperatorGroup, $OperatorGroup->toarray());
 					}
-				}else{
-					OperatorGroup::whereid($rows['id'])->update($rows);
-					array_push($duplicateOperatorGroup, $OperatorGroup->toarray());
+					$progress['message'] = "Importing [$fileName] to Database.";
+					$progress['file_url'] = "";
+					$progress['total_size'] = count($OperatorGroups) * 1024;
+					$progress['file_lenght'] = $i++ * 1024;
+					$this->saveFile('progress', $progress);
 				}
+				$response['status_code'] = 1; //1 is success;
+				$response['message']	 = 'Successfully your import data.';
+				$response['duplicateOperatorGroup']= $duplicateOperatorGroup;
+				$response['errorOperatorGroup']	 = $errorOperatorGroup;
+				$response['successOperatorGroup']  = $successOperatorGroup;
+				return $response;
 			}
-			$response['status_code'] = 1; //1 is success;
-			$response['message']	 = 'Successfully your import data.';
-			$response['duplicateOperatorGroup']= $duplicateOperatorGroup;
-			$response['errorOperatorGroup']	 = $errorOperatorGroup;
-			$response['successOperatorGroup']  = $successOperatorGroup;
-			return $response;
+		}else{
+			dd('Cann\'t unzip your file.');
 		}
 	}
 	/**
@@ -1624,6 +1931,7 @@ class SyncDatabaseController extends BaseController
 		}
 		if($OperatorGroupUsers){
 			$this->saveFile($fileName, $OperatorGroupUsers);
+			$this->createZip($this->getFile(str_replace('.json', '.zip', $fileName)), $fileName, $this->getFile($fileName));
 			return "true";
 		}else{
 			return "false";
@@ -1633,31 +1941,45 @@ class SyncDatabaseController extends BaseController
 	 * To Import OperatorGroupUser Data.
 	 */
 	public function importOperatorGroupUser($fileName){
-		$OperatorGroupUsers = $this->readJson($fileName);
-		if($OperatorGroupUsers){
-			$duplicateOperatorGroupUser 	= array();
-			$successOperatorGroupUser 	= array();
-			$errorOperatorGroupUser 		= array();
-			foreach ($OperatorGroupUsers as $rows) {
-				$OperatorGroupUser = OperatorGroupUser::whereid($rows['id'])->first();
-				if(!$OperatorGroupUser){
-					$OperatorGroupUser = OperatorGroupUser::create($rows);
-					if($OperatorGroupUser){
-						array_push($successOperatorGroupUser, $OperatorGroupUser->toarray());
+		$zip = new ZipArchive;
+		$res = $zip->open($this->getFile(str_replace('.json', '.zip', $fileName)));
+		if ($res) {
+			$zip->extractTo($this->local_file_dir);
+			$zip->close();
+			$OperatorGroupUsers = $this->readJson($fileName);
+			if($OperatorGroupUsers){
+				$duplicateOperatorGroupUser 	= array();
+				$successOperatorGroupUser 	= array();
+				$errorOperatorGroupUser 		= array();
+				$i = 0;
+				foreach ($OperatorGroupUsers as $rows) {
+					$OperatorGroupUser = OperatorGroupUser::whereid($rows['id'])->first();
+					if(!$OperatorGroupUser){
+						$OperatorGroupUser = OperatorGroupUser::create($rows);
+						if($OperatorGroupUser){
+							array_push($successOperatorGroupUser, $OperatorGroupUser->toarray());
+						}else{
+							array_push($errorOperatorGroupUser, $rows->toarray());
+						}
 					}else{
-						array_push($errorOperatorGroupUser, $rows->toarray());
+						OperatorGroupUser::whereid($rows['id'])->update($rows);
+						array_push($duplicateOperatorGroupUser, $OperatorGroupUser->toarray());
 					}
-				}else{
-					OperatorGroupUser::whereid($rows['id'])->update($rows);
-					array_push($duplicateOperatorGroupUser, $OperatorGroupUser->toarray());
+					$progress['message'] = "Importing [$fileName] to Database.";
+					$progress['file_url'] = "";
+					$progress['total_size'] = count($OperatorGroupUsers) * 1024;
+					$progress['file_lenght'] = $i++ * 1024;
+					$this->saveFile('progress', $progress);
 				}
+				$response['status_code'] = 1; //1 is success;
+				$response['message']	 = 'Successfully your import data.';
+				$response['duplicateOperatorGroupUser']= $duplicateOperatorGroupUser;
+				$response['errorOperatorGroupUser']	 = $errorOperatorGroupUser;
+				$response['successOperatorGroupUser']  = $successOperatorGroupUser;
+				return $response;
 			}
-			$response['status_code'] = 1; //1 is success;
-			$response['message']	 = 'Successfully your import data.';
-			$response['duplicateOperatorGroupUser']= $duplicateOperatorGroupUser;
-			$response['errorOperatorGroupUser']	 = $errorOperatorGroupUser;
-			$response['successOperatorGroupUser']  = $successOperatorGroupUser;
-			return $response;
+		}else{
+			dd('Cann\'t unzip your file');
 		}
 	}
 	/**
@@ -1673,6 +1995,7 @@ class SyncDatabaseController extends BaseController
 		
 		if($Users){
 			$this->saveFile($fileName, $Users);
+			$this->createZip($this->getFile(str_replace('.json', '.zip', $fileName)), $fileName, $this->getFile($fileName));
 			return "true";
 		}else{
 			return "false";
@@ -1682,31 +2005,45 @@ class SyncDatabaseController extends BaseController
 	 * To Import User Data.
 	 */
 	public function importUser($fileName){
-		$Users = $this->readJson($fileName);
-		if($Users){
-			$duplicateUser 	= array();
-			$successUser 	= array();
-			$errorUser 		= array();
-			foreach ($Users as $rows) {
-				$User = User::whereid($rows['id'])->first();
-				if(!$User){
-					$User = User::create($rows);
-					if($User){
-						array_push($successUser, $User->toarray());
+		$zip = new ZipArchive;
+		$res = $zip->open($this->getFile(str_replace('.json', '.zip', $fileName)));
+		if ($res) {
+			$zip->extractTo($this->local_file_dir);
+			$zip->close();
+			$Users = $this->readJson($fileName);
+			if($Users){
+				$duplicateUser 	= array();
+				$successUser 	= array();
+				$errorUser 		= array();
+				$i = 0;
+				foreach ($Users as $rows) {
+					$User = User::whereid($rows['id'])->first();
+					if(!$User){
+						$User = User::create($rows);
+						if($User){
+							array_push($successUser, $User->toarray());
+						}else{
+							array_push($errorUser, $rows->toarray());
+						}
 					}else{
-						array_push($errorUser, $rows->toarray());
+						User::whereid($rows['id'])->update($rows);
+						array_push($duplicateUser, $User->toarray());
 					}
-				}else{
-					User::whereid($rows['id'])->update($rows);
-					array_push($duplicateUser, $User->toarray());
+					$progress['message'] = "Importing [$fileName] to Database.";
+					$progress['file_url'] = "";
+					$progress['total_size'] = count($Users) * 1024;
+					$progress['file_lenght'] = $i++ * 1024;
+					$this->saveFile('progress', $progress);
 				}
+				$response['status_code'] = 1; //1 is success;
+				$response['message']	 = 'Successfully your import data.';
+				$response['duplicateUser']= $duplicateUser;
+				$response['errorUser']	 = $errorUser;
+				$response['successUser']  = $successUser;
+				return $response;
 			}
-			$response['status_code'] = 1; //1 is success;
-			$response['message']	 = 'Successfully your import data.';
-			$response['duplicateUser']= $duplicateUser;
-			$response['errorUser']	 = $errorUser;
-			$response['successUser']  = $successUser;
-			return $response;
+		}else{
+			dd('Cann\'t unzip your file.');
 		}
 	}
 	/**
@@ -1722,6 +2059,7 @@ class SyncDatabaseController extends BaseController
 		
 		if($Operators){
 			$this->saveFile($fileName, $Operators);
+			$this->createZip($this->getFile(str_replace('.json', '.zip', $fileName)), $fileName, $this->getFile($fileName));
 			return "true";
 		}else{
 			return "false";
@@ -1731,31 +2069,45 @@ class SyncDatabaseController extends BaseController
 	 * To Import Operator Data.
 	 */
 	public function importOperator($fileName){
-		$Operators = $this->readJson($fileName);
-		if($Operators){
-			$duplicateOperator 	= array();
-			$successOperator 	= array();
-			$errorOperator 		= array();
-			foreach ($Operators as $rows) {
-				$Operator = Operator::whereid($rows['id'])->first();
-				if(!$Operator){
-					$Operator = Operator::create($rows);
-					if($Operator){
-						array_push($successOperator, $Operator->toarray());
+		$zip = new ZipArchive;
+		$res = $zip->open($this->getFile(str_replace('.json', '.zip', $fileName)));
+		if ($res) {
+			$zip->extractTo($this->local_file_dir);
+			$zip->close();
+			$Operators = $this->readJson($fileName);
+			if($Operators){
+				$duplicateOperator 	= array();
+				$successOperator 	= array();
+				$errorOperator 		= array();
+				$i = 0;
+				foreach ($Operators as $rows) {
+					$Operator = Operator::whereid($rows['id'])->first();
+					if(!$Operator){
+						$Operator = Operator::create($rows);
+						if($Operator){
+							array_push($successOperator, $Operator->toarray());
+						}else{
+							array_push($errorOperator, $rows->toarray());
+						}
 					}else{
-						array_push($errorOperator, $rows->toarray());
+						Operator::whereid($rows['id'])->update($rows);
+						array_push($duplicateOperator, $Operator->toarray());
 					}
-				}else{
-					Operator::whereid($rows['id'])->update($rows);
-					array_push($duplicateOperator, $Operator->toarray());
+					$progress['message'] = "Importing [$fileName] to Database.";
+					$progress['file_url'] = "";
+					$progress['total_size'] = count($Operators) * 1024;
+					$progress['file_lenght'] = $i++ * 1024;
+					$this->saveFile('progress', $progress);
 				}
+				$response['status_code'] = 1; //1 is success;
+				$response['message']	 = 'Successfully your import data.';
+				$response['duplicateOperator']= $duplicateOperator;
+				$response['errorOperator']	 = $errorOperator;
+				$response['successOperator']  = $successOperator;
+				return $response;
 			}
-			$response['status_code'] = 1; //1 is success;
-			$response['message']	 = 'Successfully your import data.';
-			$response['duplicateOperator']= $duplicateOperator;
-			$response['errorOperator']	 = $errorOperator;
-			$response['successOperator']  = $successOperator;
-			return $response;
+		}else{
+			dd('Cann\'t unzip your file.');
 		}
 	}
 	/**
@@ -1771,6 +2123,7 @@ class SyncDatabaseController extends BaseController
 		
 		if($SeatInfos){
 			$this->saveFile($fileName, $SeatInfos);
+			$this->createZip($this->getFile(str_replace('.json', '.zip', $fileName)), $fileName, $this->getFile($fileName));
 			return "true";
 		}else{
 			return "false";
@@ -1780,31 +2133,45 @@ class SyncDatabaseController extends BaseController
 	 * To Import SeatInfo Data.
 	 */
 	public function importSeatInfo($fileName){
-		$SeatInfos = $this->readJson($fileName);
-		if($SeatInfos){
-			$duplicateSeatInfo 	= array();
-			$successSeatInfo 	= array();
-			$errorSeatInfo 		= array();
-			foreach ($SeatInfos as $rows) {
-				$SeatInfo = SeatInfo::whereid($rows['id'])->first();
-				if(!$SeatInfo){
-					$SeatInfo = SeatInfo::create($rows);
-					if($SeatInfo){
-						array_push($successSeatInfo, $SeatInfo->toarray());
+		$zip = new ZipArchive;
+		$res = $zip->open($this->getFile(str_replace('.json', '.zip', $fileName)));
+		if ($res) {
+			$zip->extractTo($this->local_file_dir);
+			$zip->close();
+			$SeatInfos = $this->readJson($fileName);
+			if($SeatInfos){
+				$duplicateSeatInfo 	= array();
+				$successSeatInfo 	= array();
+				$errorSeatInfo 		= array();
+				$i = 0;
+				foreach ($SeatInfos as $rows) {
+					$SeatInfo = SeatInfo::whereid($rows['id'])->first();
+					if(!$SeatInfo){
+						$SeatInfo = SeatInfo::create($rows);
+						if($SeatInfo){
+							array_push($successSeatInfo, $SeatInfo->toarray());
+						}else{
+							array_push($errorSeatInfo, $rows->toarray());
+						}
 					}else{
-						array_push($errorSeatInfo, $rows->toarray());
+						SeatInfo::whereid($rows['id'])->update($rows);
+						array_push($duplicateSeatInfo, $SeatInfo->toarray());
 					}
-				}else{
-					SeatInfo::whereid($rows['id'])->update($rows);
-					array_push($duplicateSeatInfo, $SeatInfo->toarray());
+					$progress['message'] = "Importing [$fileName] to Database.";
+					$progress['file_url'] = "";
+					$progress['total_size'] = count($SeatInfos) * 1024;
+					$progress['file_lenght'] = $i++ * 1024;
+					$this->saveFile('progress', $progress);
 				}
+				$response['status_code'] = 1; //1 is success;
+				$response['message']	 = 'Successfully your import data.';
+				$response['duplicateSeatInfo']= $duplicateSeatInfo;
+				$response['errorSeatInfo']	 = $errorSeatInfo;
+				$response['successSeatInfo']  = $successSeatInfo;
+				return $response;
 			}
-			$response['status_code'] = 1; //1 is success;
-			$response['message']	 = 'Successfully your import data.';
-			$response['duplicateSeatInfo']= $duplicateSeatInfo;
-			$response['errorSeatInfo']	 = $errorSeatInfo;
-			$response['successSeatInfo']  = $successSeatInfo;
-			return $response;
+		}else{
+			dd('Cann\'t unzip your file.');
 		}
 	}
 	/**
@@ -1822,6 +2189,7 @@ class SyncDatabaseController extends BaseController
 		
 		if($saleOrders){
 			$this->saveFile($fileName, $saleOrders);
+			$this->createZip($this->getFile(str_replace('.json', '.zip', $fileName)), $fileName, $this->getFile($fileName));
 			return "true";
 		}else{
 			return "false";
@@ -1845,6 +2213,7 @@ class SyncDatabaseController extends BaseController
 			$errorSaleItems	 		= array();
 			$successSaleOrders 		= array();
 			$successSaleItems	 	= array();
+			$i = 0;
 			if($saleOrders){
 				foreach ($saleOrders as $rows) {
 					$saleOrder = SaleOrder::whereid($rows['id'])->first();
@@ -1898,6 +2267,12 @@ class SyncDatabaseController extends BaseController
 						}
 						array_push($duplicateSaleOrders, $saleOrder);
 					}
+
+					$progress['message'] = "Importing [$fileName] to Database.";
+					$progress['file_url'] = "";
+					$progress['total_size'] = count($saleOrders) * 1024;
+					$progress['file_lenght'] = $i++ * 1024;
+					$this->saveFile('progress', $progress);					
 				}
 				$response['status_code']  = 1; // 1 is success.
 				$response['message'] = "Successfully your data was saved.";
@@ -1931,6 +2306,7 @@ class SyncDatabaseController extends BaseController
 		
 		if($agentDeposits){
 			$this->saveFile($fileName, $agentDeposits);
+			$this->createZip($this->getFile(str_replace('.json', '.zip', $fileName)), $fileName, $this->getFile($fileName));
 			return "true";
 		}else{
 			return "false";
@@ -1951,6 +2327,7 @@ class SyncDatabaseController extends BaseController
 			$errorAgentDeposits	 		= array();
 			$successAgentDeposits	 	= array();
 			if($agentDeposits){
+				$i = 0;
 				foreach ($agentDeposits as $rows) {
 					$agentDeposit = AgentDeposit::whereagent_id($rows['agent_id'])
 								->whereoperator_id($rows['operator_id'])
@@ -1976,6 +2353,12 @@ class SyncDatabaseController extends BaseController
 					}else{
 						array_push($duplicateAgentDeposits, $agentDeposit->toarray());
 					}
+
+					$progress['message'] = "Importing [$fileName] to Database.";
+					$progress['file_url'] = "";
+					$progress['total_size'] = count($agentDeposits) * 1024;
+					$progress['file_lenght'] = $i++ * 1024;
+					$this->saveFile('progress', $progress);	
 				}
 				$response['status_code']  = 1; // 1 is success.
 				$response['message'] = "Successfully your data was saved.";
@@ -2005,6 +2388,7 @@ class SyncDatabaseController extends BaseController
 		
 		if($deleteSaleOrders){
 			$this->saveFile($fileName, $deleteSaleOrders);
+			$this->createZip($this->getFile(str_replace('.json', '.zip', $fileName)), $fileName, $this->getFile($fileName));
 			return "true";
 		}else{
 			return "false";
@@ -2015,82 +2399,97 @@ class SyncDatabaseController extends BaseController
 	 * To Import DeleteSale Transaction Data.
 	 */
 	public function importDeleteSaleOrderJson($fileName){
-		$DeleteSaleOrders = $this->readJson($fileName);
-		$duplicateDeleteSaleOrders 	= array();
-		$duplicateDeleteSaleItems 	= array();
-		$errorDeleteSaleOrders 		= array();
-		$errorDeleteSaleItems	 	= array();
-		$successDeleteSaleOrders 	= array();
-		$successDeleteSaleItems	 	= array();
-		if($DeleteSaleOrders){
-			foreach ($DeleteSaleOrders as $rows) {
-				$deleteSaleOrder = DeleteSaleOrder::whereid($rows['id'])->first();
+		$zip = new ZipArchive;
+		$res = $zip->open($this->getFile(str_replace('.json', '.zip', $fileName)));
+		if ($res) {
+			$zip->extractTo($this->local_file_dir);
+			$zip->close();
+			$DeleteSaleOrders = $this->readJson($fileName);
+			$duplicateDeleteSaleOrders 	= array();
+			$duplicateDeleteSaleItems 	= array();
+			$errorDeleteSaleOrders 		= array();
+			$errorDeleteSaleItems	 	= array();
+			$successDeleteSaleOrders 	= array();
+			$successDeleteSaleItems	 	= array();
+			if($DeleteSaleOrders){
+				$i = 0;
+				foreach ($DeleteSaleOrders as $rows) {
+					$deleteSaleOrder = DeleteSaleOrder::whereid($rows['id'])->first();
 
-				if(SaleOrder::whereid($rows['id'])->delete())
-					SaleOrder::whereid($rows['id'])->delete();
+					if(SaleOrder::whereid($rows['id'])->delete())
+						SaleOrder::whereid($rows['id'])->delete();
 
-				if(!$deleteSaleOrder){
-					$delSaleOrder = DeleteSaleOrder::create($rows);
-					if($delSaleOrder){
-						array_push($successDeleteSaleOrders, $delSaleOrder->toarray());
-						foreach ($rows['saleitems'] as $row) {
-							$deleteSaleItem = DeleteSaleItem::whereorder_id($row['order_id'])->whereseat_no($row['seat_no'])->first();
-							if(!$deleteSaleItem){
-								$deleteSaleItem = DeleteSaleItem::create($row);
-								if($deleteSaleItem){
-									array_push($successDeleteSaleItems, $deleteSaleItem->toarray());
+					if(!$deleteSaleOrder){
+						$delSaleOrder = DeleteSaleOrder::create($rows);
+						if($delSaleOrder){
+							array_push($successDeleteSaleOrders, $delSaleOrder->toarray());
+							foreach ($rows['saleitems'] as $row) {
+								$deleteSaleItem = DeleteSaleItem::whereorder_id($row['order_id'])->whereseat_no($row['seat_no'])->first();
+								if(!$deleteSaleItem){
+									$deleteSaleItem = DeleteSaleItem::create($row);
+									if($deleteSaleItem){
+										array_push($successDeleteSaleItems, $deleteSaleItem->toarray());
+									}else{
+										array_push($errorDeleteSaleItems, $row->toarray());
+									}
 								}else{
-									array_push($errorDeleteSaleItems, $row->toarray());
+									array_push($duplicateDeleteSaleItems, $deleteSaleItem->toarray());
 								}
-							}else{
-								array_push($duplicateDeleteSaleItems, $deleteSaleItem->toarray());
 							}
+						}else{
+							array_push($errorDeleteSaleOrders, $rows->toarray());
 						}
+						
 					}else{
-						array_push($errorDeleteSaleOrders, $rows->toarray());
-					}
-					
-				}else{
-					$deleteSaleorder_item = $rows;
-					unset($deleteSaleorder_item['device_id']);
-					unset($deleteSaleorder_item['saleitems']);
-					$DeleteSaleOrder = DeleteSaleOrder::whereid($rows['id'])->where('updated_at','<',$rows['updated_at'])->update($deleteSaleorder_item);
-					if($DeleteSaleOrder){
-						array_push($successDeleteSaleOrders, $DeleteSaleOrder);
-						foreach ($rows['saleitems'] as $row) {
-							unset($row['device_id']);
-							$deleteSaleItem = DeleteSaleItem::whereorder_id($row['order_id'])->whereseat_no($row['seat_no'])->first();
-							if(!$deleteSaleItem){
-								$deleteSaleItem = DeleteSaleItem::create($row);
-								if($deleteSaleItem){
-									array_push($successDeleteSaleItems, $deleteSaleItem);
+						$deleteSaleorder_item = $rows;
+						unset($deleteSaleorder_item['device_id']);
+						unset($deleteSaleorder_item['saleitems']);
+						$DeleteSaleOrder = DeleteSaleOrder::whereid($rows['id'])->where('updated_at','<',$rows['updated_at'])->update($deleteSaleorder_item);
+						if($DeleteSaleOrder){
+							array_push($successDeleteSaleOrders, $DeleteSaleOrder);
+							foreach ($rows['saleitems'] as $row) {
+								unset($row['device_id']);
+								$deleteSaleItem = DeleteSaleItem::whereorder_id($row['order_id'])->whereseat_no($row['seat_no'])->first();
+								if(!$deleteSaleItem){
+									$deleteSaleItem = DeleteSaleItem::create($row);
+									if($deleteSaleItem){
+										array_push($successDeleteSaleItems, $deleteSaleItem);
+									}else{
+										array_push($errorDeleteSaleItems, $row);
+									}
 								}else{
-									array_push($errorDeleteSaleItems, $row);
+									DeleteSaleItem::whereorder_id($row['order_id'])->whereseat_no($row['seat_no'])->update($row);
+									array_push($duplicateDeleteSaleItems, $deleteSaleItem);
 								}
-							}else{
-								DeleteSaleItem::whereorder_id($row['order_id'])->whereseat_no($row['seat_no'])->update($row);
-								array_push($duplicateDeleteSaleItems, $deleteSaleItem);
 							}
+						}else{
+							array_push($errorDeleteSaleOrders, $rows);
 						}
-					}else{
-						array_push($errorDeleteSaleOrders, $rows);
+						array_push($duplicateDeleteSaleOrders, $DeleteSaleOrder);
 					}
-					array_push($duplicateDeleteSaleOrders, $DeleteSaleOrder);
+
+					$progress['message'] = "Importing [$fileName] to Database.";
+					$progress['file_url'] = "";
+					$progress['total_size'] = count($DeleteSaleOrders) * 1024;
+					$progress['file_lenght'] = $i++ * 1024;
+					$this->saveFile('progress', $progress);	
 				}
+				$response['status_code']  = 1; // 1 is success.
+				$response['message'] = "Successfully your data was saved.";
+				$response["duplicateDeleteSaleOrders"] = $duplicateDeleteSaleOrders;
+				$response["duplicateDeleteSaleItems"] = $duplicateDeleteSaleItems;
+				$response["errorDeleteSaleOrders"] = $errorDeleteSaleOrders;
+				$response["errorDeleteSaleItems"] = $errorDeleteSaleItems;
+				$response["successDeleteSaleOrders"] = $successDeleteSaleOrders;
+				$response["successDeleteSaleItems"] = $successDeleteSaleItems;
+				return $response;
+			}else{
+				$response['status_code']  = 0;
+				$response['message'] = "Empty value from your uploaded file.";
+				return $response;
 			}
-			$response['status_code']  = 1; // 1 is success.
-			$response['message'] = "Successfully your data was saved.";
-			$response["duplicateDeleteSaleOrders"] = $duplicateDeleteSaleOrders;
-			$response["duplicateDeleteSaleItems"] = $duplicateDeleteSaleItems;
-			$response["errorDeleteSaleOrders"] = $errorDeleteSaleOrders;
-			$response["errorDeleteSaleItems"] = $errorDeleteSaleItems;
-			$response["successDeleteSaleOrders"] = $successDeleteSaleOrders;
-			$response["successDeleteSaleItems"] = $successDeleteSaleItems;
-			return $response;
 		}else{
-			$response['status_code']  = 0;
-			$response['message'] = "Empty value from your uploaded file.";
-			return $response;
+			dd('Cann\'t unzip your file.');
 		}
 	}
 	/**
@@ -2349,13 +2748,14 @@ class SyncDatabaseController extends BaseController
 
 	public function getDownloadedProgress(){
 		$progress = $this->readJson('progress');
+		$response['message'] = isset($progress['message']) ? $progress['message'] : 'Downloading from server...';
 		if(isset($progress['total_size'])){
-			
 			$fileSize = $progress['total_size'];
 			$source_file = $progress['file_url'];
-
-			$sizeNow=filesize($source_file);
-			$response['message'] = 'Downloading from server...';
+			if(!$source_file)
+				$sizeNow=$progress['file_lenght'];
+			else
+				$sizeNow=filesize($source_file);
 			$response['file_url'] = $source_file;
 			$response['total_size'] = ceil($fileSize / 1024);
 			$response['downloaded'] = ceil($sizeNow / 1024);

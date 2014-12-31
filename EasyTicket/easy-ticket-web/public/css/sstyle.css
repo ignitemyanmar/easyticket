@@ -1,0 +1,10 @@
+@media only screen and (max-width: 40em){
+	nav.tab-bar {top:154px;}
+	a.menu-icon {height: 2rem;}
+	.top_left_menu{padding-left: 40px;}
+	.delivery{min-width: 80%; padding-left: 80px; }
+	.order_btn_frame{position: absolute; top:100px; right: 10px;}
+	.order{height: 2.2rem; border: 1px solid #eee;margin: 0;width:30%;float:left;}
+
+	.orbit-container {padding: 1px 0px 0 0px;height: auto;}
+}

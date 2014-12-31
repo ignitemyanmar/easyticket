@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+  <html>
+    <head>
+      <?php 
+          $currentroute=Route::getCurrentRoute()->getPath();
+          $path=substr($currentroute,0,10);
+      ?>
+      <?php if($path == 'itemdetail'): ?>
+      <!-- Place this data between the <head> tags of your website -->
+      <title><?php echo $item->name; ?></title>
+      <meta name="description" content="<?php echo $item->name; ?>" />
+
+      <!-- Schema.org markup for Google+ -->
+      <meta itemprop="name" content="<?php echo $item->name; ?>">
+      <meta itemprop="description" content="<?php echo strip_tags($item->description); ?>">
+      <meta itemprop="image" content="https://528go.com/itemphoto/php/files/<?php echo $item->image; ?>">
+
+      <!-- Twitter Card data -->
+      <meta name="twitter:card" content="<?php echo $item->name; ?>">
+      <meta name="twitter:site" content="528GO.com">
+      <meta name="twitter:title" content="<?php echo $item->name; ?>">
+      <meta name="twitter:description" content="<?php echo strip_tags($item->description); ?>">
+      <meta name="twitter:creator" content="528GO">
+      <meta name="twitter:image" content="https://528go.com/itemphoto/php/files/<?php echo $item->image; ?>">
+      <meta name="twitter:data1" content="<?php echo $item->itemdetail[0]->price; ?>">
+      <meta name="twitter:label1" content="Price">
+
+      <!-- Open Graph data -->
+      <meta property="og:title" content="<?php echo $item->name; ?>" />
+      <meta property="og:type" content="article" />
+      <meta property="og:url" content="<?php echo Request::url(); ?>" />
+      <meta property="og:image" content="https://528go.com/itemphoto/php/files/<?php echo $item->image; ?>" />
+      <meta property="og:description" content="<?php echo strip_tags($item->description); ?>" />
+      <meta property="og:site_name" content="528go.com" />
+      <meta property="og:price:amount" content="<?php echo $item->itemdetail[0]->price; ?>" />
+      <meta property="og:price:currency" content="MMK" />
+      <?php else: ?>
+      <title>528Go Online Shopping</title>
+      <?php endif; ?>
+      
+      <!-- <?php echo HTML::style('images/favicon.ico',array('rel'=>'icon','type'=>'image/ico')); ?> -->
+      <?php echo HTML::style('../../../css/font.css'); ?>
+      <?php echo HTML::style('../../../css/foundation.min.css'); ?>
+      <?php echo HTML::style('../../../css/frontnavcus.css'); ?>
+      <?php echo HTML::style('../../../css/lstyle.css'); ?>
+      <?php echo HTML::style('../../../css/sstyle.css'); ?>
+      <?php echo HTML::style('../../../css/smkstyle.css'); ?>
+      <?php echo HTML::style('../../../src/select2.css'); ?>
+      <?php echo HTML::style('../../../css/pagestyle.css'); ?>
+      <?php echo HTML::style('../../../css/dropdown.css'); ?>
+      <?php echo HTML::style('../../../css/pages/master.css'); ?>
+      
+      <?php echo HTML::script('../../../js/jquery.js'); ?>
+      <?php echo HTML::script('../../../js/app.js'); ?>
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" >
+    <script type="text/javascript" defer="defer" src="https://mylivechat.com/chatinline.aspx?hccid=44120520"></script>
+    </head>
+    <body>
+      <div>
+        <div class="row hide-for-small hide-for-medium">
+          <div class="large-2 columns top_left_menu">
+            Hi, 
+            <?php if(Auth::check()): ?> 
+            <a href="../../../profile/<?php echo Auth::user()->id; ?>?access_token=<?php echo Auth::user()->access_token; ?>"><?php echo Auth::user()->name; ?></a> / <a href="/logout">Logout</a>
+            <?php else: ?>
+            Please 
+            <a href="" style="background:transparent;" data-reveal-id="login_register" class="updatecustomer AyarWagaung" rel="2211" id="222">Login</a> / 
+            <a href="" style="background:transparent;" data-reveal-id="register" class="updatecustomer AyarWagaung" rel="2211" id="222">Register</a>
+            <?php endif; ?>
+            | Delivery
+          </div>
+          <div class="large-4 columns nopadding" id="deliver" style="margin-top:5px;">
+          <select id="delivery_to_city" name="delivery_address" class="delivery_city left">
+              <option value="0">Select to City</option>
+              <?php echo $delivery = City::orderBy('name','asc')->get();; ?>
+              <?php foreach($delivery as $rows): ?>
+                <option value="<?php echo $rows->id; ?>" <?php if(Session::has('delivery_to_city')): ?> <?php if(Session::get('delivery_to_city') == $rows->id): ?> selected <?php endif; ?> <?php endif; ?>><?php echo $rows->name; ?></option>
+              <?php endforeach; ?>
+          </select>
+          <span class="indicator left">&nbsp;</span>
+          <div class="left township-container">
+            <select id="delivery_to_township" name="delivery_township" class="delivery_township left">
+              <option value="0">Select to Township</option>
+              <?php if(Session::has('delivery_to_city')): ?>
+                <?php echo $township = Township::wherecity_id(Session::get('delivery_to_city'))->orderby('name','asc')->get();; ?>
+              <?php else: ?>
+                <?php echo $township = Township::orderby('name','asc')->get();; ?>
+              <?php endif; ?>
+              <?php foreach($township as $rows): ?>
+                <option value="<?php echo $rows->id; ?>" <?php if(Session::has('delivery_to_township')): ?> <?php if(Session::get('delivery_to_township') == $rows->id): ?> selected <?php endif; ?> <?php endif; ?>><?php echo $rows->name; ?></option>
+              <?php endforeach; ?>
+            </select>
+          </div>
+            <!-- <div class="deliver">&nbsp;</div> -->
+          </div>
+          <div class="large-3 columns">&nbsp;</div>
+          <div class="large-3 columns top_left_menu text-right hide-for-small right_menu"><a href="../aboutus">About Us</a> | <a href="../contactus">Contact Us</a> | <a href="">English</a> </div>
+          <hr class="hide-for-small">
+        </div>
+      </div>
+
+      <div id="left_fix_line" class="left"></div>
+      <div id="right_fix_line" class="right"></div>
+      <div class="row">
+        <div id="searchbar" style="background:#fff;z-index:98;">
+          <div class="large-12 columns hide-for-large"><p>&nbsp;</p></div>
+          <div class="large-2 medium-12 columns logo text-center"><img src="../../../skins/logo.png"></div>
+          <div class="large-1 hide-for-small hide-for-medium columns">&nbsp;</div>
+          <div class="large-6 columns search_form hide-for-small hide-for-medium">
+            <form method="get" action="/items/search">
+              <div class="row collapse margintop-20px">
+                <div class="small-2 columns show-for-small">&nbsp;</div>
+                <div class="small-8 medium-10 columns">
+                  <input name="search" placeholder="ပစၥည္း အမ်ိဳးအမည္မ်ားျဖင့္ ရွာပါ" type="text" class="txt_search">
+                </div>
+                <div class="small-2 medium-2 columns" style="margin-left: -1px;">
+                  <span class="searchbg"></span>
+                  <input href="#" class="postfix small button expand searchbtn" value=""  type="submit">
+                </div>
+                <?php $search_links=SearchLink::orderBy('priority','asc')->groupBy('menu_id')->get(); ?>
+                <!-- <div class="large-12 medium-12 columns search_suggest_label hide-for-small">ရွပ္အကၤ်းီ၊ ေက်ာပိုးအိပ္၊ ဖိနပ္၊ နာရီ၊ စကပ္၊ ေဘာင္းဘီ၊ လံုခ်ည္၊ မိုးဘုိင္ဖုန္း။</div> 
+                      </div> -->
+                <div class="large-12 medium-12 columns search_suggest_label hide-for-small hide-for-medium">
+                  <!-- <a href="">ရွပ္အကၤ်းီ၊ ေက်ာပိုးအိပ္၊ ဖိနပ္၊ နာရီ၊ စကပ္၊ ေဘာင္းဘီ၊ လံုခ်ည္၊ မိုးဘုိင္ဖုန္း။</a> -->
+                  <?php if($search_links): ?>
+                    <?php foreach($search_links as $rows): ?>
+                     <a href="/list/<?php echo $rows['menu_id']; ?>"> <?php echo $rows['name_mm']; ?></a> ၊ 
+                    <?php endforeach; ?>
+                  <?php endif; ?>
+                </div> 
+              </div> 
+            </form>
+          </div>
+          <div class="large-1 medium-1 columns">&nbsp;</div>
+          <div class="large-2 columns hide-for-small hide-for-medium shopping_cart_form order_btn_frame right">
+            <div class="order"><img src="../../../skins/combo.png"></div>
+            <?php 
+                $shipping = array();
+                if(Auth::check())
+                  $shipping = Order::whereuser_id(Auth::user()->id)->wherestatus(1)->get() 
+            ?>
+            <div id="tracking" data-dropdown="tracking-view" class="order"><img <?php if(count($shipping) > 0): ?> class="blank-img" src="../../../skins/order_tracking_effet.png" <?php else: ?> src="../../../skins/order_tracking.png" <?php endif; ?>></div>
+            <?php if(count($shipping) > 0): ?>
+              <ul id="tracking-view" data-dropdown-content class="f-dropdown tracking_show">
+                <?php foreach($shipping as $rows): ?>
+                <li><a href="#"><?php echo $rows->shipping_note; ?></li>
+                <?php endforeach; ?>
+              </ul>
+            <?php endif; ?>
+            <div class="order_form carts" data-dropdown="carts"><img src="../../../skins/order_form.png"><span><?php echo Cart::count(); ?></span></div>
+            <?php if(Cart::count() > 0): ?>
+            <?php 
+              $content = Cart::content(); 
+              $grand_total = 0;
+            ?>
+            <ul id="carts" data-dropdown-content class="f-dropdown drop-carts">
+              <?php foreach($content as $rows): ?>
+              <li>
+                <div class="row nopadding">
+                  <div class="large-4 columns nopadding cart-photo">
+                    <img class="center_photo" src="../../../itemphoto/php/files/medium/<?php echo $rows->options->image; ?>" >
+                  </div>
+                  <div class="large-8 columns nopadding">
+                    <div class="cart_title"><?php echo $rows->name; ?></div>
+                    <div style="font-size: 14px;line-height: 30PX;">Price: <?php echo $rows->price; ?>Ks</div>
+                    <div class="label">Qty <?php echo $rows->qty; ?></div>
+                  </div>
+                </div>
+              </li>
+              <?php $grand_total += $rows->subtotal; ?>
+              <?php endforeach; ?>
+              <li>
+                  <div class="rows nopadding">
+                      <div class="large-12 columns left grand-total" style="margin-bottom: 12px;"><span> <?php echo $grand_total; ?> </span>Kyats</div>
+                      <!-- <div class="large-5 columns right"><a href="../../../delivery?<?php if(Auth::check()): ?>access_token=<?php echo Auth::user()->access_token; ?><?php endif; ?>" <?php if(!Auth::check()): ?> data-reveal-id="login_register" <?php endif; ?> class="button">ရွင္းမည္</a></div> -->
+                      <br>
+                      <div class="large-12 columns text-right"><a href="../../../cart" class="button" style="color:white;">Go to Cart</a></div>
+                  </div>
+              </li>
+            </ul>
+            <?php endif; ?>  
+          </div>
+        </div>
+      </div>
+        <div class="contentframe off-canvas-wrap">
+          <div class="inner-wrap">
+                <nav class="top-bar show-for-large-up top-bars" data-topbar> 
+                    <section class="top-bar-section"> 
+                      <ul class="left"> 
+                      <?php $currentroute=Route::getCurrentRoute()->getPath();
+                        $currentroute=substr($currentroute,0,3);
+                        $currentroute=substr($currentroute,0,3);
+
+                      ?>
+                        <li <?php if($currentroute ==''): ?> class="has-dropdown active" <?php else: ?> class="has-dropdown"  <?php endif; ?>> 
+                          <a href="#">ပစၥည္း အမ်ိဳးအစားမ်ား</a> 
+                          <?php echo $__env->make('home.menu', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+                        </li> 
+                        <li <?php if($currentroute=='/'): ?> class="active" <?php else: ?> class="" <?php endif; ?>> 
+                          <a href="/">မူလစာ မ်က္ႏွာ</a> 
+                        </li>
+                        <li <?php if($currentroute=='fre'): ?> class="active" <?php else: ?> class="" <?php endif; ?>> 
+                          <a href="/free-get">Free Get <span class="hot">Hot!</span></a> 
+                        </li>
+                        <li <?php if($currentroute=='gro'): ?> class="active" <?php else: ?> class="" <?php endif; ?>> 
+                          <a href="/group-sale">ပူးေပါင္း ေစ်းဝယ္</a> 
+                        </li>
+                        <li <?php if($currentroute=='tim'): ?> class="active" <?php else: ?> class="" <?php endif; ?>>  
+                          <a href="/time-sale">နံနက္/ည ေစ်း</a>
+                        </li>
+                      </ul> 
+                    </section> 
+                </nav>
+                <!-- shown on only on a small screen. -->
+                
+              <a class="exit-off-canvas" href="#"></a>
+              <!--End shown menu on only on a small screen. -->
+
+              <section class="main-section"> 
+                <div style="clear:both;min-height:6px;"></div>
+                <div class="content-frame">
+                    <div class="row">
+                      <div class="large-12 columns">
+                        <div id="login_register" class="reveal-modal small" data-reveal style="display:block;"> 
+                              <h3><i class="icon-user"></i>သင္၏ အေကာင့္သို႕ ဝင္ရန္</h3>
+                                <form id="update-form" name ="update-form" class="horizontal-form" action = "#" method= "POST" style="width:100%;padding:1px;padding-left: 2px;">    
+                                    <div class="form-actions">
+                                    <div class="portlet box">
+                                       <div class="portlet-title">
+                                          <div class="actions">
+                                          </div>
+                                       </div>
+                                       <div class="portlet-body">
+                                        <div class="row">
+                                            <div class="large-12 columns"><p class="message"></p></div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="large-4 columns nopadding">
+                                             <label class="control-label">အီးေမး လ္</label>
+                                            </div>
+                                            <div class="large-8 columns">
+                                                <input type="text" name="username" id="l_username" required placeholder="Email / Phone No."  />
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="large-4 columns nopadding">
+                                             <label id="text_change" onclick="replace()" class="control-label">လိ့်ဳ ဝွက္နံပါတ္</label>
+                                            </div>
+                                            <div class="large-8 columns">
+                                                <input type="password" name="password" id="l_password" required placeholder="Password"  />
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="large-4 columns">
+                                             <label class="control-label">&nbsp;</label>
+                                            </div>
+                                            <div class="large-8 columns">
+                                                <input type="checkbox" name="remember_me" value="" />
+                                                <span style="color:#7C7C7C; font-size:14px;">မိမိအား အၿမဲမွတ္ထားရန္</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="large-7 columns nopadding"><br><br>
+                                             <span><a href="" style="font-size: 14px;">သင္၏ လိ့်ဳဝွက္နံပါတ္ ေမ့ေနပါသလား?</a></span>
+                                            </div>
+                                            <div class="large-3 columns right"><br>
+                                                   <input type = "button" value = "ဝင္ရန္" class="btn_signin btn button-submit" id="btn_create" style="color:white;" />
+                                            </div>
+                                            <div class="large-2 columns right">
+                                              <div class="loading_indicator" style="width: 36px;height: 35px;position: relative;float: right;margin-top: 21px;"></div>
+                                            </div>
+                                        </div>
+
+                                            <div class="cleardiv">&nbsp;</div>
+                                            <div class="controls">
+                                                <div class="large-2 column">&nbsp;</div>
+                                                <div class="large-10 column">
+                                                   <br>
+                                                </div>
+                                            </div>
+                                       </div>
+                                    </div>
+                                    </div>
+                                </form>
+                                <div class="bottom_grey">
+                                  <div class="row">
+                                    <div class="large-12 columns">
+                                      <form> 
+                                        <fieldset> 
+                                          <legend>Login with</legend> 
+                                            <div class="large-2 columns"><a href="https://528go.com/loginwithgoogle"><img src="../../../../img/google_ci.png"></a></div> 
+                                            <div class="large-2 columns"><a href="https://528go.com/loginwithfacebook"><img src="../../../../img/facebook_ci.png"></a></div> 
+                                            <div class="large-2 columns"><a href="https://528go.com/loginwithtwitter"><img src="../../../../img/twitter_ci.png"></a></div> 
+                                            <div class="large-2 columns"><a href="https://528go.com/loginwithlinkedin"><img src="../../../../img/linkedin_ci.png"></a></div> 
+                                            <div class="large-2 columns left"><a href=""><img src="../../../../img/qq_ci.png"></a></div> 
+                                            <!-- <div class="large-2 columns"><a href=""><img src="../../../../img/google_ci.png"></a></div>  -->
+                                        </fieldset> 
+                                      </form>
+                                    </div>
+                                    <p style="margin: 0px 17px;">သင့္မွာ အေကာင့္မရိွေသးဘူးလား? <a href="#" data-reveal-id="register"> ဒီလင့္မွ</a> အေကာင့္အသစ္ ဖန္တီးႏိုင္ပါသည္။</p>
+                                  </div>
+                                </div>
+                              <a class="close-reveal-modal">&#215;</a> 
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="large-12 columns">
+                        <div id="register" class="reveal-modal small" data-reveal style="display:block;"> 
+                              <h3><i class="icon-user"></i>အေကာင့္သစ္ ဖြင့္ရန္</h3>
+                                <form id="update-form" name ="update-form" class="horizontal-form" action = "#" method= "post" style="width:100%;padding:1px;padding-left: 2px;">    
+                                    <div class="form-actions">
+                                    <div class="portlet box">
+                                       <div class="portlet-title">
+                                          <div class="actions">
+                                          </div>
+                                       </div>
+                                       <div class="portlet-body">
+                                        <div class="row">
+                                            <div class="large-12 columns"><p class="register_message"></p></div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="large-4 columns nopadding">
+                                             <label class="control-label">အမည္ အျပည့္အစံု</label>
+                                            </div>
+                                            <div class="large-8 columns">
+                                                <input type="text" name="name" id="s_name" required placeholder="Full Name"  />
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="large-4 columns nopadding">
+                                             <label class="control-label">အီးေမး လ္</label>
+                                            </div>
+                                            <div class="large-8 columns">
+                                                <input type="text" name="email" id="s_email" required placeholder="Email / Phone No."  />
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="large-4 columns nopadding">
+                                             <label class="control-label">လိ့်ဳ ဝွက္နံပါတ္</label>
+                                            </div>
+                                            <div class="large-8 columns">
+                                                <input type="password" name="password" id="s_password" required placeholder="Password"  />
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="large-4 columns nopadding">
+                                             <label class="control-label">လိ့်ဳ ဝွက္နံပါတ္ တဖန္</label>
+                                            </div>
+                                            <div class="large-8 columns">
+                                                <input type="password" name="confirm_password" id="sc_password" required placeholder="Password"  />
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="large-4 columns">
+                                             <label class="control-label">&nbsp;</label>
+                                            </div>
+                                            <div class="large-8 columns">
+                                                <input type="checkbox" name="remember_me" required />
+                                                <label class="remember">စည္းမ်ဥ္းစည္းကမ္း အားလံုးကို လုိက္နာပါမည္။</label>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="large-7 columns nopadding"><br><br>
+                                             <span>&nbsp;</span>
+                                            </div>
+                                            <div class="large-2 columns">
+                                              <div class="register_indicator" style="width: 36px;height: 35px;position: relative;float: right;margin-top: 21px;"></div>
+                                            </div>
+                                            <div class="large-3 columns right"><br>
+                                                   <input type = "button" value = "သိမ္းမည္" class="btn_signup btn button-submit right" id="btn_create" style="color:white;" />
+                                            </div>
+                                        </div>
+
+                                            <div class="cleardiv">&nbsp;</div>
+                                            <div class="controls">
+                                                <div class="large-2 column">&nbsp;</div>
+                                                <div class="large-10 column">
+                                                   <br>
+                                                </div>
+                                            </div>
+                                       </div>
+                                    </div>
+                                    </div>
+                                </form>
+                                <div class="bottom_grey">
+                                  <div class="row">
+                                    <div class="large-12 columns">
+                                      <form> 
+                                        <fieldset> 
+                                          <legend>Login with</legend> 
+                                            <div class="large-2 columns"><a href="https://528go.com/loginwithgoogle"><img src="../../../../img/google_ci.png"></a></div> 
+                                            <div class="large-2 columns"><a href="https://528go.com/loginwithfacebook"><img src="../../../../img/facebook_ci.png"></a></div> 
+                                            <div class="large-2 columns"><a href="https://528go.com/loginwithtwitter"><img src="../../../../img/twitter_ci.png"></a></div> 
+                                            <div class="large-2 columns"><a href="https://528go.com/loginwithlinkedin"><img src="../../../../img/linkedin_ci.png"></a></div> 
+                                            <div class="large-2 columns left"><a href=""><img src="../../../../img/qq_ci.png"></a></div> 
+                                            <!-- <div class="large-2 columns"><a href=""><img src="../../../../img/google_ci.png"></a></div>  -->
+                                        </fieldset> 
+                                      </form>
+                                    </div>
+                                    <p style="margin: 0px 17px;">သင့္မွာ အေကာင့္အသင့္ ရိွၿပီးသာလား? <a href="#" data-reveal-id="login_register">ဒီလင့္မွ</a> ဝင္ေရာက္ႏိုင္ပါသည္။</p>
+                                  </div>
+                                </div>
+                              <a class="close-reveal-modal">&#215;</a> 
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="large-12 columns">
+                        <div <?php if(!Session::has('delivery_to_city')): ?> id="delivery_window" <?php endif; ?> class="reveal-modal small" data-reveal style="display:block;"> 
+                              <h3><i class="icon-user"></i>528Go မွ ႀကိဳဆိုပါ၏</h3>
+                                <form id="update-form" name ="update-form" class="horizontal-form" action = "/settownship" method= "POST" style="width:100%;padding:1px;padding-left: 2px;">    
+                                    <div class="form-actions">
+                                    <div class="portlet box">
+                                       <div class="portlet-title">
+                                          <div class="actions">
+                                          </div>
+                                       </div>
+                                       <div class="portlet-body">
+                                        <div class="row">
+                                            <div class="large-12 columns nopadding" style="line-height: 29px;margin-top: -34px;">528Go မွ ၿမိဳ႕နယ္ (၁၃၉) ခုကို အိမ္အေရာက္ ပို႕ေဆာင္မႈ ေပးေနပါသည္။ သင္မွာယူေသာ ပစၥည္းကို ပို႔ေဆာင္ေပးရန္ ေအာက္ပါၿမိဳ႕နယ္မ်ားကို ေရြးပါ။</div>
+                                        </div>
+                                        <br/>
+                                        <div class="row delivery">
+                                            <nav class="top-bar" data-topbar > 
+                                              <section class="top-bar-section"> 
+                                                <ul class="right transparent"> 
+                                                  <li><a href="#" class="a_label">မွာယူေသာ ပစၥည္းမ်ားကို ေပးပုိ႕ရန္:</a></li> 
+                                                  <li class="has-dropdown active"> 
+                                                    <input type="hidden" id="city-township" name="city-township">
+                                                    <a href="#" id="delivery-info">ၿမိဳ႕ေရြးပါ... </a> 
+                                                    <ul class="dropdown submenu"> 
+                                                      <li class="has-dropdown">
+                                                        <div class="menu_container">
+                                                            <div class="left_menu">
+                                                            <?php $i = 1; ?>
+                                                            <?php foreach($delivery as $rows): ?>
+                                                              <div data-id="<?php echo $i; ?>" class="menu_city <?php if($i == 1): ?> active <?php endif; ?>"><?php echo $rows->name_mm; ?></div>
+                                                              <?php $i++; ?>
+                                                            <?php endforeach; ?>
+                                                            </div>
+
+                                                            <div class="right_menu">
+                                                              <?php $i = 1; ?>
+                                                              <?php foreach($delivery as $row): ?>
+                                                              <div id="township-<?php echo $i; ?>" class="township <?php if($i == 1): ?> active <?php endif; ?>">
+                                                                <?php $town = Township::wherecity_id($row->id)->get(); ?>
+                                                                <?php $j = 1; ?>
+                                                                <?php foreach($town as $rows): ?>
+                                                                <span data-id="<?php echo $rows->name_mm; ?>, <?php echo $row->name_mm; ?>/<?php echo $rows->id; ?>-<?php echo $row->id; ?>" class="each-township label <?php if($i == 1 && $j==1): ?> active <?php endif; ?>"><?php echo $rows->name_mm; ?></span>
+                                                                <?php $j++ ?>
+                                                                <?php endforeach; ?>
+                                                                <?php $i++; ?>
+                                                              </div>
+                                                              <?php endforeach; ?>
+                                                            </div>
+                                                        </div>
+                                                      </li> 
+                                                    </ul> 
+                                                  </li> 
+                                            
+                                                  <li><input type="submit" value="" class="delivery-submit"></li>
+                                                </ul> 
+                                              </section> 
+                                              
+                                            </nav>
+                                          
+                                        </div>
+                                        <br/>
+                                        <div class="cleardiv">&nbsp;</div>
+                                            <div class="controls">
+                                                <div class="large-2 column">&nbsp;</div>
+                                                <div class="large-10 column">
+                                                   <br>
+                                                </div>
+                                            </div>
+                                       </div>
+                                    </div>
+                                    </div>
+                                </form>
+                                
+                              <a class="close-reveal-modal">&#215;</a> 
+                        </div>
+                      </div>
+                    </div> 
+                    <?php echo $__env->yieldContent('content'); ?>
+                </div>
+              </section> 
+          </div>
+        </div>
+
+
+
+      <!-- footer  -->
+      <!-- <div class="large-12 columns footer"> -->
+            <div class="clear"></div>
+              <div class="row">
+                <div class="large-3 medium-3 small-6 small-6 columns">
+                  <div class="footer_title">
+                     &nbsp;ေစ်းဝယ္လမ္းညႊန္
+                  </div>
+                  <div class="footer_menu">
+                    <ul> 
+                      <li><a href="../howtoregister">Register ျပဳလုပ္ျခင္း</a></li>
+                      <li><a href="../howtologin">Login ဝင္ျခင္း</a></li>
+                      <li><a href="../advantagemember">အဖြဲ႔ဝင္ေကာင္းက်ိဳးမ်ား</a></li>
+                      <li><a href="../freegetguide">Daily Free Get လမ္းညြန္</a></li>
+                      <li><a href="../groupsaleguide">ပူးေပါင္းေစ်း၀ယ္လမ္းညႊန္</a></li>
+                      <li><a href="../timesaleguide"> နံနက္/ညေစ်း</a></li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="large-3 medium-3 small-6 small-6 columns">
+                  <div class="footer_title">
+                      &nbsp;၀န္ေဆာင္မႈမ်ား
+                  </div>
+                  <div class="footer_menu">
+                    <ul> 
+                      <li><a href="../warranty">ပစၥည္းအာမခံခ်က္မ်ား </a></li>
+                      <li><a href="../changeitem">၇ ရက္အတြင္း ျပန္လည္ လဲလွယ္ေပးျခင္း </a></li>
+                      <li><a href="../personalnote">ပုဂၢိဳလ္ေရးဆိုင္ရာ အခ်က္အလက္မ်ား ထိန္းသိမ္းကာကြယ္ေပးျခင္း</a></li>
+                      <li><a href="../ordercancel">ကုန္ပစၥည္းအမွာစာကို ပယ္ဖ်က္ျခင္း၊ လဲလွယ္ျခင္း</a></li>
+                      <li><a href="../solveproblem">Problem ေျဖရွင္းခ်က္မ်ား</a></li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="large-3 medium-3 small-6 small-6 columns">
+                  <div class="footer_title">
+                     &nbsp;ကုန္ပို႔စနစ္
+                  </div>
+                  <div class="footer_menu">
+                    <ul> 
+                      <li><a href="../deliveries">အျမန္ေခ်ာပို႔ (Express) ျဖင့္ေပးပို႔ျခင္း</a></li>
+                      <li><a href="../conditionofdelivery">ပစၥည္းမ်ား ေရာက္ရွိမႈ အေျခအေန Tracking Check </a></li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="clear show-for-small">&nbsp;</div>
+
+                <div class="large-3 medium-3 small-6 small-6 columns">
+                  <div class="footer_title">
+                      &nbsp;ေငြေပးေခ် စနစ္ 
+                  </div>
+                  <div class="footer_menu">
+                    <ul> 
+                      <li><a href="../cardondelivery">ပစၥည္းေရာက္ ေငြေပးေခ် စနစ္ </a></li>
+                      <li><a href="../mobilebanking">I Banking စနစ္</a></li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="clear show-for-small">&nbsp;</div>
+
+              </div>
+              <div class="row">
+                <div class="large-12 columns nopadding">
+                    <div class="footer_line"></div>
+                </div>
+              </div>
+
+              <div class="row shop_link">
+                <div class="large-1 columns show-for-large-up">&nbsp;</div>
+                <div class="large-5 medium-6 small-6 columns nopadding">
+                    <div class="qr_code"><img src="../../../../img/528_head_office.png"></div>
+                    <div class="shop_title">Shop No 1</div>
+                    <div class="address"> No.(13), Building -128/128-A/130, 33 Street, Kyauktada Tsp, Yangon.  </div>
+                    <div class="phone">Hotline Phone: 09400030345, 09253356699, 0932121700</div>
+                </div>
+                <div class="large-5 medium-6 small-6 columns nopadding">
+                    <div class="qr_code"><img src="../../../../img/528_store_office.png"></div>
+                    <div class="shop_title">Shop No.2</div>
+                    <div class="address"> No.(2), Building - (2), Bo Aung Kyaw Housing, Bo Aung Kyaw Street (Near Zone 4), Hlaing Thar Yar Tsp, Yangon. </div>
+                    <div class="phone">Hotline Phone: 01645140, 0973067130</div>
+                </div>
+                <div class="large-1 columns show-for-large-up">&nbsp;</div>
+              </div>
+
+              <!-- <div class="row mobile_link">
+                  <div class="large-4 columns">&nbsp;</div>
+                  <div class="large-4 columns text-center">
+                    <img src="../../../skins/iphone.png">
+                    <img src="../../../skins/ipad.png">
+                    <img src="../../../skins/android.png">
+                  </div>
+                  <div class="large-4 columns">&nbsp;</div>
+              </div> -->
+
+              <div class="row sale">
+                  <hr>
+                <div class="large-1 columns show-for-large-up">&nbsp;</div>
+                <div class="large-10 medium-12 columns">
+                  <div class="row">
+                    <div class="large-3 medium-6 small-6 columns">
+                        <img src="../../../img/ic_shipping.png">
+                        <span class="service_title">National Free Shipping </span>
+                    </div>
+
+                    <div class="large-3 medium-6 small-6 columns">
+                        <img src="../../../img/ic_security.png">
+                        <span class="service_title">Genuine Security  </span>
+                    </div>
+                    <div class="clear hide-for-large-up">&nbsp;</div>
+                    <div class="large-3 medium-6 small-6 columns">
+                        <img src="../../../img/ic_sale.png">
+                        <span class="service_title">Sale Worry </span>
+                    </div>
+                    <div class="large-3 medium-6 small-6 columns">
+                        <img src="../../../img/ic_time.png">
+                        <span class="service_title">Time Served</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="large-1 columns show-for-large-up">&nbsp;</div>
+              </div>
+
+              <div class="row">
+                  <div class="large-2 columns">&nbsp;</div>
+                  <div class="large-8 medium-12 columns">
+                      <div class="copyright">Copyright © 2014, All Rights Reserved</div>
+                  </div>
+                  <div class="large-2 columns">&nbsp;</div>
+              </div>
+      <!-- </div> -->
+      <?php echo HTML::script('../../../js/foundation.min.js'); ?>
+      <?php echo HTML::script('../../../src/select2.min.js'); ?>
+      <?php echo HTML::script('../../js/jquery.floatingFixed.js'); ?>
+
+      <!-- <?php echo HTML::script('../src/select2.min.js'); ?> -->
+      <!-- <?php echo HTML::script('js/responsiveslides.min.js'); ?> -->
+      <script type="text/javascript">
+        $(document).foundation(); 
+      </script>
+      <script>
+      $(function() {        
+        $("#searchbar").floatingFixed({ padding: 0 });
+        $(".delivery").select2();
+        /*$("#left_fix_line").floatingFixed({ padding: 70 });
+        $("#right_fix_line").floatingFixed({ padding: 70 });*/
+      });
+    </script>
+  </body>
+</html>

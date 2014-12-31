@@ -1,0 +1,95 @@
+.countdownHolder{
+	width: 100%; 
+	/* margin: 0 auto; */
+	/* font-size: 14px; */
+	/* font: 40px/1.5 'Open Sans Condensed',sans-serif; */
+	/* text-align: center; */
+	/* padding-left: 24px; */
+	letter-spacing: -7px;
+	/* background: #D17E9E; */
+	/* background: #00f; */
+	/*background: url('../img/timer.png') no-repeat 5px 3px;*/
+	/* border: 1px solid #D17E9E; */
+	/* padding-top: 0px; */
+	color: white;
+}
+
+.position{
+	display: inline-block;
+	height: 1.2em;
+	overflow: hidden;
+	position: relative;
+	width: 1.05em;
+
+}
+
+.digit{
+	position:absolute;
+	display:block;
+	width:1em;
+	/*background-color:#bbb;*/
+	/*border-radius:0.2em;*/
+	text-align:center;
+	color:white;
+	letter-spacing:-1px;
+	margin-left: 2px;
+	background: rgba(0,0,0,.7);
+}
+
+.digit.static{
+	/*box-shadow:1px 1px 1px rgba(4, 4, 4, 0.35);*/
+	/*
+	background-image: linear-gradient(bottom, #aaaaaa 50%, #cccccc 50%);
+	background-image: -o-linear-gradient(bottom, #aaaaaa 50%, #cccccc 50%);
+	background-image: -moz-linear-gradient(bottom, #aaaaaa 50%, #cccccc 50%);
+	background-image: -webkit-linear-gradient(bottom, #aaaaaa 50%, #cccccc 50%);
+	background-image: -ms-linear-gradient(bottom, #aaaaaa 50%, #cccccc 50%);
+	
+	background-image: -webkit-gradient(
+		linear,
+		left bottom,
+		left top,
+		color-stop(0.5, #aaaaaa),
+		color-stop(0.5, #cccccc)
+	);*/
+}
+
+/**
+ * You can use these classes to hide parts
+ * of the countdown that you don't need.
+ */
+
+.countDays{}
+.countDiv0{ /* display:none !important;*/ }
+.countHours{margin-left: 8px;}
+.countDiv1{}
+.countMinutes{margin-left: 8px;}
+.countDiv2{}
+.countSeconds{margin-left: 8px;}
+
+
+.countDiv{
+	display:inline-block;
+	/*width:16px;*/
+	height:1.4em;
+	position:relative;
+}
+
+.countDiv:before,
+.countDiv:after{
+	position: absolute;
+	width: 2px;
+	height: 4px;
+	background-color: black;
+	border-radius: 50%;
+	left: 50%;
+	margin: 3px 3px;
+	top: 15px;
+	content: '';
+	font-size: 16px;
+	padding: 3px 3px;
+}
+
+.countDiv:after{
+	top:0.4em;
+}

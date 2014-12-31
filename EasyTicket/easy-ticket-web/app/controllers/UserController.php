@@ -328,6 +328,11 @@ class UserController extends BaseController
 
   }
 
+  /**
+   * User List
+   *
+   * @return response
+   */
   public function index(){
     $user_ids=array();
     $user_id=OperatorGroup::whereoperator_id($this->myGlob->operator_id)->lists('user_id');
@@ -357,6 +362,8 @@ class UserController extends BaseController
           }
 
           $response[$key]['operator_groupname']=$operator_groupname;
+          $operator_id=Operator::whereuser_id($rows->id)->pluck('id');
+          $response[$key]['operator_id']=$operator_id ? $operator_id : '0';
           $response[$key]['header']=$role;
         }
       } 
@@ -366,15 +373,172 @@ class UserController extends BaseController
     return View::make('user.list', array('response'=>$response));
   }
 
+  /**
+   * Create New User
+   *
+   * @return response
+   */
   public function create(){
     $response=array();
+    $response['role']=array('2'=>"Staff", '4'=>"Supervisor", '8'=>"Manager");
+    $operator_group=OperatorGroup::whereoperator_id($this->myGlob->operator_id)
+                                  ->with(array(
+                                    'user'=>function($q){ $q->addSelect(array('id','name'));}
+                                  ))->get(array('id','user_id'));
+    
+    $response['operator_group']=$operator_group;
     return View::make('user.add', array('response'=>$response));
   }
 
-  public function destroy(){
+  /**
+   * Store User Info
+   *
+   * @return response
+   */
+  public function store(){
+    $name         =Input::get('name');
+    $email        =Input::get('email');
+    $password     =Input::get('password');
+    $role         =Input::get('role');
+    $type         =Input::get('type');
+    $group_user   =Input::get('group_user');
+    $groupuser_id =Input::get('groupuser_id');
+
+    $checkexisting=User::whereemail($email)->first();
+    if($checkexisting){
+      $message['status']=0;
+      $message['info']="Email is already used.";
+      return Redirect::to('user-list')->with('message',$message);
+    }
+    $objuser            =new User();
+    $objuser->name      =$name;
+    $objuser->email     =$email;
+    $objuser->password  =Hash::make($password);
+    $objuser->role      =$role;
+    $objuser->type      =$type;
+    $objuser->save();
+
+    $user_id            =$objuser->id;
+    if($group_user=="group"){
+      $objoperatorgroup     =new OperatorGroup();
+      $objoperatorgroup->operator_id  =$this->myGlob->operator_id;
+      $objoperatorgroup->user_id  =$user_id;
+      $objoperatorgroup->save();
+    }else{
+      $objgroupuser                   =new OperatorGroupUser();
+      $objgroupuser->operator_id      =$this->myGlob->operator_id;
+      $objgroupuser->operatorgroup_id =$groupuser_id;
+      $objgroupuser->user_id          =$user_id;
+      $objgroupuser->save();
+    }
+
+    $message['status']=1;
+    $message['info']="Successfully save one user.";
+    return Redirect::to('user-list')->with('message', $message);
+  }
+
+  /**
+   * Edit User Info
+   *
+   * @return response
+   */
+  public function edit($id){
+    $response=array();
+    $response['role']=array('2'=>"Staff", '4'=>"Supervisor", '8'=>"Manager");
+    $operator_group=OperatorGroup::whereoperator_id($this->myGlob->operator_id)
+                                  ->with(array(
+                                    'user'=>function($q){ $q->addSelect(array('id','name'));}
+                                  ))->get(array('id','user_id'));
+    
+    $response['operator_group']=$operator_group;
+    $user_info=User::find($id);
+    $checkgroup=OperatorGroup::whereuser_id($id)->first();
+    if($checkgroup){
+      $user_info['group']="group";
+      $user_info['undergroup_id']=0;
+    }else{
+      $user_info['group']="undergroup";
+      $checkgroupuser=OperatorGroupUser::whereuser_id($id)->first();
+      
+      $user_info['undergroup_id']=0;
+      if($checkgroupuser)
+        $user_info['undergroup_id']=$checkgroupuser->operatorgroup_id;
+    }
+
+
+
+    return View::make('user.edit', array('response'=>$response, 'user_info'=>$user_info));
+  }
+
+  /**
+   * Store User Info
+   *
+   * @return response
+   */
+  public function update($id){
+    $name         =Input::get('name');
+    $email        =Input::get('email');
+    $password     =Input::get('password');
+    $role         =Input::get('role');
+    $type         =Input::get('type');
+    $group_user   =Input::get('group_user');
+    $groupuser_id =Input::get('groupuser_id');
+
+    $checkexisting=User::where('id','!=',$id)->whereemail($email)->first();
+    if($checkexisting){
+      $message['status']=0;
+      $message['info']="Email is already used.";
+      return Redirect::to('user-list')->with('message',$message);
+    }
+    $objuser            =User::find($id);
+    $objuser->name      =$name;
+    $objuser->email     =$email;
+    if($password)
+      $objuser->password  =Hash::make($password);
+    $objuser->role      =$role;
+    $objuser->type      =$type;
+    $objuser->save();
+
+    $user_id            =$id;
+    if($group_user=="group"){
+      OperatorGroupUser::whereuser_id($id)->delete();
+      $objoperatorgroup     =new OperatorGroup();
+      $objoperatorgroup->operator_id  =$this->myGlob->operator_id;
+      $objoperatorgroup->user_id  =$user_id;
+      $objoperatorgroup->save();
+    }else{
+      OperatorGroup::whereuser_id($id)->delete();
+      $checkgroupuser=OperatorGroupUser::whereuser_id($id)->first();
+      if($checkgroupuser){
+        $checkgroupuser->operatorgroup_id =$groupuser_id;
+        $checkgroupuser->user_id          =$user_id;
+        $checkgroupuser->update();
+      }else{
+        $objgroupuser                   =new OperatorGroupUser();
+        $objgroupuser->operator_id      =$this->myGlob->operator_id;
+        $objgroupuser->operatorgroup_id =$groupuser_id;
+        $objgroupuser->user_id          =$user_id;
+        $objgroupuser->save();
+      }
+      
+    }
+
+    $message['status']=1;
+    $message['info']="Successfully save one user.";
+    return Redirect::to('user-list')->with('message', $message);
+  }
+  
+
+  /**
+   * Delete User info
+   *
+   * @return response
+   */
+  public function destroy($id){
+    User::whereid($id)->delete();
     $message['status']=1;
     $message['info']="Successfully delete one record.";
     return Redirect::to('user-list')->with('message', $message);
-  }  
+  } 
 
 }

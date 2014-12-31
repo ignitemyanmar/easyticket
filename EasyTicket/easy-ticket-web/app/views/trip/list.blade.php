@@ -9,26 +9,7 @@
             <!-- BEGIN PAGE HEADER-->
                <div class="row-fluid">
                   <div class="span12">
-                     <!-- BEGIN STYLE CUSTOMIZER -->
-                     <div class="color-panel hidden-phone">
-                        <div class="color-mode-icons icon-color"></div>
-                        <div class="color-mode-icons icon-color-close"></div>
-                        <div class="color-mode">
-                           <p>THEME COLOR</p>
-                           <ul class="inline">
-                              <li class="color-black current color-default" data-style="default"></li>
-                              <li class="color-blue" data-style="blue"></li>
-                              <li class="color-brown" data-style="brown"></li>
-                              <li class="color-purple" data-style="purple"></li>
-                              <li class="color-white color-light" data-style="light"></li>
-                           </ul>
-                           <label class="hidden-phone">
-                           <input type="checkbox" class="header" checked value="" />
-                           <span class="color-mode-label">Fixed Header</span>
-                           </label>                   
-                        </div>
-                     </div>
-                     <!-- END BEGIN STYLE CUSTOMIZER -->    
+                        
                      <!-- BEGIN PAGE TITLE & BREADCRUMB-->        
                      <h3 class="page-title">
                         Dashboard            
@@ -66,6 +47,17 @@
                                     </a>
                                  </div>
                                  
+                                 <div class="btn-group pull-right">
+                                     <button class="btn green dropdown-toggle" data-toggle="dropdown">Tools <i class="icon-angle-down"></i>
+                                     </button>
+                                     <ul class="dropdown-menu">
+                                        <li>
+                                           <a href="#" class="print">Print</a></li>
+                                        <!-- <li><a href="#">Save as PDF</a></li> -->
+                                        <li><a href="#" id="btnExportExcel">Export to Excel</a></li>
+                                     </ul>
+                                  </div>
+
                               </div>
                               @if(Session::has('message'))
                                  <?php $message=Session::get('message'); ?>
@@ -76,6 +68,39 @@
                                  </div>
                                  @endif
                               @endif
+                              <table class="table table-striped table-hover table-bordered" id="tblExport" style="display:none;">
+                                 <thead>
+                                    <tr>
+                                       <th class="hidden-phone span3">ခရီးစဥ္</th>
+                                       <!-- <th class="span2">ေရာက္မည့္ျမိဳ႕</th> -->
+                                       <th class="span2">ကားအမ်ိဳးအစား / ခုံအစီအစဥ္</th>
+                                       <th class="span2">ကားထြက္သည့္ ေန႕ အခ်ိန္<!-- ႕မ်ား --></th>
+                                       <!-- <th class="span2">အခ်ိန္</th> -->
+                                       <th class="span1">ႏုိင္ငံသား ေစ်းႏုန္း</th>
+                                       <th class="span1">ႏုိင္ငံျခားသား<br> ေစ်းႏုန္း</th>
+                                       <th class="span1">ေကာ္မစ္ရွင္ႏႈန္း</th>
+                                    </tr>
+                                 </thead>
+                                 <tbody>
+                                    @foreach($response as $trip)
+                                          <tr>
+                                             <td class="hidden-phone span2">{{$trip['from_city']->name.'=>'.$trip['to_city']->name}} @if($trip['extendcity']) ==> {{City::whereid($trip['extendcity']->city_id)->pluck('name');}} @endif</td>
+                                             <!-- <td>{{$trip['to_city']->name}}</td> -->
+                                             <td>{{$trip['busclass']->name}} {{$trip['seat_plan']->name}}</td>
+                                             <td>
+                                                ကားထြက္သည့္ ေန႕မ်ား : {{$trip['available_day']}}
+                                            အခ်ိန္ :   {{$trip['time']}}</td>
+                                             <td>
+                                                {{$trip['price']}}
+                                             </td>
+                                             <td>{{$trip['foreign_price']}}</td>
+                                             <td>{{$trip['commission']}}</td>
+                                          </tr>
+                                    @endforeach
+                                    
+                                 </tbody>
+                              </table>
+
                               <table class="table table-striped table-hover table-bordered" id="sample_editable_1">
                                  <thead>
                                     <tr>
@@ -135,11 +160,21 @@
       <!-- END PAGE --> 
    <script type="text/javascript" src="assets/data-tables/jquery.dataTables.js"></script>
    <script type="text/javascript" src="assets/data-tables/DT_bootstrap.js"></script>
+   <script type="text/javascript" src="../../../js/jquery.battatech.excelexport.min.js"></script>
    <script>
       jQuery(document).ready(function() {       
          // initiate layout and plugins
          App.setPage("table_editable");
          // App.init();
       });
+      $("#btnExportExcel").click(function () {
+               var filename="TripList";
+               var uri =$("#tblExport").btechco_excelexport({
+                      containerid: "tblExport"
+                     , datatype: $datatype.Table
+                     , returnUri: true
+                  });
+               $(this).attr('download', filename+'.xls').attr('href', uri).attr('target', '_blank');
+        });
    </script>
 @stop

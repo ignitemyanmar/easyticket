@@ -74,6 +74,52 @@
                                  </div>
                               </div>
 
+                              <div class="row-fluid">
+                                 <div class="span12">
+                                    <label class="control-label">Position (Role)</label>
+                                    <div class="control-group">
+                                       <div class="controls">
+                                          <select name="role" class="chosen span4">
+                                             @foreach($response['role'] as $key=>$role)
+                                                <option value="{{$key}}">{{$role}}</option>
+                                             @endforeach
+                                          </select>
+                                          <input type="hidden" value="operator" name="type">
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+
+                              <div class="control-group">
+                                 <label class="control-label">Group User</label>
+                                 <div class="controls">
+                                    <label class="radio">
+                                    <div id="uniform-undefined" class="radio"><span><input style="opacity: 0;" name="group_user" value="group" type="radio" class="groupuser" checked=""></span></div>
+                                     Group
+                                    </label>
+                                    <label class="radio">
+                                    <div id="uniform-undefined" class="radio"><span class=""><input style="opacity: 0;" name="group_user" value="undergroup" class="groupuser"  type="radio"></span></div>
+                                    Under Group
+                                    </label>  
+                                     
+                                 </div>
+                              </div>
+                              <div class="row-fluid" id="undergroup">
+                                 <div class="span12">
+                                    <label class="control-label">Under Group User</label>
+                                    <div class="control-group">
+                                       <div class="controls">
+                                          <select name="groupuser_id" class="chosen span4">
+                                             @foreach($response['operator_group'] as $group)
+                                                <option value="{{$group->id}}">{{$group->user->name}}</option>
+                                             @endforeach
+                                          </select>
+                                          <input type="hidden" value="operator" name="type">
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+
                               <div class="cleardiv">&nbsp;</div>
                               <div class="controls">
                                     <a href="/user-list">
@@ -92,7 +138,6 @@
                         </div>
                      </form>
                   </div>
-                  
                </div>
             <!-- END PAGE CONTENT-->         
          </div>
@@ -101,4 +146,27 @@
 <!-- END PAGE --> 
    {{HTML::script('../../assets/chosen-bootstrap/chosen/chosen.jquery.min.js')}}
    <script type="text/javascript" src="../../assets/uniform/jquery.uniform.min.js"></script>
+   <script type="text/javascript">
+      //init for check group user or under group user
+      $(function(){
+         var groupuser=$('.groupuser:checked').val();
+         checkgroupornot(groupuser);
+      });
+
+      //for handle click radio optional
+      $('.groupuser').click(function(){
+         var groupuser=$(this).val();
+         checkgroupornot(groupuser);
+      })
+
+      //for check group user or under group user
+      function checkgroupornot(groupuser){
+         if(groupuser=="group"){
+            $('#undergroup').css({'opacity':0});
+         }else{
+            $('#undergroup').css({'opacity':1});
+            $('.chosen').chosen();
+         }
+      }
+   </script>
 @stop

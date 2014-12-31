@@ -256,7 +256,7 @@ class TripController extends \BaseController {
 	}
 
 	public function triplists(){
-		$operator_id=OperatorGroup::whereuser_id(Auth::user()->id)->pluck('operator_id');
+		$operator_id=Operator::whereuser_id(Auth::user()->id)->pluck('id');
 		$response=Trip::whereoperator_id($operator_id)->with(array('operator','from_city','to_city','busclass','seat_plan','extendcity'))->orderBy('id','desc')->get();
 		// return Response::json($response);
 		return View::make('trip.list', array('response'=>$response));

@@ -23,7 +23,7 @@
                <div class="row-fluid">
                   <div class="span12">
                      <h3 class="page-title">
-                        လုပ္ပုိင္ခြင့္မ်ား          
+                        User List         
                      </h3>
                      <ul class="breadcrumb">
                         <li>
@@ -31,7 +31,7 @@
                            <a href="/report/dailycarandadvancesale?operator_id={{$myApp->operator_id}}">ပင္မစာမ်က္ႏွာ</a> 
                            <i class="icon-angle-right"></i>
                         </li>
-                        <li><a href="#">လုပ္ပုိင္ခြင့္မ်ား</a></li>
+                        <li><a href="#">User List</a></li>
                         
                      </ul>
                      <!-- END PAGE TITLE & BREADCRUMB-->
@@ -45,7 +45,7 @@
                         <!-- BEGIN EXAMPLE TABLE PORTLET-->
                         <div class="portlet box blue">
                            <div class="portlet-title">
-                              <h4><i class="icon-th-list"></i>လုပ္ပုိင္ခြင့္မ်ား</h4>
+                              <h4><i class="icon-th-list"></i>User List</h4>
                            </div>
                            <div class="portlet-body">
                               <div class="clearfix">
@@ -77,9 +77,9 @@
                                        <th>Header</th>
                                        <th class="span2">ရာထူး</th>
                                        <th class="span3">အမည္</th>
-                                       <th class="span3">Email</th>
-                                       <th class="span3">Operator Group</th>
-                                       <th class="span1">ဖ်က္ရန္</th>
+                                       <th class="span2">Email</th>
+                                       <th>Group (Users)</th>
+                                       <th class="span3">ဖ်က္ရန္</th>
                                  </thead>
                                  <tbody>
                                     @foreach($response as $key=>$rows)
@@ -88,9 +88,13 @@
                                          <td>@if($rows->role==2) Staff @elseif($rows->role==4) Supervisor @else Manager @endif</td>
                                          <td>{{$rows->name}}</td>
                                          <td>{{$rows->email}}</td>
-                                         <td>{{$rows->operator_groupname}}</td>
-                                         <td style="text-align:center;">
+                                         <td>@if($rows->operator_groupname !='-') {{$rows->operator_groupname}} @else {{$rows->name}} ( * )  @endif</td>
+                                         <td>
+                                          @if($rows->operator_id != $myApp->operator_id)
                                             <a href="user-delete/{{$rows->id}}" class="btn red-stripe delete">ဖ်က္ရန္</a>
+                                          @endif
+                                            <a href="user-edit/{{$rows->id}}" class="btn blue-stripe">ျပင္ရန္</a>
+
                                          </td>
                                       </tr>
                                     @endforeach

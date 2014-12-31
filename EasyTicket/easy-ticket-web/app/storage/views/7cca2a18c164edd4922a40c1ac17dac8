@@ -105,7 +105,7 @@
                                                          <a href="/agent-update/<?php echo $agent['id']; ?>"  class="btn blue-stripe button-submit">Edit</a><br><br>
                                                    </td>
                                                    <td style="text-align:center;">
-                                                         <a href="deleteagent/<?php echo $agent['id']; ?>"   class="btn red-stripe button-submit">Delete</a>
+                                                         <a href="deleteagentgroup/<?php echo $agent['id']; ?>"   class="btn red-stripe button-submit">Delete</a>
                                                    </td>
                                                 </tr>
                                     <?php endforeach; ?>

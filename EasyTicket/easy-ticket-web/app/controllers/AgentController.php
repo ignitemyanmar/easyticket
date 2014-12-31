@@ -55,7 +55,7 @@ class AgentController extends BaseController
   	public function showAgentList()
   	{
       $user_id    =Auth::user()->id;
-      $operator_id=OperatorGroup::whereuser_id($user_id)->pluck('operator_id');
+      $operator_id=$this->myGlob->operator_id;
       $response   = $obj_agent = Agent::whereoperator_id($operator_id)->orderBy('id','desc')->orderBy('name','asc')->get();
       $allagent   = Agent::all();
       $totalCount = count($allagent);

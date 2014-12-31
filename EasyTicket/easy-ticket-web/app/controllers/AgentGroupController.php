@@ -29,10 +29,11 @@ class AgentGroupController extends BaseController
 
   	public function showAgentgroupList()
   	{
-      $objagentgroup = AgentGroup::orderBy('id','desc')->get();
+      $operator_id=$this->myGlob->operator_id;
+      $objagentgroup = AgentGroup::whereoperator_id($operator_id)->orderBy('id','desc')->get();
       // return Response::json($objagentgroup);
       $response = $objagentgroup;
-      $totalcount = AgentGroup::count();
+      $totalcount = AgentGroup::whereoperator_id($operator_id)->count();
       return View::make('agentgroup.list',array('response'=>$response,'totalcount'=>$totalcount));
   	}
 

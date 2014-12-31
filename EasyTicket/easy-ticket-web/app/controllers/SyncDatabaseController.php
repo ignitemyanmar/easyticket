@@ -16,45 +16,57 @@ class SyncDatabaseController extends BaseController
 	* Upload Sale Order from Clent.
 	*/
  	public function pushJsonToServer(){
+ 		$zipFile = 'client-'.$this->operatorgroup_id.'-today-sale-order.zip';
 		$fileName = 'client-'.$this->operatorgroup_id.'-today-sale-order.json';
-		$fromFile = $this->getFile($fileName);
-		$toFile	  = $this->remote_file_dir.$fileName;
+		$fromFile = $this->getFile($zipFile);
+		$toFile	  = $this->remote_file_dir.$zipFile;
 		$startDate	  = $this->getSysDateTime();
-		$sync 		  = Sync::wherename($fileName)->first(); // To Check/Update Latest Sync Date.
+		$sync 		  = Sync::wherename($zipFile)->first(); // To Check/Update Latest Sync Date.
 		if($sync){
 			$startDate 	  = $sync->last_sync_date; // To Get Data that Not Sync.
 		}else{
 			$startDate = 0;
 		}
+		
 		if($this->exportSaleOrderJson($this->operatorgroup_id,$fileName,$startDate) == "true"){
+			$this->createZip($this->getFile($zipFile), $fileName, $this->getFile($fileName));
 			if($this->upload($fromFile, $toFile)){
+				$response = array();
+				$response['message'] = 'Importing your uploaded data.';
+				$this->saveFile('progress',$response);
 				$curl = curl_init( $this->domain."/writetodatabase/".$fileName );
 				curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 				$response = curl_exec( $curl );
+				$this->saveFile('progress',json_decode($response,true));
 				if($response){
-					$sync = Sync::wherename($fileName)->first();
+					$sync = Sync::wherename($zipFile)->first();
 					if($sync){
 						$sync->last_updated_date = $this->getSysDateTime();
 						$sync->last_sync_date = $this->getSysDateTime();
 						$sync->update();
 					}else{
 						$sync 						= new Sync();
-						$sync->name 				= $fileName;
+						$sync->name 				= $zipFile;
 						$sync->last_updated_date 	= $this->getSysDateTime();
 						$sync->last_sync_date 		= $this->getSysDateTime();
 						$sync->save();
 					}
-					$this->pushPaymentJsonToServer();
+					//$this->pushPaymentJsonToServer();
+					$this->deleteFile('progress');
 					return Response::json(json_decode($response));
 				}else{
 					$response['status_code']  = 0; // 0 is error.
 					$response['message'] = "Can't import data!.";
 					return Response::json($response);
 				}
+			}else{
+				$response['status_code']  = 0; // 0 is error.
+				$response['message'] = "Can't upload data, please check connection.";
+				return Response::json($response);
 			}
 		}else{
 			$response['status_code']  = 0; // 0 is error.
-			$response['message'] = "Can't export data!.";
+			$response['message'] = "There is no updated data yet!.";
 			return Response::json($response);
 		}
 		
@@ -63,41 +75,55 @@ class SyncDatabaseController extends BaseController
 	* Upload Sale Order from Clent.
 	*/
  	public function pushPaymentJsonToServer(){
+ 		$zipFile = 'client-'.$this->operatorgroup_id.'-today-payment.zip';
 		$fileName = 'client-'.$this->operatorgroup_id.'-today-payment.json';
-		$fromFile = $this->getFile($fileName);
-		$toFile	  = $this->remote_file_dir.$fileName;
+		$fromFile = $this->getFile($zipFile);
+		$toFile	  = $this->remote_file_dir.$zipFile;
 		$startDate	  = $this->getSysDateTime();
-		$sync 		  = Sync::wherename($fileName)->first(); // To Check/Update Latest Sync Date.
+		$sync 		  = Sync::wherename($zipFile)->first(); // To Check/Update Latest Sync Date.
 		if($sync){
 			$startDate 	  = $sync->last_sync_date; // To Get Data that Not Sync.
 		}else{
-			$sync 						= new Sync();
-			$sync->name 				= $fileName;
-			$sync->last_updated_date 	= $this->getSysDateTime();
-			$sync->last_sync_date 		= $this->getSysDateTime();
-			$sync->save();
 			$startDate = 0;
 		}
 		if($this->exportPaymentJson($this->operatorgroup_id,$fileName,$startDate)  == "true"){
+			$this->createZip($this->getFile($zipFile), $fileName, $this->getFile($fileName));
 			if($this->upload($fromFile, $toFile)){
+				$response = array();
+				$response['message'] = 'Importing your uploaded data.';
+				$this->saveFile('progress',$response);
 				$curl = curl_init( $this->domain."/writepaymentjson/".$fileName );
 				curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 				$response = curl_exec( $curl );
+				$this->saveFile('progress',json_decode($response,true));
 				if($response){
-					$sync = Sync::wherename($fileName)->first();
-					$sync->last_updated_date = $this->getSysDateTime();
-					$sync->last_sync_date = $this->getSysDateTime();
-					$sync->update();
+					$sync = Sync::wherename($zipFile)->first();
+					if($sync){
+						$sync->last_updated_date = $this->getSysDateTime();
+						$sync->last_sync_date = $this->getSysDateTime();
+						$sync->update();
+					}else{
+						$sync 						= new Sync();
+						$sync->name 				= $zipFile;
+						$sync->last_updated_date 	= $this->getSysDateTime();
+						$sync->last_sync_date 		= $this->getSysDateTime();
+						$sync->save();
+					}
+					$this->deleteFile('progress');
 					return Response::json(json_decode($response));
 				}else{
 					$response['status_code']  = 0; // 0 is error.
 					$response['message'] = "Can't import data!.";
 					return Response::json($response);
 				}
+			}else{
+				$response['status_code']  = 0; // 0 is error.
+				$response['message'] = "Can't upload data, please check connection.";
+				return Response::json($response);
 			}
 		}else{
 			$response['status_code']  = 0; // 0 is error.
-			$response['message'] = "Can't export data!.";
+			$response['message'] = "There is no updated data yet!.";
 			return Response::json($response);
 		}
 		
@@ -169,13 +195,18 @@ class SyncDatabaseController extends BaseController
 		}else{
 			$syncDatetime = 0;
 		}
-
+		$response['message'] = "Exporting from Server...";
+		$this->saveFile('progress', $response);
 		$curl = curl_init( $this->domain."/exportbusjson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		if($response == "true"){
-			if($this->download($fromFile, $toFile)){
+			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile))){
+				$response = array();
+				$response['message'] = "Importing your downloaded data...";
+				$this->saveFile('progress', $response);
 				$importData = $this->importBusOccurance($fileName);
+				$this->deleteFile('progress');
 				if($importData){
 					return Response::json($importData);
 				}
@@ -921,23 +952,6 @@ class SyncDatabaseController extends BaseController
 	 * @/exportbusjson/{id}/{fname}/{date}
 	 */
 	public function exportBusOccurance($operator_id,$fileName,$startDate){
-		/*$startDate	  = $this->getSysDateTime();
-		$endDate 	  = date('Y-m-d H:i:s',strtotime($this->getSysDateTime() . ' + 30 day'));
-		$sync 		  = Sync::wherename($fileName)->first(); // To Check/Update Latest Sync Date.
-		if($sync){
-			if(substr($sync->last_updated_date,0,10) == $this->getSysDate())
-				return "false"; // Already Syn for Today.
-			$startDate 	  = $sync->last_sync_date; // To Get Data that Not Sync.
-			$sync->last_updated_date = $this->getSysDateTime();
-			$sync->last_sync_date = $endDate;
-			$sync->update();
-		}else{
-			$sync 						= new Sync();
-			$sync->name 				= $fileName;
-			$sync->last_updated_date 	= $this->getSysDateTime();
-			$sync->last_sync_date 		= $endDate;
-			$sync->save();
-		}*/
 		$busOccurance = null;
 		if($startDate == 0){
 			$busOccurance = BusOccurance::whereoperator_id($operator_id)
@@ -949,6 +963,7 @@ class SyncDatabaseController extends BaseController
 
 		if($busOccurance){
 			$this->saveFile($fileName, $busOccurance);
+			$this->createZip($this->getFile(str_replace('.json', '.zip', $fileName)), $fileName, $this->getFile($fileName));
 			return "true";
 		}else{
 			return "false";
@@ -958,31 +973,39 @@ class SyncDatabaseController extends BaseController
 	 * To Import BusOccourence Data
 	 */
 	public function importBusOccurance($fileName){
-		$busOccurance = $this->readJson($fileName);
-		if($busOccurance){
-			$duplicateBus 	= array();
-			$successBus 	= array();
-			$errorBus 		= array();
-			foreach ($busOccurance as $rows) {
-				$busOccuran = BusOccurance::whereid($rows['id'])->first();
-				if(!$busOccuran){
-					$busOccuran = BusOccurance::create($rows);
-					if($busOccuran){
-						array_push($successBus, $busOccuran->toarray());
+		$zip = new ZipArchive;
+		$res = $zip->open($this->getFile(str_replace('.json', '.zip', $fileName)));
+		if ($res) {
+			$zip->extractTo($this->local_file_dir);
+			$zip->close();
+			$busOccurance = $this->readJson($fileName);
+			if($busOccurance){
+				$duplicateBus 	= array();
+				$successBus 	= array();
+				$errorBus 		= array();
+				foreach ($busOccurance as $rows) {
+					$busOccuran = BusOccurance::whereid($rows['id'])->first();
+					if(!$busOccuran){
+						$busOccuran = BusOccurance::create($rows);
+						if($busOccuran){
+							array_push($successBus, $busOccuran->toarray());
+						}else{
+							array_push($errorBus, $rows->toarray());
+						}
 					}else{
-						array_push($errorBus, $rows->toarray());
+						BusOccurance::whereid($rows['id'])->update($rows);
+						array_push($duplicateBus, $busOccuran->toarray());
 					}
-				}else{
-					BusOccurance::whereid($rows['id'])->update($rows);
-					array_push($duplicateBus, $busOccuran->toarray());
 				}
+				$response['status_code'] = 1; //1 is success;
+				$response['message']	 = 'Successfully your import data.';
+				$response['duplicateBus']= $duplicateBus;
+				$response['errorBus']	 = $errorBus;
+				$response['successBus']  = $successBus;
+				return $response;
 			}
-			$response['status_code'] = 1; //1 is success;
-			$response['message']	 = 'Successfully your import data.';
-			$response['duplicateBus']= $duplicateBus;
-			$response['errorBus']	 = $errorBus;
-			$response['successBus']  = $successBus;
-			return $response;
+		}else{
+			dd('Cann\'t unzip your file.');
 		}
 	}
 	/**
@@ -1251,6 +1274,7 @@ class SyncDatabaseController extends BaseController
 		}
 		if($Citys){
 			$this->saveFile($fileName, $Citys);
+			$this->createZip($this->getFile(str_replace('.json', '.zip', $fileName)), $fileName, $this->getFile($fileName));
 			return "true";
 		}else{
 			return "false";
@@ -1808,80 +1832,90 @@ class SyncDatabaseController extends BaseController
 	 * To Import Sale Transaction Data.
 	 */
 	public function importSaleOrderJson($fileName){
-		$saleOrders = $this->readJson($fileName);
-		$duplicateSaleOrders 	= array();
-		$duplicateSaleItems 	= array();
-		$errorSaleOrders 		= array();
-		$errorSaleItems	 		= array();
-		$successSaleOrders 		= array();
-		$successSaleItems	 	= array();
-		if($saleOrders){
-			foreach ($saleOrders as $rows) {
-				$saleOrder = SaleOrder::whereid($rows['id'])->first();
-				if(!$saleOrder){
-					$saleOrder = SaleOrder::create($rows);
-					if($saleOrder){
-						array_push($successSaleOrders, $saleOrder->toarray());
-						foreach ($rows['saleitems'] as $row) {
-							$saleItem = SaleItem::whereorder_id($row['order_id'])->whereseat_no($row['seat_no'])->first();
-							if(!$saleItem){
+		$zip = new ZipArchive;
+		$res = $zip->open($this->getFile(str_replace('.json', '.zip', $fileName)));
+		if ($res) {
+			$zip->extractTo($this->local_file_dir);
+			$zip->close();
+		
+			$saleOrders = $this->readJson($fileName);
+			$duplicateSaleOrders 	= array();
+			$duplicateSaleItems 	= array();
+			$errorSaleOrders 		= array();
+			$errorSaleItems	 		= array();
+			$successSaleOrders 		= array();
+			$successSaleItems	 	= array();
+			if($saleOrders){
+				foreach ($saleOrders as $rows) {
+					$saleOrder = SaleOrder::whereid($rows['id'])->first();
+					if(!$saleOrder){
+						$saleOrder = SaleOrder::create($rows);
+						if($saleOrder){
+							array_push($successSaleOrders, $saleOrder->toarray());
+							foreach ($rows['saleitems'] as $row) {
+								$saleItem = SaleItem::whereorder_id($row['order_id'])->whereseat_no($row['seat_no'])->first();
+								if(!$saleItem){
+									unset($row['id']);
+									$saleItem = SaleItem::create($row);
+									if($saleItem){
+										array_push($successSaleItems, $saleItem->toarray());
+									}else{
+										array_push($errorSaleItems, $row->toarray());
+									}
+								}else{
+									array_push($duplicateSaleItems, $saleItem->toarray());
+								}
+							}
+						}else{
+							array_push($errorSaleOrders, $rows->toarray());
+						}
+						
+					}else{
+						$saleorder_item = $rows;
+						unset($saleorder_item['device_id']);
+						unset($saleorder_item['saleitems']);
+						$saleOrder = SaleOrder::whereid($rows['id'])->where('updated_at','<',$rows['updated_at'])->update($saleorder_item);
+						if($saleOrder){
+							array_push($successSaleOrders, $saleOrder);
+							foreach ($rows['saleitems'] as $row) {
 								unset($row['id']);
-								$saleItem = SaleItem::create($row);
-								if($saleItem){
-									array_push($successSaleItems, $saleItem->toarray());
+								unset($row['device_id']);
+								$saleItem = SaleItem::whereorder_id($row['order_id'])->whereseat_no($row['seat_no'])->first();
+								if(!$saleItem){
+									$saleItem = SaleItem::create($row);
+									if($saleItem){
+										array_push($successSaleItems, $saleItem);
+									}else{
+										array_push($errorSaleItems, $row);
+									}
 								}else{
-									array_push($errorSaleItems, $row->toarray());
+									SaleItem::whereorder_id($row['order_id'])->whereseat_no($row['seat_no'])->update($row);
+									array_push($duplicateSaleItems, $saleItem);
 								}
-							}else{
-								array_push($duplicateSaleItems, $saleItem->toarray());
 							}
+						}else{
+							array_push($errorSaleOrders, $rows);
 						}
-					}else{
-						array_push($errorSaleOrders, $rows->toarray());
+						array_push($duplicateSaleOrders, $saleOrder);
 					}
-					
-				}else{
-					$saleorder_item = $rows;
-					unset($saleorder_item['device_id']);
-					unset($saleorder_item['saleitems']);
-					$saleOrder = SaleOrder::whereid($rows['id'])->where('updated_at','<',$rows['updated_at'])->update($saleorder_item);
-					if($saleOrder){
-						array_push($successSaleOrders, $saleOrder);
-						foreach ($rows['saleitems'] as $row) {
-							unset($row['id']);
-							unset($row['device_id']);
-							$saleItem = SaleItem::whereorder_id($row['order_id'])->whereseat_no($row['seat_no'])->first();
-							if(!$saleItem){
-								$saleItem = SaleItem::create($row);
-								if($saleItem){
-									array_push($successSaleItems, $saleItem);
-								}else{
-									array_push($errorSaleItems, $row);
-								}
-							}else{
-								SaleItem::whereorder_id($row['order_id'])->whereseat_no($row['seat_no'])->update($row);
-								array_push($duplicateSaleItems, $saleItem);
-							}
-						}
-					}else{
-						array_push($errorSaleOrders, $rows);
-					}
-					array_push($duplicateSaleOrders, $saleOrder);
 				}
+				$response['status_code']  = 1; // 1 is success.
+				$response['message'] = "Successfully your data was saved.";
+				$response["duplicateSaleOrders"] = count($duplicateSaleOrders);
+				$response["duplicateSaleItems"] = count($duplicateSaleItems);
+				$response["errorSaleOrders"] = count($errorSaleOrders);
+				$response["errorSaleItems"] = count($errorSaleItems);
+				$response["successSaleOrders"] = count($successSaleOrders);
+				$response["successSaleItems"] =count($successSaleItems);
+				return $response;
+			}else{
+				$response['status_code']  = 0;
+				$response['message'] = "Empty value from your uploaded file.";
+				return $response;
 			}
-			$response['status_code']  = 1; // 1 is success.
-			$response['message'] = "Successfully your data was saved.";
-			$response["duplicateSaleOrders"] = $duplicateSaleOrders;
-			$response["duplicateSaleItems"] = $duplicateSaleItems;
-			$response["errorSaleOrders"] = $errorSaleOrders;
-			$response["errorSaleItems"] = $errorSaleItems;
-			$response["successSaleOrders"] = $successSaleOrders;
-			$response["successSaleItems"] = $successSaleItems;
-			return $response;
+
 		}else{
-			$response['status_code']  = 0;
-			$response['message'] = "Empty value from your uploaded file.";
-			return $response;
+			dd('Cann\'t open zip file.');
 		}
 	}
 	/**
@@ -1907,47 +1941,55 @@ class SyncDatabaseController extends BaseController
 	 * To Import Payment Transaction Data.
 	 */
 	public function importPaymentJson($fileName){
-		$agentDeposits = $this->readJson($fileName);
-		$duplicateAgentDeposits 	= array();
-		$errorAgentDeposits	 		= array();
-		$successAgentDeposits	 	= array();
-		if($agentDeposits){
-			foreach ($agentDeposits as $rows) {
-				$agentDeposit = AgentDeposit::whereagent_id($rows['agent_id'])
-							->whereoperator_id($rows['operator_id'])
-							->wheredeposit_date($rows['deposit_date'])
-							->wheredeposit($rows['deposit'])
-							->wheretotal_ticket_amt($rows['total_ticket_amt'])
-							->wherepayment($rows['payment'])
-							->wherepay_date($rows['pay_date'])
-							->whereorder_ids($rows['order_ids'])
-							->wherebalance($rows['balance'])
-							->wheredebit($rows['debit'])
-							->wherecreated_at($rows['created_at'])
-							->whereupdated_at($rows['updated_at'])
-							->first();
-				if(!$agentDeposit){
-					$agentDeposit = AgentDeposit::create($rows);
-					if($agentDeposit){
-						array_push($successAgentDeposits, $agentDeposit->toarray());
+		$zip = new ZipArchive;
+		$res = $zip->open($this->getFile(str_replace('.json', '.zip', $fileName)));
+		if ($res) {
+			$zip->extractTo($this->local_file_dir);
+			$zip->close();
+			$agentDeposits = $this->readJson($fileName);
+			$duplicateAgentDeposits 	= array();
+			$errorAgentDeposits	 		= array();
+			$successAgentDeposits	 	= array();
+			if($agentDeposits){
+				foreach ($agentDeposits as $rows) {
+					$agentDeposit = AgentDeposit::whereagent_id($rows['agent_id'])
+								->whereoperator_id($rows['operator_id'])
+								->wheredeposit_date($rows['deposit_date'])
+								->wheredeposit($rows['deposit'])
+								->wheretotal_ticket_amt($rows['total_ticket_amt'])
+								->wherepayment($rows['payment'])
+								->wherepay_date($rows['pay_date'])
+								->whereorder_ids($rows['order_ids'])
+								->wherebalance($rows['balance'])
+								->wheredebit($rows['debit'])
+								->wherecreated_at($rows['created_at'])
+								->whereupdated_at($rows['updated_at'])
+								->first();
+					if(!$agentDeposit){
+						$agentDeposit = AgentDeposit::create($rows);
+						if($agentDeposit){
+							array_push($successAgentDeposits, $agentDeposit->toarray());
+						}else{
+							array_push($errorAgentDeposits, $rows->toarray());
+						}
+						
 					}else{
-						array_push($errorAgentDeposits, $rows->toarray());
+						array_push($duplicateAgentDeposits, $agentDeposit->toarray());
 					}
-					
-				}else{
-					array_push($duplicateAgentDeposits, $agentDeposit->toarray());
 				}
+				$response['status_code']  = 1; // 1 is success.
+				$response['message'] = "Successfully your data was saved.";
+				$response["duplicateAgentDeposits"] = count($duplicateAgentDeposits);
+				$response["errorAgentDeposits"] = count($errorAgentDeposits);
+				$response["successAgentDeposits"] = count($successAgentDeposits);
+				return $response;
+			}else{
+				$response['status_code']  = 0;
+				$response['message'] = "Empty value from your uploaded file.";
+				return $response;
 			}
-			$response['status_code']  = 1; // 1 is success.
-			$response['message'] = "Successfully your data was saved.";
-			$response["duplicateAgentDeposits"] = $duplicateAgentDeposits;
-			$response["errorAgentDeposits"] = $errorAgentDeposits;
-			$response["successAgentDeposits"] = $successAgentDeposits;
-			return $response;
 		}else{
-			$response['status_code']  = 0;
-			$response['message'] = "Empty value from your uploaded file.";
-			return $response;
+			dd('Cann\'t open zip file.');
 		}
 	}
 	/**
@@ -2071,6 +2113,24 @@ class SyncDatabaseController extends BaseController
 		}
 	}
 	/**
+	 * To Delete File
+	 */
+	public function deleteFile($fileName){
+		$fileDir = "remote_file/".$fileName;
+		if (file_exists($fileDir)) {
+        	unlink($fileDir);
+    	}
+	}
+	/*
+	 * To Create Zipfile
+	 */
+	public function createZip($zipFile, $fileName, $addFile){
+		$zip = new ZipArchive();
+		$zip->open($zipFile, ZipArchive::CREATE);
+		$zip->addFile($addFile, $fileName);
+		$zip->close();
+	}
+	/**
 	 * To Get File Dir.
 	 */
 	public function getFile($fileName){
@@ -2098,114 +2158,227 @@ class SyncDatabaseController extends BaseController
 		}
 	}
 	/**
-	 * To Upload Data to Server.
-	 */
-	public function upload($fromFile, $toFile){
-		try {
-			$conn_id = $this->connect();
-			if($conn_id){
-				// ftp_set_option($conn_id, FTP_TIMEOUT_SEC, 1800); // 30 minute * 60 second = 1800 second
-				// upload a file
-				if (ftp_put($conn_id, $toFile, $fromFile, FTP_ASCII)) {
-					ftp_chmod($conn_id, 0777, $toFile);
-					ftp_close($conn_id);
-					return true;
-				} else {
-				 	return false;
-				}
-			}
-			// close the connection
-		} catch (Exception $e) {
-			dd($e);
-		}
-		
-	}
-	/**
 	 * To Download Data from Server.
 	 */
 	public function download($fromFile, $toFile){
-		try {
-			$conn_id = $this->connect();
-			if($conn_id){
-				// ftp_set_option($conn_id, FTP_TIMEOUT_SEC, 1800); // 30 minute * 60 second = 1800 second
-				// try to download $server_file and save to $local_file
-				if (ftp_get($conn_id, $toFile, $fromFile, FTP_BINARY)) {
-					ftp_close($conn_id);
-				    return true;
-				} else {
-				    return false;
-				}
-			}
-			// close the connection
-		} catch (Exception $e) {
-			dd($e);
-		}
-	}
-	public function uploadtest(){
-		$destination_file = $this->remote_file_dir.'ezticket.zip';
-		$source_file = $this->local_file_dir.'ezticket.zip';
+		
+		// First -> attend
+		$response['status'] = 'Connecting to Server...';
+		
+		$this->saveFile('progress', $response);
+
 		$primary_connection = $this->connect();
 		$secondary_connection = $this->connect();
 
-		$mode = FTP_BINARY;
-		ftp_pasv($primary_connection,TRUE);
-		ftp_pasv($secondary_connection,TRUE);
+		try {
+			
+			$mode = FTP_BINARY;
+			ftp_pasv($primary_connection,TRUE);
+			ftp_pasv($secondary_connection,TRUE);
 
-		$upload_status=ftp_nb_put($primary_connection, $destination_file, $source_file, $mode);
+			$upload_status=ftp_nb_get($primary_connection, $toFile, $fromFile, $mode);
+			if($upload_status == FTP_FAILED){
+				dd('Can\'t upload data, Please check connection.');
+			}
+			if($upload_status == FTP_MOREDATA){
+				// Second -> connected
+				$response['status'] = 'Connected to Server...';
+				$this->saveFile('progress', $response);
+			}
 
-		define('ALPHA', 0.2); // Weight factor of new calculations, between 0 and 1
-		$filesize=filesize($source_file);
-		$transferred = 0;
-		$rate = 0;
-		$time = microtime(true);
+			$filesize=ftp_size($secondary_connection,$fromFile);
+			$response['file_url']		= $toFile;
+			$response['total_size'] 	= $filesize;
+			$this->saveFile('progress', $response);
+			
+			while($upload_status == FTP_MOREDATA){
+			    $upload_status = ftp_nb_continue($primary_connection);
+			}
 
-		$start_time=$time;
-
-		while($upload_status == FTP_MOREDATA){
-
-		    $upload_status = ftp_nb_continue($primary_connection);
-
-		    $sizeNow=ftp_size($secondary_connection,$destination_file);
-		    $sizeNowkB=$sizeNow/1024;
-		    $timeNow = microtime(true);
-
-		    $currentRate = ($sizeNow - $transferred) / ($timeNow - $time);
-		    $currentkBRate = $currentRate / 1024;
-
-		    $rate = ALPHA * $currentRate + (1 - ALPHA) * $rate;
-		    $time = $timeNow;
-		    $transferred = $sizeNow;
-
-		    $response 					= array();
-		    $response['file_url'] 		= $source_file;
-		    $response['total_size'] 	= $filesize/1024;
-		    $response['uploaded_size'] 	= $sizeNowkB;
-		    $response['speed'] 			= $currentkBRate;
-		    $response['agv_speed'] 		= $rate/1024;
-		    $elapsed_time 				= $timeNow - $start_time;
-		    $response['elapsed_time'] 	= $elapsed_time;
-		    if($rate!=0){
-		        $eta = $filesize/$rate - $elapsed_time;
-		    }else{
-		        $eta=0.0;
-		    }
-		    if($eta<=0){
-		        $eta=0.0;
-		    };
-		    $response['elapsed_time_left'] = $eta;
-		    print json_encode($response);
-
+		} catch (Exception $e) {
+			dd($e);
 		}
-
-		print('connection time out!.');
+		$response['message'] = 'Successfully your download file';
+		$this->saveFile('progress',$response);
+		ftp_close($primary_connection);
+		ftp_close($secondary_connection);
+		$this->deleteFile('progress');
+		return true;
 	}
+	/**
+	 * To Upload Data to Server.
+	 */
+	public function upload($fromFile, $toFile){
+
+		$destination_file = $toFile;
+		$source_file = $fromFile;
+
+		// First -> attend
+		$response['message'] = 'Connecting to Server...';
+		$response['file_url'] 		= $source_file;
+		$response['total_size'] 	= ceil(filesize($source_file)/1024);
+		$response['uploaded_size'] 	= 0;
+
+		$this->saveFile('progress', $response);
+
+		$primary_connection = $this->connect();
+		$secondary_connection = $this->connect();
+
+		try {
+			
+			$mode = FTP_BINARY;
+			ftp_pasv($primary_connection,TRUE);
+			ftp_pasv($secondary_connection,TRUE);
+
+			$upload_status=ftp_nb_put($primary_connection, $destination_file, $source_file, $mode);
+			if($upload_status == FTP_FAILED){
+				dd('Can\'t upload data, Please check connection.');
+			}
+			if($upload_status == FTP_MOREDATA){
+				// Second -> connected
+				$response['message'] = 'Connected to Server...';
+				$this->saveFile('progress', $response);
+			}else{
+				$response['message'] = 'Please try againt!.';
+				$this->saveFile('progress', $response);
+			}
+
+			define('ALPHA', 0.2); // Weight factor of new calculations, between 0 and 1
+			$filesize=filesize($source_file);
+			$transferred = 0;
+			$rate = 0;
+			$time = microtime(true);
+
+			$start_time=$time;
+			while($upload_status == FTP_MOREDATA){
+			    $upload_status = ftp_nb_continue($primary_connection);
+
+			    $sizeNow=ftp_size($secondary_connection,$destination_file);
+			    $sizeNowkB=$sizeNow/1024;
+			    $timeNow = microtime(true);
+
+			    $currentRate = ($sizeNow - $transferred) / ($timeNow - $time);
+			    $currentkBRate = $currentRate / 1024;
+
+			    $rate = ALPHA * $currentRate + (1 - ALPHA) * $rate;
+			    $time = $timeNow;
+			    $transferred = $sizeNow;
+
+			    $response['message'] 		= 'Uploading to server...';
+			    $response['uploaded_size'] 	= ceil($sizeNowkB);
+			    $response['progress'] 		= ceil($sizeNowkB / ($filesize/1024) * 100);
+			    $response['speed'] 			= ceil($currentkBRate);
+			    $response['agv_speed'] 		= ceil($rate/1024);
+			    $elapsed_time 				= ceil($timeNow - $start_time);
+			    $response['elapsed_time'] 	= ceil($elapsed_time);
+			    if($rate!=0){
+			        $eta = $filesize/$rate - $elapsed_time;
+			    }else{
+			        $eta=0.0;
+			    }
+			    if($eta<=0){
+			        $eta=0.0;
+			    };
+			    $response['elapsed_time_left'] = ceil($eta);
+			    $this->saveFile('progress',$response);
+
+			}
+		} catch (Exception $e) {
+			dd($e);
+		}
+		$response['message'] = 'Successfully your uploaded file';
+		$this->saveFile('progress',$response);
+		ftp_chmod($primary_connection, 0777, $destination_file);
+		ftp_close($primary_connection);
+		ftp_close($secondary_connection);
+		//$this->deleteFile('progress');
+		return true;
+	}
+
+	public function downloadtest(){
+		
+		$destination_file = $this->remote_file_dir.'ezticket.zip';
+		$source_file = $this->local_file_dir.'ezticket.zip';
+
+		// First -> attend
+		$response['status'] = 'Connecting to Server...';
+		
+		$this->saveFile('progress', $response);
+
+		$primary_connection = $this->connect();
+		$secondary_connection = $this->connect();
+
+		try {
+			
+			$mode = FTP_BINARY;
+			ftp_pasv($primary_connection,TRUE);
+			ftp_pasv($secondary_connection,TRUE);
+
+			$upload_status=ftp_nb_get($primary_connection, $source_file, $destination_file, $mode);
+			if($upload_status == FTP_FAILED){
+				dd('Can\'t upload data, Please check connection.');
+			}
+			if($upload_status == FTP_MOREDATA){
+				// Second -> connected
+				$response['status'] = 'Connected to Server...';
+				$this->saveFile('progress', $response);
+			}
+
+			$filesize=ftp_size($secondary_connection,$destination_file);
+			$response['file_url']		= $source_file;
+			$response['total_size'] 	= $filesize;
+			$this->saveFile('progress', $response);
+			
+			while($upload_status == FTP_MOREDATA){
+			    $upload_status = ftp_nb_continue($primary_connection);
+			}
+
+		} catch (Exception $e) {
+			dd($e);
+		}
+		$response['message'] = 'Successfully your uploaded file';
+		$this->saveFile('progress',$response);
+		ftp_close($primary_connection);
+		ftp_close($secondary_connection);
+		$this->deleteFile('progress');
+	}
+
+	public function getUploadProgress(){
+		print json_encode($this->readJson('progress'));
+	}
+
+	public function getDownloadedProgress(){
+		$progress = $this->readJson('progress');
+		if(isset($progress['total_size'])){
+			
+			$fileSize = $progress['total_size'];
+			$source_file = $progress['file_url'];
+
+			$sizeNow=filesize($source_file);
+			$response['message'] = 'Downloading from server...';
+			$response['file_url'] = $source_file;
+			$response['total_size'] = ceil($fileSize / 1024);
+			$response['downloaded'] = ceil($sizeNow / 1024);
+			$response['progress']	= ceil(($sizeNow/1024) / ($fileSize/1024) * 100);
+		    print json_encode($response);
+		}else{
+			print json_encode($progress);
+		}
+	}
+	
 	/**
 	 * To Read from Json File.
 	 */
 	public function readJson($fileName){
-		$jsonString = file_get_contents("remote_file/".$fileName);
-		$jsonArr = json_decode($jsonString,true);
-		return $jsonArr;
+		$file = "remote_file/".$fileName;
+		if(file_exists($file)){
+			$jsonString = file_get_contents($file);
+			$jsonArr = json_decode($jsonString,true);
+			return $jsonArr;
+		}else{
+			return array();
+		}
+		
 	}
 
 }

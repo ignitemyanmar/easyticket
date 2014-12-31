@@ -22,7 +22,7 @@
                <div class="row-fluid">
                   <div class="span12">
                      <h3 class="page-title">
-                        လုပ္ပုိင္ခြင့္မ်ား          
+                        User List         
                      </h3>
                      <ul class="breadcrumb">
                         <li>
@@ -30,7 +30,7 @@
                            <a href="/report/dailycarandadvancesale?operator_id=<?php echo $myApp->operator_id; ?>">ပင္မစာမ်က္ႏွာ</a> 
                            <i class="icon-angle-right"></i>
                         </li>
-                        <li><a href="#">လုပ္ပုိင္ခြင့္မ်ား</a></li>
+                        <li><a href="#">User List</a></li>
                         
                      </ul>
                      <!-- END PAGE TITLE & BREADCRUMB-->
@@ -44,7 +44,7 @@
                         <!-- BEGIN EXAMPLE TABLE PORTLET-->
                         <div class="portlet box blue">
                            <div class="portlet-title">
-                              <h4><i class="icon-th-list"></i>လုပ္ပုိင္ခြင့္မ်ား</h4>
+                              <h4><i class="icon-th-list"></i>User List</h4>
                            </div>
                            <div class="portlet-body">
                               <div class="clearfix">
@@ -76,9 +76,9 @@
                                        <th>Header</th>
                                        <th class="span2">ရာထူး</th>
                                        <th class="span3">အမည္</th>
-                                       <th class="span3">Email</th>
-                                       <th class="span3">Operator Group</th>
-                                       <th class="span1">ဖ်က္ရန္</th>
+                                       <th class="span2">Email</th>
+                                       <th>Group (Users)</th>
+                                       <th class="span3">ဖ်က္ရန္</th>
                                  </thead>
                                  <tbody>
                                     <?php foreach($response as $key=>$rows): ?>
@@ -87,9 +87,13 @@
                                          <td><?php if($rows->role==2): ?> Staff <?php elseif($rows->role==4): ?> Supervisor <?php else: ?> Manager <?php endif; ?></td>
                                          <td><?php echo $rows->name; ?></td>
                                          <td><?php echo $rows->email; ?></td>
-                                         <td><?php echo $rows->operator_groupname; ?></td>
-                                         <td style="text-align:center;">
+                                         <td><?php if($rows->operator_groupname !='-'): ?> <?php echo $rows->operator_groupname; ?> <?php else: ?> <?php echo $rows->name; ?> ( * )  <?php endif; ?></td>
+                                         <td>
+                                          <?php if($rows->operator_id != $myApp->operator_id): ?>
                                             <a href="user-delete/<?php echo $rows->id; ?>" class="btn red-stripe delete">ဖ်က္ရန္</a>
+                                          <?php endif; ?>
+                                            <a href="user-edit/<?php echo $rows->id; ?>" class="btn blue-stripe">ျပင္ရန္</a>
+
                                          </td>
                                       </tr>
                                     <?php endforeach; ?>

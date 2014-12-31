@@ -86,7 +86,9 @@ App::before(function($request)
         $currentroute=$url=Request::url(); 
 		$currentroute=substr($currentroute,15);
         if (Auth::check()) {
-            $operator_id=OperatorGroup::whereuser_id(Auth::user()->id)->pluck('operator_id');
+            $operator_id=Operator::whereuser_id(Auth::user()->id)->pluck('id');
+            if(!$operator_id)
+                $operator_id=OperatorGroup::whereuser_id(Auth::user()->id)->pluck('operator_id');
             $operatorgroup_id=OperatorGroup::whereuser_id(Auth::user()->id)->pluck('id');
             if(!$operator_id){
                 $operator_id=OperatorGroupUser::whereuser_id(Auth::user()->id)->pluck('operator_id');

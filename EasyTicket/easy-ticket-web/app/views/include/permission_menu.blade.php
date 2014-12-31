@@ -6,7 +6,7 @@
 $menulist['ေန႔စဥ္ အေရာင္းစာရင္း']             ="<li
                                                     if(strpos($currentroute, 'daiadv')!==false)class='active'
                                                     >
-                                                    <a href='/report/dailycarandadvancesale?operator_id={{$operator_id}}'>
+                                                    <a href='/report/dailycarandadvancesale?operator_id=$operator_id'>
                                                         <i class='icon-th-list'></i> 
                                                         <span class='title'>ေန့စဥ်အေရာင်းစာရင်းများ </span>
                                                     </a>
@@ -23,7 +23,7 @@ $menulist['ကားခ်ဳပ္အေရာင္းစာရင္း']    
 
 $menulist['ခရီးစဥ္အလုိက္ အေရာင္းစာရင္း']      ="<li if($currentroute=='rep')class=''
                                                     >
-                                                    <a href='/report/operator/trip/dateranges?operator_id={{$operator_id}}&trips=1'>
+                                                    <a href='/report/operator/trip/dateranges?operator_id=$operator_id&trips=1'>
                                                     <i class='icon-th-list'></i> 
                                                     <span class='title'>ခရီးစဥ်အလုိက်အေရာင်း စာရင်းများ</span>
                                                     </a>
@@ -31,7 +31,7 @@ $menulist['ခရီးစဥ္အလုိက္ အေရာင္းစာ�
 
 $menulist['အေရာင္းကုိယ္စားလွယ္ႏွင့္ အေရာင္းစာရင္း']="<li if($currentroute=='rep')class=''
                                                         >
-                                                    <a href='/report/operator/trip/dateranges?operator_id={{$operator_id}}&&&agent_id=All'>
+                                                    <a href='/report/operator/trip/dateranges?operator_id=$operator_id&&&agent_id=All'>
                                                     <i class='icon-th-list'></i> 
                                                     <span class='title'>အေရာင်းကုိယ်စားလှယ်နှင့် အေရာင်းစာရင်းများ</span>
                                                     </a>

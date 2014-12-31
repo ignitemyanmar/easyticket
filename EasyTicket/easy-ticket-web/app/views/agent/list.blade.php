@@ -63,6 +63,16 @@
                                     </a>
                                  </div>
                                  
+                                 <div class="btn-group pull-right">
+                                     <button class="btn green dropdown-toggle" data-toggle="dropdown">Tools <i class="icon-angle-down"></i>
+                                     </button>
+                                     <ul class="dropdown-menu">
+                                        <li>
+                                           <a href="#" class="print">Print</a></li>
+                                        <!-- <li><a href="#">Save as PDF</a></li> -->
+                                        <li><a href="#" id="btnExportExcel">Export to Excel</a></li>
+                                     </ul>
+                                  </div>
                               </div>
                               @if(Session::has('message'))
                                  <?php $message=Session::get('message'); ?>
@@ -78,6 +88,40 @@
                                     </div>
                                  @endif
                               @endif
+                              <table class="table table-striped table-hover table-bordered" id="tblExportExcel" style="display:none;">
+                                 <thead>
+                                       <th>Group</th>
+                                       <th>အမည္</th>
+                                       <th>ဖုန္းနံပါတ္</th>
+                                       <th>လိပ္စာ</th>
+                                       <th>ေကာ္္မစ္ရွင္ ႏႈန္း</th>
+                                       <th>Owner</th>
+                                 </thead>
+                                 <tbody>
+                                    @if(count($response)==0)
+                                       There is no record in database.
+                                    @else
+                                    @endif
+                                 
+                                    @foreach($response as $key=>$rows)
+                                       <!-- <tr class="heading">
+                                          <td colspan="6">{{$key}}</td>
+                                       </tr> -->
+                                       @foreach($rows as $agent)
+                                          <tr>
+                                             <td>{{$key}}</td>
+                                             <td>{{$agent['name']}}</td>
+                                             <td>{{$agent['phone']}}</td>
+                                             <td><div class="wordwrap">{{$agent['address']}}</div></td>
+                                             <td>{{$agent['commission']}} @if($agent['commission_id']==2) % @endif</td>
+                                             <td>@if($agent['owner']==1) Owner @else - @endif</td>
+                                          </tr>
+                                       @endforeach
+                                    @endforeach
+                                    
+                                 </tbody>
+                              </table>
+
                               <table class="table table-striped table-hover table-bordered" id="tblExport">
                                  <thead>
                                        <th>Group</th>
@@ -131,6 +175,7 @@
       </div>
       <!-- END PAGE --> 
    <script type="text/javascript" src="../../../../js/jquery.dataTables.v1.10.4.min.js"></script>
+   <script type="text/javascript" src="../../../js/jquery.battatech.excelexport.min.js"></script>
    <script type="text/javascript">
       $(document).ready(function() {
           var table = $('#tblExport').DataTable({
@@ -167,5 +212,15 @@
               }
           } );
       } );
+
+      $("#btnExportExcel").click(function () {
+               var filename="AgentList";
+               var uri =$("#tblExportExcel").btechco_excelexport({
+                      containerid: "tblExportExcel"
+                     , datatype: $datatype.Table
+                     , returnUri: true
+                  });
+               $(this).attr('download', filename+'.xls').attr('href', uri).attr('target', '_blank');
+        });
    </script>
 @stop

@@ -281,7 +281,7 @@
 		Route::get('user-create',				'UserController@create');
 		Route::post('user-create',				'UserController@store');
 		Route::get('user-edit/{id}',			'UserController@edit');
-		Route::get('user-update/{id}',			'UserController@update');
+		Route::post('user-update/{id}',			'UserController@update');
 		Route::get('user-delete/{id}',			'UserController@destroy');
 
 
@@ -638,8 +638,9 @@
 	Route::get('generateautoid/{prefix}', 					'ApiController@generateAutoID');
 
 	Route::get('test/{fname}', 								'SyncDatabaseController@importDeleteSaleOrderJson');
-	Route::get('testupload', 								'SyncDatabaseController@uploadtest');
-
+	Route::get('testdownload', 								'SyncDatabaseController@downloadtest');
+	Route::get('getupprogress',								'SyncDatabaseController@getUploadProgress');
+	Route::get('getdownprogress',							'SyncDatabaseController@getDownloadedProgress');
 
 	Route::get('404', function()
 	{

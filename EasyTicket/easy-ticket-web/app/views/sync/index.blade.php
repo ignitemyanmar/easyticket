@@ -66,6 +66,7 @@
                            <div class="portlet-body">
 
                                  <div class="alert" style="display:none;">
+                                    <span></span>
                                     <button class="close" data-dismiss="alert"></button>
                                  </div>
 
@@ -76,9 +77,16 @@
                                        <h3>Sync</h3>
                                     </div>
                                     <div class="modal-body">
-                                       <p>Please wait, we are transferring your data...[<span id="uploaded"></span>]</p>
-                                       <div class="progress progress-striped progress-warning">
-                                          <div style="width: 100%;" class="bar"></div>
+                                       <p><h5>Please wait, we are transferring your data...</h5></p>
+                                       <p>Message: <span id="message">Connecting to Server...</span></p>
+                                       <p>File:<span id="file"></span></p>
+                                       <div id="file_upload" style="display:none;">
+                                          <p>Uploaded: <span id="uploaded"></span> kb</p>
+                                          <p>Speed: <span id="speed"></span> kb</p>
+                                          <p>Left Elapsed Time: <span id="elapsed_time_left"></span> seconds</p>
+                                          <div class="progress progress-striped progress-warning">
+                                             <div style="width: 0%;" class="bar"></div>
+                                          </div>
                                        </div>
                                     </div>
                                     <div class="modal-footer">
@@ -90,12 +98,6 @@
                                        <span class="help-inline">Please click to Sync "Today Sale Order" button.</span>
                                        <p>
                                           <a  href="#myModal1" role="button" data-toggle="modal" class="btn green big" id="sync_to_server">Sync Today Sale Order <i class="m-icon-big-swapup m-icon-white"></i></a></div>
-                                       </p>
-                                    </div>
-                                    <div class="controls">
-                                       <span class="help-inline">Please click to Sync "Test Upload" button.</span>
-                                       <p>
-                                          <a  href="#myModal1" role="button" data-toggle="modal" class="btn green big" id="test_upload">Test Upload<i class="m-icon-big-swapup m-icon-white"></i></a></div>
                                        </p>
                                     </div>
                                     <div class="controls">
@@ -242,35 +244,64 @@
 
    $('#sync_to_server').click(function(){
       $('.progress-striped').addClass('active');
+      $('#message').html('Connecting to server...');
+      $('#file').html('');
       $.ajax({
         type: "GET",
         url: "/uploadjson",
         data: null
       })
       .done(function( response ) {
+         syncPaymantToServer();
+         if(progressUploadInterval) {
+            clearInterval(progressUploadInterval);
+         }
+      });
+      progressUploadCallback();
+   });
+
+   var syncPaymantToServer = function(){
+      $('.progress-striped').addClass('active');
+      $('#message').html('Connecting to server...');
+      $('#file').html('');
+      $.ajax({
+        type: "GET",
+        url: "/uploadpaymentjson",
+        data: null
+      })
+      .done(function( response ) {
          $('.progress-striped').removeClass('active');
          if(response.status_code === 1){
-            alert( "Data Saved: " + response.message );
+            // alert( "Data Saved: " + response.message );
+            $('.alert').removeClass('alert-success alert-error');
             $('.alert').show();
             $('.alert').addClass('alert-success');
-            $('.alert').append(response.message);
+            $('.alert span').html(response.message);
             $('#myModal1').modal('hide');
          }
          else if(response.status_code === 0){
-            alert( "Error: " + response.message);
+            // alert( "Error: " + response.message);
+            $('.alert').removeClass('alert-success alert-error');
             $('.alert').show();
             $('.alert').addClass('alert-error');
-            $('.alert').append(response.message);
+            $('.alert span').html(response.message);
             $('#myModal1').modal('hide');
          }else{
             alert(JSON.stringify(response));
             $('#myModal1').modal('hide');
             
          }
+
+         if(progressUploadInterval) {
+            clearInterval(progressUploadInterval);
+         }
          
       });
-      
-   });
+
+      progressUploadCallback();
+   }
+
+
    $('#sync_from_server').click(function(){
       $('.progress-striped').addClass('active');
       $.ajax({
@@ -281,17 +312,18 @@
       .done(function( response ) {
          $('.progress-striped').removeClass('active');
          if(response.status_code === 1){
-            alert( "Data Saved: " + response.message );
+           // alert( "Data Saved: " + response.message );
             $('.alert').show();
             $('.alert').addClass('alert-success');
             $('.alert').append(response.message);
             $('#myModal1').modal('hide');
          }
          else if(response.status_code === 0){
-            alert( "Error: " + response.message);
+            // alert( "Error: " + response.message);
+            $('.alert').removeClass('alert-success alert-error');
             $('.alert').show();
             $('.alert').addClass('alert-error');
-            $('.alert').append(response.message);
+            $('.alert span').html(response.message);
             $('#myModal1').modal('hide');
          }else{
             alert(JSON.stringify(response));
@@ -316,17 +348,17 @@
          $('.progress-striped').removeClass('active');
          //alert(JSON.stringify(response));
          if(response.status_code === 1){
-            alert( "Data Saved: " + response.message );
+            $('.alert').removeClass('alert-success alert-error');
             $('.alert').show();
             $('.alert').addClass('alert-success');
-            $('.alert').append(response.message);
+            $('.alert span').html(response.message);
             $('#myModal1').modal('hide');
          }
          else if(response.status_code === 0){
-            alert( "Error: " + response.message);
+            $('.alert').removeClass('alert-success alert-error');
             $('.alert').show();
             $('.alert').addClass('alert-error');
-            $('.alert').append(response.message);
+            $('.alert span').html(response.message);
             $('#myModal1').modal('hide');
 
          }else{
@@ -334,8 +366,12 @@
             $('#myModal1').modal('hide');
 
          }
+         if(progressDownloadInterval) {
+            clearInterval(progressDownloadInterval);
+         }
          
       });
+      progressDownloadCallback();
       
    });
    $('#sync_trip_from_server').click(function(){
@@ -956,20 +992,66 @@
       
    });
 
-   $('#test_upload').click(function(){
-      $('.progress-striped').addClass('active');
-      $.ajax({
-        type: "GET",
-        url: "/testupload",
-        data: null
-      })
-      .done(function( response ) {
-         alert(JSON.stringify(response));
-         var data = jQuery.parseJSON(response);
-         $('#uploaded').html(data.uploaded_size);
-      });
-      
-   });
+   var progressUploadInterval
+
+   var progressUploadCallback = function(){
+      progressUploadInterval = setInterval(function(){
+         $.ajax({
+           type: "GET",
+           url: "/getupprogress",
+           data: null
+         })
+         .always(function( data ) {
+            response = jQuery.parseJSON(data);
+            if(response !== null){
+               console.log(JSON.stringify(data));
+               $('#message').html(response.message != "undefined"? response.message : '');
+               $('#file').html(response.file_url != "undefined"? response.file_url : '');
+               if(response.progress > 0){
+                  $('#file_upload').show()
+                  $('#uploaded').html(response.uploaded_size + '/'+ response.total_size);
+                  $('#speed').html(response.agv_speed);
+                  $('#elapsed_time_left').html(response.elapsed_time_left);
+                  $('.bar').css({'width':+response.progress+'%'});
+               }else{
+                  $('#file_upload').hide();                                      
+               }
+
+            }
+         });
+
+      }, 1000);
+   }
+
+   var progressDownloadInterval;
+
+   var progressDownloadCallback = function(){
+      progressDownloadInterval = setInterval(function(){
+         $.ajax({
+           type: "GET",
+           url: "/getdownprogress",
+           data: null
+         })
+         .always(function( data ) {
+            response = jQuery.parseJSON(data);
+            if(response !== null){
+               console.log(JSON.stringify(data));
+               $('#message').html(response.message != "undefined"? response.message : '');
+               $('#file').html(response.file_url != "undefined"? response.file_url : '');
+               if(response.progress > 0){
+                  $('#file_upload').show()
+                  $('#uploaded').html(response.downloaded + '/'+ response.total_size);
+                  $('.bar').css({'width':+response.progress+'%'});
+               }else{
+                  $('#file_upload').hide();                                      
+               }
+
+            }
+         });
+
+      }, 1000);
+   }
+
 
    </script>
    

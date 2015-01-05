@@ -71,7 +71,7 @@ class OrderController extends \BaseController {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function destroy($id)
+	/*public function destroy($id)
 	{
 		$saleOrder = SaleOrder::with('saleitems')->whereid($id)->first();
 		if($saleOrder){
@@ -83,6 +83,17 @@ class OrderController extends \BaseController {
 		}
 		$message="Successfully delete order.";
 		return Redirect::to('orderlist')->with('message',$message);
+	}*/
+
+	public function destroy($id)
+	{
+		$saleOrder = SaleOrder::whereid($id)->first();
+		if($saleOrder){
+			SaleOrder::whereid($id)->delete();
+			AgentDeposit::whereorder_ids('["'.$id.'"]')->delete();
+			$message="Successfully delete order.";
+			return Redirect::to('orderlist')->with('message',$message);
+		}
 	}
 
 	public function deleteNotConfirmOrder($id){
@@ -99,7 +110,7 @@ class OrderController extends \BaseController {
 	}
 
 	public function orderlist(){
-		$operator_id=OperatorGroup::whereuser_id(Auth::user()->id)->pluck('operator_id');
+		$operator_id=$this->myGlob->operator_id;
 		$response=SaleOrder::whereoperator_id($operator_id)->with(array('agent','saleitems'))->get();
 		// return Response::json($response);
 		if($response){
@@ -139,13 +150,56 @@ class OrderController extends \BaseController {
 		return View::make('order.tickets', array('response'=>$response));
 	}
 
-	public function ticketdelete($id){
+	/*public function ticketdelete($id){
 		$objsaleitem=SaleItem::find($id);
 		$orderid=$objsaleitem->order_id;
 		$objsaleitem->delete();
 		$saleitems=SaleItem::whereorder_id($orderid)->count();
 		if($saleitems ==0){
 			SaleOrder::whereid($orderid)->delete();
+		}
+		$message="Successfully delete ticket.";
+		return Redirect::to('/order-tickets/'.$orderid)->with('message',$message);
+	}*/
+	public function ticketdelete($id){
+		$objsaleitem=SaleItem::find($id);
+		if(!$objsaleitem){
+			$message="Record has been deleted.";
+			return Redirect::to('/order-tickets/'.$id)->with('message',$message);
+		}
+		$orderid=$objsaleitem->order_id;
+		$saleitems=SaleItem::whereorder_id($orderid)->count();
+		$objagent_commission=AgentCommission::whereagent_id($objsaleitem->agent_id)->wheretrip_id($objsaleitem->trip_id)->first();
+		$commission=0;
+		if($objagent_commission){
+			if($objagent_commission->commission_id==1){
+				$commission=$objagent_commission->commission;
+			}else{
+				if($nationality=='local'){
+    				$commission +=($objsaleitems->price * $objagent_commission->commission) / 100;
+    			}else{
+    				$commission +=($objsaleitems->foreign_price * $objagent_commission->commission) / 100;
+    			}
+			}
+		}
+		if($commission==0){
+			$tripcommission=Trip::whereid($objsaleitem->trip_id)->pluck('commission');
+			$commission= $tripcommission;
+		}
+		$objsaleitem->delete();
+
+		$price=$objsaleitem->price -$commission;
+
+
+		if($saleitems ==0){
+			SaleOrder::whereid($orderid)->delete();
+			AgentDeposit::whereorder_ids('["'.$orderid.'"]')->delete();
+		}else{
+			$objagentdeposit=AgentDeposit::whereorder_ids('["'.$orderid.'"]')->first();
+			if($objagentdeposit){
+				$objagentdeposit->total_ticket_amt= $objagentdeposit->total_ticket_amt - $price;
+				$objagentdeposit->update();
+			}
 		}
 		$message="Successfully delete ticket.";
 		return Redirect::to('/order-tickets/'.$orderid)->with('message',$message);

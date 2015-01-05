@@ -2534,13 +2534,17 @@ class ApiController extends BaseController
 						$checkoccupied_seat =SaleItem::wherebusoccurance_id($busoccurance_id)
 												->whereseat_no($rows->seat_no)->first(array('order_id','ticket_no','name','phone','nrc_no','agent_id'));
 						if($checkoccupied_seat){
-							$temp['status']			=2;
+							$temp['status']			= 2;
 							$temp['booking']		= SaleOrder::whereid($checkoccupied_seat->order_id)->pluck('booking');
+							$temp['remark_type']	= SaleOrder::whereid($checkoccupied_seat->order_id)->pluck('remark_type');
+							$temp['remark']			= SaleOrder::whereid($checkoccupied_seat->order_id)->pluck('remark');
 							$temp['customer_info']  = $checkoccupied_seat->toarray();
 							$temp['customer_info']['agent_name'] = Agent::whereid($checkoccupied_seat->agent_id)->pluck('name');
 						}else{
 							$temp['status']			= $rows->status;
 							$temp['booking']		= 0;
+							$temp['remark_type']	= 0;
+							$temp['remark']			= null;
 							$temp['customer_info']  = null;
 						}
 						$temp['operatorgroup_id']	=$rows->operatorgroup_id;
@@ -2557,12 +2561,16 @@ class ApiController extends BaseController
 						if($checkoccupied_seat){
 							$temp['status']			=2;
 							$temp['booking']		= SaleOrder::whereid($checkoccupied_seat->order_id)->pluck('booking');
+							$temp['remark_type']	= SaleOrder::whereid($checkoccupied_seat->order_id)->pluck('remark_type');
+							$temp['remark']			= SaleOrder::whereid($checkoccupied_seat->order_id)->pluck('remark');
 							$temp['customer_info']  = $checkoccupied_seat->toarray();
 							$temp['customer_info']['phone'] = SaleOrder::whereid($checkoccupied_seat->order_id)->pluck('phone');
 							$temp['customer_info']['agent_name'] = Agent::whereid($checkoccupied_seat->agent_id)->pluck('name');
 						}else{
 							$temp['status']			=$rows->status;
 							$temp['booking']		= 0;
+							$temp['remark_type']	= 0;
+							$temp['remark']			= null;
 							$temp['customer_info']  = null;
 						}
 						
@@ -2692,6 +2700,7 @@ class ApiController extends BaseController
 	    	$group_operator_id 		= Input::get('group_operator_id') ? Input::get('group_operator_id') : 0;
 	    	$booking 				= Input::get('booking');
 	    	$device_id				= Input::get('device_id');
+	    	$user_id 				= Input::get('user_id');
 	  
     	
     	/*
@@ -2789,6 +2798,7 @@ class ApiController extends BaseController
 	    		$objsaleorder->expired_at 			= $expired_date;
 	    		$objsaleorder->device_id 			= $device_id;
 	    		$objsaleorder->booking 				= $booking;
+	    		$objsaleorder->user_id 				= $user_id ? $user_id : 0;
 	    		$objsaleorder->save();
 	    		
 	    		foreach ($available_seats as $rows) {
@@ -2947,7 +2957,7 @@ class ApiController extends BaseController
 	    			$agent_id=$objagent->id;
 	    		}
 	    	}
-    		$same=true;	
+    		/*$same=true;	
     		foreach ($json_tickets as $rows) {
     			$same_saleitems=SaleItem::whereorder_id($sale_order_no)->wheredevice_id($device_id)->whereseat_no($rows->seat_no)->wherebusoccurance_id($rows->busoccurance_id)->first();
     			if(!$same_saleitems){
@@ -2960,7 +2970,9 @@ class ApiController extends BaseController
 				$response['status']=$same;
 				$response['message']='Sorry. Some ticket have been taken by another customer.';
 				return Response::json($response);
-    		}
+    		}*/
+
+    		
 
 
     		foreach ($json_tickets as $rows) {
@@ -3182,6 +3194,9 @@ class ApiController extends BaseController
     		foreach ($response as $row) {
     			$response[$i]=$row;
     			$trip='-';
+    			$time='-';
+    			$date='-';
+    			$classes='-';
     			$price=0;
     			$amount=0;
     			$tickets=count($row->saleitems);
@@ -3213,7 +3228,10 @@ class ApiController extends BaseController
     					}
     					$from=City::whereid($objbusoccurance->from)->pluck('name');
     					$to=City::whereid($objbusoccurance->to)->pluck('name');
-    					$trip=$from.'-'.$to;
+    					$trip  		=$from.'-'.$to;
+    					$time 		=$objbusoccurance->departure_time;
+    					$date 		=$objbusoccurance->departure_date;
+    					$classes 	=Classes::whereid($objbusoccurance->classes)->pluck('name');
     					if($row->nationality == 'foreign' && $objbusoccurance->foreign_price > 0){
     						$price=$objbusoccurance->foreign_price;
     					}else{
@@ -3234,6 +3252,9 @@ class ApiController extends BaseController
     			$response[$i]['operator']=$operator;
     			$response[$i]['agent']=$agent;
     			$response[$i]['trip']=$trip;
+    			$response[$i]['time']=$time;
+    			$response[$i]['classes']=$classes;
+    			$response[$i]['date']=$date;
     			$response[$i]['total_ticket']=$tickets;
     			$response[$i]['price']=$price;
     			$response[$i]['commissiontype']=$commissiontype;

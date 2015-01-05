@@ -15,7 +15,7 @@ class SyncDatabaseController extends BaseController
 	/**
 	* Upload Sale Order from Clent.
 	*/
- 	public function pushJsonToServer(){
+ 	public function pushJsonToServer($sync_id){
  		$zipFile = 'client-'.$this->operatorgroup_id.'-today-sale-order.zip';
 		$fileName = 'client-'.$this->operatorgroup_id.'-today-sale-order.json';
 		$fromFile = $this->getFile($zipFile);
@@ -29,15 +29,15 @@ class SyncDatabaseController extends BaseController
 		}
 		
 		if($this->exportSaleOrderJson($this->operatorgroup_id,$fileName,$startDate) == "true"){
-			$this->createZip($this->getFile($zipFile), $fileName, $this->getFile($fileName));
-			if($this->upload($fromFile, $toFile)){
+			chmod($this->getFile($zipFile), 0777);
+			if($this->upload($fromFile, $toFile, $sync_id)){
 				$response = array();
 				$response['message'] = 'Importing your uploaded data.';
-				$this->saveFile('progress',$response);
+				$this->saveFile($sync_id,$response);
 				$curl = curl_init( $this->domain."/writetodatabase/".$fileName );
 				curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 				$response = curl_exec( $curl );
-				$this->saveFile('progress',json_decode($response,true));
+				$this->saveFile($sync_id,json_decode($response,true));
 				if($response){
 					$sync = Sync::wherename($zipFile)->first();
 					if($sync){
@@ -52,7 +52,7 @@ class SyncDatabaseController extends BaseController
 						$sync->save();
 					}
 					//$this->pushPaymentJsonToServer();
-					$this->deleteFile('progress');
+					$this->deleteFile($sync_id);
 					return Response::json(json_decode($response));
 				}else{
 					$response['status_code']  = 0; // 0 is error.
@@ -74,7 +74,7 @@ class SyncDatabaseController extends BaseController
 	/**
 	* Upload Sale Order from Clent.
 	*/
- 	public function pushPaymentJsonToServer(){
+ 	public function pushPaymentJsonToServer($sync_id){
  		$zipFile = 'client-'.$this->operatorgroup_id.'-today-payment.zip';
 		$fileName = 'client-'.$this->operatorgroup_id.'-today-payment.json';
 		$fromFile = $this->getFile($zipFile);
@@ -87,15 +87,15 @@ class SyncDatabaseController extends BaseController
 			$startDate = 0;
 		}
 		if($this->exportPaymentJson($this->operatorgroup_id,$fileName,$startDate)  == "true"){
-			$this->createZip($this->getFile($zipFile), $fileName, $this->getFile($fileName));
-			if($this->upload($fromFile, $toFile)){
+			chmod($this->getFile($zipFile), 0777);
+			if($this->upload($fromFile, $toFile, $sync_id)){
 				$response = array();
 				$response['message'] = 'Importing your uploaded data.';
-				$this->saveFile('progress',$response);
+				$this->saveFile($sync_id,$response);
 				$curl = curl_init( $this->domain."/writepaymentjson/".$fileName );
 				curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 				$response = curl_exec( $curl );
-				$this->saveFile('progress',json_decode($response,true));
+				$this->saveFile($sync_id,json_decode($response,true));
 				if($response){
 					$sync = Sync::wherename($zipFile)->first();
 					if($sync){
@@ -109,7 +109,7 @@ class SyncDatabaseController extends BaseController
 						$sync->last_sync_date 		= $this->getSysDateTime();
 						$sync->save();
 					}
-					$this->deleteFile('progress');
+					$this->deleteFile($sync_id);
 					return Response::json(json_decode($response));
 				}else{
 					$response['status_code']  = 0; // 0 is error.
@@ -133,7 +133,7 @@ class SyncDatabaseController extends BaseController
 	 * @/writetodatabase/{fname}
 	 */
 	public function writeJsonToDatabase($fileName){
-		$importSaleOrder = $this->importSaleOrderJson($fileName);
+		$importSaleOrder = $this->importSaleOrderJson($fileName,'');
 		return $importSaleOrder;
 	}
 
@@ -142,7 +142,7 @@ class SyncDatabaseController extends BaseController
 	 * @/writepaymentjson/{fname}
 	 */
 	public function writePaymentJsonToDatabase($fileName){
-		$importPayment = $this->importPaymentJson($fileName);
+		$importPayment = $this->importPaymentJson($fileName,'');
 		return $importPayment;
 	}
 	
@@ -182,7 +182,7 @@ class SyncDatabaseController extends BaseController
 	/**
 	 * To Sync Bus from Server
 	 */
-	public function downloadBusJsonfromServer(){
+	public function downloadBusJsonfromServer($sync_id){
 
 		$fileName = 'client-'.$this->operatorgroup_id.'-bus-occurance.json';
 		$toFile = $this->getFile($fileName);
@@ -195,21 +195,22 @@ class SyncDatabaseController extends BaseController
 		}else{
 			$syncDatetime = 0;
 		}
+		$syncDatetime = "2015-01-01";
 		$response['message'] = "Exporting from Server...";
-		$this->saveFile('progress', $response);
+		$this->saveFile($sync_id, $response);
 		$curl = curl_init( $this->domain."/exportbusjson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		if($response == "true"){
-			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile))){
+			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile), $sync_id)){
 				$response = array();
 				$response['message'] = "Importing your downloaded data...";
-				$this->saveFile('progress', $response);
+				$this->saveFile($sync_id, $response);
 				$response = array();
 				$response['message'] = "Importing your downloaded data...";
-				$this->saveFile('progress', $response);
-				$importData = $this->importBusOccurance($fileName);
-				$this->deleteFile('progress');
+				$this->saveFile($sync_id, $response);
+				$importData = $this->importBusOccurance($fileName, $sync_id);
+				$this->deleteFile($sync_id);
 				if($importData){
 					return Response::json($importData);
 				}
@@ -229,7 +230,7 @@ class SyncDatabaseController extends BaseController
 	/**
 	 * To Sync Trip from Server
 	 */
-	public function downloadTripJsonfromServer(){
+	public function downloadTripJsonfromServer($sync_id){
 		
 		$fileName = 'client-'.$this->operatorgroup_id.'-trip.json';
 		$toFile = $this->getFile($fileName);
@@ -242,20 +243,20 @@ class SyncDatabaseController extends BaseController
 		}else{
 			$syncDatetime = 0;
 		}
-
+		$syncDatetime = 0; #To Remove It
 		$response['message'] = "Exporting from Server...";
-		$this->saveFile('progress', $response);
+		$this->saveFile($sync_id, $response);
 		$curl = curl_init( $this->domain."/exporttripjson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 
 		if($response == "true"){
-			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile))){
+			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile), $sync_id)){
 				$response = array();
 				$response['message'] = "Importing your downloaded data...";
-				$this->saveFile('progress', $response);
-				$importData = $this->importTrip($fileName);
-				$this->deleteFile('progress');
+				$this->saveFile($sync_id, $response);
+				$importData = $this->importTrip($fileName, $sync_id);
+				$this->deleteFile($sync_id);
 				if($importData){
 					return Response::json($importData);
 				}
@@ -275,7 +276,7 @@ class SyncDatabaseController extends BaseController
 	/**
 	 * To Sync DeleteTrip from Server
 	 */
-	public function downloadDeleteTripJsonfromServer(){
+	public function downloadDeleteTripJsonfromServer($sync_id){
 		
 		$fileName = 'client-'.$this->operatorgroup_id.'-del-trip.json';
 		$toFile = $this->getFile($fileName);
@@ -288,19 +289,20 @@ class SyncDatabaseController extends BaseController
 		}else{
 			$syncDatetime = 0;
 		}
+		$syncDatetime = 0; #To Remove It
 		$response['message'] = "Exporting from Server...";
-		$this->saveFile('progress', $response);
+		$this->saveFile($sync_id, $response);
 		$curl = curl_init( $this->domain."/exportdeletetripjson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 
 		if($response == "true"){
-			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile))){
+			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile), $sync_id)){
 				$response = array();
 				$response['message'] = "Importing your downloaded data...";
-				$this->saveFile('progress', $response);
-				$importData = $this->importDeleteTrip($fileName);
-				$this->deleteFile('progress');
+				$this->saveFile($sync_id, $response);
+				$importData = $this->importDeleteTrip($fileName, $sync_id);
+				$this->deleteFile($sync_id);
 				if($importData){
 					return Response::json($importData);
 				}
@@ -320,7 +322,7 @@ class SyncDatabaseController extends BaseController
 	/**
 	 * To Sync Seating Plan from Server
 	 */
-	public function downloadSeatingPlanJsonfromServer(){
+	public function downloadSeatingPlanJsonfromServer($sync_id){
 		
 		$fileName = 'client-'.$this->operatorgroup_id.'-seating-plan.json';
 		$toFile = $this->getFile($fileName);
@@ -332,18 +334,19 @@ class SyncDatabaseController extends BaseController
 		}else{
 			$syncDatetime = 0;
 		}
+		$syncDatetime = 0; #To Remove It
 		$response['message'] = "Exporting from Server...";
-		$this->saveFile('progress', $response);
+		$this->saveFile($sync_id, $response);
 		$curl = curl_init( $this->domain."/exportseatingplanjson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		if($response == "true"){
-			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile))){
+			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile), $sync_id)){
 				$response = array();
 				$response['message'] = "Importing your downloaded data...";
-				$this->saveFile('progress', $response);
-				$importData = $this->importSeatingPlan($fileName);
-				$this->deleteFile('progress');
+				$this->saveFile($sync_id, $response);
+				$importData = $this->importSeatingPlan($fileName, $sync_id);
+				$this->deleteFile($sync_id);
 				if($importData){
 					return Response::json($importData);
 				}
@@ -363,7 +366,7 @@ class SyncDatabaseController extends BaseController
 	/**
 	 * To Sync Agent from Server
 	 */
-	public function downloadAgentJsonfromServer(){
+	public function downloadAgentJsonfromServer($sync_id){
 		
 		$fileName = 'client-'.$this->operatorgroup_id.'-agent.json';
 		$toFile = $this->getFile($fileName);
@@ -375,18 +378,19 @@ class SyncDatabaseController extends BaseController
 		}else{
 			$syncDatetime = 0;
 		}
+		$syncDatetime = 0; #To Remove It
 		$response['message'] = "Exporting from Server...";
-		$this->saveFile('progress', $response);
+		$this->saveFile($sync_id, $response);
 		$curl = curl_init( $this->domain."/exportagentjson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		if($response == "true"){
-			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile))){
+			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile), $sync_id)){
 				$response = array();
 				$response['message'] = "Importing your downloaded data...";
-				$this->saveFile('progress', $response);
-				$importData = $this->importAgent($fileName);
-				$this->deleteFile('progress');
+				$this->saveFile($sync_id, $response);
+				$importData = $this->importAgent($fileName, $sync_id);
+				$this->deleteFile($sync_id);
 				if($importData){
 					return Response::json($importData);
 				}
@@ -406,7 +410,7 @@ class SyncDatabaseController extends BaseController
 	/**
 	 * To Sync AgentGroup from Server
 	 */
-	public function downloadAgentGroupJsonfromServer(){
+	public function downloadAgentGroupJsonfromServer($sync_id){
 		
 		$fileName = 'client-'.$this->operatorgroup_id.'-agentgroup.json';
 		$toFile = $this->getFile($fileName);
@@ -418,18 +422,19 @@ class SyncDatabaseController extends BaseController
 		}else{
 			$syncDatetime = 0;
 		}
+		$syncDatetime = 0; #To Remove It
 		$response['message'] = "Exporting from Server...";
-		$this->saveFile('progress', $response);
+		$this->saveFile($sync_id, $response);
 		$curl = curl_init( $this->domain."/exportagentgroupjson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		if($response == "true"){
-			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile))){
+			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile), $sync_id)){
 				$response = array();
 				$response['message'] = "Importing your downloaded data...";
-				$this->saveFile('progress', $response);
-				$importData = $this->importAgentGroup($fileName);
-				$this->deleteFile('progress');
+				$this->saveFile($sync_id, $response);
+				$importData = $this->importAgentGroup($fileName, $sync_id);
+				$this->deleteFile($sync_id);
 				if($importData){
 					return Response::json($importData);
 				}
@@ -449,7 +454,7 @@ class SyncDatabaseController extends BaseController
 	/**
 	 * To Sync City from Server
 	 */
-	public function downloadCityJsonfromServer(){
+	public function downloadCityJsonfromServer($sync_id){
 		
 		$fileName = 'client-'.$this->operatorgroup_id.'-city.json';
 		$toFile = $this->getFile($fileName);
@@ -463,17 +468,17 @@ class SyncDatabaseController extends BaseController
 		}
 		$syncDatetime = 0; #To Remove It
 		$response['message'] = "Exporting from Server...";
-		$this->saveFile('progress', $response);
+		$this->saveFile($sync_id, $response);
 		$curl = curl_init( $this->domain."/exportcityjson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		if($response == "true"){
-			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile))){
+			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile), $sync_id)){
 				$response = array();
 				$response['message'] = "Importing your downloaded data...";
-				$this->saveFile('progress', $response);
-				$importData = $this->importCity($fileName);
-				$this->deleteFile('progress');
+				$this->saveFile($sync_id, $response);
+				$importData = $this->importCity($fileName, $sync_id);
+				$this->deleteFile($sync_id);
 				if($importData){
 					return Response::json($importData);
 				}
@@ -493,7 +498,7 @@ class SyncDatabaseController extends BaseController
 	/**
 	 * To Sync Extra Destination from Server
 	 */
-	public function downloadExtraDestinationJsonfromServer(){
+	public function downloadExtraDestinationJsonfromServer($sync_id){
 		
 		$fileName = 'client-'.$this->operatorgroup_id.'-extradestination.json';
 		$toFile = $this->getFile($fileName);
@@ -507,17 +512,17 @@ class SyncDatabaseController extends BaseController
 		}
 		$syncDatetime = 0; #To Remove It
 		$response['message'] = "Exporting from Server...";
-		$this->saveFile('progress', $response);
+		$this->saveFile($sync_id, $response);
 		$curl = curl_init( $this->domain."/exportextradestinationjson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		if($response == "true"){
-			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile))){
+			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile), $sync_id)){
 				$response = array();
 				$response['message'] = "Importing your downloaded data...";
-				$this->saveFile('progress', $response);
-				$importData = $this->importExtraDestination($fileName);
-				$this->deleteFile('progress');
+				$this->saveFile($sync_id, $response);
+				$importData = $this->importExtraDestination($fileName, $sync_id);
+				$this->deleteFile($sync_id);
 				if($importData){
 					return Response::json($importData);
 				}
@@ -537,7 +542,7 @@ class SyncDatabaseController extends BaseController
 	/**
 	 * To Sync Classes from Server
 	 */
-	public function downloadClassesJsonfromServer(){
+	public function downloadClassesJsonfromServer($sync_id){
 		
 		$fileName = 'client-'.$this->operatorgroup_id.'-bus-classes.json';
 		$toFile = $this->getFile($fileName);
@@ -551,17 +556,17 @@ class SyncDatabaseController extends BaseController
 		}
 		$syncDatetime = 0; #To Remove It
 		$response['message'] = "Exporting from Server...";
-		$this->saveFile('progress', $response);
+		$this->saveFile($sync_id, $response);
 		$curl = curl_init( $this->domain."/exportclassesjson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		if($response == "true"){
-			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile))){
+			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile), $sync_id)){
 				$response = array();
 				$response['message'] = "Importing your downloaded data...";
-				$this->saveFile('progress', $response);
-				$importData = $this->importClasses($fileName);
-				$this->deleteFile('progress');
+				$this->saveFile($sync_id, $response);
+				$importData = $this->importClasses($fileName, $sync_id);
+				$this->deleteFile($sync_id);
 				if($importData){
 					return Response::json($importData);
 				}
@@ -581,7 +586,7 @@ class SyncDatabaseController extends BaseController
 	/**
 	 * To Sync AgentCommission from Server
 	 */
-	public function downloadAgentCommissionJsonfromServer(){
+	public function downloadAgentCommissionJsonfromServer($sync_id){
 		
 		$fileName = 'client-'.$this->operatorgroup_id.'-agentcommission.json';
 		$toFile = $this->getFile($fileName);
@@ -595,17 +600,17 @@ class SyncDatabaseController extends BaseController
 		}
 		$syncDatetime = 0; #To Remove It
 		$response['message'] = "Exporting from Server...";
-		$this->saveFile('progress', $response);
+		$this->saveFile($sync_id, $response);
 		$curl = curl_init( $this->domain."/exportagentcommissionjson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		if($response == "true"){
-			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile))){
+			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile), $sync_id)){
 				$response = array();
 				$response['message'] = "Importing your downloaded data...";
-				$this->saveFile('progress', $response);
-				$importData = $this->importAgentCommission($fileName);
-				$this->deleteFile('progress');
+				$this->saveFile($sync_id, $response);
+				$importData = $this->importAgentCommission($fileName, $sync_id);
+				$this->deleteFile($sync_id);
 				if($importData){
 					return Response::json($importData);
 				}
@@ -625,7 +630,7 @@ class SyncDatabaseController extends BaseController
 	/**
 	 * To Sync CloseSeatInfo from Server
 	 */
-	public function downloadCloseSeatInfoJsonfromServer(){
+	public function downloadCloseSeatInfoJsonfromServer($sync_id){
 		
 		$fileName = 'client-'.$this->operatorgroup_id.'-closeseatinfo.json';
 		$toFile = $this->getFile($fileName);
@@ -639,17 +644,17 @@ class SyncDatabaseController extends BaseController
 		}
 		$syncDatetime = 0; #To Remove It
 		$response['message'] = "Exporting from Server...";
-		$this->saveFile('progress', $response);
+		$this->saveFile($sync_id, $response);
 		$curl = curl_init( $this->domain."/exportcloseseatinfojson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		if($response == "true"){
-			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile))){
+			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile), $sync_id)){
 				$response = array();
 				$response['message'] = "Importing your downloaded data...";
-				$this->saveFile('progress', $response);
-				$importData = $this->importCloseSeatInfo($fileName);
-				$this->deleteFile('progress');
+				$this->saveFile($sync_id, $response);
+				$importData = $this->importCloseSeatInfo($fileName, $sync_id);
+				$this->deleteFile($sync_id);
 				if($importData){
 					return Response::json($importData);
 				}
@@ -669,7 +674,7 @@ class SyncDatabaseController extends BaseController
 	/**
 	 * To Sync CommissionType from Server
 	 */
-	public function downloadCommissionTypeJsonfromServer(){
+	public function downloadCommissionTypeJsonfromServer($sync_id){
 		
 		$fileName = 'client-'.$this->operatorgroup_id.'-commissiontype.json';
 		$toFile = $this->getFile($fileName);
@@ -683,17 +688,17 @@ class SyncDatabaseController extends BaseController
 		}
 		$syncDatetime = 0; #To Remove It
 		$response['message'] = "Exporting from Server...";
-		$this->saveFile('progress', $response);
+		$this->saveFile($sync_id, $response);
 		$curl = curl_init( $this->domain."/exportcommissiontypejson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		if($response == "true"){
-			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile))){
+			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile), $sync_id)){
 				$response = array();
 				$response['message'] = "Importing your downloaded data...";
-				$this->saveFile('progress', $response);
-				$importData = $this->importCommissionType($fileName);
-				$this->deleteFile('progress');
+				$this->saveFile($sync_id, $response);
+				$importData = $this->importCommissionType($fileName, $sync_id);
+				$this->deleteFile($sync_id);
 				if($importData){
 					return Response::json($importData);
 				}
@@ -713,7 +718,7 @@ class SyncDatabaseController extends BaseController
 	/**
 	 * To Sync OperatorGroup from Server
 	 */
-	public function downloadOperatorGroupJsonfromServer(){
+	public function downloadOperatorGroupJsonfromServer($sync_id){
 		
 		$fileName = 'client-'.$this->operatorgroup_id.'-operatorgroup.json';
 		$toFile = $this->getFile($fileName);
@@ -727,17 +732,17 @@ class SyncDatabaseController extends BaseController
 		}	
 		$syncDatetime = 0; #To Remove It
 		$response['message'] = "Exporting from Server...";
-		$this->saveFile('progress', $response);
+		$this->saveFile($sync_id, $response);
 		$curl = curl_init( $this->domain."/exportoperatorgroupjson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		if($response == "true"){
-			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile))){
+			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile), $sync_id)){
 				$response = array();
 				$response['message'] = "Importing your downloaded data...";
-				$this->saveFile('progress', $response);
-				$importData = $this->importOperatorGroup($fileName);
-				$this->deleteFile('progress');
+				$this->saveFile($sync_id, $response);
+				$importData = $this->importOperatorGroup($fileName, $sync_id);
+				$this->deleteFile($sync_id);
 				if($importData){
 					return Response::json($importData);
 				}
@@ -757,7 +762,7 @@ class SyncDatabaseController extends BaseController
 	/**
 	 * To Sync OperatorGroupUser from Server
 	 */
-	public function downloadOperatorGroupUserJsonfromServer(){
+	public function downloadOperatorGroupUserJsonfromServer($sync_id){
 		
 		$fileName = 'client-'.$this->operatorgroup_id.'-operatorgroupuser.json';
 		$toFile = $this->getFile($fileName);
@@ -771,17 +776,17 @@ class SyncDatabaseController extends BaseController
 		}	
 		$syncDatetime = 0; #To Remove It
 		$response['message'] = "Exporting from Server...";
-		$this->saveFile('progress', $response);
+		$this->saveFile($sync_id, $response);
 		$curl = curl_init( $this->domain."/exportoperatorgroupuserjson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		if($response == "true"){
-			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile))){
+			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile), $sync_id)){
 				$response = array();
 				$response['message'] = "Importing your downloaded data...";
-				$this->saveFile('progress', $response);
-				$importData = $this->importOperatorGroupUser($fileName);
-				$this->deleteFile('progress');
+				$this->saveFile($sync_id, $response);
+				$importData = $this->importOperatorGroupUser($fileName, $sync_id);
+				$this->deleteFile($sync_id);
 				if($importData){
 					return Response::json($importData);
 				}
@@ -801,7 +806,7 @@ class SyncDatabaseController extends BaseController
 	/**
 	 * To Sync User from Server
 	 */
-	public function downloadUserJsonfromServer(){
+	public function downloadUserJsonfromServer($sync_id){
 		
 		$fileName = 'client-'.$this->operatorgroup_id.'-user.json';
 		$toFile = $this->getFile($fileName);
@@ -815,17 +820,17 @@ class SyncDatabaseController extends BaseController
 		}
 		$syncDatetime = 0; #To Remove It
 		$response['message'] = "Exporting from Server...";
-		$this->saveFile('progress', $response);
+		$this->saveFile($sync_id, $response);
 		$curl = curl_init( $this->domain."/exportuserjson/".$this->operator_id."/".$fileName."/".$syncDatetime);
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		if($response == "true"){
-			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile))){
+			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile), $sync_id)){
 				$response = array();
 				$response['message'] = "Importing your downloaded data...";
-				$this->saveFile('progress', $response);
-				$importData = $this->importUser($fileName);
-				$this->deleteFile('progress');
+				$this->saveFile($sync_id, $response);
+				$importData = $this->importUser($fileName, $sync_id);
+				$this->deleteFile($sync_id);
 				if($importData){
 					return Response::json($importData);
 				}
@@ -845,7 +850,7 @@ class SyncDatabaseController extends BaseController
 	/**
 	 * To Sync Operator from Server
 	 */
-	public function downloadOperatorJsonfromServer(){
+	public function downloadOperatorJsonfromServer($sync_id){
 		
 		$fileName = 'client-'.$this->operatorgroup_id.'-operator.json';
 		$toFile = $this->getFile($fileName);
@@ -859,17 +864,17 @@ class SyncDatabaseController extends BaseController
 		}
 		$syncDatetime = 0; #To Remove It
 		$response['message'] = "Exporting from Server...";
-		$this->saveFile('progress', $response);
+		$this->saveFile($sync_id, $response);
 		$curl = curl_init( $this->domain."/exportoperatorjson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		if($response == "true"){
-			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile))){
+			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile), $sync_id)){
 				$response = array();
 				$response['message'] = "Importing your downloaded data...";
-				$this->saveFile('progress', $response);
-				$importData = $this->importOperator($fileName);
-				$this->deleteFile('progress');
+				$this->saveFile($sync_id, $response);
+				$importData = $this->importOperator($fileName, $sync_id);
+				$this->deleteFile($sync_id);
 				if($importData){
 					return Response::json($importData);
 				}
@@ -889,7 +894,7 @@ class SyncDatabaseController extends BaseController
 	/**
 	 * To Sync SeatInfo from Server
 	 */
-	public function downloadSeatInfoJsonfromServer(){
+	public function downloadSeatInfoJsonfromServer($sync_id){
 		
 		$fileName = 'client-'.$this->operatorgroup_id.'-seatinfo.json';
 		$toFile = $this->getFile($fileName);
@@ -903,17 +908,17 @@ class SyncDatabaseController extends BaseController
 		}
 		$syncDatetime = 0; #To Remove It
 		$response['message'] = "Exporting from Server...";
-		$this->saveFile('progress', $response);
+		$this->saveFile($sync_id, $response);
 		$curl = curl_init( $this->domain."/exportseatinfojson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		if($response == "true"){
-			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile))){
+			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile), $sync_id)){
 				$response = array();
 				$response['message'] = "Importing your downloaded data...";
-				$this->saveFile('progress', $response);
-				$importData = $this->importSeatInfo($fileName);
-				$this->deleteFile('progress');
+				$this->saveFile($sync_id, $response);
+				$importData = $this->importSeatInfo($fileName, $sync_id);
+				$this->deleteFile($sync_id);
 				if($importData){
 					return Response::json($importData);
 				}
@@ -933,7 +938,7 @@ class SyncDatabaseController extends BaseController
 	/**
 	 * To Sync SaleOrder from Server
 	 */
-	public function downloadSaleOrderJsonfromServer(){
+	public function downloadSaleOrderJsonfromServer($sync_id){
 		
 		$fileName = 'client-'.$this->operatorgroup_id.'-today-sale-order.json';
 		$toFile = $this->getFile($fileName);
@@ -947,17 +952,17 @@ class SyncDatabaseController extends BaseController
 		}	
 		$syncDatetime = 0; #To Remove It	
 		$response['message'] = "Exporting from Server...";
-		$this->saveFile('progress', $response);
+		$this->saveFile($sync_id, $response);
 		$curl = curl_init( $this->domain."/exportsaleorderjson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		if($response == "true"){
-			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile))){
+			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile), $sync_id)){
 				$response = array();
 				$response['message'] = "Importing your downloaded data...";
-				$this->saveFile('progress', $response);
-				$importData = $this->importSaleOrderJson($fileName);
-				$this->deleteFile('progress');
+				$this->saveFile($sync_id, $response);
+				$importData = $this->importSaleOrderJson($fileName, $sync_id);
+				$this->deleteFile($sync_id);
 				if($importData){
 					return Response::json($importData);
 				}
@@ -977,7 +982,7 @@ class SyncDatabaseController extends BaseController
 	/**
 	 * To Sync DeleteSaleOrder from Server
 	 */
-	public function downloadDeleteSaleOrderJsonfromServer(){
+	public function downloadDeleteSaleOrderJsonfromServer($sync_id){
 		
 		$fileName = 'client-'.$this->operatorgroup_id.'-today-delsale-order.json';
 		$toFile = $this->getFile($fileName);
@@ -991,17 +996,17 @@ class SyncDatabaseController extends BaseController
 		}	
 		$syncDatetime = 0; #To Remove It	
 		$response['message'] = "Exporting from Server...";
-		$this->saveFile('progress', $response);
+		$this->saveFile($sync_id, $response);
 		$curl = curl_init( $this->domain."/exportdeletesaleorderjson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		if($response == "true"){
-			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile))){
+			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile), $sync_id)){
 				$response = array();
 				$response['message'] = "Importing your downloaded data...";
-				$this->saveFile('progress', $response);
-				$importData = $this->importDeleteSaleOrderJson($fileName);
-				$this->deleteFile('progress');
+				$this->saveFile($sync_id, $response);
+				$importData = $this->importDeleteSaleOrderJson($fileName, $sync_id);
+				$this->deleteFile($sync_id);
 				if($importData){
 					return Response::json($importData);
 				}else{
@@ -1026,7 +1031,7 @@ class SyncDatabaseController extends BaseController
 	/**
 	 * To Sync Payment from Server
 	 */
-	public function downloadPaymentJsonfromServer(){
+	public function downloadPaymentJsonfromServer($sync_id){
 		
 		$fileName = 'client-'.$this->operatorgroup_id.'-today-payment.json';
 		$toFile = $this->getFile($fileName);
@@ -1040,17 +1045,17 @@ class SyncDatabaseController extends BaseController
 		}	
 		$syncDatetime = 0; #To Remove It
 		$response['message'] = "Exporting from Server...";
-		$this->saveFile('progress', $response);
+		$this->saveFile($sync_id, $response);
 		$curl = curl_init( $this->domain."/exportpaymentjson/".$this->operator_id."/".$fileName."/".$syncDatetime );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $curl );
 		if($response == "true"){
-			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile))){
+			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile), $sync_id)){
 				$response = array();
 				$response['message'] = "Importing your downloaded data...";
-				$this->saveFile('progress', $response);
-				$importData = $this->importPaymentJson($fileName);
-				$this->deleteFile('progress');
+				$this->saveFile($sync_id, $response);
+				$importData = $this->importPaymentJson($fileName, $sync_id);
+				$this->deleteFile($sync_id);
 				if($importData){
 					return Response::json($importData);
 				}
@@ -1080,7 +1085,7 @@ class SyncDatabaseController extends BaseController
 			$busOccurance = BusOccurance::whereoperator_id($operator_id)->where('created_at','>',$startDate)->orwhere('updated_at','>',$startDate)
 											->get()->toarray();
 		}
-
+		
 		if($busOccurance){
 			$this->saveFile($fileName, $busOccurance);
 			$this->createZip($this->getFile(str_replace('.json', '.zip', $fileName)), $fileName, $this->getFile($fileName));
@@ -1092,7 +1097,7 @@ class SyncDatabaseController extends BaseController
 	/**
 	 * To Import BusOccourence Data
 	 */
-	public function importBusOccurance($fileName){
+	public function importBusOccurance($fileName, $sync_id){
 		$zip = new ZipArchive;
 		$res = $zip->open($this->getFile(str_replace('.json', '.zip', $fileName)));
 		if ($res) {
@@ -1121,7 +1126,7 @@ class SyncDatabaseController extends BaseController
 					$progress['file_url'] = "";
 					$progress['total_size'] = count($busOccurance) * 1024;
 					$progress['file_lenght'] = $i++ * 1024;
-					$this->saveFile('progress', $progress);
+					$this->saveFile($sync_id, $progress);
 				}
 				$response['status_code'] = 1; //1 is success;
 				$response['message']	 = 'Successfully your import data.';
@@ -1157,7 +1162,7 @@ class SyncDatabaseController extends BaseController
 	/**
 	 * To Import Trip Data.
 	 */
-	public function importTrip($fileName){
+	public function importTrip($fileName, $sync_id){
 		$zip = new ZipArchive;
 		$res = $zip->open($this->getFile(str_replace('.json', '.zip', $fileName)));
 		if ($res) {
@@ -1186,7 +1191,7 @@ class SyncDatabaseController extends BaseController
 					$progress['file_url'] = "";
 					$progress['total_size'] = count($trips) * 1024;
 					$progress['file_lenght'] = $i++ * 1024;
-					$this->saveFile('progress', $progress);
+					$this->saveFile($sync_id, $progress);
 				}
 				$response['status_code'] = 1; //1 is success;
 				$response['message']	 = 'Successfully your import data.';
@@ -1221,7 +1226,7 @@ class SyncDatabaseController extends BaseController
 	/**
 	 * To Import DeleteTrip Data.
 	 */
-	public function importDeleteTrip($fileName){
+	public function importDeleteTrip($fileName, $sync_id){
 		$zip = new ZipArchive;
 		$res = $zip->open($this->getFile(str_replace('.json', '.zip', $fileName)));
 		if ($res) {
@@ -1256,7 +1261,7 @@ class SyncDatabaseController extends BaseController
 					$progress['file_url'] = "";
 					$progress['total_size'] = count($DeleteTrips) * 1024;
 					$progress['file_lenght'] = $i++ * 1024;
-					$this->saveFile('progress', $progress);
+					$this->saveFile($sync_id, $progress);
 				}
 				$response['status_code'] = 1; //1 is success;
 				$response['message']	 = 'Successfully your import data.';
@@ -1291,7 +1296,7 @@ class SyncDatabaseController extends BaseController
 	/**
 	 * To Import SeatingPlan Data.
 	 */
-	public function importSeatingPlan($fileName){
+	public function importSeatingPlan($fileName, $sync_id){
 		$zip = new ZipArchive;
 		$res = $zip->open($this->getFile(str_replace('.json', '.zip', $fileName)));
 		if ($res) {
@@ -1321,7 +1326,7 @@ class SyncDatabaseController extends BaseController
 					$progress['file_url'] = "";
 					$progress['total_size'] = count($seatingPlans) * 1024;
 					$progress['file_lenght'] = $i++ * 1024;
-					$this->saveFile('progress', $progress);
+					$this->saveFile($sync_id, $progress);
 				}
 				$response['status_code'] = 1; //1 is success;
 				$response['message']	 = 'Successfully your import data.';
@@ -1356,7 +1361,7 @@ class SyncDatabaseController extends BaseController
 	/**
 	 * To Import Agent Data.
 	 */
-	public function importAgent($fileName){
+	public function importAgent($fileName, $sync_id){
 		$zip = new ZipArchive;
 		$res = $zip->open($this->getFile(str_replace('.json', '.zip', $fileName)));
 		if ($res) {
@@ -1385,7 +1390,7 @@ class SyncDatabaseController extends BaseController
 					$progress['file_url'] = "";
 					$progress['total_size'] = count($Agents) * 1024;
 					$progress['file_lenght'] = $i++ * 1024;
-					$this->saveFile('progress', $progress);
+					$this->saveFile($sync_id, $progress);
 				}
 				$response['status_code'] = 1; //1 is success;
 				$response['message']	 = 'Successfully your import data.';
@@ -1420,7 +1425,7 @@ class SyncDatabaseController extends BaseController
 	/**
 	 * To Import AgentGroup Data.
 	 */
-	public function importAgentGroup($fileName){
+	public function importAgentGroup($fileName, $sync_id){
 		$zip = new ZipArchive;
 		$res = $zip->open($this->getFile(str_replace('.json', '.zip', $fileName)));
 		if ($res) {
@@ -1449,7 +1454,7 @@ class SyncDatabaseController extends BaseController
 					$progress['file_url'] = "";
 					$progress['total_size'] = count($AgentGroups) * 1024;
 					$progress['file_lenght'] = $i++ * 1024;
-					$this->saveFile('progress', $progress);
+					$this->saveFile($sync_id, $progress);
 				}
 				$response['status_code'] = 1; //1 is success;
 				$response['message']	 = 'Successfully your import data.';
@@ -1485,7 +1490,7 @@ class SyncDatabaseController extends BaseController
 	/**
 	 * To Import City Data.
 	 */
-	public function importCity($fileName){
+	public function importCity($fileName, $sync_id){
 		$zip = new ZipArchive;
 		$res = $zip->open($this->getFile(str_replace('.json', '.zip', $fileName)));
 		if ($res) {
@@ -1514,7 +1519,7 @@ class SyncDatabaseController extends BaseController
 					$progress['file_url'] = "";
 					$progress['total_size'] = count($Citys) * 1024;
 					$progress['file_lenght'] = $i++ * 1024;
-					$this->saveFile('progress', $progress);
+					$this->saveFile($sync_id, $progress);
 				}
 				$response['status_code'] = 1; //1 is success;
 				$response['message']	 = 'Successfully your import data.';
@@ -1549,7 +1554,7 @@ class SyncDatabaseController extends BaseController
 	/**
 	 * To Import ExtraDestination Data.
 	 */
-	public function importExtraDestination($fileName){
+	public function importExtraDestination($fileName, $sync_id){
 		$zip = new ZipArchive;
 		$res = $zip->open($this->getFile(str_replace('.json', '.zip', $fileName)));
 		if ($res) {
@@ -1578,7 +1583,7 @@ class SyncDatabaseController extends BaseController
 					$progress['file_url'] = "";
 					$progress['total_size'] = count($ExtraDestinations) * 1024;
 					$progress['file_lenght'] = $i++ * 1024;
-					$this->saveFile('progress', $progress);
+					$this->saveFile($sync_id, $progress);
 				}
 				$response['status_code'] = 1; //1 is success;
 				$response['message']	 = 'Successfully your import data.';
@@ -1613,7 +1618,7 @@ class SyncDatabaseController extends BaseController
 	/**
 	 * To Import Classes Data.
 	 */
-	public function importClasses($fileName){
+	public function importClasses($fileName, $sync_id){
 		$zip = new ZipArchive;
 		$res = $zip->open($this->getFile(str_replace('.json', '.zip', $fileName)));
 		if ($res) {
@@ -1642,7 +1647,7 @@ class SyncDatabaseController extends BaseController
 					$progress['file_url'] = "";
 					$progress['total_size'] = count($Classess) * 1024;
 					$progress['file_lenght'] = $i++ * 1024;
-					$this->saveFile('progress', $progress);
+					$this->saveFile($sync_id, $progress);
 				}
 				$response['status_code'] = 1; //1 is success;
 				$response['message']	 = 'Successfully your import data.';
@@ -1677,7 +1682,7 @@ class SyncDatabaseController extends BaseController
 	/**
 	 * To Import AgentCommission Data.
 	 */
-	public function importAgentCommission($fileName){
+	public function importAgentCommission($fileName, $sync_id){
 		$zip = new ZipArchive;
 		$res = $zip->open($this->getFile(str_replace('.json', '.zip', $fileName)));
 		if ($res) {
@@ -1706,7 +1711,7 @@ class SyncDatabaseController extends BaseController
 					$progress['file_url'] = "";
 					$progress['total_size'] = count($AgentCommissions) * 1024;
 					$progress['file_lenght'] = $i++ * 1024;
-					$this->saveFile('progress', $progress);
+					$this->saveFile($sync_id, $progress);
 					
 				}
 				$response['status_code'] = 1; //1 is success;
@@ -1742,7 +1747,7 @@ class SyncDatabaseController extends BaseController
 	/**
 	 * To Import CloseSeatInfo Data.
 	 */
-	public function importCloseSeatInfo($fileName){
+	public function importCloseSeatInfo($fileName, $sync_id){
 		$zip = new ZipArchive;
 		$res = $zip->open($this->getFile(str_replace('.json', '.zip', $fileName)));
 		if ($res) {
@@ -1771,7 +1776,7 @@ class SyncDatabaseController extends BaseController
 					$progress['file_url'] = "";
 					$progress['total_size'] = count($CloseSeatInfos) * 1024;
 					$progress['file_lenght'] = $i++ * 1024;
-					$this->saveFile('progress', $progress);
+					$this->saveFile($sync_id, $progress);
 				}
 				$response['status_code'] = 1; //1 is success;
 				$response['message']	 = 'Successfully your import data.';
@@ -1808,7 +1813,7 @@ class SyncDatabaseController extends BaseController
 	/**
 	 * To Import CommissionType Data.
 	 */
-	public function importCommissionType($fileName){
+	public function importCommissionType($fileName, $sync_id){
 		$zip = new ZipArchive;
 		$res = $zip->open($this->getFile(str_replace('.json', '.zip', $fileName)));
 		if ($res) {
@@ -1837,7 +1842,7 @@ class SyncDatabaseController extends BaseController
 					$progress['file_url'] = "";
 					$progress['total_size'] = count($CommissionTypes) * 1024;
 					$progress['file_lenght'] = $i++ * 1024;
-					$this->saveFile('progress', $progress);
+					$this->saveFile($sync_id, $progress);
 				}
 				$response['status_code'] = 1; //1 is success;
 				$response['message']	 = 'Successfully your import data.';
@@ -1874,7 +1879,7 @@ class SyncDatabaseController extends BaseController
 	/**
 	 * To Import OperatorGroup Data.
 	 */
-	public function importOperatorGroup($fileName){
+	public function importOperatorGroup($fileName, $sync_id){
 		$zip = new ZipArchive;
 		$res = $zip->open($this->getFile(str_replace('.json', '.zip', $fileName)));
 		if ($res) {
@@ -1903,7 +1908,7 @@ class SyncDatabaseController extends BaseController
 					$progress['file_url'] = "";
 					$progress['total_size'] = count($OperatorGroups) * 1024;
 					$progress['file_lenght'] = $i++ * 1024;
-					$this->saveFile('progress', $progress);
+					$this->saveFile($sync_id, $progress);
 				}
 				$response['status_code'] = 1; //1 is success;
 				$response['message']	 = 'Successfully your import data.';
@@ -1940,7 +1945,7 @@ class SyncDatabaseController extends BaseController
 	/**
 	 * To Import OperatorGroupUser Data.
 	 */
-	public function importOperatorGroupUser($fileName){
+	public function importOperatorGroupUser($fileName, $sync_id){
 		$zip = new ZipArchive;
 		$res = $zip->open($this->getFile(str_replace('.json', '.zip', $fileName)));
 		if ($res) {
@@ -1969,7 +1974,7 @@ class SyncDatabaseController extends BaseController
 					$progress['file_url'] = "";
 					$progress['total_size'] = count($OperatorGroupUsers) * 1024;
 					$progress['file_lenght'] = $i++ * 1024;
-					$this->saveFile('progress', $progress);
+					$this->saveFile($sync_id, $progress);
 				}
 				$response['status_code'] = 1; //1 is success;
 				$response['message']	 = 'Successfully your import data.';
@@ -2004,7 +2009,7 @@ class SyncDatabaseController extends BaseController
 	/**
 	 * To Import User Data.
 	 */
-	public function importUser($fileName){
+	public function importUser($fileName, $sync_id){
 		$zip = new ZipArchive;
 		$res = $zip->open($this->getFile(str_replace('.json', '.zip', $fileName)));
 		if ($res) {
@@ -2033,7 +2038,7 @@ class SyncDatabaseController extends BaseController
 					$progress['file_url'] = "";
 					$progress['total_size'] = count($Users) * 1024;
 					$progress['file_lenght'] = $i++ * 1024;
-					$this->saveFile('progress', $progress);
+					$this->saveFile($sync_id, $progress);
 				}
 				$response['status_code'] = 1; //1 is success;
 				$response['message']	 = 'Successfully your import data.';
@@ -2068,7 +2073,7 @@ class SyncDatabaseController extends BaseController
 	/**
 	 * To Import Operator Data.
 	 */
-	public function importOperator($fileName){
+	public function importOperator($fileName, $sync_id){
 		$zip = new ZipArchive;
 		$res = $zip->open($this->getFile(str_replace('.json', '.zip', $fileName)));
 		if ($res) {
@@ -2097,7 +2102,7 @@ class SyncDatabaseController extends BaseController
 					$progress['file_url'] = "";
 					$progress['total_size'] = count($Operators) * 1024;
 					$progress['file_lenght'] = $i++ * 1024;
-					$this->saveFile('progress', $progress);
+					$this->saveFile($sync_id, $progress);
 				}
 				$response['status_code'] = 1; //1 is success;
 				$response['message']	 = 'Successfully your import data.';
@@ -2132,7 +2137,7 @@ class SyncDatabaseController extends BaseController
 	/**
 	 * To Import SeatInfo Data.
 	 */
-	public function importSeatInfo($fileName){
+	public function importSeatInfo($fileName, $sync_id){
 		$zip = new ZipArchive;
 		$res = $zip->open($this->getFile(str_replace('.json', '.zip', $fileName)));
 		if ($res) {
@@ -2161,7 +2166,7 @@ class SyncDatabaseController extends BaseController
 					$progress['file_url'] = "";
 					$progress['total_size'] = count($SeatInfos) * 1024;
 					$progress['file_lenght'] = $i++ * 1024;
-					$this->saveFile('progress', $progress);
+					$this->saveFile($sync_id, $progress);
 				}
 				$response['status_code'] = 1; //1 is success;
 				$response['message']	 = 'Successfully your import data.';
@@ -2199,7 +2204,7 @@ class SyncDatabaseController extends BaseController
 	/**
 	 * To Import Sale Transaction Data.
 	 */
-	public function importSaleOrderJson($fileName){
+	public function importSaleOrderJson($fileName, $sync_id){
 		$zip = new ZipArchive;
 		$res = $zip->open($this->getFile(str_replace('.json', '.zip', $fileName)));
 		if ($res) {
@@ -2272,7 +2277,7 @@ class SyncDatabaseController extends BaseController
 					$progress['file_url'] = "";
 					$progress['total_size'] = count($saleOrders) * 1024;
 					$progress['file_lenght'] = $i++ * 1024;
-					$this->saveFile('progress', $progress);					
+					$this->saveFile($sync_id, $progress);					
 				}
 				$response['status_code']  = 1; // 1 is success.
 				$response['message'] = "Successfully your data was saved.";
@@ -2316,7 +2321,7 @@ class SyncDatabaseController extends BaseController
 	/**
 	 * To Import Payment Transaction Data.
 	 */
-	public function importPaymentJson($fileName){
+	public function importPaymentJson($fileName, $sync_id){
 		$zip = new ZipArchive;
 		$res = $zip->open($this->getFile(str_replace('.json', '.zip', $fileName)));
 		if ($res) {
@@ -2358,7 +2363,7 @@ class SyncDatabaseController extends BaseController
 					$progress['file_url'] = "";
 					$progress['total_size'] = count($agentDeposits) * 1024;
 					$progress['file_lenght'] = $i++ * 1024;
-					$this->saveFile('progress', $progress);	
+					$this->saveFile($sync_id, $progress);	
 				}
 				$response['status_code']  = 1; // 1 is success.
 				$response['message'] = "Successfully your data was saved.";
@@ -2398,7 +2403,7 @@ class SyncDatabaseController extends BaseController
 	/**
 	 * To Import DeleteSale Transaction Data.
 	 */
-	public function importDeleteSaleOrderJson($fileName){
+	public function importDeleteSaleOrderJson($fileName,$sync_id){
 		$zip = new ZipArchive;
 		$res = $zip->open($this->getFile(str_replace('.json', '.zip', $fileName)));
 		if ($res) {
@@ -2472,7 +2477,7 @@ class SyncDatabaseController extends BaseController
 					$progress['file_url'] = "";
 					$progress['total_size'] = count($DeleteSaleOrders) * 1024;
 					$progress['file_lenght'] = $i++ * 1024;
-					$this->saveFile('progress', $progress);	
+					$this->saveFile($sync_id, $progress);	
 				}
 				$response['status_code']  = 1; // 1 is success.
 				$response['message'] = "Successfully your data was saved.";
@@ -2507,8 +2512,6 @@ class SyncDatabaseController extends BaseController
 				return $e;
 			}
 			
-		}else{
-			dd('Please Check File Name or Array List');
 		}
 	}
 	/**
@@ -2550,7 +2553,8 @@ class SyncDatabaseController extends BaseController
 					return $conn_id;
 				}
 			}else{
-				return false;
+				dd("No Internet Connection.");
+				//return false;
 			}
 		} catch (Exception $e) {
 			dd($e);
@@ -2559,12 +2563,12 @@ class SyncDatabaseController extends BaseController
 	/**
 	 * To Download Data from Server.
 	 */
-	public function download($fromFile, $toFile){
+	public function download($fromFile, $toFile, $sync_id){
 		
 		// First -> attend
-		$response['status'] = 'Connecting to Server...';
+		$response['message'] = 'Connecting to Server...';
 		
-		$this->saveFile('progress', $response);
+		$this->saveFile($sync_id, $response);
 
 		$primary_connection = $this->connect();
 		$secondary_connection = $this->connect();
@@ -2581,14 +2585,14 @@ class SyncDatabaseController extends BaseController
 			}
 			if($upload_status == FTP_MOREDATA){
 				// Second -> connected
-				$response['status'] = 'Connected to Server...';
-				$this->saveFile('progress', $response);
+				$response['message'] = 'Connected to Server...';
+				$this->saveFile($sync_id, $response);
 			}
 
 			$filesize=ftp_size($secondary_connection,$fromFile);
 			$response['file_url']		= $toFile;
 			$response['total_size'] 	= $filesize;
-			$this->saveFile('progress', $response);
+			$this->saveFile($sync_id, $response);
 			
 			while($upload_status == FTP_MOREDATA){
 			    $upload_status = ftp_nb_continue($primary_connection);
@@ -2598,16 +2602,16 @@ class SyncDatabaseController extends BaseController
 			dd($e);
 		}
 		$response['message'] = 'Successfully your download file';
-		$this->saveFile('progress',$response);
+		$this->saveFile($sync_id,$response);
 		ftp_close($primary_connection);
 		ftp_close($secondary_connection);
-		$this->deleteFile('progress');
+		$this->deleteFile($sync_id);
 		return true;
 	}
 	/**
 	 * To Upload Data to Server.
 	 */
-	public function upload($fromFile, $toFile){
+	public function upload($fromFile, $toFile, $sync_id){
 
 		$destination_file = $toFile;
 		$source_file = $fromFile;
@@ -2618,7 +2622,7 @@ class SyncDatabaseController extends BaseController
 		$response['total_size'] 	= ceil(filesize($source_file)/1024);
 		$response['uploaded_size'] 	= 0;
 
-		$this->saveFile('progress', $response);
+		$this->saveFile($sync_id, $response);
 
 		$primary_connection = $this->connect();
 		$secondary_connection = $this->connect();
@@ -2628,7 +2632,11 @@ class SyncDatabaseController extends BaseController
 			$mode = FTP_BINARY;
 			ftp_pasv($primary_connection,TRUE);
 			ftp_pasv($secondary_connection,TRUE);
-
+			$files_on_server = ftp_nlist($primary_connection, $this->remote_file_dir);
+			if (in_array($destination_file, $files_on_server)) 
+	        {
+				ftp_delete($primary_connection, $destination_file);
+	        }
 			$upload_status=ftp_nb_put($primary_connection, $destination_file, $source_file, $mode);
 			if($upload_status == FTP_FAILED){
 				dd('Can\'t upload data, Please check connection.');
@@ -2636,10 +2644,10 @@ class SyncDatabaseController extends BaseController
 			if($upload_status == FTP_MOREDATA){
 				// Second -> connected
 				$response['message'] = 'Connected to Server...';
-				$this->saveFile('progress', $response);
+				$this->saveFile($sync_id, $response);
 			}else{
 				$response['message'] = 'Please try againt!.';
-				$this->saveFile('progress', $response);
+				$this->saveFile($sync_id, $response);
 			}
 
 			define('ALPHA', 0.2); // Weight factor of new calculations, between 0 and 1
@@ -2679,30 +2687,33 @@ class SyncDatabaseController extends BaseController
 			        $eta=0.0;
 			    };
 			    $response['elapsed_time_left'] = ceil($eta);
-			    $this->saveFile('progress',$response);
+			    $this->saveFile($sync_id,$response);
 
 			}
 		} catch (Exception $e) {
 			dd($e);
 		}
 		$response['message'] = 'Successfully your uploaded file';
-		$this->saveFile('progress',$response);
+		$this->saveFile($sync_id,$response);
 		ftp_chmod($primary_connection, 0777, $destination_file);
 		ftp_close($primary_connection);
 		ftp_close($secondary_connection);
-		//$this->deleteFile('progress');
+		//$this->deleteFile($sync_id);
 		return true;
 	}
 
-	public function downloadtest(){
-		
-		$destination_file = $this->remote_file_dir.'ezticket.zip';
-		$source_file = $this->local_file_dir.'ezticket.zip';
+	public function uploadtest(){
 
+		$destination_file = $this->remote_file_dir.'client-5-today-sale-order.zip';
+		$source_file = $this->getFile('client-5-today-sale-order.zip');
+		$sync_id = '1232131';
 		// First -> attend
-		$response['status'] = 'Connecting to Server...';
-		
-		$this->saveFile('progress', $response);
+		$response['message'] = 'Connecting to Server...';
+		$response['file_url'] 		= $source_file;
+		$response['total_size'] 	= ceil(filesize($source_file)/1024);
+		$response['uploaded_size'] 	= 0;
+
+		$this->saveFile($sync_id, $response);
 
 		$primary_connection = $this->connect();
 		$secondary_connection = $this->connect();
@@ -2712,42 +2723,80 @@ class SyncDatabaseController extends BaseController
 			$mode = FTP_BINARY;
 			ftp_pasv($primary_connection,TRUE);
 			ftp_pasv($secondary_connection,TRUE);
+			ftp_delete($primary_connection, $destination_file);
+			$upload_status=ftp_nb_put($primary_connection, $destination_file, $source_file, $mode);
 
-			$upload_status=ftp_nb_get($primary_connection, $source_file, $destination_file, $mode);
 			if($upload_status == FTP_FAILED){
 				dd('Can\'t upload data, Please check connection.');
 			}
 			if($upload_status == FTP_MOREDATA){
 				// Second -> connected
-				$response['status'] = 'Connected to Server...';
-				$this->saveFile('progress', $response);
+				$response['message'] = 'Connected to Server...';
+				$this->saveFile($sync_id, $response);
+			}else{
+				$response['message'] = 'Please try againt!.';
+				$this->saveFile($sync_id, $response);
 			}
 
-			$filesize=ftp_size($secondary_connection,$destination_file);
-			$response['file_url']		= $source_file;
-			$response['total_size'] 	= $filesize;
-			$this->saveFile('progress', $response);
-			
+			define('ALPHA', 0.2); // Weight factor of new calculations, between 0 and 1
+			$filesize=filesize($source_file);
+			$transferred = 0;
+			$rate = 0;
+			$time = microtime(true);
+
+			$start_time=$time;
 			while($upload_status == FTP_MOREDATA){
 			    $upload_status = ftp_nb_continue($primary_connection);
-			}
 
+			    $sizeNow=ftp_size($secondary_connection,$destination_file);
+			    $sizeNowkB=$sizeNow/1024;
+			    $timeNow = microtime(true);
+
+			    $currentRate = ($sizeNow - $transferred) / ($timeNow - $time);
+			    $currentkBRate = $currentRate / 1024;
+
+			    $rate = ALPHA * $currentRate + (1 - ALPHA) * $rate;
+			    $time = $timeNow;
+			    $transferred = $sizeNow;
+
+			    $response['message'] 		= 'Uploading to server...';
+			    $response['uploaded_size'] 	= ceil($sizeNowkB);
+			    $response['progress'] 		= ceil($sizeNowkB / ($filesize/1024) * 100);
+			    $response['speed'] 			= ceil($currentkBRate);
+			    $response['agv_speed'] 		= ceil($rate/1024);
+			    $elapsed_time 				= ceil($timeNow - $start_time);
+			    $response['elapsed_time'] 	= ceil($elapsed_time);
+			    if($rate!=0){
+			        $eta = $filesize/$rate - $elapsed_time;
+			    }else{
+			        $eta=0.0;
+			    }
+			    if($eta<=0){
+			        $eta=0.0;
+			    };
+			    $response['elapsed_time_left'] = ceil($eta);
+			    $this->saveFile($sync_id,$response);
+			   	print json_encode($this->readJson($sync_id));
+
+			}
 		} catch (Exception $e) {
 			dd($e);
 		}
 		$response['message'] = 'Successfully your uploaded file';
-		$this->saveFile('progress',$response);
+		$this->saveFile($sync_id,$response);
+		ftp_chmod($primary_connection, 0777, $destination_file);
 		ftp_close($primary_connection);
 		ftp_close($secondary_connection);
-		$this->deleteFile('progress');
+		//$this->deleteFile($sync_id);
+		//return true;
 	}
 
-	public function getUploadProgress(){
-		print json_encode($this->readJson('progress'));
+	public function getUploadProgress($sync_id){
+		print json_encode($this->readJson($sync_id));
 	}
 
-	public function getDownloadedProgress(){
-		$progress = $this->readJson('progress');
+	public function getDownloadedProgress($sync_id){
+		$progress = $this->readJson($sync_id);
 		$response['message'] = isset($progress['message']) ? $progress['message'] : 'Downloading from server...';
 		if(isset($progress['total_size'])){
 			$fileSize = $progress['total_size'];

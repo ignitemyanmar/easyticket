@@ -19,7 +19,7 @@ class TripController extends \BaseController {
 	 */
 	public function create()
 	{
-		$operator_id=Operator::whereuser_id(Auth::user()->id)->pluck('id');
+		$operator_id=$this->myGlob->operator_id;
 		$cities=City::all();
 		$busclasses=Classes::whereoperator_id($operator_id)->get();	
 		$seatplan=SeatingPlan::whereoperator_id($operator_id)->get();
@@ -256,7 +256,7 @@ class TripController extends \BaseController {
 	}
 
 	public function triplists(){
-		$operator_id=Operator::whereuser_id(Auth::user()->id)->pluck('id');
+		$operator_id=$this->myGlob->operator_id;
 		$response=Trip::whereoperator_id($operator_id)->with(array('operator','from_city','to_city','busclass','seat_plan','extendcity'))->orderBy('id','desc')->get();
 		// return Response::json($response);
 		return View::make('trip.list', array('response'=>$response));
@@ -616,8 +616,7 @@ class TripController extends \BaseController {
 	}
 
 	public function ownseat($id){
-
-		$operator_id=Operator::whereuser_id(Auth::user()->id)->pluck('id');
+		$operator_id=$this->myGlob->operator_id;
 		$objtrip=Trip::whereid($id)->first();
 		$seatplan=SeatingPlan::find($objtrip->seat_plan_id);
 		$closeseat=CloseSeatInfo::wheretrip_id($objtrip->id)->whereseat_plan_id($objtrip->seat_plan_id)->pluck('seat_lists');
@@ -684,7 +683,7 @@ class TripController extends \BaseController {
 	}
 
 	public function postownseat(){
-		$operator_id=Input::get('operator_id');
+		$operator_id=$this->myGlob->operator_id;
 		$user_id=Auth::user()->id;
 		$color=Input::get('color');
 		$trip_id=Input::get('trip_id');

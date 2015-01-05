@@ -16,7 +16,7 @@ class SeatOccupiedByBusController extends BaseController {
 
 		$userid=Auth::user()->id;
 		$usertype=Auth::user()->type;
-		$operator_id =Operator::whereuser_id($userid)->pluck('id');
+		$operator_id=$this->myGlob->operator_id;
 		$operator_ids=$operator_id;
 		
 		if(!$operator_id && $usertype=='agent'){

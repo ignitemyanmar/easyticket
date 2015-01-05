@@ -1,21 +1,5 @@
 <?php
 	
-	/*Route::post('/activate', function(){
-		$id = Input::get('device_id');
-		$device = Device::wheredevice_name($id)->whereactivated(1)->first();
-		if($device){
-			return Response::json("Your device is already activated.")
-		}else{
-			$device = new Device();
-			$device->devece_name = $id;
-			$device->save();
-			if($device){
-				return Response::json("Your device was registered, please contact to \"Ignite Software Solution.\"")
-			}
-		}
-		
-	});*/
-
 	Route::get('tripautocreate',       				'ApiController@tripautocreate');
 
 	Route::group(array('before' => 'fauth'), function()
@@ -584,26 +568,25 @@
 
 	});
 
-	Route::get('downloadbusjson', 							'SyncDatabaseController@downloadBusJsonfromServer');
-	Route::get('downloadtripjson', 							'SyncDatabaseController@downloadTripJsonfromServer');
-	Route::get('downloaddeletetripjson', 					'SyncDatabaseController@downloadDeleteTripJsonfromServer');
-	Route::get('downloadseatingplanjson', 					'SyncDatabaseController@downloadSeatingPlanJsonfromServer');
-	Route::get('downloadagentjson', 						'SyncDatabaseController@downloadAgentJsonfromServer');
-	Route::get('downloadagentgroupjson', 					'SyncDatabaseController@downloadAgentGroupJsonfromServer');
-	Route::get('downloadcityjson', 							'SyncDatabaseController@downloadCityJsonfromServer');
-	Route::get('downloadextradestinationjson',				'SyncDatabaseController@downloadExtraDestinationJsonfromServer');
-	Route::get('downloadclassesjson',						'SyncDatabaseController@downloadClassesJsonfromServer');
-
-	Route::get('downloadagentcommissionjson',				'SyncDatabaseController@downloadAgentCommissionJsonfromServer');
-	Route::get('downloadcloseseatinfojson',					'SyncDatabaseController@downloadCloseSeatInfoJsonfromServer');
-	Route::get('downloadcomissiontypejson', 				'SyncDatabaseController@downloadCommissionTypeJsonfromServer');
-	Route::get('downloadoperatorgroupjson',					'SyncDatabaseController@downloadOperatorGroupJsonfromServer');
-	Route::get('downloadoperatorgroupuserjson',				'SyncDatabaseController@downloadOperatorGroupUserJsonfromServer');
-	Route::get('downloaduserjson',							'SyncDatabaseController@downloadUserJsonfromServer');
-	Route::get('downloadoperatorjson',						'SyncDatabaseController@downloadOperatorJsonfromServer');
-	Route::get('downloadseatinfojson',						'SyncDatabaseController@downloadSeatInfoJsonfromServer');
-	Route::get('downloadsaleorderjson',						'SyncDatabaseController@downloadSaleOrderJsonfromServer');
-	Route::get('downloaddeletesaleorderjson',				'SyncDatabaseController@downloadDeleteSaleOrderJsonfromServer');
+	Route::get('downloadbusjson/{sync_id}', 							'SyncDatabaseController@downloadBusJsonfromServer');
+	Route::get('downloadtripjson/{sync_id}', 							'SyncDatabaseController@downloadTripJsonfromServer');
+	Route::get('downloaddeletetripjson/{sync_id}', 						'SyncDatabaseController@downloadDeleteTripJsonfromServer');
+	Route::get('downloadseatingplanjson/{sync_id}', 					'SyncDatabaseController@downloadSeatingPlanJsonfromServer');
+	Route::get('downloadagentjson/{sync_id}', 							'SyncDatabaseController@downloadAgentJsonfromServer');
+	Route::get('downloadagentgroupjson/{sync_id}', 						'SyncDatabaseController@downloadAgentGroupJsonfromServer');
+	Route::get('downloadcityjson/{sync_id}', 							'SyncDatabaseController@downloadCityJsonfromServer');
+	Route::get('downloadextradestinationjson/{sync_id}',				'SyncDatabaseController@downloadExtraDestinationJsonfromServer');
+	Route::get('downloadclassesjson/{sync_id}',							'SyncDatabaseController@downloadClassesJsonfromServer');
+	Route::get('downloadagentcommissionjson/{sync_id}',					'SyncDatabaseController@downloadAgentCommissionJsonfromServer');
+	Route::get('downloadcloseseatinfojson/{sync_id}',					'SyncDatabaseController@downloadCloseSeatInfoJsonfromServer');
+	Route::get('downloadcomissiontypejson/{sync_id}', 					'SyncDatabaseController@downloadCommissionTypeJsonfromServer');
+	Route::get('downloadoperatorgroupjson/{sync_id}',					'SyncDatabaseController@downloadOperatorGroupJsonfromServer');
+	Route::get('downloadoperatorgroupuserjson/{sync_id}',				'SyncDatabaseController@downloadOperatorGroupUserJsonfromServer');
+	Route::get('downloaduserjson/{sync_id}',							'SyncDatabaseController@downloadUserJsonfromServer');
+	Route::get('downloadoperatorjson/{sync_id}',						'SyncDatabaseController@downloadOperatorJsonfromServer');
+	Route::get('downloadseatinfojson/{sync_id}',						'SyncDatabaseController@downloadSeatInfoJsonfromServer');
+	Route::get('downloadsaleorderjson/{sync_id}',						'SyncDatabaseController@downloadSaleOrderJsonfromServer');
+	Route::get('downloaddeletesaleorderjson/{sync_id}',					'SyncDatabaseController@downloadDeleteSaleOrderJsonfromServer');
 
 	Route::get('exportbusjson/{id}/{fname}/{date}',						'SyncDatabaseController@exportBusOccurance');
 	Route::get('exporttripjson/{id}/{fname}/{date}', 					'SyncDatabaseController@exportTrip');
@@ -630,17 +613,17 @@
 	Route::get('writetodatabase/{fname}',						'SyncDatabaseController@writeJsonToDatabase');
 	Route::get('writepaymentjson/{fname}',						'SyncDatabaseController@writePaymentJsonToDatabase');
 	
-	Route::get('uploadjson', 								'SyncDatabaseController@pushJsonToServer');
-	Route::get('uploadpaymentjson', 						'SyncDatabaseController@pushPaymentJsonToServer');
+	Route::get('uploadjson/{sync_id}', 								'SyncDatabaseController@pushJsonToServer');
+	Route::get('uploadpaymentjson/{sync_id}', 						'SyncDatabaseController@pushPaymentJsonToServer');
 	
 	Route::get('downloadjson', 								'SyncDatabaseController@downloadAllJsonfromServer');
 
 	Route::get('generateautoid/{prefix}', 					'ApiController@generateAutoID');
 
 	Route::get('test/{fname}', 								'SyncDatabaseController@importDeleteSaleOrderJson');
-	Route::get('testdownload', 								'SyncDatabaseController@downloadtest');
-	Route::get('getupprogress',								'SyncDatabaseController@getUploadProgress');
-	Route::get('getdownprogress',							'SyncDatabaseController@getDownloadedProgress');
+	Route::get('testupload', 								'SyncDatabaseController@uploadtest');
+	Route::get('getupprogress/{sync_id}',					'SyncDatabaseController@getUploadProgress');
+	Route::get('getdownprogress/{sync_id}',					'SyncDatabaseController@getDownloadedProgress');
 
 	Route::get('404', function()
 	{

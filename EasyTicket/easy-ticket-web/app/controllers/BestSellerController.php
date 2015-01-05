@@ -11,7 +11,7 @@ class BestSellerController extends \BaseController {
     public function trips()
 	{
 		$report_info 			=array();
-		$operator_id  			=OperatorGroup::whereuser_id(Auth::user()->id)->pluck('operator_id');
+		$operator_id            =$this->myGlob->operator_id;
 		$agent_id  				=Input::get('agent_id');
 		$today =Date('Y-m-d');
 		$s_date 				= Input::get('start_date') ? Input::get('start_date') : date('Y-m-d', strtotime($today.'-30 days'));
@@ -168,7 +168,7 @@ class BestSellerController extends \BaseController {
 	 */
 	public function agents()
 	{
-		$operator_id  			=OperatorGroup::whereuser_id(Auth::user()->id)->pluck('operator_id');
+		$operator_id  			=$this->myGlob->operator_id;
     	$today =Date('Y-m-d');
 		$s_date 				= Input::get('start_date') ? Input::get('start_date') : date('Y-m-d', strtotime($today.'-30 days'));
     	$e_date 				= Input::get('end_date') ? Input::get('end_date') : $today;
@@ -237,7 +237,7 @@ class BestSellerController extends \BaseController {
 	 * @return Response
 	 */
     public function times(){
-        $operator_id    = OperatorGroup::whereuser_id(Auth::user()->id)->pluck('operator_id');
+        $operator_id    =$this->myGlob->operator_id;
         // dd($operator_id);
         $agent_id       = Input::get('agent_id');
         $s_date         = Input::get('start_date');

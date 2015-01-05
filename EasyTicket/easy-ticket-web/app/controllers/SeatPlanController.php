@@ -6,14 +6,14 @@ class SeatPlanController extends BaseController
 		$seatlayout = SeatingLayout::all();
 		$tickettype = TicketType::all();
 		$operator   = Operator::all();
-		$operator_id=OperatorGroup::whereuser_id(Auth::user()->id)->pluck('operator_id');
+		$operator_id=$this->myGlob->operator_id;
 
 		return View::make('seatplan.add',array('seatlayout'=>$seatlayout,'tickettype'=>$tickettype,'operator'=>$operator, 'operator_id'=>$operator_id));
 	}
 
 	public function postAddSeatPlan()
 	{
-		$operator_id   = OperatorGroup::whereuser_id(Auth::user()->id)->pluck('operator_id');
+		$operator_id   =$this->myGlob->operator_id;
 		$ticketype_id  = Input::get('tickettype');
 		$seatlayout_id = Input::get('seat_layout');
 		$row 		   = SeatingLayout::whereid($seatlayout_id)->pluck('row');
@@ -27,7 +27,7 @@ class SeatPlanController extends BaseController
 									->whereseat_layout_id($seatlayout_id)->first();
 		if($checkseatplan){
 			$response['message']='This record is already exit';
-			return Response::json($response);
+			return Redirect::to('/seatplanlist');
 		}	
 		
 		$j=0;$i=0;
@@ -95,7 +95,7 @@ class SeatPlanController extends BaseController
 
 	public function showSeatPlanList()
   	{
-  		$operator_id=OperatorGroup::whereuser_id(Auth::user()->id)->pluck('operator_id');
+  		$operator_id=$this->myGlob->operator_id;
       	$response   	= $obj_seatplan = SeatingPlan::whereoperator_id($operator_id)->orderBy('id','desc')->get();
   		$allSeatPlan	= SeatingPlan::all();
       	$totalCount 	= count($allSeatPlan);

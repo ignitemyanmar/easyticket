@@ -292,6 +292,7 @@
    <script type="text/javascript" src="../../assets/chosen-bootstrap/chosen/chosen.jquery.min.js"></script>
    <script type="text/javascript" src="../../assets/data-tables/jquery.dataTables.js"></script>
    <script type="text/javascript" src="../../assets/bootstrap-timepicker/js/bootstrap-timepicker.js"></script>
+   <script type="text/javascript" src="../../assets/uniform/jquery.uniform.min.js"></script>
    {{HTML::script('../../src/jquery-ui.js')}}
    <script type="text/javascript" src="../../js/apps.js"></script>
 @stop

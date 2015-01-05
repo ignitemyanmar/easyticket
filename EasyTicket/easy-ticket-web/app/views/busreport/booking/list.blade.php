@@ -18,10 +18,9 @@
                         <li>
                            <i class="icon-home"></i>
                            <a href="/">Home</a> 
-                           <i class="icon-angle-right"></i>
+                           <!-- <i class="icon-angle-right"></i> -->
                         </li>
-                        <li><a href="/dashboard">Dashboard</a></li>
-                        
+
                      </ul>
                      <!-- END PAGE TITLE & BREADCRUMB-->
                   </div>
@@ -54,7 +53,9 @@
                                        <th>အေရာင္းကုိယ္စားလွယ္</th>
                                        <th>စုစုေပါင္းခုံ</th>
                                        <th>စုစုေပါင္း</th>
-                                       <th>-</th>
+                                       @if(Auth::user()->role != 2)
+                                          <th>-</th>
+                                       @endif
                                     </tr>
                                  </thead>
                                  <tbody>
@@ -66,10 +67,12 @@
                                                 <td><b class="btn mini green">{{ $booking['total_seat']}}</b><br>({{ $booking['seat_numbers']}})</td>
                                                 
                                                 <td>{{ $booking['total_amount']}}</td>
-                                                <td>
-                                                   <a class="btn large red-stripe delete" href="/report/booking/delete/{{$booking->id}}">ဖ်က္မည္</a>
-                                                   <a class="btn mini green-stripe" href="/cartview/{{$booking->id}}">အတည္ျပဳမည္</a>
-                                                </td>
+                                                @if(Auth::user()->role != 2)
+                                                   <td>
+                                                      <a class="btn large red-stripe delete" href="/report/booking/delete/{{$booking->id}}">ဖ်က္မည္</a>
+                                                      <a class="btn mini green-stripe" href="/cartview/{{$booking->id}}">အတည္ျပဳမည္</a>
+                                                   </td>
+                                                @endif
                                              </tr>
                                           @endforeach
                                        @endif

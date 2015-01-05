@@ -56,7 +56,7 @@
           </form>
           <!-- END LOGIN FORM -->        
           <!-- BEGIN FORGOT PASSWORD FORM -->
-          <form class="form-vertical forget-form" action="/teamwiz-admin" method="post">
+          <form class="form-vertical forget-form" action="/easyticket-admin" method="post">
             <h3 class="">Forget Password ?</h3>
             <p>Enter your e-mail address below to reset your password.</p>
             <div class="control-group">

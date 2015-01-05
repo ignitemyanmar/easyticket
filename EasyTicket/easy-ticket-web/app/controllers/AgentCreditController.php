@@ -658,7 +658,7 @@ class AgentCreditController extends \BaseController {
 	{
 		$response=array();
 		$response=Agent::whereid($id)->first();
-        $operator_id=OperatorGroup::whereuser_id(Auth::user()->id)->pluck('operator_id');
+        $operator_id=$this->myGlob->operator_id;
         $trips=Trip::whereoperator_id($operator_id)->with(array('from_city','to_city','busclass'))->get();
 		// dd(count($trips));
         return View::make('busreport.agentcredit.actionform', array('response'=>$response,'trips'=>$trips));
@@ -668,7 +668,7 @@ class AgentCreditController extends \BaseController {
 	public function postAgentDeposit()
 	{
     	$agent_id 		=Input::get('agent_id');
-    	$operator_id 	=OperatorGroup::whereuser_id(Auth::user()->id)->pluck('operator_id');
+    	$operator_id    =$this->myGlob->operator_id;
     	$deposit_date	=date('Y-m-d');
     	$deposit     	=Input::get('deposit');
     	$objagentdeposit=new AgentDeposit();
@@ -726,7 +726,7 @@ class AgentCreditController extends \BaseController {
 
     public function getAgentCommission($id)
     {
-        $operator_id=OperatorGroup::whereuser_id(Auth::user()->id)->pluck('operator_id');
+        $operator_id    =$this->myGlob->operator_id;
         $trip_ids=Trip::whereoperator_id($operator_id)->lists('id');
         $response=array();
         if($trip_ids){
@@ -758,7 +758,7 @@ class AgentCreditController extends \BaseController {
     public function postAgentOldCredit()
 	{
     	$agent_id 		=Input::get('agent_id');
-    	$operator_id 	=OperatorGroup::whereuser_id(Auth::user()->id)->pluck('operator_id');
+    	$operator_id    =$this->myGlob->operator_id;
     	$deposit_date	=date('Y-m-d');
     	$credit     	=Input::get('credit');
     	$objagentdeposit=new AgentDeposit();
@@ -1083,7 +1083,7 @@ class AgentCreditController extends \BaseController {
     // Payment Transaction
     public function getPaymentTransaction($agent_id)
     {
-    	$operator_id=OperatorGroup::whereuser_id(Auth::user()->id)->pluck('operator_id');
+    	$operator_id    =$this->myGlob->operator_id;
 		$objpayment=AgentDeposit::whereagent_id($agent_id)
 							->whereoperator_id($operator_id)
 							->orderBy('id','desc')

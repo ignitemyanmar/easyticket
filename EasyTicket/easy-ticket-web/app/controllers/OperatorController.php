@@ -56,8 +56,7 @@ class OperatorController extends BaseController
 
 	public function showOperatorlist()
 	{
-        $user_id    =Auth::user()->id;
-        $operator_id=OperatorGroup::whereuser_id($user_id)->pluck('operator_id');
+        $operator_id=$this->myGlob->operator_id;
 
 		$obj_operator = Operator::whereid($operator_id)->get();
         $i=0;

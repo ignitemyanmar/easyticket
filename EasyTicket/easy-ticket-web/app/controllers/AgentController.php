@@ -13,8 +13,7 @@ class AgentController extends BaseController
 	  	$agent =Agent::all();
 	  	$agentgroup = AgentGroup::all();
 	  	$commission = CommissionType::all();
-      $user_id=Auth::user()->id;
-      $operator_id=Operator::whereuser_id($user_id)->pluck('id');
+      $operator_id=$this->myGlob->operator_id;
 	  	return View::make('agent.add',array('agent'=>$agent,'agentgroup'=>$agentgroup,'commission'=>$commission, 'operator_id'=> $operator_id));
   	}
 

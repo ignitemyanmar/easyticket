@@ -1145,7 +1145,7 @@ class ReportController extends BaseController
 	public function getSeatOccupancyReportbybus(){
 		$userid=Auth::user()->id;
 		$usertype=Auth::user()->type;
-		$operator_id =Operator::whereuser_id($userid)->pluck('id');
+		$operator_id=$this->myGlob->operator_id;
 		$responsecity		= $this->getCitiesByoperatorId($operator_id);
 		$search['cities']=$responsecity;
 
@@ -1561,7 +1561,7 @@ class ReportController extends BaseController
 			// return Response::json($report_info);
 			$operator_ids=Operator::lists('id');
 			$user_id =Auth::user()->id;
-			$operator_id =Operator::whereuser_id($user_id)->pluck('id');
+			$operator_id=$this->myGlob->operator_id;
 			$search=array();
 			if($operator_id){
 				$responsecities=$this->getCitiesByoperatorId($operator_id, $from, $to);
@@ -1634,7 +1634,7 @@ class ReportController extends BaseController
 			// return Response::json($response);
 			$operator_ids=Operator::lists('id');
 			$user_id =Auth::user()->id;
-			$operator_id =Operator::whereuser_id($user_id)->pluck('id');
+			$operator_id=$this->myGlob->operator_id;
 			$search=array();
 			if($operator_id){
 				$responsecities=$this->getCitiesByoperatorId($operator_id, $from, $to);
@@ -2010,7 +2010,7 @@ class ReportController extends BaseController
 
 	    public function getSeatOccupancyReport(){
 	    	$userid 			=Auth::user()->id;
-	    	$operator_id 		=Operator::whereuser_id($userid)->pluck('id');
+	    	$operator_id 		=$this->myGlob->operator_id;
 	    	$today 				=date('Y-m-d');
 	    	$from_date 			=Input::get('from_date') !=null ? Input::get('from_date') : $today;
 

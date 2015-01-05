@@ -1,6 +1,9 @@
 package com.ignite.mm.ticketing;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.http.NameValuePair;
@@ -24,6 +27,7 @@ import android.os.Message;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -97,6 +101,7 @@ public class NRCActivity extends BaseSherlockActivity {
 	private EditText edt_remark;
 	private Spinner sp_remark_type;
 	private Integer selectedRemarkType;
+	private TextView actionBarSubtitle;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -105,13 +110,14 @@ public class NRCActivity extends BaseSherlockActivity {
 		setContentView(R.layout.nrc_activity);
 
 		actionBar = getSupportActionBar();
-		actionBar.setCustomView(R.layout.action_bar);
+		actionBar.setCustomView(R.layout.action_bar_with_2title);
 		actionBarTitle = (TextView) actionBar.getCustomView().findViewById(
 				R.id.action_bar_title);
+		actionBarSubtitle = (TextView) actionBar.getCustomView().findViewById(
+				R.id.action_bar_title_2);
 		actionBarBack = (ImageButton) actionBar.getCustomView().findViewById(
 				R.id.action_bar_back);
 		actionBarBack.setOnClickListener(clickListener);
-		actionBarTitle.setText("BUS");
 		actionBarNoti = (TextView) actionBar.getCustomView().findViewById(R.id.txt_notify_booking);
 		actionBarNoti.setOnClickListener(clickListener);
 		actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
@@ -128,9 +134,13 @@ public class NRCActivity extends BaseSherlockActivity {
 		if(Intents.equals("booking")){
 			AgentID = bundle.getString("agent_id");
 		}
+		actionBarTitle.setText(bundle.getString("from_to")+ " ["+bundle.getString("time")+"] "+ bundle.getString("classes"));
+		actionBarSubtitle.setText("ကား ထြက္ခြာမည့္ ေန႕ = "+changeDate(bundle.getString("date")));
 		SelectedSeatIndex = bundle.getString("selected_seat");
 		SaleOrderNo = bundle.getString("sale_order_no");
 		BusOccurence = bundle.getString("bus_occurence");
+		
+		
 		
 		edt_buyer = (EditText) findViewById(R.id.edt_buyer);
 		edt_nrc_no = (AutoCompleteTextView) findViewById(R.id.edt_nrc_no);
@@ -166,7 +176,7 @@ public class NRCActivity extends BaseSherlockActivity {
 		remarkTypes.add("ေတာင္းရန္");
 		remarkTypes.add("ခုံေရြ႕ရန္");
 		remarkTypes.add("Date Chanage ရန္");
-		remarkTypes.add("စည္းဖ်က္");
+		remarkTypes.add("စီးျဖတ္");
 		
 		ArrayAdapter<String> remarkAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, remarkTypes);
 		sp_remark_type.setAdapter(remarkAdapter);
@@ -380,7 +390,7 @@ public class NRCActivity extends BaseSherlockActivity {
     		return false;
     	}
     	
-    	if(edt_phone.getText().toString().length() == 0 && edt_phone.getText().toString().length() < 8)
+    	if(edt_phone.getText().toString().length() == 0 || edt_phone.getText().toString().length() < 8)
     	{
     		edt_phone.setError("Enter The Phone.");
 			return false;
@@ -503,5 +513,16 @@ public class NRCActivity extends BaseSherlockActivity {
 		}
 		//super.onBackPressed();
 		
+	}
+	public static String changeDate(String date){
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		Date StartDate = null;
+		try {
+			StartDate = df.parse(date);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return DateFormat.format("dd/MM/yyyy",StartDate).toString();
 	}
 }

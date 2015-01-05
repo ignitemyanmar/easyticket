@@ -27,6 +27,12 @@ public class CreditOrder {
 	private String agent;
 	@Expose
 	private String trip;
+	@Expose
+	private String time;
+	@Expose
+	private String classes;
+	@Expose
+	private String date;
 	@SerializedName("total_ticket")
 	@Expose
 	private Integer totalTicket;
@@ -109,6 +115,30 @@ public class CreditOrder {
 	this.trip = trip;
 	}
 	
+	public String getTime() {
+		return time;
+	}
+
+	public void setTime(String time) {
+		this.time = time;
+	}
+
+	public String getClasses() {
+		return classes;
+	}
+
+	public void setClasses(String classes) {
+		this.classes = classes;
+	}
+
+	public String getDate() {
+		return date;
+	}
+
+	public void setDate(String date) {
+		this.date = date;
+	}
+
 	public Integer getTotalTicket() {
 	return totalTicket;
 	}

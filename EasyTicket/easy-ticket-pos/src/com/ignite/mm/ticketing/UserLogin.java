@@ -112,6 +112,7 @@ public class UserLogin extends SherlockActivity {
 								user.setRefreshToken(arg0.getRefresh_token());
 								user.setUserID(arg0.getUser().getId());
 								user.setUserGroupID(arg0.getUser().getOperatorgroup_id());
+								user.setLoginUserID(arg0.getUser().getUser_id());
 								user.setUserName(arg0.getUser().getName());
 								user.setUserType(arg0.getUser().getType());
 								user.login();

@@ -13,6 +13,10 @@ public class Seat_list {
 	@Expose
 	private Integer booking;
 	@Expose
+	private Integer remark_type;
+	@Expose
+	private String remark;
+	@Expose
 	private Integer operatorgroup_id;
 	@Expose
 	private CustomerInfo customer_info;
@@ -54,6 +58,22 @@ public class Seat_list {
 
 	public void setBooking(Integer booking) {
 		this.booking = booking;
+	}
+	
+	public Integer getRemark_type() {
+		return remark_type;
+	}
+
+	public void setRemark_type(Integer remark_type) {
+		this.remark_type = remark_type;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
 	}
 
 	public Integer getOperatorgroup_id() {

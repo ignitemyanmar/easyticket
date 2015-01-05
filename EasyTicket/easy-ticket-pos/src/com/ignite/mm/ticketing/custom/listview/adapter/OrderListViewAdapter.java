@@ -38,6 +38,8 @@ public class OrderListViewAdapter extends BaseAdapter {
 		if (convertView == null) {
 			holder = new ViewHolder();
         	convertView = mInflater.inflate(R.layout.list_item_credit, null);
+        	holder.buyer = (TextView) convertView.findViewById(R.id.txt_buyer);
+        	holder.phone = (TextView) convertView.findViewById(R.id.txt_phone);
         	holder.name = (TextView) convertView.findViewById(R.id.txt_agent_name);
         	holder.trip = (TextView) convertView.findViewById(R.id.txt_trip);
         	holder.date = (TextView) convertView.findViewById(R.id.txt_date);
@@ -48,16 +50,19 @@ public class OrderListViewAdapter extends BaseAdapter {
 		}else{
 			holder = (ViewHolder) convertView.getTag();
 		}
-		
-		holder.name.setText(getItem(position).getAgent());
-		holder.trip.setText(getItem(position).getTrip().toString());
-		holder.date.setText(getItem(position).getOrderdate().toString());
+		holder.buyer.setText("Buyer: "+getItem(position).getCustomer());
+		holder.phone.setText("Phone: "+getItem(position).getPhone());
+		holder.name.setText("Agent: "+getItem(position).getAgent());
+		holder.trip.setText(getItem(position).getTrip().toString()+" ["+getItem(position).getTime()+"] "+getItem(position).getClasses());
+		holder.date.setText("Order Date: "+getItem(position).getOrderdate());
 		holder.total_ticket.setText("Total Ticket: "+getItem(position).getTotalTicket().toString());
 		holder.amount.setText("Amount: "+getItem(position).getAmount().toString());
 		
 		return convertView;
 	}
 	static class ViewHolder {
+		TextView buyer;
+		TextView phone;
 		TextView name;
 		TextView trip;
 		TextView date;

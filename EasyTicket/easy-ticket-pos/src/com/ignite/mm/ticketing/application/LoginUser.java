@@ -21,6 +21,7 @@ public class LoginUser {
 	private String RefreshToken;
 	private String UserID;
 	private String UserGroupID;
+	private String LoginUserID;
 	private String UserName;
 	private String UserType;
 	private String TodayString;
@@ -40,6 +41,7 @@ public class LoginUser {
 		RefreshToken = pref.getString("refresh_token", null);
 		UserID = pref.getString("user_id", null);
 		UserGroupID = pref.getString("usergroup_id", null);
+		LoginUserID = pref.getString("login_user_id", null);
 		UserName = pref.getString("user_name", null);
 		UserType = pref.getString("user_type", null);
         
@@ -77,6 +79,7 @@ public class LoginUser {
 		editor.putString("refresh_token", getRefreshToken());
 		editor.putString("user_id", getUserID());
 		editor.putString("usergroup_id", getUserGroupID());
+		editor.putString("login_user_id", getLoginUserID());
 		editor.putString("user_name", getUserName());
 		editor.putString("user_type", getUserType());
 		
@@ -183,6 +186,14 @@ public class LoginUser {
 
 	public void setUserGroupID(String userGroupID) {
 		UserGroupID = userGroupID;
+	}
+	
+	public String getLoginUserID() {
+		return LoginUserID;
+	}
+
+	public void setLoginUserID(String loginUserID) {
+		LoginUserID = loginUserID;
 	}
 
 	public String getUserName() {

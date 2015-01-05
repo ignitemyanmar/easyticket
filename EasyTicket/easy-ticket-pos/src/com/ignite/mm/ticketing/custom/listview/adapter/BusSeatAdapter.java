@@ -98,11 +98,10 @@ public class BusSeatAdapter extends BaseAdapter{
 					
 			}
 			
-			
+			//Already Purchase or Booking
 			if(list.get(position).getStatus() == 2){
 				holder.seat.setEnabled(false);
-            	holder.seatNo.setText(list.get(position).getSeat_no());
-            	if(list.get(position).getCustomerInfo() != null && list.get(position).getBooking() == 0){
+            	if(list.get(position).getCustomerInfo() != null){
             		holder.layout_customer_info.setVisibility(View.VISIBLE);
             		holder.txt_name.setText(list.get(position).getCustomerInfo().getName());
             		holder.txt_phone.setText(list.get(position).getCustomerInfo().getPhone());

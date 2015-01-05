@@ -19,17 +19,17 @@
         android:descendantFocusability="beforeDescendants" 
      	android:focusableInTouchMode="true"
         android:orientation="vertical" >
-
+
         <ScrollView
             android:id="@+id/scrollView1"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true" >
-
+
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:orientation="vertical" >
 
                 <LinearLayout
@@ -111,9 +111,9 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:paddingRight="5dp" >
-
+
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -137,12 +137,12 @@
                                 android:padding="3dp"
                                 android:text="ေရြးျပီး ခံုမ်ား" />
                         </LinearLayout>
-
+
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_margin="20dp" >
-
+
                             <View
                                 android:id="@+id/view1"
                                 android:layout_width="20dp"
@@ -183,33 +183,30 @@
                             android:layout_height="wrap_content"
                             android:layout_margin="20dp"
                             android:orientation="horizontal" >
-
+
                             <View
                                 android:id="@+id/View02"
                                 android:layout_width="20dp"
                                 android:layout_height="20dp"
                                 android:background="#470203" />
-
+
                             <com.smk.custom.view.CustomTextView
                                 android:id="@+id/CustomTextView01"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:padding="3dp"
                                 android:text="Booking ခံုမ်ား" />
-
                         </LinearLayout>
-
+
                         <ListView
                             android:id="@+id/lst_group_user"
                             android:layout_width="200dp"
                             android:layout_height="wrap_content"
                             android:layout_margin="10dp"
                             android:divider="#FFF" >
-
                         </ListView>
-
                     </LinearLayout>
-
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -272,70 +269,57 @@
                             android:visibility="gone" >
                         </ListView>
 
-                        <com.smk.custom.view.CustomTextView
-                            android:id="@+id/CustomTextView02"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="10dp"
-                            android:layout_weight="59.64"
-                            android:text="Please Choose Agent"
-                            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-	                    <com.smk.custom.view.CustomAutocompleteTextView
-			                android:id="@+id/edt_agent"
-			                android:layout_width="match_parent"
-			                android:layout_height="wrap_content"
-			                android:layout_marginTop="10dp"
-			                android:ems="10" >
-			            </com.smk.custom.view.CustomAutocompleteTextView>
-
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="59.64" >
-
-                            <Button
+
+                            <com.smk.custom.view.CustomButton
                                 android:id="@+id/btn_now_booking"
                                 style="?android:attr/buttonStyleSmall"
-                                android:layout_width="150dp"
+                                android:layout_width="310dp"
                                 android:layout_height="60dp"
                                 android:layout_marginTop="30dp"
                                 android:background="@drawable/btn_blue"
-                                android:text="Now Booking"
+                                android:text="Booking မွာရန္"
                                 android:textColor="@color/white"
                                 android:textSize="20dp"
                                 android:textStyle="bold" />
-
-                            <Button
-                                android:id="@+id/btn_booking"
-                                style="?android:attr/buttonStyleSmall"
-                                android:layout_width="150dp"
-                                android:layout_height="60dp"
-                                android:layout_marginLeft="10dp"
-                                android:layout_marginTop="30dp"
-                                android:background="@drawable/btn_gold"
-                                android:text="Booking List"
-                                android:textColor="@color/white"
-                                android:textSize="20dp"
-                                android:textStyle="bold" />
-
                         </LinearLayout>
-
-                        <Button
+
+                        <com.smk.custom.view.CustomButton
                             android:id="@+id/btn_check_out"
                             android:layout_width="310dp"
                             android:layout_height="60dp"
-                            android:layout_marginTop="10dp"
+                            android:layout_marginTop="30dp"
                             android:layout_weight="59.64"
                             android:background="@drawable/btn_green"
-                            android:text="Check Out"
+                            android:text="ဝယ္ ရန္"
                             android:textColor="@color/white"
                             android:textSize="20dp"
                             android:textStyle="bold" />
 
+                        <com.smk.custom.view.CustomButton
+                            android:id="@+id/btn_booking"
+                            style="?android:attr/buttonStyleSmall"
+                            android:layout_width="310dp"
+                            android:layout_height="60dp"
+                            android:layout_marginTop="30dp"
+                            android:background="@drawable/btn_gold"
+                            android:text="Booking စားရင္းသို႕"
+                            android:textColor="@color/white"
+                            android:textSize="20dp"
+                            android:textStyle="bold" />
                     </LinearLayout>
-
                 </LinearLayout>
+
+                <ListView
+                    android:id="@+id/lst_remark"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" >
+
+                </ListView>
             </LinearLayout>
         </ScrollView>
     </RelativeLayout>

@@ -92,6 +92,10 @@ public class PayDeleteActivity extends BaseSherlockActivity {
 				}
 				Bundle bundle = new Bundle();
 				bundle.putString("from_intent", "booking");
+				bundle.putString("from_to", creditOrder.getTrip());
+				bundle.putString("time", creditOrder.getTime());
+				bundle.putString("classes",creditOrder.getClasses());
+				bundle.putString("date", creditOrder.getDate());
 				bundle.putString("agent_id", creditOrder.getAgentId().toString());
 				bundle.putString("selected_seat",  SeatLists);
 				bundle.putString("sale_order_no", creditOrder.getId().toString());

@@ -67,4 +67,13 @@ public class OperatorGroupUser {
 	this.operatorname = operatorname;
 	}
 
+	@Override
+	public String toString() {
+		return "OperatorGroupUser [id=" + id + ", operatorId=" + operatorId
+				+ ", userId=" + userId + ", color=" + color + ", username="
+				+ username + ", operatorname=" + operatorname + "]";
+	}
+	
+	
+
 }

@@ -1,7 +1,9 @@
 package com.ignite.mm.ticketing;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -110,6 +112,7 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
 	private List<Seat_list> remarkSeats;
 	private ListView lst_remark;
 	private String BusClasses;
+	private LinearLayout layout_remark;
 	public static List<BusSeat> BusSeats;
 	public static List<OperatorGroupUser> groupUser = new ArrayList<OperatorGroupUser>();
 	public static String CheckOut;
@@ -133,7 +136,7 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
 		actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
 		mSeat = (GridView) findViewById(R.id.grid_seat);
 		lst_group_user = (ListView) findViewById(R.id.lst_group_user);
-		lst_remark = (ListView) findViewById(R.id.lst_remark);
+		layout_remark = (LinearLayout) findViewById(R.id.layout_remark);
 		connectionDetector = new ConnectionDetector(this);
 		
 		Bundle bundle = getIntent().getExtras();	
@@ -204,6 +207,7 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
 			public void success(List<OperatorGroupUser> arg0, Response arg1) {
 				// TODO Auto-generated method stub
 				groupUser = arg0;
+				Log.i("","Hello Group User: "+ groupUser.size());
 				lst_group_user.setAdapter(new GroupUserListAdapter(BusSelectSeatActivity.this, groupUser));
 				setListViewHeightBasedOnChildren(lst_group_user);
 			}
@@ -389,13 +393,33 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
 			txt_price.setText("ေစ်းႏႈန္း :"+ BusSeats.get(0).getSeat_plan().get(0).getPrice()+" Ks");
 			BusClasses = BusSeats.get(0).getSeat_plan().get(0).getClasses();
 			remarkSeats = new ArrayList<Seat_list>();
-			for(Seat_list remarkSeat: BusSeats.get(0).getSeat_plan().get(0).getSeat_list()){
+			
+			Map<Integer, List<Seat_list>> map = new HashMap<Integer, List<Seat_list>>();
+			for (Seat_list remarkSeat : BusSeats.get(0).getSeat_plan().get(0).getSeat_list()) {
 				if(remarkSeat.getRemark_type() != 0){
-					remarkSeats.add(remarkSeat);
+					Integer key  = remarkSeat.getRemark_type();
+				    if(map.containsKey(key)){
+				        map.get(key).add(remarkSeat);
+				    }else{
+				        List<Seat_list> list = new ArrayList<Seat_list>();
+				        list.add(remarkSeat);
+				        map.put(key, list);
+				    }
 				}
 			}
-			lst_remark.setAdapter(new RemarkListAdapter(this, remarkSeats));
-			setListViewHeightBasedOnChildren(lst_remark);
+			layout_remark.removeAllViewsInLayout();
+			for (Map.Entry<Integer, List<Seat_list>> entry : map.entrySet())
+			{
+			    ListView lst_remark = new ListView(this);
+			    View viewRemarkType = View.inflate(this, R.layout.remark_header, null);
+			    TextView txtRemartType = (TextView) viewRemarkType.findViewById(R.id.txt_remark_type);
+			    txtRemartType.setText(getRemarkType(entry.getKey()));
+			    lst_remark.addHeaderView(viewRemarkType);
+				lst_remark.setAdapter(new RemarkListAdapter(this, entry.getValue()));
+				Log.i("","Hello = "+ entry.getValue());
+				layout_remark.addView(lst_remark);
+				setListViewHeightBasedOnChildren(lst_remark);
+			}
 			
 			mSeat.setNumColumns(BusSeats.get(0).getSeat_plan().get(0).getColumn());
 			mSeat.setAdapter(new BusSeatAdapter(this, BusSeats.get(0).getSeat_plan().get(0).getSeat_list()));	
@@ -417,6 +441,17 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
 			});
 			alertDialog.show();
 		}
+	}
+	
+	private String getRemarkType(int remarkType){
+		List<String> remarkTypes = new ArrayList<String>();
+		remarkTypes.add("မွတ္ခ်က္ အမ်ိဳးအစား  ေရြးရန္");
+		remarkTypes.add("လမ္းၾကိဳ");
+		remarkTypes.add("ေတာင္းရန္");
+		remarkTypes.add("ခုံေရြ႕ရန္");
+		remarkTypes.add("Date Change ရန္");
+		remarkTypes.add("စီးျဖတ္");
+		return remarkTypes.get(remarkType).toString();
 	}
 	
 	private OnItemClickListener itemClickListener = new OnItemClickListener() {

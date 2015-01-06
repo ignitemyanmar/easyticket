@@ -45,6 +45,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import com.actionbarsherlock.app.ActionBar;
@@ -102,6 +103,7 @@ public class NRCActivity extends BaseSherlockActivity {
 	private Spinner sp_remark_type;
 	private Integer selectedRemarkType;
 	private TextView actionBarSubtitle;
+	private LinearLayout layout_remark;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -135,12 +137,10 @@ public class NRCActivity extends BaseSherlockActivity {
 			AgentID = bundle.getString("agent_id");
 		}
 		actionBarTitle.setText(bundle.getString("from_to")+ " ["+bundle.getString("time")+"] "+ bundle.getString("classes"));
-		actionBarSubtitle.setText("ကား ထြက္ခြာမည့္ ေန႕ = "+changeDate(bundle.getString("date")));
+		actionBarSubtitle.setText(changeDate(bundle.getString("date")));
 		SelectedSeatIndex = bundle.getString("selected_seat");
 		SaleOrderNo = bundle.getString("sale_order_no");
 		BusOccurence = bundle.getString("bus_occurence");
-		
-		
 		
 		edt_buyer = (EditText) findViewById(R.id.edt_buyer);
 		edt_nrc_no = (AutoCompleteTextView) findViewById(R.id.edt_nrc_no);
@@ -152,30 +152,314 @@ public class NRCActivity extends BaseSherlockActivity {
 		rdo_local = (RadioButton) findViewById(R.id.rdo_local);
 		extra_city_container = (LinearLayout) findViewById(R.id.extra_city_container);
 		sp_extra_city = (Spinner) findViewById(R.id.sp_extra_city);
+		layout_remark = (LinearLayout) findViewById(R.id.layout_remark);
 		sp_remark_type = (Spinner) findViewById(R.id.sp_remark_type);
 		edt_remark = (EditText) findViewById(R.id.edt_remark);
 		
 		nrcFormat = new ArrayList<String>();
-		nrcFormat.add("1/MaAhaPa(N) ");
-		nrcFormat.add("2/MaAhaPa(N) ");
-		nrcFormat.add("3/MaAhaPa(N) ");
-		nrcFormat.add("4/MaAhaPa(N) ");
-		nrcFormat.add("5/MaAhaPa(N) ");
-		nrcFormat.add("6/MaAhaPa(N) ");
-		nrcFormat.add("7/MaAhaPa(N) ");
-		nrcFormat.add("8/MaAhaPa(N) ");
-		nrcFormat.add("9/MaAhaPa(N) ");
-		nrcFormat.add("11/MaAhaPa(N) ");
-		nrcFormat.add("12/MaAhaPa(N) ");
-		nrcFormat.add("13/MaAhaPa(N) ");
-		nrcFormat.add("14/MaAhaPa(N) ");
+		nrcFormat.add("14/Ba Ba La (N)");
+		nrcFormat.add("14/Da Na Pha (N)");
+		nrcFormat.add("14/Da Da Ya (N)");
+		nrcFormat.add("14/Ah Ma Na (N)");
+		nrcFormat.add("14/Ha Tha Ta (N)");
+		nrcFormat.add("14/Ah Ga Pa (N)");
+		nrcFormat.add("14/Ka Ka Hta (N)");
+		nrcFormat.add("14/Ka La Na (N)");
+		nrcFormat.add("14/Ka Kha Na (N)");
+		nrcFormat.add("14/Ka Ka Na (N)");
+		nrcFormat.add("14/Ka Pa Na (N)");
+		nrcFormat.add("14/La Pa Ta (N)");
+		nrcFormat.add("14/La Ma Na (N)");
+		nrcFormat.add("14/Ma Ah Pa (N)");
+		nrcFormat.add("14/Ma Ma Ka (N)");
+		nrcFormat.add("14/Ma Ah Na (N)");
+		nrcFormat.add("14/Ma Ma Na (N)");
+		nrcFormat.add("14/Ng Pa ta (N)");
+		nrcFormat.add("14/Nya Ta Na (N)");
+		nrcFormat.add("14/Pa Ta Na (N)");
+		nrcFormat.add("14/Pa Ta Na (N)");
+		nrcFormat.add("14/Pha Pa Na (N)");
+		nrcFormat.add("14/Pha Pa Na (N)");
+		nrcFormat.add("14/Wha Kha Ma (N)");
+		nrcFormat.add("14/Ya Ka Na (N)");
+		nrcFormat.add("14/ Za La Na (N)");
+		nrcFormat.add("7/Ba Ka Na (N)");
+		nrcFormat.add("7/Da U Na (N)");
+		nrcFormat.add("7/Ka Wah Na(N)");
+		nrcFormat.add("7/ Ka Ka Na(N)");
+		nrcFormat.add("7/Ka Ta Ka (N)");
+		nrcFormat.add("7/Na La Pa (N)");
+		nrcFormat.add("7/Ah Ta Na (N)");
+		nrcFormat.add("7/Pha Ma Na (N)");
+		nrcFormat.add("7/Ya Ka Na (N)");
+		nrcFormat.add("7/Hta Ta Pa (N)");
+		nrcFormat.add("7/Ta Ng Na(N)");
+		nrcFormat.add("7/Tha Na Pa (N)");
+		nrcFormat.add("7/Wah Ma Na(N)");
+		nrcFormat.add("7/Ya Ta Ya (N)");
+		nrcFormat.add("7/Ga Pa Ka(N)");
+		nrcFormat.add("7/La Pa Da (N)");
+		nrcFormat.add("7/Ma La Na (N)");
+		nrcFormat.add("7/Ma Na Na (N)");
+		nrcFormat.add("7/ Na Ta Lin(N)");
+		nrcFormat.add("7/Ah Pha Na (N)");
+		nrcFormat.add("7/Pa Ta Na(N)");
+		nrcFormat.add("7/Pa Kha Ta (N)");
+		nrcFormat.add("7/Pa Ta Ta (N)");
+		nrcFormat.add("7/Pa Ma Na (N)");
+		nrcFormat.add("7/Ya Ta Na(N)");
+		nrcFormat.add("7/Tha Ya Ta (N)");
+		nrcFormat.add("7/Tha Ka Na(N)");
+		nrcFormat.add("7/Za Ka Na(N)");
+		nrcFormat.add("8/Ah La Na(N)");
+		nrcFormat.add("8/Kha Ma Na (N)");
+		nrcFormat.add("8/ Ga Ka Na (N)");
+		nrcFormat.add("8/Ka Ma Na (N)");
+		nrcFormat.add("8/Ma Ga Na (N)");
+		nrcFormat.add("8 /Ma Ba Na (N)");
+		nrcFormat.add("8/Ma Ta Na (N)");
+		nrcFormat.add("8/Ma La Na (N)");
+		nrcFormat.add("8/Ma Ma Na(N)");
+		nrcFormat.add("8/Ma Tha Na(N)");
+		nrcFormat.add("8/Na Ma Na(N)");
+		nrcFormat.add("8/Nge Pha Na (N)");
+		nrcFormat.add("8/Pa Kha Ka (N)");
+		nrcFormat.add("8/Pa Ma Na (N)");
+		nrcFormat.add("8/Pa Pha Na(N)");
+		nrcFormat.add("8/Sa La Na (N)");
+		nrcFormat.add("8/Sa Ma Na(N)");
+		nrcFormat.add("8/Sa Pha Na(N)");
+		nrcFormat.add("8/Sa Ta Ta (N)");
+		nrcFormat.add("8/Sa Pa Wah (N)");
+		nrcFormat.add("8/Ta Ta Ka(N)");
+		nrcFormat.add("8/Tha Ya Na (N)");
+		nrcFormat.add("8/Ya Na Kha(N)");
+		nrcFormat.add("8/Ya Sa Ga (N)");
+		nrcFormat.add("8/Hta La Na(N) ");
+		nrcFormat.add("5/Ah Ya Ta(N)");
+		nrcFormat.add("5/Ba Ma Na (N)");
+		nrcFormat.add("5/ba Ta la (N)");
+		nrcFormat.add("5/kha Ah Na(N)");
+		nrcFormat.add("5/Kha Ta Na (N)");
+		nrcFormat.add("5/ba ka la (N)");
+		nrcFormat.add("5/Ah Ta Na(N)");
+		nrcFormat.add("5/Ka la Na(N)");
+		nrcFormat.add("5/Ka La Wah (N)");
+		nrcFormat.add("5/Ka ba La (N)");
+		nrcFormat.add("5/Ka Na Na(N)");
+		nrcFormat.add("5/Ka Tha Na(N)");
+		nrcFormat.add("5/Ka La Na (N)");
+		nrcFormat.add("5/Kha U Na (N)");
+		nrcFormat.add("5/Ka La Na(N)");
+		nrcFormat.add("5/La Ha Na(N)");
+		nrcFormat.add("5/La Ya Na(N)");
+		nrcFormat.add("5/Ma La Na(N)");
+		nrcFormat.add("5/Ma Ma Na (N)");
+		nrcFormat.add("5/Ma Ma Na(N)");
+		nrcFormat.add("5/(N)");
+		nrcFormat.add("5/Pa La Na(N)");
+		nrcFormat.add("5/ (N)");
+		nrcFormat.add("5/Pa La Ba(N)");
+		nrcFormat.add("5/Sa Ka Na (N)");
+		nrcFormat.add("5/Sa La Ka (N)");
+		nrcFormat.add("5/Ya Ba Na (N)");
+		nrcFormat.add("5/Ta Ma Na (N)");
+		nrcFormat.add("5/Ta Za Na (N)");
+		nrcFormat.add("5/Wah La Na (N)");
+		nrcFormat.add("5/Wah Tha Na (N)");
+		nrcFormat.add("5/Ya U Na (N)");
+		nrcFormat.add("5/Ya Ma Pa (N)");
+		nrcFormat.add("6/Ba Ah Na(N)");
+		nrcFormat.add("6/Hta Wh Na (N)");
+		nrcFormat.add("6/Ka Tha Na (N)");
+		nrcFormat.add("6/Ka Sa Na (N)");
+		nrcFormat.add("6/La La Na(N)");
+		nrcFormat.add("6/Ma Ah Ya (N)");
+		nrcFormat.add("6/Pa La Na(N)");
+		nrcFormat.add("6/Ta Na Ya (N)");
+		nrcFormat.add("6/Tha Ya Kha (N)");
+		nrcFormat.add("6/Ya Pha Na (N)");
+		nrcFormat.add("6/Ah Ma Ya (N)");
+		nrcFormat.add("6/Ah Ma Tha (N)");
+		nrcFormat.add("6/Kha Ah Tha (N)");
+		nrcFormat.add("6/Kha Ma Tha(N)");
+		nrcFormat.add("6/Ka Pa Ta (N)");
+		nrcFormat.add("6/Ka Sa Na (N)");
+		nrcFormat.add("6/(N)La Wah Na (N)");
+		nrcFormat.add("6/Ma Ta Ya (N)");
+		nrcFormat.add("6/Ma Ha Ah (N)");
+		nrcFormat.add("6/Ma Hla Na (N)");
+		nrcFormat.add("6/Ma Hta La (N)");
+		nrcFormat.add("6/Ma Ka Na(N)");
+		nrcFormat.add("6/ Ma Ka Na(N)");
+		nrcFormat.add("6/Ma Tha Na(N)");
+		nrcFormat.add("6/Na Hta Ka(N)");
+		nrcFormat.add("6/Ng Za Na(N)");
+		nrcFormat.add("6/Nya Ah Na(N)");
+		nrcFormat.add("6/Pa Tha Ka (N)");
+		nrcFormat.add("6/Pa Ba Na (N)");
+		nrcFormat.add("6/Pa Ka Ta (N)");
+		nrcFormat.add("6/Pa Ma Na (N)");
+		nrcFormat.add("6/Pa Ah La (N)");
+		nrcFormat.add("6/Sa ka Na (N)");
+		nrcFormat.add("6/ Sa Ta Ka(N)");
+		nrcFormat.add("6/Ta Da Ah (N)");
+		nrcFormat.add("6/Ta Ka Na (N)");
+		nrcFormat.add("6/Ta tha Na (N)");
+		nrcFormat.add("6/Tha Ba Ka (N)");
+		nrcFormat.add("6/Tha Za Na(N)");
+		nrcFormat.add("6/Wh Ta Na(N)");
+		nrcFormat.add("6/Ya Ma Tha(N)");
+		nrcFormat.add("12/Ah La Na(N)");
+		nrcFormat.add("12/Ba Ha Na (N)");
+		nrcFormat.add("12/Ba Ta Hta (N)");
+		nrcFormat.add("12/Ka Ka Ka (N)");
+		nrcFormat.add("12/Da Ga Na(N)");
+		nrcFormat.add("12/Da  Ga Ya (N)");
+		nrcFormat.add("12/Da Ga  Ma(N)");
+		nrcFormat.add("12/Sa Ka Na (N)");
+		nrcFormat.add("12/ Da Ga Ta (N)");
+		nrcFormat.add("12/Da La Na (N)");
+		nrcFormat.add("12/Da Pa Na (N)");
+		nrcFormat.add("12/La Ma Na(N)");
+		nrcFormat.add("12/La Tha Ya(N)");
+		nrcFormat.add("12/La Ka Na(N)");
+		nrcFormat.add("12/ Ma Ba Na (N)");
+		nrcFormat.add("12/Hta Ta Pa(N)");
+		nrcFormat.add("12/Ah Sa Na (N)");
+		nrcFormat.add("12/Ka Ma Ya (N)");
+		nrcFormat.add("12/Ka Ma Na(N)");
+		nrcFormat.add("12/Kha  Ya Ka(N)");
+		nrcFormat.add("12/Kha Ya Ka (N)");
+		nrcFormat.add("12/Ka Ta Ta(N)");
+		nrcFormat.add("12/ Ka Ta Na(N)");
+		nrcFormat.add("12/Ka Ma Ta(N)");
+		nrcFormat.add("12/La Ma Ta (N)");
+		nrcFormat.add("12/La Tha Na (N)");
+		nrcFormat.add("12/Ma Ya Ka(N)");
+		nrcFormat.add("12/Ma Ga Ta (N)");
+		nrcFormat.add("12/U Ka Ma (N)");
+		nrcFormat.add("12/Pa Ba Ta(N)");
+		nrcFormat.add("12/Pa Za Ta (N)");
+		nrcFormat.add("12/Sa Kha Na (N)");
+		nrcFormat.add("12/Sa Ka Kha(N)");
+		nrcFormat.add("12/Sa Kha Na (N)");
+		nrcFormat.add("12/Ya Pa Tha(N)");
+		nrcFormat.add("12/Ta Ka Na(N)");
+		nrcFormat.add("12/Ta Ma Na (N)");
+		nrcFormat.add("12/Tha Ka Ta(N)");
+		nrcFormat.add("12/Tha La Na(N)");
+		nrcFormat.add("12/Tha Ka Ka (N)");
+		nrcFormat.add("12/Tha Ga Na (N)");
+		nrcFormat.add("12/Ta Ta Na(N)");
+		nrcFormat.add("12/Ya Ka Na(N)");
+		nrcFormat.add("1/Ba Ma Na (N)");
+		nrcFormat.add("1/(N)Kha Pha Na (N)");
+		nrcFormat.add("1/Pha Ka Na(N)");
+		nrcFormat.add("1/Ah La Na(N)");
+		nrcFormat.add("1/(N)Kha La Pha (N)");
+		nrcFormat.add("1/Ma Kha Ba(N)");
+		nrcFormat.add("1/Ma Sa Na(N)");
+		nrcFormat.add("1/Ma Ga Na(N) ");
+		nrcFormat.add("1/Ma Nya Na(N)");
+		nrcFormat.add("1/Ma Ma Na(N)");
+		nrcFormat.add("1/Ma Ka Na(N)");
+		nrcFormat.add("1/(N) Na Ma Na (N)");
+		nrcFormat.add("1/Pa TA Ah(N)");
+		nrcFormat.add("1/Ya Ga Na(N)");
+		nrcFormat.add("1/Sa Pa Ya (N)");
+		nrcFormat.add("1/Ta Na Na(N)");
+		nrcFormat.add("1/(N)Sa La Na (N)");
+		nrcFormat.add("1/Wah Ma Na (N)");
+		nrcFormat.add("2/Da Mo Sa(N)");
+		nrcFormat.add("2/La Ka Na(N)");
+		nrcFormat.add("2/Ma Sa Na(N)");
+		nrcFormat.add("2/Ma Sa Na(N)");
+		nrcFormat.add("2/Ya Ta Na(N)");
+		nrcFormat.add("3/Hla Ba Na(N)");
+		nrcFormat.add("3/Pha Ah Na(N)");
+		nrcFormat.add("3/Pha Pa Na(N)");
+		nrcFormat.add("3/Ka Ka Ya(N)");
+		nrcFormat.add("3/Ka Ya Sa(N)");
+		nrcFormat.add("3/Ma Wah Ta(N)");
+		nrcFormat.add("3/Tha Ta Na(N)");
+		nrcFormat.add("4/Pha Lan Na(N)");
+		nrcFormat.add("4/Ha Kha Na(N)");
+		nrcFormat.add("4/Kan Pa let(N)");
+		nrcFormat.add("4/Ma Du Pi (N)");
+		nrcFormat.add("4/Ma Ta Na(N)");
+		nrcFormat.add("4/Pa La Wah (N)");
+		nrcFormat.add("4/Ta Ta Na(N)");
+		nrcFormat.add("10/Bi La Na(N)");
+		nrcFormat.add("10/Kha Sa Na(N)");
+		nrcFormat.add("10/Ka Ma Ya(N)");
+		nrcFormat.add("10/Ka Hta Na(N)");
+		nrcFormat.add("10/Ma La Ma(N)");
+		nrcFormat.add("10/Ma Da Na(N)");
+		nrcFormat.add("10/Pa Ma Na(N)");
+		nrcFormat.add("10/Tha Pha Ya(N)");
+		nrcFormat.add("10/Tha Hta Na(N)");
+		nrcFormat.add("10/Ya Ma Na(N)");
+		nrcFormat.add("10/Bi La Na(N)");
+		nrcFormat.add("10/Kha Sa Na(N)");
+		nrcFormat.add("10/Ka Ma Ya(N)");
+		nrcFormat.add("10/Ka Hta Na(N)");
+		nrcFormat.add("10/Ma La Ma(N)");
+		nrcFormat.add("10/Ma Da Na(N)");
+		nrcFormat.add("10/Pa Ma Na(N)");
+		nrcFormat.add("10/Tha Pha Ya(N)");
+		nrcFormat.add("10/Tha Hta Na(N)");
+		nrcFormat.add("10/Ya Ma Na(N)");
+		nrcFormat.add("11/Ah Ma Na(N)");
+		nrcFormat.add("11/Ba Tha Ta(N)");
+		nrcFormat.add("11/Ga Ma Na(N)");
+		nrcFormat.add("11/Ka Pha Na(N)");
+		nrcFormat.add("11/Ka Ta Na(N)");
+		nrcFormat.add("11/Ma Ta Na(N)");
+		nrcFormat.add("11/Ma Pa Na(N)");
+		nrcFormat.add("11/Ma U Na(N)");
+		nrcFormat.add("11/Ma Pa Na(N)");
+		nrcFormat.add("11/Pa Ta Na(N)");
+		nrcFormat.add("11/(N)");
+		nrcFormat.add("11/Ya Tha Ta(N)");
+		nrcFormat.add("11/Sa Ta Na(N)");
+		nrcFormat.add("11/Tha Ta Na(N)");
+		nrcFormat.add("11/Tha Ta Na(N)");
+		nrcFormat.add("13/Ma Sa Na (N)");
+		nrcFormat.add("13/Ma La Na (N)");
+		nrcFormat.add("13/Ma Pa Na (N)");
+		nrcFormat.add("13/Ma Ta Na (N)");
+		nrcFormat.add("13/Ma Ya Na (N)");
+		nrcFormat.add("13/Ta Kha La (N)");
+		nrcFormat.add("13/Ha Pha Na (N)");
+		nrcFormat.add("13/Ha Na Na(N)");
+		nrcFormat.add("13/Ka Kha (N)");
+		nrcFormat.add("13/Ka Kha  (N)");
+		nrcFormat.add("13/La Ya Na (N)");
+		nrcFormat.add("13/Ma Ba Na (N)");
+		nrcFormat.add("13/Ma Sa Na (N)");
+		nrcFormat.add("13/Na Sa Na (N)");
+		nrcFormat.add("13/Na pha Na (N)");
+		nrcFormat.add("13/Na Ma Ta (N)");
+		nrcFormat.add("13/Ka La Na (N)");
+		nrcFormat.add("13/La La Na(N)");
+		nrcFormat.add("13/Ma Ya Na (N)");
+		nrcFormat.add("13/Ma Ka Na (N)");
+		nrcFormat.add("13/Ma Na Na (N)");
+		nrcFormat.add("13/Ma Pa Na (N)");
+		nrcFormat.add("13/Na Sa Na (N)");
+		nrcFormat.add("13/Nya Ya Na (N)");
+		nrcFormat.add("13/Pha Ka Na (N)");
+		nrcFormat.add("13/Pa Ta Ya (N)");
+		nrcFormat.add("13/Pa La Na (N)");
+		nrcFormat.add("13/Ta Ka Ma (N)");
 		
 		List<String> remarkTypes = new ArrayList<String>();
 		remarkTypes.add("မွတ္ခ်က္ အမ်ိဳးအစား  ေရြးရန္");
 		remarkTypes.add("လမ္းၾကိဳ");
 		remarkTypes.add("ေတာင္းရန္");
 		remarkTypes.add("ခုံေရြ႕ရန္");
-		remarkTypes.add("Date Chanage ရန္");
+		remarkTypes.add("Date Change ရန္");
 		remarkTypes.add("စီးျဖတ္");
 		
 		ArrayAdapter<String> remarkAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, remarkTypes);
@@ -213,14 +497,56 @@ public class NRCActivity extends BaseSherlockActivity {
 		selectedSeat = SelectedSeatIndex.split(",");
 		for (int i = 0; i < selectedSeat.length; i++) {
 			CustomTextView label = new CustomTextView(this);
-			label.setText("လက္မွတ္ နံပါတ္ "+(i+1));
+			label.setText("လက္မွတ္ နံပါတ္ "+(i+1)+" [ Seat No."+ selectedSeat[i] +" ]");
 			label.setTextSize(18f);
 			layout_ticket_no_container.addView(label,lps);
 			
 			CheckBox chk_free = new CheckBox(this);
 			chk_free.setText("Free Ticket");
 			chk_free.setId(i+1 * 100);
+			chk_free.setTag(i+1 * 150);
+			chk_free.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+				
+				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+					// TODO Auto-generated method stub
+					Integer chkId = (Integer) buttonView.getTag();
+					if(isChecked)
+						((LinearLayout) findViewById(chkId)).setVisibility(View.VISIBLE);
+					else
+						((LinearLayout) findViewById(chkId)).setVisibility(View.GONE);
+				}
+			});
 			layout_ticket_no_container.addView(chk_free,lps);
+			
+			LinearLayout layout_free_ticket = new LinearLayout(this);
+			layout_free_ticket.setId(i+1 * 150);
+			layout_free_ticket.setVisibility(View.GONE);
+			RadioButton rdo_free_pro = new RadioButton(this);
+			rdo_free_pro.setText("Promotion");
+			rdo_free_pro.setId((i+1 * 200)+ 1);
+			rdo_free_pro.setChecked(true);
+			RadioButton rdo_free_mnt = new RadioButton(this);
+			rdo_free_mnt.setText("Management");
+			rdo_free_mnt.setId((i+1 * 200)+ 2);
+			RadioButton rdo_free_10plus = new RadioButton(this);
+			rdo_free_10plus.setText("10+");
+			rdo_free_10plus.setId((i+1 * 200)+ 3);
+			RadioButton rdo_free_pilgrim = new RadioButton(this);
+			rdo_free_pilgrim.setText("Pilgrim");
+			rdo_free_pilgrim.setId((i+1 * 200)+ 4);
+			RadioButton rdo_free_spr = new RadioButton(this);
+			rdo_free_spr.setText("Sponsor");
+			rdo_free_spr.setId((i+1 * 200)+ 5);
+			RadioGroup rdo_gp_free = new RadioGroup(this);
+			rdo_gp_free.setId(i+1 * 250);
+			rdo_gp_free.setOrientation(RadioGroup.HORIZONTAL);
+			rdo_gp_free.addView(rdo_free_pro);
+			rdo_gp_free.addView(rdo_free_mnt);
+			rdo_gp_free.addView(rdo_free_10plus);
+			rdo_gp_free.addView(rdo_free_pilgrim);
+			rdo_gp_free.addView(rdo_free_spr);
+			layout_free_ticket.addView(rdo_gp_free);
+			layout_ticket_no_container.addView(layout_free_ticket);
 			
 			EditText ticket_no = new EditText(this);
 			ticket_no.setInputType(InputType.TYPE_CLASS_TEXT);
@@ -264,8 +590,12 @@ public class NRCActivity extends BaseSherlockActivity {
 		public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2,
 				long arg3) {
 			// TODO Auto-generated method stub
+			if(arg2 == 0){
+				layout_remark.setVisibility(View.GONE);
+			}else{
+				layout_remark.setVisibility(View.VISIBLE);
+			}
 			selectedRemarkType = arg2;
-			
 		}
 
 		public void onNothingSelected(AdapterView<?> arg0) {
@@ -318,10 +648,18 @@ public class NRCActivity extends BaseSherlockActivity {
 		for (int i = 0; i < selectedSeat.length; i++) {
 			EditText ticket_no = (EditText)findViewById(i+1);
 			CheckBox free_ticket = (CheckBox) findViewById(i+1 * 100);
+			String free_ticket_remark = null;
+			if(free_ticket.isChecked()){
+				RadioGroup rdo_gp_free = (RadioGroup) findViewById(i+1 * 250);
+				int chkedId = rdo_gp_free.getCheckedRadioButtonId();
+				RadioButton rdo_free = (RadioButton) findViewById(chkedId);
+				free_ticket_remark = rdo_free.getText().toString();
+			}
 			seats.add(
 					new ConfirmSeat(BusOccurence,selectedSeat[i].toString(), edt_buyer
 							.getText().toString(), edt_nrc_no.getText()
-							.toString(),ticket_no.getText().toString(),free_ticket.isChecked()));
+							.toString(),ticket_no.getText().toString(),
+							free_ticket.isChecked(), free_ticket_remark));
 		}
 		
 		SharedPreferences pref_old_sale = this.getApplicationContext().getSharedPreferences("old_sale", Activity.MODE_PRIVATE);

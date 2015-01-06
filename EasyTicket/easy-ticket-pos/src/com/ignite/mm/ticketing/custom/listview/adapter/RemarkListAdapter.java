@@ -46,33 +46,19 @@ public class RemarkListAdapter extends BaseAdapter{
 		if (view == null) {
 			view = mInflater.inflate(R.layout.list_item_remark, null);
 			holder = new ViewHolder();
-			holder.txt_remark_type	= (TextView)view.findViewById(R.id.txt_remark_type);
 			holder.txt_remark = (TextView)view .findViewById(R.id.txt_remark);
 			holder.txt_seat_no = (TextView)view .findViewById(R.id.txt_seat_no);
 			view.setTag(holder);
 		} else {
 			holder = (ViewHolder) view.getTag();
 		}
-		holder.txt_remark_type.setText(getRemarkType(getItem(position).getRemark_type()));
 		holder.txt_remark.setText(getItem(position).getRemark());
 		holder.txt_seat_no.setText("Seat No. = "+ getItem(position).getSeat_no().toString());
 		
 		return view;
 	}
 	
-	private String getRemarkType(int remarkType){
-		List<String> remarkTypes = new ArrayList<String>();
-		remarkTypes.add("မွတ္ခ်က္ အမ်ိဳးအစား  ေရြးရန္");
-		remarkTypes.add("လမ္းၾကိဳ");
-		remarkTypes.add("ေတာင္းရန္");
-		remarkTypes.add("ခုံေရြ႕ရန္");
-		remarkTypes.add("Date Chanage ရန္");
-		remarkTypes.add("စီးျဖတ္");
-		return remarkTypes.get(remarkType).toString();
-	}
-	
 	static class ViewHolder {
-		TextView txt_remark_type;
 		TextView txt_remark;
 		TextView txt_seat_no;
 				

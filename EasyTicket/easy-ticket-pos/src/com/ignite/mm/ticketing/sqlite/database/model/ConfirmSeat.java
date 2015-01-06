@@ -6,11 +6,11 @@ public class ConfirmSeat {
 	private String nrc_no;
 	private String ticket_no;
 	private Boolean free_ticket;
-	
-	
+	private String free_ticket_remark;
 
 	public ConfirmSeat(String busoccurance_id, String seat_no, String name,
-			String nrc_no, String ticket_no, Boolean free_ticket) {
+			String nrc_no, String ticket_no, Boolean free_ticket,
+			String free_ticket_remark) {
 		super();
 		this.busoccurance_id = busoccurance_id;
 		this.seat_no = seat_no;
@@ -18,6 +18,7 @@ public class ConfirmSeat {
 		this.nrc_no = nrc_no;
 		this.ticket_no = ticket_no;
 		this.free_ticket = free_ticket;
+		this.free_ticket_remark = free_ticket_remark;
 	}
 
 
@@ -91,15 +92,21 @@ public class ConfirmSeat {
 	public void setFree_ticket(Boolean free_ticket) {
 		this.free_ticket = free_ticket;
 	}
+	
+	public String getFree_ticket_remark() {
+		return free_ticket_remark;
+	}
 
-
+	public void setFree_ticket_remark(String free_ticket_remark) {
+		this.free_ticket_remark = free_ticket_remark;
+	}
 
 	@Override
 	public String toString() {
 		return "{\"busoccurance_id\":\"" + busoccurance_id
 				+ "\", \"seat_no\":\"" + seat_no + "\", \"name\":\"" + name
 				+ "\", \"nrc_no\":\"" + nrc_no + "\", \"free_ticket\": \""+ free_ticket 
-				+ "\", \"ticket_no\":\"" + ticket_no + "\"}";
+				+ "\", \"ticket_no\":\"" + ticket_no + "\",\"free_ticket_remark\": \""+free_ticket_remark+"\"}";
 	}
 	
 }

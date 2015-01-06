@@ -16,7 +16,7 @@
         <com.smk.custom.view.CustomButton
             android:id="@+id/btn_pay"
             android:layout_width="match_parent"
-            android:layout_height="70dp"
+            android:layout_height="80dp"
             android:layout_marginTop="10dp"
             android:background="@drawable/btn_green"
             android:text="Booking Confirm"
@@ -25,7 +25,7 @@
         <com.smk.custom.view.CustomButton
             android:id="@+id/btn_cancel"
             android:layout_width="match_parent"
-            android:layout_height="70dp"
+            android:layout_height="80dp"
             android:layout_marginTop="15dp"
             android:background="@drawable/btn_orange"
             android:text="Booking ဖ်တ္မည္"
@@ -35,7 +35,7 @@
     <com.smk.custom.view.CustomButton
         android:id="@+id/btn_back"
         android:layout_width="match_parent"
-        android:layout_height="70dp"
+        android:layout_height="80dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_marginBottom="20dp"

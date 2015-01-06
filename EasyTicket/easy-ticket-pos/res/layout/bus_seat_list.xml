@@ -269,6 +269,18 @@
                             android:visibility="gone" >
                         </ListView>
 
+                        <com.smk.custom.view.CustomButton
+                            android:id="@+id/btn_check_out"
+                            android:layout_width="310dp"
+                            android:layout_height="60dp"
+                            android:layout_marginTop="30dp"
+                            android:layout_weight="59.64"
+                            android:background="@drawable/btn_green"
+                            android:text="ဝယ္ ရန္"
+                            android:textColor="@color/white"
+                            android:textSize="20dp"
+                            android:textStyle="bold" />
+
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -288,18 +300,6 @@
                         </LinearLayout>
 
                         <com.smk.custom.view.CustomButton
-                            android:id="@+id/btn_check_out"
-                            android:layout_width="310dp"
-                            android:layout_height="60dp"
-                            android:layout_marginTop="30dp"
-                            android:layout_weight="59.64"
-                            android:background="@drawable/btn_green"
-                            android:text="ဝယ္ ရန္"
-                            android:textColor="@color/white"
-                            android:textSize="20dp"
-                            android:textStyle="bold" />
-
-                        <com.smk.custom.view.CustomButton
                             android:id="@+id/btn_booking"
                             style="?android:attr/buttonStyleSmall"
                             android:layout_width="310dp"
@@ -313,13 +313,13 @@
                     </LinearLayout>
                 </LinearLayout>
 
-                <ListView
-                    android:id="@+id/lst_remark"
+                <LinearLayout
+                    android:id="@+id/layout_remark"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1" >
+                    android:orientation="vertical" >
 
-                </ListView>
+                </LinearLayout>
             </LinearLayout>
         </ScrollView>
     </RelativeLayout>

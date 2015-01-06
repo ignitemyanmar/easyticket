@@ -31,7 +31,19 @@
 	  	#agents{display:none;background:#eee;overflow:hidden;margin-top:0;padding-top:1rem;}
 	  	body .ui-tooltip {
 			font: bold 14px "Zawgyi-One", Sans-Serif;
-		}
+		}	
+
+		.padding-5{padding: 5px;}
+		.zawgyi-one, h4{font-family: "Zawgyi-One";}  
+		.fit-a{padding-top: 9px;}
+		.check-a label{height: 175px;}
+		.colorbox{width:24px; height:24px;float:left;margin-right:8px;}
+		.booking{background:  #470203;}
+		.rm_typeframe{border:1px solid #eee;min-height:200px !important;background: rgba(231, 241, 246, 1);font-size: 13px;}
+		.rm_heading{background:#000; color:white;padding:11px 12px;margin-top:0;font-size: 18px;}
+		hr{margin:4px 0; border-bottom:1px solid #444;}
+		.padding_rmtype{padding: 0 12px; background: transparent;}
+		.padding_rmtype span{background:#000;padding:0 1px;color:white;position:relative;}
 	</style>
 	<div class="large-12 columns">
 		<br>
@@ -207,6 +219,75 @@
 		<div class="clear">&nbsp;</div>
 		<br>
     </form>
+
+    <div class="large-12 columns">
+		@if(count($remarkgroup)>0)
+            <?php $i=1;?>
+            @foreach($remarkgroup as $key=>$remark_typerow)
+                <?php 
+                   switch ($key) {
+                      case '1':
+                         $remark_type="လမ္းၾကိဳ";
+                         break;
+                      case '2':
+                         $remark_type="ေတာင္းရန္";
+                         break;
+                      case '3':
+                         $remark_type="ခုံေရြ႕ရန္";
+                         break;
+                      case '4':
+                         $remark_type="Date Chanage ရန္";
+                         break;
+                      
+                      default:
+                          $remark_type="စည္းဖ်က္";
+                         break;
+                   }
+                ?>
+                @if($i%3==1)
+                <div class="row">
+                @endif
+                   <div class="large-4 medium-4 columns">
+                        <div class="rm_typeframe">
+	                        <h4 class="rm_heading">{{$remark_type}}</h4>
+	                        <div class="row padding_rmtype">
+	                            <div class="large-4 medium-4 columns"><b>Seat No</b><br>
+	                            </div>
+	                            <div class="large-8 medium-8 columns"><b>Remark</b></div> 
+
+	                        </div>
+	                        <div class="clearfix"><hr></div> 
+
+	                        @foreach($remark_typerow as $remarkrow)
+	                            @if(count($remarkrow['saleitems'])>0)
+	                               <div class="row padding_rmtype">
+	                                  <div class="large-4 medium-4 columns">
+	                                     <?php $j=1;?>
+	                                     @foreach($remarkrow['saleitems'] as $seats)
+	                                        <span>{{$seats['seat_no']}}</span>
+	                                        @if($j%4==0)
+	                                           <div>&nbsp;</div>
+	                                        @endif
+	                                        <?php $j++;?>
+	                                     @endforeach
+	                                  </div>
+	                                  <div class="large-8 medium-8 columns">
+	                                     @if($remarkrow['remark']) {{$remarkrow['remark']}} @else - @endif
+	                                  </div>
+	                               </div>
+	                               <div class="clearfix"><hr></div> 
+	                            @endif
+	                        @endforeach
+	                    </div>
+                   </div>
+                @if($i%3==0 || $i==count($remarkgroup)) 
+                </div>
+                <div class="clear"><br></div> 
+                @endif
+                <?php $i++;?>
+            @endforeach
+        @endif
+	</div>
 
 	<div class="large-4 columns">&nbsp;</div>
     {{HTML::script('../js/chooseseats.js')}}

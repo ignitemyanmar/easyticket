@@ -299,6 +299,7 @@
 						$operator_id=$operatorgroup->operator_id;
 						$response->user['id'] 				= $operator_id;
 						$response->user['operatorgroup_id'] = $operatorgroup->id;
+						$response->user['user_id'] 			= Auth::user()->id;
 						$response->user['name'] 			= Auth::user()->name;
 						$response->user['type'] 			= Auth::user()->type;
 						$response->user['role'] 			= Auth::user()->role;
@@ -308,6 +309,7 @@
 						$groupUser = OperatorGroupUser::whereuser_id(Auth::user()->id)->first();
 						$response->user['id'] 				= $groupUser->operator_id;
 						$response->user['operatorgroup_id'] = $groupUser->operatorgroup_id;
+						$response->user['user_id'] 			= Auth::user()->id;
 						$response->user['name'] 			= Auth::user()->name;
 						$response->user['type'] 			= Auth::user()->type;
 						$response->user['role'] 			= Auth::user()->role;

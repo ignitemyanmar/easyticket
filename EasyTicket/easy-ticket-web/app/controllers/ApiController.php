@@ -2985,6 +2985,7 @@ class ApiController extends BaseController
     			$objsaleitems->ticket_no		=$rows->ticket_no;
     			if($rows->free_ticket == "true"){
     				$objsaleitems->free_ticket		= 1;
+    				$objsaleitems->free_ticket_remark = $rows->free_ticket_remark;
     			}
 				$objsaleitems->agent_id 		=$agent_id; 
 				if($extra_dest_id != 0){

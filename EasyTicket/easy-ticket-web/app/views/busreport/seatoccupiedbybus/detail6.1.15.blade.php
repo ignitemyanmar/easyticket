@@ -3,8 +3,7 @@
    {{HTML::style('../../css/Tixato_files/seating_builder.css')}}
    {{HTML::style('../../css/jquery-ui.css')}}
    {{HTML::style('../../css/component.css')}}
-   
-<style type="text/css" media="all">
+<style type="text/css">
   .padding-5{padding: 5px;}
   body .ui-tooltip, .arrow:after {
       background: transparent;
@@ -16,7 +15,7 @@
       box-shadow: transparent;
    }
    .zawgyi-one, h4{font-family: "Zawgyi-One";}  
-.fit-a{padding-top: 9px;}
+   .fit-a{padding-top: 9px;}
  .check-a label{height: 175px;}
  .colorbox{width:24px; height:24px;float:left;margin-right:8px;}
  .booking{background:  #470203;}
@@ -25,9 +24,8 @@
  hr{margin:4px 0; border-bottom:1px solid #444;}
  .padding_rmtype{padding: 0 12px;}
  .padding_rmtype span{background:#000;padding:0 1px;color:white;position:relative;}
- .show-for-print{display: none;}
-</style>
 
+</style>
 <!-- BEGIN PAGE -->  
    <div class="page-content">
       <!-- BEGIN PAGE CONTAINER-->
@@ -149,93 +147,6 @@
                                  </ul>
                               </div>
                            </div>
-
-                             <div id="contentprint" class="show-for-print">
-                                 @if($response['seat_plan']['seat_list'])
-                                 <ul class="trip_info">
-                                    <h3>ခရီးစဥ္ အခ်က္အလက္မ်ား</h3>
-                                    <li>ကားနံပါတ္: <span style="margin-left:250px;">{{$response['seat_plan']['bus_no']}}</span></li>
-                                    <li>ခရီးစဥ္ : <span style="margin-left:250px;">{{$response['seat_plan']['from'].'-'. $response['seat_plan']['to']}}</span></li>
-                                    <li>ကားအမ်ုိဳးအစား : <span style="margin-left:250px;">{{$response['seat_plan']['class']}}</span></li>
-                                    <li>ကားထြက္မည့္ေန႕: <span style="margin-left:250px;">{{date('d/m/Y',strtotime($response['seat_plan']['date']))}}</span></li>
-                                    <li>အခ်ိန္ : <span style="margin-left:250px;">{{$response['seat_plan']['time']}}</span></li>
-                                    <li>ေရာင္းျပီး/ စုစုေပါင္းလက္မွတ္ : <span style="margin-left:250px;">{{$response['seat_plan']['total_sold_seats'].'/'.$response['seat_plan']['total_seats']}}</span></li>
-                                    <li>ေရာင္းရေငြစုစုေပါင္း : <span style="margin-left:250px;">{{$response['seat_plan']['total_amount']}} MMK</span></li>
-                                    <br>
-                                    <div style="width:25px;height:25px; background-color:#FF1711 !important;float:left;margin-right:5px;"></div>ေရာင္းျပီးသားခုံမ်ား<br>
-                                    <div class="clear">&nbsp;</div>
-                                    <div style="width:25px;height:25px; background-color:#470203 !important;float:left;margin-right:5px;"></div>ၾကိဳတင္မွာယူထားေသာ ခုံမ်ား<br>
-                                    <div class="clear">&nbsp;</div>
-                                    <div style="width:25px;height:25px; background-color:#5586C8 !important;float:left;margin-right:5px;"></div>ခုံလြတ္မ်ား<br>
-                                    <div class="clear">&nbsp;</div>
-                                    <hr>
-                                 </ul>
-
-                                 <div class="check-a">
-                                       <?php $k=1;  $columns=$response['seat_plan']['column'];?>
-                                       @foreach($response['seat_plan']['seat_list'] as $rows)
-                                          @if($k%$columns==1)
-                                          <div class="row-fluid">
-                                             <div class="span1 ">&nbsp;</div>
-                                          @endif
-                                                @if($rows['status']==0)
-                                                   <div class="span2">&nbsp;</div>
-                                                @else
-                                                   <?php 
-                                                      if($rows['status'] == 2){
-                                                         $disabled="disabled";
-                                                         $taken="taken";
-                                                         $color='#FF1711;';
-                                                      }else if($rows['status'] ==3){
-                                                         $disabled="disabled";
-                                                         $taken="booking";
-                                                         $color='#470203;';
-                                                      }else{
-                                                         $disabled=''; 
-                                                         $taken='available';  
-                                                         $color='#5586C8;';
-                                                      }
-                                                   ?>
-                                                   @if($taken=="taken")
-                                                      <div class="span2 grid cs-style-3">
-                                                         <div class="list">
-                                                            <figure>
-                                                               <div class="checkboxframe">
-                                                                  <label>
-                                                                     <span></span>
-                                                                     <div class="fit-a {{$taken}} zawgyi-one" title="{{$rows['agent_name']}}" id="{{$rows['seat_no']}}">{{$rows['customer']['name']}}<br> {{$rows['customer']['phone']}}<br> {{$rows['ticket_no']}}<br> {{$rows['customer']['nrc_no']}}<br> &nbsp;{{$rows['agent_name']}}</div>
-                                                                  </label>
-                                                               </div>
-                                                            </figure>
-                                                         </div>
-                                                      </div>
-
-                                                   @else
-                                                      <div class="span2 grid cs-style-3">
-                                                         <div class="list">
-                                                            <figure>
-                                                               <div class="checkboxframe">
-                                                                  <label>
-                                                                     <span></span>
-                                                                     <div class="fit-a {{$taken}}" title="{{$rows['seat_no'].'('. $rows['price'].' K)'}}" id="{{$rows['seat_no']}}">Seat No : <b>{{$rows['seat_no']}}</b><span class="zawgyi-one"> <br> &nbsp;{{$rows['agent_name']}}</b><br>{{$rows['customer']['name']}}<br>{{$rows['customer']['nrc_no']}}</span></div>
-                                                                     <!-- <div style="background:{{$color}}" class="fit-a zawgyi-one" title="{{$rows['agent_name']}}" id="{{$rows['seat_no']}}">{{$rows['customer']['name']}}<br> {{$rows['customer']['phone']}}<br> {{$rows['ticket_no']}}<br> {{$rows['customer']['nrc_no']}}<br> &nbsp;{{$rows['agent_name']}}</div> -->
-                                                                  </label>
-                                                               </div>
-                                                            </figure>
-                                                         </div>
-                                                      </div>
-                                                      
-                                                   @endif
-                                                @endif
-                                          @if($k%$columns==0)
-                                          </div>
-                                          @endif
-                                          <?php $k++;?>
-                                       @endforeach
-                                 </div>
-                                 @endif
-                           </div>
-
                            <div id="contents">
                               @if($response['seat_plan']['seat_list'])
                               <ul class="trip_info">
@@ -425,29 +336,15 @@
             e.preventDefault();
          });
           $(document).foundation();
-         
-
-         /*$('.print').click(function() {
-           w=window.open();
-           w.document.write($('#contentprint').html());
-           w.print();
-           w.close();
-        });
-*/
-
-
-
-        
-      });
-      $('.print').click(function() {
+         $('.print').click(function() {
             //Get the HTML of div
-            var divElements = document.getElementById('contentprint').innerHTML;
+            var divElements = document.getElementById('contents').innerHTML;
             //Get the HTML of whole page
             var oldPage = document.body.innerHTML;
 
             //Reset the page's HTML with div's HTML only
             document.body.innerHTML = 
-              '<html><head><title>Report</title></head><body>' + 
+              "<html><head><title>Report</title></head><body>" + 
               divElements + "</body>";
             //Print Page
             window.print();
@@ -455,5 +352,7 @@
             document.body.innerHTML = oldPage;
             return false;
          });
+
+      });
    </script>
 @stop

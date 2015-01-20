@@ -789,7 +789,7 @@ class ApiController extends BaseController
 	public function getAllAgent(){
 		$operator_id=Input::get('operator_id');
 		if($operator_id){
-			$objagent=Agent::whereoperator_id($operator_id)->get();
+			$objagent=Agent::whereoperator_id($operator_id)->orderBy('name', 'asc')->get();
 		}else{
 			$objagent=Agent::all();
 		}
@@ -1311,8 +1311,13 @@ class ApiController extends BaseController
 							$foreign_price		=$objtrip->foreign_price == 0 ? $objtrip->price : $objtrip->foreign_price;
 							$commission			=$objtrip->commission;
 							$time 				=$objtrip->time;
-							$i=1;
+							$remark 			=$objtrip->remark;
 							foreach ($tocreateoccurance as $departure_date) {
+								//if close with from-to date;
+								$status 			= (strtotime($departure_date) >= strtotime($objtrip->from_close_date)) && (strtotime($departure_date) <= strtotime($objtrip->to_close_date))  ? 1 : 0;
+								//else if ever close;
+								$status 			= $objtrip->ever_close == 1 && strtotime($departure_date) >= strtotime($objtrip->from_close_date) ? 1 : $status;
+
 								$obj_busoccurance 	=new BusOccurance();
 								$obj_busoccurance->seat_plan_id 	=$seat_plan_id;
 								$obj_busoccurance->bus_no 			=$bus_no;
@@ -1326,13 +1331,14 @@ class ApiController extends BaseController
 								$obj_busoccurance->commission		=$commission;
 								$obj_busoccurance->operator_id 		=$operator_id;
 								$obj_busoccurance->trip_id 			=$trip_id;
+								$obj_busoccurance->status 			=$status;
+								$obj_busoccurance->remark 			=$remark;
 								$checkbusoccurances=BusOccurance::wheretrip_id($trip_id)->wheredeparture_date($departure_date)->wheredeparture_time($time)->whereclasses($class_id)->first();
 								if($checkbusoccurances){
 									
 								}else{
 									$obj_busoccurance->save();
 								}
-								$i++;
 							}	
 						}
 						
@@ -1379,18 +1385,19 @@ class ApiController extends BaseController
 						}
 						$availabledayindexs[]=$index;
 					}
-					$today 				=$today;
+
 					$year 				=date('Y');
 					$checkdate 			=date('d', strtotime($today));
 					$month 				= date("Y-m-d", strtotime("+1 month", strtotime($today)));
 					$currentMonth 		=date("m");
 					$nextMonth 			=date("m", strtotime($month));
-					$days_in_currentMonth=date("t");
-					$days_in_nextMonth  =date("t", strtotime($month));
+					$nextYear			=$year + 1;
+					$days_in_currentMonth=cal_days_in_month(CAL_GREGORIAN,$currentMonth,$year);
+					$days_in_nextMonth  =cal_days_in_month(CAL_GREGORIAN,$nextMonth,$nextYear);
 					
-						$end_date=strtotime($year.'-'.$nextMonth.'-'.$days_in_nextMonth);
-						$start_date=$year.'-'.$nextMonth.'-01';
-						$now = strtotime($start_date);
+					$end_date=strtotime($year.'-'.$nextMonth.'-'.$days_in_nextMonth);
+					$start_date=$year.'-'.$currentMonth.'-01';
+					$now = strtotime($start_date);
 					$customdays=array();
 					while (date("Y-m-d", $now) != date("Y-m-d", $end_date)) {
 					    $day_index = date("w", $now);
@@ -1420,31 +1427,35 @@ class ApiController extends BaseController
 								$commission 		=$objtrip->commission;
 								$time 				=$objtrip->time;
 								$seat_plan_id		=$objtrip->seat_plan_id ? $objtrip->seat_plan_id : 1;
+								$remark 			=$objtrip->remark;
 
 								$today=$today;
 								$count_days=count($customdays);
-								$i=1;
-								$j=0;
 								// return Response::json($available_day);
-								foreach ($customdays as $customdaydate) {
-									if($i<$count_days){
-										$objbusoccurance=new BusOccurance();
-										$objbusoccurance->seat_plan_id	=$seat_plan_id;
-										$objbusoccurance->bus_no		=$bus_no;
-										$objbusoccurance->from			=$from;
-										$objbusoccurance->to			=$to;
-										$objbusoccurance->classes		=$class_id;
-										$objbusoccurance->departure_date=$customdaydate;
-										$objbusoccurance->departure_time=$time;
-										$objbusoccurance->price			=$price;
-										$objbusoccurance->foreign_price	=$foreign_price;
-										$objbusoccurance->commission	=$commission;
-										$objbusoccurance->operator_id	=$operator_id;
-										$objbusoccurance->trip_id		=$trip_id;
+								foreach ($customdays as $departure_date) {
+									//if close with from-to date;
+									$status 			= (strtotime($departure_date) >= strtotime($objtrip->from_close_date)) && (strtotime($departure_date) <= strtotime($objtrip->to_close_date)) ? 1 : 0;
+									//else if ever close;
+									$status 			= $objtrip->ever_close == 1 && strtotime($departure_date) >= strtotime($objtrip->from_close_date) ? 1 : $status;
+									$objbusoccurance=new BusOccurance();
+									$objbusoccurance->seat_plan_id	=$seat_plan_id;
+									$objbusoccurance->bus_no		=$bus_no;
+									$objbusoccurance->from			=$from;
+									$objbusoccurance->to			=$to;
+									$objbusoccurance->classes		=$class_id;
+									$objbusoccurance->departure_date=$departure_date;
+									$objbusoccurance->departure_time=$time;
+									$objbusoccurance->price			=$price;
+									$objbusoccurance->foreign_price	=$foreign_price;
+									$objbusoccurance->commission	=$commission;
+									$objbusoccurance->operator_id	=$operator_id;
+									$objbusoccurance->trip_id		=$trip_id;
+									$objbusoccurance->status 		=$status;
+									$objbusoccurance->remark 		=$remark;
+									$checkbusoccurances=BusOccurance::wheretrip_id($trip_id)->wheredeparture_date($departure_date)->wheredeparture_time($time)->whereclasses($class_id)->first();
+									if(!$checkbusoccurances){
 										$objbusoccurance->save();
-										$j++;
 									}
-									$i++;
 								}
 							}
 						}
@@ -2611,6 +2622,7 @@ class ApiController extends BaseController
 					->wherefrom($from_city)
 					->whereto($to_city)
 					->orderBy('departure_time','asc')
+					->wherestatus(0)
 					->get();
 		}elseif($operator_id && !$from_city && !$to_city){
 			$objtrip=BusOccurance::whereoperator_id($operator_id)
@@ -2696,6 +2708,8 @@ class ApiController extends BaseController
 	    	$agent_id 				= Input::get('agent_id');
 	    	$name 	 				= Input::get('name');
 	    	$phone  				= Input::get('phone');
+	    	$remark_type  			= Input::get('remark_type');
+	    	$remark  				= Input::get('remark');
 	    	$seat_liststring 		= Input::get('seat_list');
 	    	$group_operator_id 		= Input::get('group_operator_id') ? Input::get('group_operator_id') : 0;
 	    	$booking 				= Input::get('booking');
@@ -2722,13 +2736,44 @@ class ApiController extends BaseController
     	/*
     	 * Delete Expired Order.
     	 */
+    	/*$expired_ids=SaleOrder::where('expired_at','<',$now_date)->wherebooking(0)->where('name','=','')->lists('id');
+    	if($expired_ids){
+    		foreach ($expired_ids as $expired_id) {
+    			SaleOrder::whereid($expired_id)->delete();
+    			SaleItem::whereorder_id($expired_id)->delete();
+    		}
+    	}*/
+	    /*
+    	 * Delete Expired Order.
+    	 */
 	    	$expired_ids=SaleOrder::where('expired_at','<',$now_date)->wherebooking(0)->where('name','=','')->lists('id');
 	    	if($expired_ids){
 	    		foreach ($expired_ids as $expired_id) {
-	    			SaleOrder::whereid($expired_id)->delete();
-	    			SaleItem::whereorder_id($expired_id)->delete();
+	    			$saleOrder = SaleOrder::whereid($expired_id)->first();
+	    			$saleItem = SaleItem::whereorder_id($expired_id)->get();
+	    			if($saleOrder){
+	    				$check = DeleteSaleOrder::whereid($expired_id)->first();
+	    				if(!$check){
+	    					$deletedSaleOrder = DeleteSaleOrder::create($saleOrder->toarray());
+		    				if($deletedSaleOrder){
+		    					SaleOrder::whereid($expired_id)->delete();
+		    				}
+	    				}
+	    			}
+	    			if($saleItem){
+	    				foreach ($saleItem as $rows) {
+	    					$check = DeleteSaleItem::whereid($rows->id)->first();
+	    					if(!$check){
+	    						$deletedSaleitem = DeleteSaleItem::create($rows->toarray());
+	    						if($deletedSaleitem){
+	    							SaleItem::whereorder_id($expired_id)->delete();
+	    						}
+	    					}
+	    				}
+	    			}
 	    		}
 	    	}
+   		
    		
    		$canby 		= true;
    		$all_canby 	= true;
@@ -2744,9 +2789,11 @@ class ApiController extends BaseController
     		/*
     		 * Calculate Departure Datetime;
     		 */
-    			$datetime = $departure_date." ".substr($departure_time, 0, 8);
-    			$strdate  = strtotime($datetime);
-    			$strdate  = $strdate - (60*60);
+    			$time 		= substr($departure_time, 0, 8);
+    			$time 		= $time == '12:00 AM' ? '12:00 PM' : $time;
+    			$datetime 	= $departure_date." ".$time;
+    			$strdate  	= strtotime($datetime);
+    			$strdate  	= $strdate - ((60*60) * 1);
     			$departure_datetime = date("Y-m-d H:i:s", $strdate);
 
     		/*
@@ -2789,11 +2836,13 @@ class ApiController extends BaseController
     			$objsaleorder=new SaleOrder();
     			$objsaleorder->id 					= $order_auto_id;
 	    		$objsaleorder->orderdate 			= $this->today;
-	    		$objsaleorder->departure_date 		= $departure_datetime;
+	    		$objsaleorder->departure_date 		= $departure_date;
 	    		$objsaleorder->departure_datetime 	= $departure_datetime;
 	    		$objsaleorder->agent_id 			= $agent_id ? $agent_id : 0;
 	    		$objsaleorder->name 	 			= $name;
 	    		$objsaleorder->phone 	 			= $phone;
+	    		$objsaleorder->remark_type 	 		= $remark_type;
+	    		$objsaleorder->remark 	 			= $remark;
 	    		$objsaleorder->operator_id 			= $operator_id;
 	    		$objsaleorder->expired_at 			= $expired_date;
 	    		$objsaleorder->device_id 			= $device_id;
@@ -2821,7 +2870,7 @@ class ApiController extends BaseController
 			    			$objsaleitems->agent_id 		= $agent_id ? $agent_id : 0;
 			    			$objsaleitems->price			=$busoccuranceinfo->price;
 			    			$objsaleitems->foreign_price	=$busoccuranceinfo->foreign_price;
-			    			$objsaleitems->departure_date	=$departure_datetime;
+			    			$objsaleitems->departure_date	=$departure_date;
 			    			$objsaleitems->save();
 	    				}
 	    			}
@@ -3177,18 +3226,44 @@ class ApiController extends BaseController
     public function getSaleOrder(){
     	$response 		=array();
     	$operator_id 	=Input::get('operator_id');
-    	$order_date 	=Input::get('order_date');
-    	if(!$operator_id || !$order_date){
+    	$departure_date 	=Input::get('departure_date');
+    	$from 	 		=Input::get('from');
+    	$to 	 		=Input::get('to');
+    	$time 			=Input::get('time');
+    	if(!$operator_id){
     		$response['status']=0;
     		$response['message']='Required Any Parameter.';
     		return Response::json($response, 400);
     	}
-
-    	$response=SaleOrder::with(array('saleitems'))
+    	if($departure_date){
+    		if($from && $to){
+    			$trip_id = Trip::wherefrom($from)->whereto($to)->where('time','LIKE', $time.'%')->lists('id');
+    			if($trip_id){
+    				$response=SaleOrder::with(array('saleitems'))
+    				->whereHas('saleitems',  function($query) use ($trip_id) {
+										$query->wherein('trip_id', $trip_id);
+										})
     				->wherebooking(1)
-    				->wheredeparture_date($order_date)
+    				->wheredeparture_date($departure_date)
     				->whereoperator_id($operator_id)
-					->get(array('id', 'orderdate', 'agent_id', 'operator_id'));
+					->get(array('id', 'orderdate', 'created_at', 'agent_id', 'operator_id'));
+    			}
+    			
+    		}else{
+    			$response=SaleOrder::with(array('saleitems'))
+    				->wherebooking(1)
+    				->wheredeparture_date($departure_date)
+    				->whereoperator_id($operator_id)
+					->get(array('id', 'orderdate', 'created_at', 'agent_id', 'operator_id'));
+    		}
+    		
+		}else{
+			$response=SaleOrder::with(array('saleitems'))
+    				->wherebooking(1)
+    				->whereoperator_id($operator_id)
+					->get(array('id', 'orderdate', 'created_at', 'agent_id', 'operator_id'));
+		}
+
     	
     	if($response){
     		$i=0;
@@ -3250,6 +3325,7 @@ class ApiController extends BaseController
     			}
 				$operator=Operator::whereid($row->operator_id)->pluck('name');
 				$agent=Agent::whereid($row->agent_id)->pluck('name');
+				$response[$i]['orderdate'] =date('d/m/Y h:i:s a',strtotime($row->orderdate.' '.date('h:i:s a',strtotime($row->created_at) + ((60*60) * 6.5))));
     			$response[$i]['operator']=$operator;
     			$response[$i]['agent']=$agent;
     			$response[$i]['trip']=$trip;

@@ -1,5 +1,104 @@
 <?php
 	
+	Route::get('saves', function(){
+		$i=0;
+		$objorders=SaleOrder::orderBy('id','asc')->get();
+		if($objorders){
+			foreach ($objorders as $rows) {
+				$objsaleorder=SaleOrder::find($rows->id);
+				$objsaleitems=SaleItem::whereorder_id($rows->id)->first();
+				if($objsaleorder && $objsaleitems){
+					$objagent_commission=AgentCommission::whereagent_id($objsaleitems->agent_id)->wheretrip_id($objsaleitems->trip_id)->first();
+					$commission=0;
+					if($objagent_commission){
+						if($objagent_commission->commission_id==1){
+							$commission=$objagent_commission->commission;
+						}else{
+							if($nationality=='local'){
+			    				$commission +=($objsaleitems->price * $objagent_commission->commission) / 100;
+			    			}else{
+			    				$commission +=($objsaleitems->foreign_price * $objagent_commission->commission) / 100;
+			    			}
+						}
+					}
+					$tickets=SaleItem::whereorder_id($rows->id)->count('id');
+					$commission=$commission * $tickets;
+
+					if($commission==0){
+						$tripcommission=Trip::whereid($objsaleitems->trip_id)->pluck('commission');
+						$commission= $tripcommission *  $tickets;
+					}
+					$totalamount=0;
+
+					if($rows->nationality=='local'){
+						$totalamount +=$objsaleitems->price * $tickets;
+					}else{
+						$totalamount +=$objsaleitems->foreign_price * $tickets;	
+					}
+				}
+
+				//Payment Transaction
+	    		if($rows->booking == 0){
+	    			$total_amount 				= $objsaleorder->total_amount - $objsaleorder->agent_commission;
+	    			$check=AgentDeposit::whereorder_ids('["'.$objsaleorder->id.'"]')->first();
+	    			
+	    			if(!$check){
+		    			$objdepositpayment_trans	= new AgentDeposit();
+		    			$agentgroup_id=Agent::whereid($objsaleorder->agent_id)->pluck('agentgroup_id');
+			    		$objdepositpayment_trans->agentgroup_id 	=$agentgroup_id;
+			    		$objdepositpayment_trans->agent_id 	 		= $objsaleorder->agent_id;
+			    		$objdepositpayment_trans->operator_id		= $objsaleorder->operator_id;
+			    		$objdepositpayment_trans->total_ticket_amt	= $total_amount;
+			    		$today 										= $objsaleorder->orderdate;
+			    		$objdepositpayment_trans->pay_date			= $today;
+			    		$objdepositpayment_trans->order_ids			= '["'.$objsaleorder->id.'"]';
+
+			    		$objdepositpayment_trans->payment 			= 0;
+			    		$agentdeposit 				= AgentDeposit::whereagent_id($objsaleorder->agent_id)->whereoperator_id($objsaleorder->operator_id)->orderBy('id','desc')->first();
+			    		if($agentdeposit){
+			    			$objdepositpayment_trans->deposit 		= $agentdeposit->balance;
+			    			$objdepositpayment_trans->balance 		= $agentdeposit->balance - $total_amount;
+			    		}else{
+			    			$objdepositpayment_trans->deposit 		= 0;
+			    			$objdepositpayment_trans->balance 		= 0 - $total_amount;
+			    		}  		
+			    		$objdepositpayment_trans->debit 			= 0;
+			    		$objdepositpayment_trans->save();
+			    	}else{
+			    		$i++;
+			    	}
+	    		}	
+			}
+			dd('Already having records are ' . $i);
+		}else{
+			dd('There is no records.');
+		}
+	});
+
+	Route::get('agntgrp', function(){
+		$objagent_ids=Agent::whereagentgroup_id(0)->lists('id');
+		$k=0;$i=0;
+		if($objagent_ids){
+			foreach ($objagent_ids as $id) {
+				$agentgroup=new AgentGroup();
+				$objagent=Agent::whereid($id)->first();
+				$check=AgentGroup::wherename($objagent->name)->first();
+				if($check){
+					$k++;
+				}else{
+					$agentgroup->name 		=$objagent->name;
+					$agentgroup->operator_id=$objagent->operator_id ? $objagent->operator_id : 0;
+					$agentgroup->save();
+					$objagent->agentgroup_id=$agentgroup->id;
+					$objagent->update();
+					$i++;
+				}
+				
+			}
+		}
+		dd('finished! create records is '.$i.' duplicate records is '.$k);
+	});
+	
 	Route::get('tripautocreate',       				'ApiController@tripautocreate');
 
 	Route::group(array('before' => 'fauth'), function()
@@ -40,7 +139,7 @@
 	Route::group(array('before' => 'auth'), function()
 	{
 		//Sync
-		Route::get('/client/sync', 					'SyncDatabaseController@index');
+		Route::get('/client/sync', 						'SyncDatabaseController@index');
 
 		//operator report
 		Route::get('report/operator/trip/dateranges',	'ReportController@getTripslistreportOperator');
@@ -126,6 +225,8 @@
 		Route::post('searchagent',       	'AgentController@postSearchAgent');
 
 		Route::get('agentgroup/create',			'AgentGroupController@getAddagentgroup');
+		Route::get('agentgroup-actions/{id}',	'AgentGroupController@getAgentGroupActions');
+		
 		Route::post('addagentgroup',			'AgentGroupController@postAddagentgroup');
 		Route::get('agentgrouplist',	    	'AgentGroupController@showAgentgroupList');
 		Route::get('agentgroupchildlist/{id}',	'AgentGroupController@AgentGroupChildList');
@@ -197,6 +298,9 @@
 
 		Route::get('define-ownseat/{id}',		'TripController@ownseat');
 		Route::post('define-ownseat',			'TripController@postownseat');
+
+		Route::get('closetrip/{id}',			'TripController@closeTrip');
+		Route::post('closetrip',				'TripController@saveCloseTrip');
 		
 
 		Route::get('orderlist',					'OrderController@orderlist');
@@ -626,6 +730,8 @@
 	Route::get('testupload', 								'SyncDatabaseController@uploadtest');
 	Route::get('getupprogress/{sync_id}',					'SyncDatabaseController@getUploadProgress');
 	Route::get('getdownprogress/{sync_id}',					'SyncDatabaseController@getDownloadedProgress');
+
+	Route::get('autorun',									'TestController@autoRun');
 
 	Route::get('404', function()
 	{

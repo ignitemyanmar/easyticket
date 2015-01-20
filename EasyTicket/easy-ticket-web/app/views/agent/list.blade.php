@@ -130,8 +130,8 @@
                                        <th>လိပ္စာ</th>
                                        <th>ေကာ္္မစ္ရွင္ ႏႈန္း</th>
                                        <th>Owner</th>
-                                       <th class="span1">ျပင္ရန္</th>
-                                       <th class="span1">ဖ်က္ရန္</th>
+                                       <th class="span2">&nbsp;</th>
+                                       <!-- <th class="span1">ဖ်က္ရန္</th> -->
                                  </thead>
                                  <tbody>
                                     @if(count($response)==0)
@@ -151,12 +151,26 @@
                                              <td><div class="wordwrap">{{$agent['address']}}</div></td>
                                              <td>{{$agent['commission']}} @if($agent['commission_id']==2) % @endif</td>
                                              <td>@if($agent['owner']==1) Owner @else - @endif</td>
-                                             <td style="text-align:center;">
-                                                   <a href="/agent-update/{{ $agent['id'] }}"  class="btn green">ျပင္ရန္</a><br><br>
-                                             </td>
-                                             <td style="text-align:center;">
-                                                   <a href="deleteagent/{{ $agent['id'] }}"   class="btn green">ဖ်က္ရန္</a>
-                                             </td>
+                                             <td>
+                                                <div class="btn-group">
+                                                    <a class="btn blue" href="#" data-toggle="dropdown">
+                                                    <i class="icon-cog"></i> Settings
+                                                    <i class="icon-angle-down"></i>
+                                                    </a>
+                                                    <ul class="dropdown-menu"> 
+                                                      <li>
+                                                        <a href="/agent-update/{{ $agent['id'] }}"><i class="icon-pencil"></i> ျပင္ရန္</a>
+                                                      </li>
+                                                      <li>
+                                                        <a href="deleteagent/{{ $agent['id'] }}"><i class="icon-trash"></i>ဖ်က္ရန္</a>
+                                                      </li>
+                                                      <li>
+                                                        <a href="agent-salelist/{{ $agent['id'] }}"><i class="icon-list"></i>အေရာင္းစာရင္းမ်ား</a>
+                                                      </li>
+                                                      <li class="divider"></li>
+                                                    </ul>
+                                                </div>
+                                              </td>
                                           </tr>
                                        @endforeach
                                     @endforeach

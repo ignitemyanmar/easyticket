@@ -12,26 +12,7 @@
             <!-- BEGIN PAGE HEADER-->
                <div class="row-fluid">
                   <div class="span12">
-                     <!-- BEGIN STYLE CUSTOMIZER -->
-                     <div class="color-panel hidden-phone">
-                        <div class="color-mode-icons icon-color"></div>
-                        <div class="color-mode-icons icon-color-close"></div>
-                        <div class="color-mode">
-                           <p>THEME COLOR</p>
-                           <ul class="inline">
-                              <li class="color-black current color-default" data-style="default"></li>
-                              <li class="color-blue" data-style="blue"></li>
-                              <li class="color-brown" data-style="brown"></li>
-                              <li class="color-purple" data-style="purple"></li>
-                              <li class="color-white color-light" data-style="light"></li>
-                           </ul>
-                           <label class="hidden-phone">
-                           <input type="checkbox" class="header" checked value="" />
-                           <span class="color-mode-label">Fixed Header</span>
-                           </label>                   
-                        </div>
-                     </div>
-                     <!-- END BEGIN STYLE CUSTOMIZER -->    
+                       
                      <!-- BEGIN PAGE TITLE & BREADCRUMB-->        
                      <h3 class="page-title">
                         Dashboard            
@@ -81,7 +62,7 @@
                                        <th>Price</th>
                                        <th>Foreign Price</th>
                                        <th>FOC</th>
-                                       <th>Action</th>
+                                       <th></th>
                                     </tr>
                                  </thead>
                                  <tbody>
@@ -96,8 +77,23 @@
                                              <td>{{$ticket->foreign_price}}</td>
                                              <td>@if($ticket->free_ticket==0) No @else Yes @endif</td>
                                              <td>
-                                                <a class="btn large green-stripe edit" href="/order-tickets/delete/{{$ticket->id}}">Delete</a>
-                                                <a class="btn large red-stripe delete" href="/orderlist">Order List</a>
+                                                <div class="btn-group pull-right">
+                                                   <a class="btn blue" href="#" data-toggle="dropdown">
+                                                      <i class="icon-cog"></i> Settings
+                                                      <i class="icon-angle-down"></i>
+                                                   </a>
+                                                   <ul class="dropdown-menu"> 
+                                                      <li>
+                                                        <a class="delete" href="/order-tickets/delete/{{$ticket->id}}"><i class="icon-trash"></i>Delete</a>
+                                                      </li>
+                                                      <li>
+                                                        <a  href="/orderlist"><i class="icon-list"></i>Order List</a>
+                                                      </li>
+                                                      <li class="divider"></li>
+                                                   </ul>
+                                                </div>
+                                                <!-- <a class="btn large green-stripe edit" href="/order-tickets/delete/{{$ticket->id}}">Delete</a> -->
+                                                <!-- <a class="btn large red-stripe delete" href="/orderlist">Order List</a> -->
                                              </td>
                                           </tr>
                                     @endforeach

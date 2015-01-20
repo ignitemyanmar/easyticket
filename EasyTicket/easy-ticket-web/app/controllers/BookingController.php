@@ -9,7 +9,27 @@ class BookingController extends \BaseController {
 	 */
 	public function getBookingList()
 	{
-		$response=SaleOrder::wherebooking(1)->with(array('agent','saleitems'))->get();
+		$time=Input::get('departure_time');
+		//for departure time
+			$format_time=substr($time, 0,8);
+			// 12-hour time to 24-hour time 
+			$format_departure_time  = date("H:i", strtotime($format_time) - (60*60*1));
+
+		$start_date=Input::get('start_date');
+		$end_date=Input::get('end_date');
+
+		if($start_date){
+			$start_date=str_replace('/', '-', $start_date);
+			$end_date=str_replace('/', '-', $end_date);
+			$start_date=date('Y-m-d', strtotime($start_date));
+			$end_date=date('Y-m-d', strtotime($end_date));
+		}else{
+			$start_date=$this->getDate();
+			$end_date=$this->getDate();
+		}
+
+		// $response=SaleOrder::where('departure_date','>=', $start_date)->where('departure_date','<=', $end_date)->where('departure_datetime','like','%'.$format_departure_time.'%')->wherebooking(1)->with(array('agent','saleitems'))->get();
+		$response=SaleOrder::where('departure_date','>=', $start_date)->where('departure_date','<=', $end_date)->wherebooking(1)->with(array('agent','saleitems'))->get();
 		$i=0;
 		foreach ($response as $row) {
 			if(count($row->saleitems)>0){
@@ -34,8 +54,17 @@ class BookingController extends \BaseController {
 				$i++;
 			}
 		}
-		// return Response::json($response);
-		return View::make('busreport.booking.list', array('response'=>$response));
+
+		$search['start_date']=$start_date;
+		$search['end_date']=$end_date;
+		$operator_id =$this->myGlob->operator_id;
+		$times=array();
+		$from=$to=null;
+	    $times=$this->getTime($operator_id, $from, $to);
+	    $search['times']=$times;
+	    $search['time'] =$time;
+	    // return Response::json($response);
+		return View::make('busreport.booking.list', array('response'=>$response, 'search'=>$search));
 
 	}
 
@@ -78,7 +107,6 @@ class BookingController extends \BaseController {
 
 	public function getTodayBookingList()
 	{
-		
 		$order_ids=SaleOrder::where('departure_date','=',$this->getDate())->wherebooking(1)->lists('id');
 		$response=array();
 		if($order_ids){
@@ -109,9 +137,18 @@ class BookingController extends \BaseController {
 				
 			}
 		}
-		
+		$search=array();
+		$search['start_date']=$this->getDate();
+		$search['end_date']=$this->getDate();
+		$search['time']="";
+		$operator_id =$this->myGlob->operator_id;
+		$times=array();
+		$from=$to=null;
+	    $times=$this->getTime($operator_id, $from, $to);
+	    $search['times']=$times;
+	    $search['time'] ="";
 		// return Response::json($response);
-		return View::make('busreport.booking.list', array('response'=>$response));
+		return View::make('busreport.booking.list', array('response'=>$response,'search'=>$search));
 
 	}
 

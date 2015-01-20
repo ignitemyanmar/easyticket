@@ -1,15 +1,22 @@
 <?php
 class AgentGroupController extends BaseController
 {
-	   public function getAddagentgroup()
-  	{   
-	  	// $agent =Agent::all();
-	  	// $agentgroup = AgentGroup::all();
-	  	return View::make('agentgroup.add');
-  	}
+    public function showAgentgroupList()
+    {
+      $objagentgroup = AgentGroup::orderBy('id','desc')->get();
+      // return Response::json($objagentgroup);
+      $response = $objagentgroup;
+      $totalcount = AgentGroup::count();
+      return View::make('agentgroup.list',array('response'=>$response,'totalcount'=>$totalcount));
+    }
 
-  	public function postAddagentgroup()
-  	{
+    public function getAddagentgroup()
+    {   
+      return View::make('agentgroup.add');
+    }
+
+    public function postAddagentgroup()
+    {
       $name = Input::get('agentgroup');
       $checkexisting=AgentGroup::wherename($name)->first();
       if($checkexisting){
@@ -24,24 +31,12 @@ class AgentGroupController extends BaseController
       $message['status']=1;
       $message['info']="Successfully save one record.";
       return Redirect::to('/agentgrouplist')->with('message', $message);
-  	}
-   
-
-  	public function showAgentgroupList()
-  	{
-      $operator_id=$this->myGlob->operator_id;
-      $objagentgroup = AgentGroup::whereoperator_id($operator_id)->orderBy('id','desc')->get();
-      // return Response::json($objagentgroup);
-      $response = $objagentgroup;
-      $totalcount = AgentGroup::whereoperator_id($operator_id)->count();
-      return View::make('agentgroup.list',array('response'=>$response,'totalcount'=>$totalcount));
-  	}
+    }
 
     public function AgentGroupChildList($id)
     {
       $response=Agent::whereagentgroup_id($id)->get();
       $groupname=AgentGroup::whereid($id)->pluck('name');
-      // return Response::json($agentlist);
       return View::make('agentgroup.childlist', array('response'=> $response, 'groupname'=>$groupname));
     }
 
@@ -50,11 +45,22 @@ class AgentGroupController extends BaseController
       return View::make('agentgroup.edit')->with('agentgroup',AgentGroup::find($id));
     }
 
+    public function getAgentGroupActions($id){
+      $response=array();
+      $response=AgentGroup::whereid($id)->first();
+      $operator_id=$this->myGlob->operator_id;
+      $trips=Trip::whereoperator_id($operator_id)->with(array('from_city','to_city','busclass'))->get();
+
+      return View::make('agentgroup.groupactions', array('response'=>$response,'trips'=>$trips));;
+      // return View::make('agentgroup.gropuactions');
+    }
+
     public function postEditAgentgroup($id)
     {
-      $agentgroup = new AgentGroup();
-      $affectedRows= AgentGroup::where('id','=',$id)->update(array('name'=>Input::get('name')));
-      return Redirect::to('agentgrouplist');
+      AgentGroup::where('id','=',$id)->update(array('name'=>Input::get('name')));
+      $message['status']=1;
+      $message['info']="Successfully update one record.";
+      return Redirect::to('agentgrouplist')->with('message', $message);
     }
 
     public function getDeleteAgentgroup($id)

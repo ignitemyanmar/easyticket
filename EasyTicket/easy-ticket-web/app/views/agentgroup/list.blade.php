@@ -9,26 +9,6 @@
             <!-- BEGIN PAGE HEADER-->
                <div class="row-fluid">
                   <div class="span12">
-                     <!-- BEGIN STYLE CUSTOMIZER -->
-                     <div class="color-panel hidden-phone">
-                        <div class="color-mode-icons icon-color"></div>
-                        <div class="color-mode-icons icon-color-close"></div>
-                        <div class="color-mode">
-                           <p>THEME COLOR</p>
-                           <ul class="inline">
-                              <li class="color-black current color-default" data-style="default"></li>
-                              <li class="color-blue" data-style="blue"></li>
-                              <li class="color-brown" data-style="brown"></li>
-                              <li class="color-purple" data-style="purple"></li>
-                              <li class="color-white color-light" data-style="light"></li>
-                           </ul>
-                           <label class="hidden-phone">
-                           <input type="checkbox" class="header" checked value="" />
-                           <span class="color-mode-label">Fixed Header</span>
-                           </label>                   
-                        </div>
-                     </div>
-                     <!-- END BEGIN STYLE CUSTOMIZER -->    
                      <!-- BEGIN PAGE TITLE & BREADCRUMB-->        
                      <h3 class="page-title">
                         အေရာင္းကုိယ္စားလွယ္ အုပ္စုမ်ား            
@@ -72,12 +52,12 @@
                                  @if($message['status']='0')
                                  <div class="alert alert-info">
                                     <button class="close" data-dismiss="alert"></button>
-                                    <strong>Exiting ! </strong>This record is already exit.
+                                    {{$message['info']}}
                                  </div>
                                  @else
                                  <div class="alert alert-success">
                                     <button class="close" data-dismiss="alert"></button>
-                                    <strong>Success!</strong> One record have been added.
+                                    <strong>Success!</strong> {{$message['info']}}
                                  </div>
                                  @endif
                               @endif
@@ -87,9 +67,10 @@
                                        <th class="span10">Name</th>
                                        <!-- <th class="span3">Phone</th> -->
                                        <!-- <th class="span3">Address</th> -->
-                                       <th class="span1">Branches</th>
-                                       <th class="span1">Edit</th>
-                                       <th class="span1">Delete</th>
+                                       <th class="span3">Branches</th>
+                                       <!-- <th class="span1">Edit</th> -->
+                                       <th class="span1">Actions</th>
+                                       <!-- <th class="span1">Delete</th> -->
                                     </tr>
                                  </thead>
                                  <tbody>
@@ -101,13 +82,28 @@
                                     @foreach($response as $agent)
                                                 <tr>
                                                    <td>{{$agent['name']}}</td>
-                                                   <td><a href="/agentgroupchildlist/{{ $agent['id'] }}"  class="btn green-stripe button-submit">View</a><br><br></td>
-                                                   <td style="text-align:center;">
-                                                         <a href="/agent-update/{{ $agent['id'] }}"  class="btn blue-stripe button-submit">Edit</a><br><br>
+                                                   <td><a href="/agentgroupchildlist/{{ $agent['id'] }}"  class="btn blue button-submit">View Branches <i class="m-icon-swapright m-icon-white"></i></a><br><br></td>
+                                                   <td>
+                                                         <div class="btn-group">
+                                                            <a class="btn blue" href="#" data-toggle="dropdown">
+                                                            <i class="icon-cog"></i> Settings
+                                                            <i class="icon-angle-down"></i>
+                                                            </a>
+                                                            <ul class="dropdown-menu"> 
+                                                               <li><a href="/agentgroup-update/{{ $agent['id'] }}"><i class="icon-pencil"></i> Edit</a></li>
+                                                               <li><a href="/agentgroup-actions/{{ $agent['id'] }}"><i class="icon-plus"></i> Entry Payments</a></li>
+                                                               <li><a href="/deleteagentgroup/{{ $agent['id'] }}"><i class="icon-remove"></i> Delete</a></li>
+                                                               <li class="divider"></li>
+                                                               <!-- <li><a href="#"><i class="i"></i> Full Settings</a></li> -->
+                                                            </ul>
+                                                         </div>
+                                                   </td>
+                                                   <!-- <td style="text-align:center;">
+                                                         <a href="/agentgroup-actions/{{ $agent['id'] }}"  class="btn blue-stripe button-submit">Entry</a><br><br>
                                                    </td>
                                                    <td style="text-align:center;">
                                                          <a href="deleteagentgroup/{{ $agent['id'] }}"   class="btn red-stripe button-submit">Delete</a>
-                                                   </td>
+                                                   </td> -->
                                                 </tr>
                                     @endforeach
                                     

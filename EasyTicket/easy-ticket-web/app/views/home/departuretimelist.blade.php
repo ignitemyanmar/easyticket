@@ -70,7 +70,7 @@
 														<div class="class-label">{{substr($row['time'],0,5)}} <br>{{substr($row['time'],5)}}</div>
 													</div>
 												</div>
-												<div class="large-6 medium-6 small-6 columns">
+												<div class="large-6 medium-6 small-6 columns nopadding">
 													<div class="departure-info">
 														<div class="class-seat">
 														{{$row['bus_class']}} <br><br>

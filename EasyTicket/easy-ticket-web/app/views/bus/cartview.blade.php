@@ -83,7 +83,7 @@
 										</div>
                                     </div>
 
-                                    <div class="row">
+                                    <!-- <div class="row">
 										<div class="large-4 columns">ဂိတ္ၾကီး / ဂိတ္ခြဲ</div>
 										<div class="large-4 columns nopadding">
 											<label>
@@ -97,17 +97,6 @@
 	                                            ဂိတ္ခြဲ
 	                                        </label>
 										</div>
-                                    </div>
-
-                                    <!-- <div class="row">
-										<div class="large-4 columns">ၾကိဳတင္မွာယူသည္</div>
-										<div class="large-4 columns nopadding">
-											<label>
-	                                            <input name="booking" class="booking" value="1" type="checkbox">
-	                                            ၾကိဳတင္မွာ ယူသည္
-	                                        </label>
-	                                    </div>
-										<div class="large-4 columns nopadding">&nbsp;</div>
                                     </div> -->
 
                                     <div class="row">

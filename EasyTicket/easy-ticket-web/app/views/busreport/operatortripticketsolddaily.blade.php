@@ -38,7 +38,6 @@
                   <div class="span12">
                      <?php 
                         $orderdate=Session::get('search_daily_date'); 
-                        $V_operator_id=Session::get('operator_id');
                      ?>
                      <?php $pagetitle=""; ?>
                      @if($search['agent_rp']==1)
@@ -144,14 +143,14 @@
                                        </td>
                                     </tr>
                                     <tr class="table-bordered">
-                                       <th class="span1">ဝယ္ယူ သည့္ေန႔</th>
-                                       <th>လက္မွတ္ No</th>
+                                       <th class="span1">လက္မွတ္ No</th>
+                                       <th>ခုံနံပါတ္ </th>
                                        <th>ခရီးစဥ္</th>
                                        <th>ထြက္ခြာ မည့္ ေန့ရက္ / အခ်ိန္</th>
                                        <th>ကားအမ်ုိဳး အစား</th>
                                        <th>အေရာင္း ကုိယ္စားလွယ္</th>
                                        <th>ဝယ္သူ</th>
-                                       <th>ခုံနံပါတ္</th>
+                                       <th>ဝယ္ယူ သည့္ေန႔</th>
                                        <th>ခုံအေရ အတြက္</th>
                                        <th>အခမဲ႕ လက္မွတ္ </th>
                                        <th>ေစ်းႏုန္း</th>
@@ -164,21 +163,27 @@
                                       <?php 
                                         $G_totalticket=0;
                                         $G_totalamount=0;
+                                        $Org_totalamount=0;
                                       ?> 
                                       @foreach($response as $key=>$rows)
-                                          <!-- <tr>
-                                             <td colspan="13"><h4>{{$key}}</h4></td>
-                                          </tr> -->
                                           @if(count($rows)>0)
                                              <?php 
                                                 $totalticket=0;
                                                 $totalamount=0;
+                                                $org_totalamount=0;
                                              ?> 
                                              @foreach($rows as $result)
+                                                <?php 
+                                                   $totalticket +=$result['sold_seat'];
+                                                   // $totalamount +=$result['total_amount'];
+                                                   $org_totalamount +=$tmptotalamount=($result['sold_seat'] - $result['free_ticket']) * $result['price'];
+                                                   $tmptotalamount -=($result['sold_seat'] - $result['free_ticket']) * $result['commission'];
+                                                   $totalamount +=$tmptotalamount;
+                                                ?> 
                                                 <tr>
                                                    <!-- <td></td> -->
-                                                   <td>{{date('d/m/Y',strtotime($result['order_date']))}}</td>
-                                                   <td>{{$result['ticket_no']}}</td>
+                                                   <td># {{$result['ticket_no']}}</td>
+                                                   <td>{{$result['seat_no']}}</td>
                                                    <td>{{$result['from_to']}}</td>
                                                    <td>{{date('d/m/Y',strtotime($result['departure_date']))}} ({{$result['time']}})</td>
                                                    <td>{{$result['classes']}}</td>
@@ -188,38 +193,33 @@
                                                       </div>
                                                    </td>
                                                    <td>{{$result['buyer_name']}}</td>
-                                                   <td>{{$result['seat_no']}}</td>
+                                                   <td>{{date('d/m/Y',strtotime($result['order_date']))}}</td>
                                                    <td>{{$result['sold_seat']}}</td>
                                                    <td>{{$result['free_ticket']}}</td>
                                                    <td>{{$result['price']}}</td>
                                                    <td>{{$result['price']-$result['commission']}} ({{$result['commission']}})</td>
-                                                   <td>{{$result['total_amount']}}</td>
+                                                   <td>{{$tmptotalamount}}</td>
                                                 </tr>
-                                                <?php 
-                                                   $totalticket +=$result['sold_seat'];
-                                                   $totalamount +=$result['total_amount'];
-                                                ?> 
+                                                
                                              @endforeach
-                                             <!-- <tr>
-                                                <th colspan="6">&nbsp;</th>
-                                                <th colspan="2">Sub Quantity</th>
-                                                <th>{{$totalticket}}</th>
-                                                <th colspan="2">Sub Total</th>
-                                                <th colspan="2" style="text-align:right;">{{$totalamount}}</th>
-                                             </tr> -->
+                                             
                                           @endif
                                           <?php 
                                              $G_totalticket +=$totalticket;
                                              $G_totalamount +=$totalamount;
+                                             $Org_totalamount +=$org_totalamount;
+
                                           ?> 
                                       @endforeach
                                     </tbody>
                                     <tfoot>
                                       <tr style="background:#ddd;">
-                                        <th colspan="6">&nbsp;</th>
+                                        <th colspan="2">&nbsp;</th>
                                         <th colspan="2" class="text-right">Grand Quantity</th>
                                         <th>: {{$G_totalticket}}</th>
                                         <th colspan="3" class="text-right">Grand Total :</th>
+                                        <th style="text-align:right;">{{$Org_totalamount}}</th>
+                                        <th colspan="3" class="text-right">% ႏုတ္ျပီး စုစုေပါင္း =</th>
                                         <th style="text-align:right;">{{$G_totalamount}}</th>
                                       </tr>
                                     </tfoot>
@@ -247,7 +247,7 @@
                   { "visible": false, "targets": 2 }
               ],*/
               "order": [[ 2, 'asc' ]],
-              "displayLength": 25,
+              "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
               "pagingType": "full_numbers",
               "drawCallback": function ( settings ) {
                   var api = this.api();
@@ -257,7 +257,7 @@
                   api.column(2, {page:'current'} ).data().each( function ( group, i ) {
                       if ( last !== group ) {
                           $(rows).eq( i ).before(
-                              '<tr class="group"><th colspan="13">'+group+'</th></tr>'
+                              '<tr class="group"><th colspan="8">'+group+'</th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th></tr>'
                           );
        
                           last = group;

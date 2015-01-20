@@ -118,9 +118,23 @@
                                  <tbody>
                                     @foreach($response as $trip)
                                           <tr>
-                                             <td class="hidden-phone span2">{{$trip['from_city']->name.'=>'.$trip['to_city']->name}} @if($trip['extendcity'])<span class="btn red mini">{{City::whereid($trip['extendcity']->city_id)->pluck('name');}}</span> @endif</td>
+                                             <td class="hidden-phone span2">{{$trip['from_city']->name.'=>'.$trip['to_city']->name}} @if($trip['extendcity'])
+                                             <span class="label label-info mini">{{City::whereid($trip['extendcity']->city_id)->pluck('name');}}</span> @endif
+                                             @if($trip->ever_close == 0)
+                                                @if((strtotime($trip->from_close_date) >= strtotime(date('Y-m-d'))) && (strtotime(date('Y-m-d')) <= strtotime($trip->to_close_date)))
+                                                <br><span class="label label-important">NOTE!</span>
+                                                <span>We are close from [{{date('d/m/Y',strtotime($trip->from_close_date))}}] to [{{date('d/m/Y',strtotime($trip->to_close_date))}}] date because of [{{$trip->remark}}]</span>
+                                                @endif
+                                             @endif
+                                             @if($trip->ever_close == 1)
+                                                <br><span class="label label-important">NOTE!</span>
+                                                <span>We are ever close from [{{date('d/m/Y',strtotime($trip->from_close_date))}}] because of [{{$trip->remark}}]</span>
+                                             @endif
+                                             </td>
                                              <!-- <td>{{$trip['to_city']->name}}</td> -->
-                                             <td>{{$trip['busclass']->name}}<br>{{$trip['seat_plan']->name}}</td>
+                                             <td>{{$trip['busclass']->name}}<br>{{$trip['seat_plan']->name}}
+
+                                             </td>
                                              <td>
                                                 <p>ကားထြက္သည့္ ေန႕မ်ား : {{$trip['available_day']}}</p>
                                             အခ်ိန္ :   {{$trip['time']}}</td>
@@ -130,15 +144,28 @@
                                              <td>{{$trip['foreign_price']}}</td>
                                              <td>{{$trip['commission']}}</td>
                                              <td>
-                                                <!-- <a class="btn mini green-stripe" href="#">ျပင္မည္</a> -->
-                                                <a class="btn mini red-stripe delete" href="deletetrip/{{ $trip['id'] }}">ဖ်က္မည္</a>
-                                                <a class="btn mini green-stripe" href="define-ownseat/{{ $trip['id'] }}">ခုံပုိင္သတ္မွတ္ရန္</a>
-                                                @if(!is_null($trip['extendcity']))
-                                                   <a class="btn large blue-stripe" href="/trip/editextend/{{$trip['id']}}">ဆက္သြားမည့္ျမိဳ႕ ျပင္ရန္</a>
-                                                   <a class="btn large red-stripe delete" href="/trip/deleteextend/{{$trip['extendcity']['id']}}">ဆက္သြားမည့္ျမိဳ႕ ဖ်က္ရန္</a>
-                                                @else
-                                                   <a class="btn large blue-stripe" href="/trip/extend/{{$trip['id'] }}">ဆက္သြားမည့္ျမိဳ႕ ထည့္ရန္</a>
-                                                @endif
+                                                <div class="btn-group">
+                                                   <a class="btn green" href="#" data-toggle="dropdown">
+                                                   <i class="icon-cogs"></i> Tools
+                                                   <i class="icon-angle-down"></i>
+                                                   </a>
+                                                   <ul class="dropdown-menu pull-right">
+                                                      <li><a href="deletetrip/{{ $trip['id'] }}"><i class="icon-trash"></i> ဖ်က္မည္</a></li>
+                                                      <li class="divider"></li>
+                                                      <li><a href="define-ownseat/{{ $trip['id'] }}"><i class="icon-pencil"></i> ခုံပုိင္သတ္မွတ္ရန္</a></li>
+                                                      <li class="divider"></li>
+                                                      @if(!is_null($trip['extendcity']))
+                                                      <li><a href="/trip/editextend/{{$trip['id']}}"><i class="icon-pencil"></i> ဆက္သြားမည့္ျမိဳ႕ ျပင္ရန္</a></li>
+                                                      <li><a href="/trip/deleteextend/{{$trip['extendcity']['id']}}"><i class="icon-trash"></i> ဆက္သြားမည့္ျမိဳ႕ ဖ်က္ရန္</a></li>
+                                                      @else
+                                                      <li><a href="/trip/extend/{{$trip['id']}}"><i class="icon-pencil"></i> ဆက္သြားမည့္ျမိဳ႕ ထည့္ရန္</a></li>
+                                                      @endif
+                                                      <li class="divider"></li>
+                                                      <li><a href="/closetrip/{{ $trip['id'] }}"><i class="icon-ban-circle"></i> ခဏ ရပ္ဆိုင္းရန္</a></li>
+                                                      
+                                                   </ul>
+                                                </div>
+                                                
                                              </td>
                                           </tr>
                                     @endforeach

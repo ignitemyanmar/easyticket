@@ -262,6 +262,52 @@ class TripController extends \BaseController {
 		return View::make('trip.list', array('response'=>$response));
 	}
 
+	public function closeTrip($trip_id){
+		return View::make('trip.closetrip', array('trip_id'=> $trip_id));
+	}
+
+	public function saveCloseTrip(){
+		$input 		= Input::all();
+		$ever_close = isset($input['ever_close']) ? $input['ever_close'] : 0;
+		$remark 	= $input['remark'];
+		$trip_id 	= $input['trip_id'];
+		if($ever_close == 0){
+			$date_range = explode("-",$input['date_range']);
+			$start_date = date('Y-m-d', strtotime($date_range[0]));
+			$end_date 	= date('Y-m-d', strtotime($date_range[1]));
+		}else{
+			$start_date =  date('Y-m-d', strtotime($input['date_range']));
+			$end_date 	= null;
+		}
+
+
+		$trip = Trip::whereid($trip_id)->first();
+		if($trip){
+			$trip->ever_close 		= $ever_close;
+			$trip->from_close_date 	= $start_date;
+			$trip->to_close_date 	= $end_date;
+			$trip->remark 			= $remark;
+			$trip->update();
+		}
+
+		if($ever_close == 0)
+			$busoccurance = BusOccurance::wheretrip_id($trip_id)->where('departure_date','>=',$start_date)->where('departure_date','<=',$end_date)->lists('id');
+		else
+			$busoccurance = BusOccurance::wheretrip_id($trip_id)->where('departure_date','>=',$start_date)->lists('id');
+
+		if($busoccurance){
+			foreach ($busoccurance as $id) {
+				$bus = BusOccurance::whereid($id)->first();
+				$bus->status = 1;
+				$bus->remark = $remark;
+				$bus->update();
+			}
+		}
+		$response="Successfully has been closed for this trip.";
+		return Redirect::to('trip-list')->with('message',$response);;
+
+	}
+
 	public function postBusOccuranceOnlyOne($operator_id, $trip_id,$departure_date, $time){
 		$bus_no 	=Input::get('bus_no') ? Input::get('bus_no') : "-"; 
 		
@@ -606,11 +652,11 @@ class TripController extends \BaseController {
 					$i++;
 				}
 				$response['message']="Successfully $j record created for this month.";
-				return Response::json($response);
+				//return Response::json($response);
 			}
 
 		}
-		$response['message']="Theres is no record to create1.";
+		// $response['message']="Theres is no record to create1.";
 		// return Response::json($response);
 		return Redirect::to('trip-list');
 	}

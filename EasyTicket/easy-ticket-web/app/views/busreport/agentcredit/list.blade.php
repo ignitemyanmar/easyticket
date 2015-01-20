@@ -8,12 +8,15 @@
    tr.group th,
    tr.group th:hover {
        background: #E4F6F5  !important;
+       border-top:2px solid #888; 
    }
    tr.groupfooter th,
    tr.groupfooter th:hover {
        background: #ddd  !important;
    }
    .noti{color: red !important; font-weight: bold;}
+   .alerts{color:#ff821c !important; font-weight: bold;}
+   .available{color:green !important; font-weight: bold;}
    /*.group b{display: none !important;}
    .groupfooter span{display: none !important;}*/
    tfoot th{background: #E4F6F5  !important;}
@@ -54,77 +57,102 @@
                               <div class="actions">
                               </div>
                            </div>
-                           <div class="row-fluid search-default">
+                           <div class="search-default">
                                  <form action="/report/agentscredits/search" method="get">
-                                       <div class="span2">
-                                          <div class="control-group">
-                                             <label class="control-label">Choose Date Range</label>
-                                             <div class="controls">
-                                                <select name="cbodate" class="chosen span12" id='alldate'>
-                                                   <option value="All" @if($search['datestatus']=="All") selected @endif>All</option>
-                                                   <option value="Custom" @if($search['datestatus']=="Custom") selected @endif>Custom</option>
-                                                </select>
+                                       <div class="row-fluid">
+                                          <div class="span2">
+                                             <div class="control-group">
+                                                <label class="control-label">Choose Date Range</label>
+                                                <div class="controls">
+                                                   <select name="cbodate" class="chosen span12" id='alldate'>
+                                                      <option value="All" @if($search['datestatus']=="All") selected @endif>All</option>
+                                                      <option value="Custom" @if($search['datestatus']=="Custom") selected @endif>Custom</option>
+                                                   </select>
+                                                </div>
                                              </div>
                                           </div>
-                                       </div>
-                                       <div class="span2">
-                                          <div class="control-group" id="daterange">
-                                             <label class="control-label" for="startdate">အစေန့ေရွးရန်</label>
-                                             <div class="controls">
-                                                <input id="startdate" data-date-format="dd-mm-yyyy" name="start_date" class="m-wrap span12 m-ctrl-medium date-picker" size="16" type="text" value="{{date('d-m-Y', strtotime($search['start_date']))}}">
+                                          <div class="span2">
+                                             <div class="control-group" id="daterange">
+                                                <label class="control-label" for="startdate">အစေန့ေရွးရန်</label>
+                                                <div class="controls">
+                                                   <input id="startdate" data-date-format="dd-mm-yyyy" name="start_date" class="m-wrap span12 m-ctrl-medium date-picker" size="16" type="text" value="{{date('d-m-Y', strtotime($search['start_date']))}}">
+                                                </div>
                                              </div>
                                           </div>
-                                       </div>
-                                       <div class="span2">
-                                          <div class="control-group" id="daterange1">
-                                             <label class="control-label" for="enddate">အဆုံးေန့ေရွးရန်</label>
-                                             <div class="controls">
-                                                <input id="enddate" data-date-format="dd-mm-yyyy" name="end_date" class="m-wrap span12 m-ctrl-medium  date-picker" size="16" type="text" value="{{date('d-m-Y', strtotime($search['end_date']))}}">
+                                          <div class="span2">
+                                             <div class="control-group" id="daterange1">
+                                                <label class="control-label" for="enddate">အဆုံးေန့ေရွးရန်</label>
+                                                <div class="controls">
+                                                   <input id="enddate" data-date-format="dd-mm-yyyy" name="end_date" class="m-wrap span12 m-ctrl-medium  date-picker" size="16" type="text" value="{{date('d-m-Y', strtotime($search['end_date']))}}">
+                                                </div>
+                                             </div>
+                                          </div>
+
+                                          <div class="span3">
+                                             <div class="control-group">
+                                                <label class="control-label" for="from">Agent Group</label>
+                                                <div class="controls">
+                                                   <select name="agentgroup" class="m-wrap span12 chosen" id="agentgroup">
+                                                      <option value="All">All</option>
+                                                      @if(isset($search['agentgroup']))
+                                                         @foreach($search['agentgroup'] as $rows)
+                                                            <option value="{{$rows['id']}}" @if($rows['id']==$search['agentgroup_id']) selected @endif>{{$rows['name']}}</option>
+                                                         @endforeach
+                                                      @endif
+                                                   </select>
+                                                </div>
+                                                
+                                             </div>
+                                          </div>
+                                          <div class="span3 responsive">
+                                             <div class="control-group">
+                                                <label class="control-label" for="from">ဂိတ်ခွဲများ</label>
+                                                <div class="controls" id="agent_id">
+                                                   <input type="hidden" value="{{$search['agent_id']}}" id="hdagent_id">
+                                                   <select name="agent_id" class="m-wrap span12 chosen">
+                                                      <option value="All">All</option>
+                                                      @if($search['agent'])
+                                                         @foreach($search['agent'] as $row)
+                                                            <option value="{{$row['id']}}" @if($row['id']==$search['agent_id']) selected @endif>{{$row['name']}}</option>
+                                                         @endforeach
+                                                      @endif
+                                                   </select>
+                                                </div>
+                                                <!-- <span id="loading" class="loader">&nbsp;</span> -->
+
                                              </div>
                                           </div>
                                        </div>
 
-                                       <div class="span3">
-                                          <div class="control-group">
-                                             <label class="control-label" for="from">Agent Group</label>
-                                             <div class="controls">
-                                                <select name="agentgroup" class="m-wrap span12 chosen" id="agentgroup">
-                                                   <option value="All">All</option>
-                                                   @if(isset($search['agentgroup']))
-                                                      @foreach($search['agentgroup'] as $rows)
-                                                         <option value="{{$rows['id']}}" @if($rows['id']==$search['agentgroup_id']) selected @endif>{{$rows['name']}}</option>
-                                                      @endforeach
-                                                   @endif
-                                                </select>
+                                       <div class="clear-fix">&nbsp;</div>
+                                       <div class="row_fluid">
+                                          <div class="span3">
+                                             <div class="control-group">
+                                                <label class="control-label">Minimun Amount</label>
+                                                <div class="controls">
+                                                   <input id="min_amount" name="min_amount" class="m-wrap span12 m-ctrl-medium" size="16" type="text" value="{{$search['min_amount']}}">
+                                                </div>
+                                             </div>
+                                          </div>
+                                          <div class="span3">
+                                             <div class="control-group">
+                                                <label class="control-label">Maximun Amount</label>
+                                                <div class="controls">
+                                                   <input id="max_amount" name="max_amount" class="m-wrap span12 m-ctrl-medium" size="16" type="text" value="{{$search['max_amount']}}">
+                                                </div>
+                                             </div>
+                                          </div>
+                                          <div class="span6">
+                                             <div class="control-group">
+                                                <label class="control-label">&nbsp;</label>
+                                                <div class="controls">
+                                                   <input type="hidden" value="{{$search['end_date'].' to '. $search['end_date']}}" id="report_date">
+                                                   <button type="submit" class="btn green pull-right">Search &nbsp; <i class="m-icon-swapright m-icon-white"></i></button>
+                                                </div>
                                              </div>
                                              
                                           </div>
-                                       </div>
-                                       <div class="span3 responsive">
-                                          <div class="control-group">
-                                             <label class="control-label" for="from">ဂိတ်ခွဲများ</label>
-                                             <div class="controls" id="agent_id">
-                                                <input type="hidden" value="{{$search['agent_id']}}" id="hdagent_id">
-                                                <select name="agent_id" class="m-wrap span12 chosen">
-                                                   <option value="All">All</option>
-                                                   @if($search['agent'])
-                                                      @foreach($search['agent'] as $row)
-                                                         <option value="{{$row['id']}}" @if($row['id']==$search['agent_id']) selected @endif>{{$row['name']}}</option>
-                                                      @endforeach
-                                                   @endif
-                                                </select>
-                                             </div>
-                                             <!-- <span id="loading" class="loader">&nbsp;</span> -->
-
-                                          </div>
-                                       </div>
-
-                                       
-                                       <div class="clear-fix">&nbsp;</div>
-
-                                       <input type="hidden" value="{{$search['end_date'].' to '. $search['end_date']}}" id="report_date">
-                                       <button type="submit" class="btn green pull-right">Search &nbsp; <i class="m-icon-swapright m-icon-white"></i></button>
-                                 </form>
+                                 </form></div>
                            </div>
                            <div class="clear-fix">&nbsp;</div>
 
@@ -153,19 +181,74 @@
                                        @if($response)
                                        <tbody>
                                           @if(count($response)>0)
-                                             @foreach($response as $row)
-                                                @if($row['receipt'] || $row['receivable'])
-                                                <tr>
-                                                   <td>{{$row['name']}}</td>
-                                                   <td>{{$row['groupheader']}}</td>
-                                                   <td><span @if($row['opening_balance'] < 0) class="noti" @endif> {{str_replace('-','',$row['opening_balance'])}} </span></td>
-                                                   <td>{{$row['receivable']}}</td>
-                                                   <td>{{$row['receipt']}}</td>
-                                                   <td><span @if($row['closing_balance'] < 0)  class="noti" @endif>{{str_replace('-',"",$row['closing_balance'])}}</span></td>
-                                                   <td>
-                                                      <a class="btn mini green-stripe" href="/report/agentcreditlist/group/{{$row['agentgroup_id']}}?agent_id={{$row['id']}}&start_date={{$search['start_date']}}&end_date={{$search['end_date']}}">အေသးစိတ္ၾကည့္မည္</a>
-                                                   </td>
-                                                </tr>
+                                             @foreach($response as $res_agentgroup)
+                                                <?php $groupheader=""; ?>
+                                                @if(str_replace(",","",$res_agentgroup['remain_balances']) >=$search['min_amount'] && str_replace(",","",$res_agentgroup['remain_balances']) <=$search['max_amount'])
+                                                   @if(count($res_agentgroup->agents)>0)
+                                                      <?php $name="";?>
+                                                      @foreach($res_agentgroup->agents as $j=>$row)
+                                                         <?php 
+                                                               $groupheader=$row['groupheader']; 
+                                                               $groupheader .='==> <span class="label label-info label-mini">Total Receipt <i class="icon-share-alt"></i></span>  <span ';
+                                                               if($res_agentgroup['L_totalreceipt'] < 0) {
+                                                                  $groupheader .='class="noti"';
+                                                               }
+                                                               $groupheader .='>['.number_format( str_replace('-','',$res_agentgroup['L_totalreceipt']) , 0 , '.' , ',' ) ." ] </span>";   
+                                                               $groupheader .='&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                                              <span class="label label-info label-mini">Total Receivable <i class="icon-share-alt"></i></span> <span ';
+                                                               if($res_agentgroup['L_colsingbalance'] < 0){
+                                                                  $groupheader .='class="noti"';
+                                                               } 
+                                                                                  
+                                                               $groupheader .='>['.number_format( str_replace('-','',$res_agentgroup['L_colsingbalance']) , 0 , '.' , ',' ). '] </span>';
+                                                               $groupheader .= '&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+                                                               
+                                                               $noti="";
+                                                                 if($res_agentgroup['remain_balances'] <= 0){
+                                                                     $noti="noti";
+                                                                 }elseif($res_agentgroup['remain_balances'] > 0 && $res_agentgroup['remain_balances'] < 300000){
+                                                                     $noti="alerts";
+                                                                 }elseif($res_agentgroup['remain_balances'] >= 300000){
+                                                                     $noti="available";
+                                                                 }else{
+
+                                                                 }
+                                                               $groupheader .='<span class="label label-success label-mini">Remain Balance <i class="icon-share-alt"></i></span> [<span class="'.$noti.'">'.number_format( str_replace('-','',$res_agentgroup['remain_balances']) , 0 , '.' , ',' ).'</span>]';
+                                                         ?>
+                                                         @if($row['receipt'] || $row['receivable'])
+                                                            <tr>
+                                                               <td>{{$row['name']}}</td>
+                                                               
+                                                               <td>{{$groupheader}}</td>
+                                                               <?php $opening_balance=str_replace('-','',$row['opening_balance']); ?>
+                                                               <td><span @if($row['opening_balance'] < 0) class="noti" @endif> {{number_format( $opening_balance , 0 , '.' , ',' )}} </span></td>
+                                                               <td>{{number_format( $row['receivable'] , 0 , '.' , ',' )}}</td>
+                                                               <td>{{number_format( $row['receipt'] , 0 , '.' , ',' )}}</td>
+                                                               <td><span @if($row['closing_balance'] < 0)  class="noti" @endif>{{str_replace('-',"",number_format($row['closing_balance'],'0','.',','))}}</span></td>
+                                                               <td>
+                                                                  <a class="btn mini green-stripe" href="/report/agentcreditlist/group/{{$row['agentgroup_id']}}?agent_id={{$row['id']}}&start_date={{$search['start_date']}}&end_date={{$search['end_date']}}">အေသးစိတ္ၾကည့္မည္</a>
+                                                               </td>
+                                                            </tr>
+                                                         @endif
+                                                      @endforeach
+                                                   @endif
+
+                                                   @if(count($res_agentgroup->payment_transactions)>0)
+                                                      @foreach($res_agentgroup->payment_transactions as $row)
+                                                         <tr>
+                                                            <td><b>Receipt at  </b><span class="label label-warning label-mini">{{$row['pay_date']}} <i class="icon-share-alt"></i></span></td>
+                                                            <td>{{$groupheader}}</td>
+
+                                                            <td><b>{{number_format( $row['payment'] , 0 , '.' , ',' )}}</b></td>
+                                                            <td>&nbsp;</td>
+                                                            <td>&nbsp;</td>
+                                                            <td></td>
+                                                            <td>
+                                                               &nbsp;
+                                                            </td>
+                                                         </tr>
+                                                      @endforeach
+                                                   @endif
                                                 @endif
                                              @endforeach
                                           @endif
@@ -216,8 +299,8 @@
                      if ( last !== group ) {
                         $(rows).eq( i ).before(
                               '<tr class="group"><th colspan="6">'+group+'</th></tr>'
+                           // Total over all pages
                         );
-                        
                         last = group;
                      }
                   } );

@@ -1,6 +1,5 @@
 @extends('../admin')
 @section('content')
-<!-- <link rel="stylesheet" href="../../../../assets/data-tables/DT_bootstrap.css" /> -->
 <link rel="stylesheet" href="../../../../css/jquery.dataTables.v1.10.4.css" />
 <link rel="stylesheet" type="text/css" href="../../../../assets/chosen-bootstrap/chosen/chosen.css" />
 <link rel="stylesheet" type="text/css" href="../../../../assets/bootstrap-datepicker/css/datepicker.css" />
@@ -304,6 +303,7 @@
                                     <th>အခမဲ႕ လက္မွတ္ </th>
                                     <th>ေစ်းႏုန္း</th>
                                     <th>စုုစုုေပါင္း</th>
+                                    <th>% ႏုတ္ျပီး စုုစုုေပါင္း</th>
                                     <th style="width:0;"><a class="btn small green blue-stripe imagechange" id="" href="/triplist/{{$search['start_date'].','.$search['end_date']}}/daily?f={{$search['from']}}&t={{$search['to']}}&agentgroup={{$search['agentgroup_id']}}&a={{$search['agent_id']}}&agentrp={{$search['agent_rp']}}&time={{$search['time']}}">အေသးစိတ္(All)</a></th>
                                  </tr>
                               </thead>
@@ -317,29 +317,15 @@
                                        @endif
                                        <!-- <div id="jsonvalue" style="display:none;">{{json_encode($response)}}</div> -->
                                        <div id="dvjson"></div>
-                                       <?php $G_total_ticket=0; $G_total_amount=0; $G_free_ticket=0; ?>
+                                       <?php $G_total_ticket=0;$G_prc_total_amount=0; $G_total_amount=0; $G_free_ticket=0; ?>
                                        @foreach($response as $key=>$rows)
-                                       <!-- <tr class="title-row">
-                                          <th align="left">{{$key}}</th>
-                                          @if($search['agent_rp'])
-                                             <th>&nbsp;</th>
-                                          @endif
-                                          <th>&nbsp;</th>
-                                          <th>&nbsp;</th>
-                                          <th>&nbsp;</th>
-                                          <th>&nbsp;</th>
-                                          <th>&nbsp;</th>
-                                          <th>&nbsp;</th>
-                                          <th>&nbsp;</th>
-                                          <th>&nbsp;</th>
-                                       </tr> -->
-                                          <?php $total_ticket=0; $total_amount=0; $free_ticket=0; ?>
+                                          <?php $total_ticket=0; $total_amount=0;$percent_total=0; $free_ticket=0; ?>
                                           @if(count($rows)>0)
                                              @foreach($rows as $result)
                                                 <tr>
                                                    <td>{{date('d/m/Y',strtotime($result['order_date']))}}</td>
                                                    @if($search['trips']!=1)
-                                                      <td><div class="wordwrap">{{$result['agent_name']}}</div></td>
+                                                      <td><div class="">{{$result['agent_name']}}</div></td>
                                                    @endif
                                                    <td>{{$result['from_to']}}</td>
                                                    <td>{{date('d/m/Y',strtotime($result['departure_date']))}} ({{$result['time']}})</td>
@@ -349,34 +335,24 @@
                                                    <td>{{$result['free_ticket']}}</td>
                                                    <td>{{$result['local_price']}}</td>
                                                    <td>{{$result['total_amount']}}</td>
+                                                   <td>{{$result['percent_total']}}</td>
                                                    <td>
-                                                      <a class="btn mini green-stripe imagechange" id="" href="/triplist/{{$result['order_date']}}/daily?bus_id={{$result['bus_id']}}&a={{$result['agent_id']}}&agentrp={{$search['agent_rp']}}">အေသးစိတ္ၾကည့္ရန္</a>
+                                                      <a class="btn mini green-stripe imagechange" id="" href="/triplist/{{$result['departure_date']}}/daily?bus_id={{$result['bus_id']}}&a={{$result['agent_id']}}&agentrp={{$search['agent_rp']}}">အေသးစိတ္ၾကည့္ရန္</a>
                                                    </td>
                                                 </tr>
                                                 <?php 
                                                    $total_ticket +=$result['sold_seat']; 
                                                    $total_amount+=$result['total_amount'];
+                                                   $percent_total+=$result['percent_total'];
                                                    $free_ticket+=$result['free_ticket'];
                                                 ?>
                                              @endforeach
                                           @endif
-                                          <!-- <tr>
-                                             @if($search['agent_rp'])
-                                                <th>&nbsp;</th>
-                                             @endif
-                                             <th>&nbsp;</th>
-                                             <th>&nbsp;</th>
-                                             <th>&nbsp;</th>
-                                             <th>Sub Quantity</th>
-                                             <th>{{$total_ticket}}</th>
-                                             <th>Sub Free Ticket : {{$free_ticket}}</th>
-                                             <th>Sub Total</th>
-                                             <th>{{$total_amount}}</th>
-                                             <th>&nbsp;</th>
-                                          </tr> -->
+                                         
                                           <?php 
                                              $G_total_ticket +=$total_ticket; 
                                              $G_total_amount +=$total_amount; 
+                                             $G_prc_total_amount +=$percent_total; 
                                              $G_free_ticket +=$free_ticket; 
                                           ?>
 
@@ -389,13 +365,13 @@
                                              <th></th>
                                           @endif
                                           <!-- <th></th> -->
-                                          <th colspan="2" class="text-right">Grand Quantity</th>
+                                          <th colspan="1" class="text-right">Grand Quantity</th>
                                           <th>: {{$G_total_ticket}}</th>
                                           <th colspan="2">Grand Free Ticket : {{$G_free_ticket}}</th>
                                           <th colspan="2" class="text-right">Grand Total :</th>
                                           <th>{{$G_total_amount}}</th>
-                                          <th></th>
-                                          <!-- <th>&nbsp;</th> -->
+                                          <th colspan="2" class="text-right">% ႏုတ္ျပီး စုစုေပါင္း =</th>
+                                          <th>{{$G_prc_total_amount}}</th>
                                        </tr>
                                     </tfoot>
                                  @endif
@@ -426,7 +402,7 @@
                   // { "visible": false, "targets": 2 }
               ],
               "order": [[ 1, 'asc' ]],
-              "displayLength": 25,
+              "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
               "pagingType": "full_numbers",
               "drawCallback": function ( settings ) {
                   var api = this.api();
@@ -436,7 +412,7 @@
                   api.column(1, {page:'current'} ).data().each( function ( group, i ) {
                       if ( last !== group ) {
                           $(rows).eq( i ).before(
-                              '<tr class="group"><th colspan="10">'+group+'</th></tr>'
+                              '<tr class="group"><th colspan="11">'+group+'</th></tr>'
                           );
        
                           last = group;

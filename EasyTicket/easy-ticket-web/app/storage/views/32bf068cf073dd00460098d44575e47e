@@ -20,8 +20,8 @@
    }
    #printable { display: none; }
    table{border-top: 1px solid #ddd;}
-   tr.group td,
-   tr.group td:hover {
+   tr.group th,
+   tr.group th:hover {
        background: #ddd !important;
    }
    tbody td, thead th{border-right: 1px solid #ddd;}
@@ -118,12 +118,18 @@
                                        </td>
                                     </tr>
                                     <tr>
-                                       <td colspan="13"><b>Trips : 
+                                       <td colspan="13"><b>Agent : 
                                           <?php if(!$bus_id): ?>
                                             <?php if($search['from']): ?> 
                                              [ <?php echo $search['first_trip']; ?> ] 
                                             <?php else: ?> 
-                                              All Tirps
+                                              <?php if($search['agentgroup_name']): ?> 
+                                                [ <?php echo $search['agentgroup_name']; ?> ]
+                                              <?php elseif($search['agent_name']): ?> 
+                                                [ <?php echo $search['agent_name']; ?> ] 
+                                              <?php else: ?> 
+                                                All Agents 
+                                              <?php endif; ?>
                                             <?php endif; ?>
                                           <?php else: ?> 
                                              [ <?php echo $search['first_trip']; ?> ] 
@@ -141,14 +147,14 @@
                                        </td>
                                     </tr>
                                     <tr class="table-bordered">
-                                       <th class="span1">ဝယ္ယူ သည့္ေန႔</th>
-                                       <th>လက္မွတ္ No</th>
+                                       <th class="span1">လက္မွတ္ No</th>
+                                       <th>ခုံနံပါတ္</th>
                                        <th>ခရီးစဥ္</th>
                                        <th>ထြက္ခြာ မည့္ ေန့ရက္ / အခ်ိန္</th>
                                        <th>ကားအမ်ုိဳး အစား</th>
                                        <th>အေရာင္း ကုိယ္စားလွယ္</th>
                                        <th>ဝယ္သူ</th>
-                                       <th>ခုံနံပါတ္</th>
+                                       <th>ဝယ္ယူ သည့္ေန႔</th>
                                        <th>ခုံအေရ အတြက္</th>
                                        <th>အခမဲ႕ လက္မွတ္ </th>
                                        <th>ေစ်းႏုန္း</th>
@@ -161,6 +167,7 @@
                                       <?php 
                                         $G_totalticket=0;
                                         $G_totalamount=0;
+                                        $Org_totalamount=0;
                                       ?> 
                                       <?php foreach($response as $key=>$rows): ?>
                                           <!-- <tr>
@@ -170,54 +177,56 @@
                                              <?php 
                                                 $totalticket=0;
                                                 $totalamount=0;
+                                                $org_total_amount=0;
                                              ?> 
                                              <?php foreach($rows as $result): ?>
+                                                <?php 
+                                                    $org_total_amount += $tmptotalamount=($result['sold_seat']-$result['free_ticket']) * $result['price'];
+                                                    $totalticket +=$result['sold_seat'];
+                                                    $tmptotalamount =$tmptotalamount- ($result['sold_seat']-$result['free_ticket']) * $result['commission'];
+                                                    $totalamount +=$tmptotalamount;
+                                                ?> 
+
                                                 <tr>
                                                    <!-- <td></td> -->
-                                                   <td><?php echo date('d/m/Y',strtotime($result['order_date'])); ?></td>
-                                                   <td><?php echo $result['ticket_no']; ?></td>
+                                                   <td># <?php echo $result['ticket_no']; ?></td>
+                                                   <td><?php echo $result['seat_no']; ?></td>
                                                    <td><?php echo $result['from_to']; ?></td>
-                                                   <td><?php echo date('d/m/Y',strtotime($result['departure_date'])); ?> <br>(<?php echo $result['time']; ?>)</td>
+                                                   <td><?php echo date('d/m/Y',strtotime($result['departure_date'])); ?> (<?php echo $result['time']; ?>)</td>
                                                    <td><?php echo $result['classes']; ?></td>
                                                    <td>
-                                                      <div class="wordwrap">
+                                                      <div class="">
                                                          &nbsp;<?php echo $result['agent_name']; ?>
                                                       </div>
                                                    </td>
                                                    <td><?php echo $result['buyer_name']; ?></td>
-                                                   <td><?php echo $result['seat_no']; ?></td>
+                                                   <td><?php echo date('d/m/Y',strtotime($result['order_date'])); ?></td>
                                                    <td><?php echo $result['sold_seat']; ?></td>
                                                    <td><?php echo $result['free_ticket']; ?></td>
                                                    <td><?php echo $result['price']; ?></td>
                                                    <td><?php echo $result['price']-$result['commission']; ?> (<?php echo $result['commission']; ?>)</td>
-                                                   <td><?php echo $result['total_amount']; ?></td>
+                                                   <td><?php echo $tmptotalamount; ?></td>
                                                 </tr>
-                                                <?php 
-                                                   $totalticket +=$result['sold_seat'];
-                                                   $totalamount +=$result['total_amount'];
-                                                ?> 
+                                                
                                              <?php endforeach; ?>
-                                             <!-- <tr>
-                                                <th colspan="6">&nbsp;</th>
-                                                <th colspan="2">Sub Quantity</th>
-                                                <th><?php echo $totalticket; ?></th>
-                                                <th colspan="2">Sub Total</th>
-                                                <th colspan="2" style="text-align:right;"><?php echo $totalamount; ?></th>
-                                             </tr> -->
+                                             
                                           <?php endif; ?>
                                           <?php 
-                                             $G_totalticket +=$totalticket;
-                                             $G_totalamount +=$totalamount;
+                                            $G_totalticket +=$totalticket;
+                                            $G_totalamount +=$totalamount;
+                                            $Org_totalamount +=$org_total_amount;
                                           ?> 
                                       <?php endforeach; ?>
                                     </tbody>
                                     <tfoot>
                                       <tr style="background:#ddd;">
-                                        <th colspan="7">&nbsp;</th>
+                                        <th colspan="2">&nbsp;</th>
                                         <th colspan="2" class="text-right">Grand Quantity</th>
                                         <th>: <?php echo $G_totalticket; ?></th>
                                         <th colspan="2" class="text-right">Grand Total</th>
-                                        <th style="text-align:right;">: <?php echo $G_totalamount; ?></th>
+                                        <th colspan="2">: <?php echo $Org_totalamount; ?></th>
+                                        <th colspan="2" class="text-right">% ႏုတ္ျပီး စုစုေပါင္း = </th>
+                                        <th colspan="2" style="text-align:left;">: <?php echo $G_totalamount; ?></th>
                                       </tr>
                                     </tfoot>
                                   <?php endif; ?>
@@ -244,7 +253,7 @@
                   { "visible": false, "targets": 2 }
               ],*/
               "order": [[ 5, 'asc' ]],
-              "displayLength": 25,
+              "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
               "pagingType": "full_numbers",
               "drawCallback": function ( settings ) {
                   var api = this.api();
@@ -254,7 +263,7 @@
                   api.column(5, {page:'current'} ).data().each( function ( group, i ) {
                       if ( last !== group ) {
                           $(rows).eq( i ).before(
-                              '<tr class="group"><td colspan="13">'+group+'</td></tr>'
+                              '<tr class="group"><th colspan="8">'+group+'</th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th></tr>'
                           );
        
                           last = group;

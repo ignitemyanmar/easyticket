@@ -40,14 +40,11 @@
                            <table class="table table-striped table-bordered table-advance table-hover">
                               <thead>
                                  <tr>
-                                   <!--  <th>ကားနံပါတ္</th>
-                                    <th>ခရီးစဥ္</th>
-                                    <th>ကားအမ်ုိဳးအစား</th>
-                                    <th>အခ်ိန္</th> -->
-                                    <th>အေရာင္းကုိယ္စားလွယ္</th>
-                                    <th>လက္မွတ္အေရအတြက္</th>
-                                    <th>ေရာင္းရေငြစုစုေပါင္း</th>
-                                    <th>-</th>
+                                    <th class="span4">အေရာင္းကုိယ္စားလွယ္</th>
+                                    <th class="span2">ဂိတ္ၾကီး / ဂိတ္ခြဲ</th>
+                                    <th class="span2">လက္မွတ္အေရအတြက္</th>
+                                    <th class="span2">ေရာင္းရေငြစုစုေပါင္း</th>
+                                    <th class="span2">-</th>
                                  </tr>
                               </thead>
                               <tbody>
@@ -55,6 +52,7 @@
                                     @foreach($response as $result)
                                        <tr>
                                           <td><div style="word-wrap: break-word;width:330px;">{{$result['agent']}}</div></td>
+                                          <td>@if($result['owner'] ==1) ဂိတ္ၾကီး @else ဂိတ္ခြဲ  @endif</td>
                                           <td>{{$result['sold_tickets']}}</td>
                                           <td>{{$result['total_amount']}}</td>
                                           <td>
@@ -65,7 +63,7 @@
                                     @endforeach
                                     <tr>
                                        <td>ဂိတ္ၾကီးအေရာင္း စုစုေပါင္း = {{$total_sold['main_gate_total']}} က်ပ္</td>
-                                       <td colspan="2">ဂိတ္ခြဲအေရာင္း စုစုေပါင္း = {{$total_sold['agent_gate_total']}} က်ပ္</td>
+                                       <td colspan="3">ဂိတ္ခြဲအေရာင္း စုစုေပါင္း = {{$total_sold['agent_gate_total']}} က်ပ္</td>
                                        <td>အားလုံးစုစုေပါင္း = {{$total_sold['grand_total']}} က်ပ္</td>
                                     </tr>
                                  @endif

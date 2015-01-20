@@ -143,6 +143,7 @@
                                        <?php 
                                           $G_totalticket=0;
                                           $G_totalamount=0;
+                                          $Org_totalamount=0;
                                        ?> 
                                        <?php foreach($response as $key=>$rows): ?>
                                           <!--  <tr>
@@ -152,11 +153,12 @@
                                              <?php 
                                                 $totalticket=0;
                                                 $totalamount=0;
+                                                $org_totalamount=0;
                                              ?> 
                                              <?php foreach($rows as $result): ?>
                                                 <tr>
                                                    <!-- <td></td> -->
-                                                   <td><?php if($result['ticket_no']): ?> <?php echo $result['ticket_no']; ?> <?php else: ?> - <?php endif; ?></td>
+                                                   <td># <?php if($result['ticket_no']): ?> <?php echo $result['ticket_no']; ?> <?php else: ?> - <?php endif; ?></td>
                                                    <td><?php echo $result['seat_no']; ?></td>
                                                    <td><?php echo $result['from_to']; ?></td>
                                                    <td><?php echo date('d/m/Y',strtotime($result['departure_date'])); ?> (<?php echo $result['time']; ?>)</td>
@@ -176,30 +178,26 @@
                                                 <?php 
                                                    $totalticket +=$result['sold_seat'];
                                                    $totalamount +=$result['total_amount'];
+                                                   $org_totalamount +=($result['sold_seat'] - $result['free_ticket']) * $result['price'];
                                                 ?> 
                                              <?php endforeach; ?>
-                                             <!-- <tr>
-                                                <th colspan="6">&nbsp;</th>
-                                                <th colspan="2">Sub Quantity</th>
-                                                <th><?php echo $totalticket; ?></th>
-                                                <th colspan="2">Sub Total</th>
-                                                <th colspan="2" style="text-align:right;"><?php echo $totalamount; ?></th>
-                                             </tr>
-                                             -->                                          
                                           <?php endif; ?>
                                           <?php 
                                              $G_totalticket +=$totalticket;
                                              $G_totalamount +=$totalamount;
+                                             $Org_totalamount +=$org_totalamount;
                                           ?> 
                                        <?php endforeach; ?>
                                     </tbody>
                                     <tfoot>
                                        <tr style="background:#ddd;">
-                                          <th colspan="5">&nbsp;</th>
+                                          <th colspan="2">&nbsp;</th>
                                           <th colspan="2" class="text-right">Grand Quantity</th>
                                           <th>: <?php echo $G_totalticket; ?></th>
-                                          <th>&nbsp;</th>
                                           <th colspan="2" class="text-right">Grand Total</th>
+                                          <th>: <?php echo $Org_totalamount; ?></th>
+                                          <th>&nbsp;</th>
+                                          <th colspan="2" class="text-right">% ႏုတ္ျပီး စုစုေပါင္း</th>
                                           <th style="text-align:right;">: <?php echo $G_totalamount; ?></th>
                                        </tr>
                                    </tfoot>

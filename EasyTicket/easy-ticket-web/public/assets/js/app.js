@@ -2452,7 +2452,7 @@ var App = function () {
             // e.preventDefault();
 
             if (confirm("Are you sure to delete this row ?") == false) {
-                return;
+                return false;
             }
 
             var nRow = $(this).parents('tr')[0];

@@ -144,6 +144,7 @@
                                        <?php 
                                           $G_totalticket=0;
                                           $G_totalamount=0;
+                                          $Org_totalamount=0;
                                        ?> 
                                        @foreach($response as $key=>$rows)
                                           <!--  <tr>
@@ -153,11 +154,12 @@
                                              <?php 
                                                 $totalticket=0;
                                                 $totalamount=0;
+                                                $org_totalamount=0;
                                              ?> 
                                              @foreach($rows as $result)
                                                 <tr>
                                                    <!-- <td></td> -->
-                                                   <td>@if($result['ticket_no']) {{$result['ticket_no']}} @else - @endif</td>
+                                                   <td># @if($result['ticket_no']) {{$result['ticket_no']}} @else - @endif</td>
                                                    <td>{{$result['seat_no']}}</td>
                                                    <td>{{$result['from_to']}}</td>
                                                    <td>{{date('d/m/Y',strtotime($result['departure_date']))}} ({{$result['time']}})</td>
@@ -177,30 +179,26 @@
                                                 <?php 
                                                    $totalticket +=$result['sold_seat'];
                                                    $totalamount +=$result['total_amount'];
+                                                   $org_totalamount +=($result['sold_seat'] - $result['free_ticket']) * $result['price'];
                                                 ?> 
                                              @endforeach
-                                             <!-- <tr>
-                                                <th colspan="6">&nbsp;</th>
-                                                <th colspan="2">Sub Quantity</th>
-                                                <th>{{$totalticket}}</th>
-                                                <th colspan="2">Sub Total</th>
-                                                <th colspan="2" style="text-align:right;">{{$totalamount}}</th>
-                                             </tr>
-                                             -->                                          
                                           @endif
                                           <?php 
                                              $G_totalticket +=$totalticket;
                                              $G_totalamount +=$totalamount;
+                                             $Org_totalamount +=$org_totalamount;
                                           ?> 
                                        @endforeach
                                     </tbody>
                                     <tfoot>
                                        <tr style="background:#ddd;">
-                                          <th colspan="5">&nbsp;</th>
+                                          <th colspan="2">&nbsp;</th>
                                           <th colspan="2" class="text-right">Grand Quantity</th>
                                           <th>: {{$G_totalticket}}</th>
-                                          <th>&nbsp;</th>
                                           <th colspan="2" class="text-right">Grand Total</th>
+                                          <th>: {{$Org_totalamount}}</th>
+                                          <th>&nbsp;</th>
+                                          <th colspan="2" class="text-right">% ႏုတ္ျပီး စုစုေပါင္း</th>
                                           <th style="text-align:right;">: {{$G_totalamount}}</th>
                                        </tr>
                                    </tfoot>

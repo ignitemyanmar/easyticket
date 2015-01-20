@@ -546,7 +546,7 @@
 		Route::get('seatlayouts',					  'ApiController@getSeatLayouts');
 		Route::get('seatplansbyoperator',			  'ApiController@getSeatplans');
 		Route::get('seatplan',						  'ApiController@getSeatPlan');
-		Route::get('time',						  	  'ApiController@getTime');
+		Route::get('time',						  	  'ApiController@getTimeLists');
 		Route::post('sale',						  	  'ApiController@postSale');
 		Route::post('sale/{id}/delete',				  'ApiController@deleteSaleOrder');
 		Route::post('sale/comfirm',					  'ApiController@postSaleComfirm');
@@ -731,7 +731,7 @@
 	Route::get('getupprogress/{sync_id}',					'SyncDatabaseController@getUploadProgress');
 	Route::get('getdownprogress/{sync_id}',					'SyncDatabaseController@getDownloadedProgress');
 
-	Route::get('autorun',									'TestController@autoRun');
+	Route::get('autorun/{op_id}',							'ApiController@tripautocreate');
 
 	Route::get('404', function()
 	{

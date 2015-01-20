@@ -90,4 +90,24 @@ class BaseController extends Controller {
 	    return $array;
 	}
 
+	// Time List
+	public function getTime($operator_id, $from_city, $to_city){
+	    if($operator_id && $from_city && $to_city){
+	      $objtrip=BusOccurance::whereoperator_id($operator_id)->wherefrom($from_city)->whereto($to_city)->groupBy('departure_time')->get();
+	    }elseif($operator_id && !$from_city && !$to_city){
+	      $objtrip=BusOccurance::whereoperator_id($operator_id)->groupBy('departure_time')->get();
+	    }else{
+	      $objtrip=BusOccurance::groupBy('departure_time')->get();
+	    }
+	    $times=array();
+	    if($objtrip){
+	      foreach ($objtrip as $row) {
+	        $temp['tripid']=$row->id;
+	        $temp['time']=$row->departure_time;
+	        $times[]=$temp;
+	      }
+	    }
+	    return $times; 
+	}
+
 }

@@ -1293,13 +1293,12 @@ class ApiController extends BaseController
 						}							
 						$tocreateoccurance[]=$year.'-'.$nextMonth.'-'.sprintf("%02s", $i);
 					}
-					// return Response::json($tocreateoccurance);
+					//return Response::json($tocreateoccurance);
 					
 					if($trip_id && $tocreateoccurance){
-						$checkbusoccurances =BusOccurance::wheretrip_id($trip_id)->wheredeparture_date($tocreateoccurance[0])->first();
-						if($checkbusoccurances){
-
-						}else{
+						 $checkbusoccurances =BusOccurance::wheretrip_id($trip_id)->wheredeparture_date($tocreateoccurance[count($tocreateoccurance) - 1])->first();
+						 if($checkbusoccurances){
+						 }else{
 							$objtrip 			=Trip::whereid($trip_id)->first();
 							$tirp_id			=$objtrip->id;
 							$seat_plan_id		=$objtrip->seat_plan_id;
@@ -1313,30 +1312,31 @@ class ApiController extends BaseController
 							$time 				=$objtrip->time;
 							$remark 			=$objtrip->remark;
 							foreach ($tocreateoccurance as $departure_date) {
-								//if close with from-to date;
-								$status 			= (strtotime($departure_date) >= strtotime($objtrip->from_close_date)) && (strtotime($departure_date) <= strtotime($objtrip->to_close_date))  ? 1 : 0;
-								//else if ever close;
-								$status 			= $objtrip->ever_close == 1 && strtotime($departure_date) >= strtotime($objtrip->from_close_date) ? 1 : $status;
-
-								$obj_busoccurance 	=new BusOccurance();
-								$obj_busoccurance->seat_plan_id 	=$seat_plan_id;
-								$obj_busoccurance->bus_no 			=$bus_no;
-								$obj_busoccurance->from 			=$from;
-								$obj_busoccurance->to 				=$to;
-								$obj_busoccurance->classes 			=$class_id;
-								$obj_busoccurance->departure_date 	=$departure_date;
-								$obj_busoccurance->departure_time 	=$time;
-								$obj_busoccurance->price 			=$price;
-								$obj_busoccurance->foreign_price	=$foreign_price;
-								$obj_busoccurance->commission		=$commission;
-								$obj_busoccurance->operator_id 		=$operator_id;
-								$obj_busoccurance->trip_id 			=$trip_id;
-								$obj_busoccurance->status 			=$status;
-								$obj_busoccurance->remark 			=$remark;
-								$checkbusoccurances=BusOccurance::wheretrip_id($trip_id)->wheredeparture_date($departure_date)->wheredeparture_time($time)->whereclasses($class_id)->first();
+								
+								$checkbusoccurances=BusOccurance::wheretrip_id($trip_id)->wheredeparture_date($departure_date)->first();
+								
 								if($checkbusoccurances){
 									
 								}else{
+									//if close with from-to date;
+									$status 			= (strtotime($departure_date) >= strtotime($objtrip->from_close_date)) && (strtotime($departure_date) <= strtotime($objtrip->to_close_date))  ? 1 : 0;
+									//else if ever close;
+									$status 			= $objtrip->ever_close == 1 && strtotime($departure_date) >= strtotime($objtrip->from_close_date) ? 1 : $status;
+									$obj_busoccurance 	=new BusOccurance();
+									$obj_busoccurance->seat_plan_id 	=$seat_plan_id;
+									$obj_busoccurance->bus_no 			=$bus_no;
+									$obj_busoccurance->from 			=$from;
+									$obj_busoccurance->to 				=$to;
+									$obj_busoccurance->classes 			=$class_id;
+									$obj_busoccurance->departure_date 	=$departure_date;
+									$obj_busoccurance->departure_time 	=$time;
+									$obj_busoccurance->price 			=$price;
+									$obj_busoccurance->foreign_price	=$foreign_price;
+									$obj_busoccurance->commission		=$commission;
+									$obj_busoccurance->operator_id 		=$operator_id;
+									$obj_busoccurance->trip_id 			=$trip_id;
+									$obj_busoccurance->status 			=$status;
+									$obj_busoccurance->remark 			=$remark;
 									$obj_busoccurance->save();
 								}
 							}	
@@ -1410,11 +1410,13 @@ class ApiController extends BaseController
 					    
 					    $now = strtotime(date("Y-m-d", $now) . "+1 day");
 					}
+
+					//dd($customdays);
 					
 					if(count($customdays)>0 && $trip_id){
-						$checkbusoccurances =BusOccurance::wheretrip_id($trip_id)->wheredeparture_date($customdays[0])->first();
-						if($checkbusoccurances){
-						}else{
+						 $checkbusoccurances =BusOccurance::wheretrip_id($trip_id)->wheredeparture_date($customdays[count($customdays) - 1])->first();
+						 if($checkbusoccurances){
+						 }else{
 							$objtrip=Trip::whereid($trip_id)->first();
 							if($objtrip){
 								$trip_id			=$objtrip->id;
@@ -1433,27 +1435,27 @@ class ApiController extends BaseController
 								$count_days=count($customdays);
 								// return Response::json($available_day);
 								foreach ($customdays as $departure_date) {
-									//if close with from-to date;
-									$status 			= (strtotime($departure_date) >= strtotime($objtrip->from_close_date)) && (strtotime($departure_date) <= strtotime($objtrip->to_close_date)) ? 1 : 0;
-									//else if ever close;
-									$status 			= $objtrip->ever_close == 1 && strtotime($departure_date) >= strtotime($objtrip->from_close_date) ? 1 : $status;
-									$objbusoccurance=new BusOccurance();
-									$objbusoccurance->seat_plan_id	=$seat_plan_id;
-									$objbusoccurance->bus_no		=$bus_no;
-									$objbusoccurance->from			=$from;
-									$objbusoccurance->to			=$to;
-									$objbusoccurance->classes		=$class_id;
-									$objbusoccurance->departure_date=$departure_date;
-									$objbusoccurance->departure_time=$time;
-									$objbusoccurance->price			=$price;
-									$objbusoccurance->foreign_price	=$foreign_price;
-									$objbusoccurance->commission	=$commission;
-									$objbusoccurance->operator_id	=$operator_id;
-									$objbusoccurance->trip_id		=$trip_id;
-									$objbusoccurance->status 		=$status;
-									$objbusoccurance->remark 		=$remark;
 									$checkbusoccurances=BusOccurance::wheretrip_id($trip_id)->wheredeparture_date($departure_date)->wheredeparture_time($time)->whereclasses($class_id)->first();
 									if(!$checkbusoccurances){
+										//if close with from-to date;
+										$status 			= (strtotime($departure_date) >= strtotime($objtrip->from_close_date)) && (strtotime($departure_date) <= strtotime($objtrip->to_close_date)) ? 1 : 0;
+										//else if ever close;
+										$status 			= $objtrip->ever_close == 1 && strtotime($departure_date) >= strtotime($objtrip->from_close_date) ? 1 : $status;
+										$objbusoccurance=new BusOccurance();
+										$objbusoccurance->seat_plan_id	=$seat_plan_id;
+										$objbusoccurance->bus_no		=$bus_no;
+										$objbusoccurance->from			=$from;
+										$objbusoccurance->to			=$to;
+										$objbusoccurance->classes		=$class_id;
+										$objbusoccurance->departure_date=$departure_date;
+										$objbusoccurance->departure_time=$time;
+										$objbusoccurance->price			=$price;
+										$objbusoccurance->foreign_price	=$foreign_price;
+										$objbusoccurance->commission	=$commission;
+										$objbusoccurance->operator_id	=$operator_id;
+										$objbusoccurance->trip_id		=$trip_id;
+										$objbusoccurance->status 		=$status;
+										$objbusoccurance->remark 		=$remark;
 										$objbusoccurance->save();
 									}
 								}
@@ -2435,11 +2437,6 @@ class ApiController extends BaseController
     			SaleItem::whereorder_id($expired_id)->delete();
     		}
     	}
-
-    	/*
-    	 * Delete not confirm order;
-    	 */
-    		SaleOrder::wherebooking(1)->where('departure_datetime','<',$this->today)->delete();
     	
 		$ticket_type_id=Input::get('ticket_type_id');
 		$operator_id=Input::get('operator_id');
@@ -2604,11 +2601,41 @@ class ApiController extends BaseController
 		return Response::json($response);
 	}
 
-	public function getTime(){
+	public function getTimeLists(){
+
 		/*
     	 * Delete not confirm order;
     	 */
-    		SaleOrder::wherebooking(1)->where('departure_datetime','<',$this->today)->delete();
+			$expired_ids=SaleOrder::wherebooking(1)->where('departure_datetime','<',$this->today)->lists('id');
+	    	if($expired_ids){
+	    		foreach ($expired_ids as $expired_id) {
+	    			$saleOrder = SaleOrder::whereid($expired_id)->first();
+	    			$saleItem = SaleItem::whereorder_id($expired_id)->get();
+	    			if($saleOrder){
+	    				$check = DeleteSaleOrder::whereid($expired_id)->first();
+	    				if(!$check){
+	    					$saleOrder->updated_at = $this->today;
+	    					$saleOrder->remark = 'Booking Expired';
+	    					$deletedSaleOrder = DeleteSaleOrder::create($saleOrder->toarray());
+		    				if($deletedSaleOrder){
+		    					SaleOrder::whereid($expired_id)->delete();
+		    				}
+	    				}
+	    			}
+	    			if($saleItem){
+	    				foreach ($saleItem as $rows) {
+	    					$check = DeleteSaleItem::whereid($rows->id)->first();
+	    					if(!$check){
+	    						$deletedSaleitem = DeleteSaleItem::create($rows->toarray());
+	    						if($deletedSaleitem){
+	    							SaleItem::whereorder_id($expired_id)->delete();
+	    						}
+	    					}
+	    				}
+	    			}
+	    		}
+	    	}
+    		//SaleOrder::wherebooking(1)->where('departure_datetime','<',$this->today)->delete();
 
 		$operator_id		=Input::get('operator_id');
 		$from_city			=Input::get('from_city');
@@ -6031,10 +6058,7 @@ class ApiController extends BaseController
     }
 
     public function getTimesByOperatorId(){
-    	/*
-    	 * Delete not confirm order;
-    	 */
-    		SaleOrder::wherebooking(1)->where('departure_datetime','<',$this->today)->delete();
+    	
     	$operator_id 		=Input::get('operator_id');
     	if(!$operator_id){
     		$response['message']='The request is missing a required parameter.'; 

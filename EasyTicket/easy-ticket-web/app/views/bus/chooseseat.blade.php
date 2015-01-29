@@ -44,6 +44,8 @@
 		hr{margin:4px 0; border-bottom:1px solid #444;}
 		.padding_rmtype{padding: 0 12px; background: transparent;}
 		.padding_rmtype span{background:#000;padding:0 1px;color:white;position:relative;}
+		.seatno{position:absolute;right:0;top:0;padding:6px 16px; background:#000;color:#fff;}
+		.seatno:hover{background: rgba(0,0,0,.5);}
 	</style>
 	<div class="large-12 columns">
 		<br>
@@ -101,15 +103,26 @@
 							                <input class="radios" type="checkbox" multiple="multiple" value="{{$rows['seat_no']}}" name="tickets" {{ $disabled }}>
 							                <div class="fit-a {{$taken}}" title="{{$rows['seat_no'].'('. $rows['price'].' K)'.$booking}}" id="{{$seatNO_id}}">
 							                	@if($rows['customer'])
-							                		<div title="{{$rows['customer']['nrc'].'၊ '.$rows['agent']}}">
+							                		<div title="{{$rows['customer']['nrc'].'၊ '.$rows['agent']}}"><br>
 							                		<strong>{{$rows['customer']['name']}}</strong><br>
 							                		{{$rows['customer']['phone']}}<br>
 							                		{{$rows['customer']['nrc']}}<br>
 							                		{{$rows['customer']['ticket_no']}}<br>
 							                		&nbsp;{{$rows['agent']}}<br>
 							                		</div>
+							                		<?php $remark_color=null; ?>
+							                		@if($remark_seats)
+							                			@foreach($remark_seats as $seatno)
+							                				@if($seatno==$rows['seat_no'])
+							                					<?php $remark_color='true';?>
+							                				@endif
+							                			@endforeach
+							                		@endif
+
+							                		<span class="seatno" @if($remark_color) style="background:#4BFFFF;color:#000;" @endif>{{$rows['seat_no']}} @if($rows['customer']['extra_city']) Extend @endif</span>
+							                	@else
+								                	<span class="seatno">{{$rows['seat_no']}}</span>
 							                	@endif
-							                	<span style="position:absolute;right:0;top:0;padding:6px 16px; background:#000;color:#fff;">{{$rows['seat_no']}}</span>
 							                </div>
 							            	<input type="hidden" value="{{$rows['price']}}" class="price{{$seatNO_id}}">
 							            	<input type="hidden" value="{{$rows['seat_no']}}" class="seatno{{$seatNO_id}}">
@@ -136,7 +149,7 @@
 				<div style="clear:both">&nbsp;</div>
 				<div class="large-12 columns">
 					<h3 class="hdtitle" style="padding:0px;"><a>{{$response['operator']}}</a></h3>
-					<p><b>{{$response['from'].'-'.$response['to']}}</b></p>
+					<p><b>{{$response['from_to']}}</b></p>
 					<p>{{date('d/m/Y',strtotime($response['departure_date']))}} ({{$response['departure_time']}})</b></p>
 				</div>
 				<div class="clear">&nbsp;</div>

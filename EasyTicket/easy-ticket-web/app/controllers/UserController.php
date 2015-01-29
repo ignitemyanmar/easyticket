@@ -48,12 +48,24 @@ class UserController extends BaseController
               'password' => Input::get('password')
           );
       if (Auth::attempt($user)) {
-         $operator_id=OperatorGroup::whereuser_id(Auth::user()->id)->pluck('operator_id');
+        if(Auth::user()->role==9){
+          $operator_ids=Operator::lists('id');
+          if($operator_ids){
+            foreach ($operator_ids as $operator_id) {
+              $this->tripautocreate($operator_id);
+            }
+          }
+          return '/alloperator';
+        }else{
+          $operator_id=OperatorGroup::whereuser_id(Auth::user()->id)->pluck('operator_id');
             if(!$operator_id){
                 $operator_id=OperatorGroupUser::whereuser_id(Auth::user()->id)->pluck('operator_id');
             }
-        $this->tripautocreate($operator_id);
-        return "/";
+          $this->tripautocreate($operator_id);
+          return "/";
+        }
+
+        
       }else{
         return 'Invalid email and password!';
       }
@@ -85,7 +97,7 @@ class UserController extends BaseController
               return "report/dailycarandadvancesale?operator_id=".$operator_id;
             }elseif($type=="agent"){
               $agent_id=Agent::whereuser_id($id)->pluck('id');
-              return "operators/agent/".$agent_id;
+              return "report/dailycarandadvancesale?operator_id=all";
             }else{
               
             }

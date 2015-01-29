@@ -60,14 +60,14 @@
                                          </div>
                                       </div>
                                     </div>
-                                    <div class="control-group from_date" style="display:none;">
+                                    <!-- <div class="control-group from_date" style="display:none;">
                                       <label class="control-label">From Date</label>
                                       <div class="controls">
                                          <div class="input-prepend">
                                             <span class="add-on"><i class="icon-calendar"></i></span><input name="date_range" id="date_range" class="m-wrap m-ctrl-medium date-picker" type="text">
                                          </div>
                                       </div>
-                                    </div>
+                                    </div> -->
                                     <div class="control-group">
                                        <label class="control-label" for="price">ခဏ ရပ်ဆိုင်ရြခင်း၏ အေြကာင်းအရင်း</label>
                                        <div class="controls">

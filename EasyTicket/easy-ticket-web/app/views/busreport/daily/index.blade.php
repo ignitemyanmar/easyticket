@@ -67,7 +67,7 @@
                               <form class="form-search" action="/report/dailycarandadvancesale/search">
                                  <div class="chat-form">
                                     <div class="input-cont">   
-                                       <input placeholder="Choose Date..." class="m-wrap" type="text" id="startdate" name="date" value="{{Session::get('search_daily_date')}}">
+                                       <input placeholder="Choose Date..." class="m-wrap" type="text" id="startdate" name="date" data-date-format="dd/mm/yyyy" value="{{date('d/m/Y', strtotime(Session::get('search_daily_date')))}}">
                                     </div>
                                     <button type="submit" class="btn green">Search &nbsp; <i class="m-icon-swapright m-icon-white"></i></button>
                                  </div>
@@ -147,7 +147,7 @@
                   // { "visible": false, "targets": 2 }
               ],
               "order": [[ 1, 'asc' ]],
-              "displayLength": 25,
+              "lengthMenu": [[25, 50, -1], [25, 50, "All"]],
               "pagingType": "full_numbers",
               "drawCallback": function ( settings ) {
                   var api = this.api();

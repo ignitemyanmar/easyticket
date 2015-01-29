@@ -84,7 +84,18 @@
                                     @foreach($response as $key=>$rows)
                                       <tr>
                                          <td>{{$rows->header}}</td>
-                                         <td>@if($rows->role==2) Staff @elseif($rows->role==4) Supervisor @else Manager @endif</td>
+                                         <td>
+                                            @if($rows->role==2)
+                                              Staff 
+                                            @elseif($rows->role==3) 
+                                                Agent 
+                                            @elseif($rows->role==4) 
+                                                Supervisor 
+                                            @elseif($rows->role==8) 
+                                              Manager 
+                                            @else 
+                                              Administrator 
+                                            @endif</td>
                                          <td>{{$rows->menu}}</td>
                                          <td style="text-align:center;">
                                             <a href="permission-delete/{{$rows->id}}" class="btn red-stripe delete">ဖ်က္ရန္</a>

@@ -1,17 +1,23 @@
 @extends('../dashboard')
 @section('content')
+  {{HTML::style('css/main.css')}}
+
     @if(Auth::check())
     @else
     <!-- BEGIN LOGIN -->
+        <div class="logo">
+          <!-- <img src="../img/elite.png" alt="" style="max-width:130px;">  -->
+        </div>
         <div class="content">
           <!-- BEGIN LOGIN FORM -->
           <form class="form-vertical login-form" action="/administration" method="post">
+            <!-- <h3 class="form-title">Login to your account</h3> -->
             <h3 class="form-title">Login to your account</h3>
             <div class="alert alert-error hide">
               <button class="close" data-dismiss="alert"></button>
               <span>Enter any username and passowrd.</span>
             </div>
-           
+          <div class="form-actions">&nbsp;
             <div class="control-group">
               <!--ie8, ie9 does not support html5 placeholder, so we just show field title for that-->
               <label class="control-label visible-ie8 visible-ie9">Email</label>
@@ -33,14 +39,15 @@
             </div>
             <div class="loader" style="display:none;"></div>
 
-            <div class="form-actions">
+            <!-- <div class="form-actions"> -->
               <!-- <label class="checkbox">
               <input type="checkbox" name="remember" value="1"/> Remember me
               </label> -->
-              <button type="submit" class="btn green pull-right">
+              <button type="submit" class="btn blue pull-right">
               Login <i class="m-icon-swapright m-icon-white"></i>
               </button>            
-            </div>
+            <!-- </div> -->
+          </div>
             <!--<div class="forget-password">
               <h4>Forgot your password ?</h4>
               <p>

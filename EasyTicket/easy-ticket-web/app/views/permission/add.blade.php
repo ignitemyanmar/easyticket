@@ -1,6 +1,9 @@
 @extends('../admin')
 @section('content')
 {{HTML::style('../../assets/chosen-bootstrap/chosen/chosen.css')}}
+<style type="text/css">
+   .span6 label{font-family: "Zawgyi-One", "Ayar Wagaung" !important;}
+</style>
 <link rel="stylesheet" type="text/css" href="../../assets/uniform/css/uniform.default.css" />
 <!-- BEGIN PAGE -->  
    <div class="page-content">

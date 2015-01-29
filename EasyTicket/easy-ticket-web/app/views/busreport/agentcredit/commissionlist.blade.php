@@ -1,6 +1,13 @@
 @extends('../admin')
 @section('content')
-   <link rel="stylesheet" href="../../assets/data-tables/DT_bootstrap.css" />
+   <!-- <link rel="stylesheet" href="../../assets/data-tables/DT_bootstrap.css" /> -->
+   {{HTML::style('../../../css/jquery.dataTables.v1.10.4.css')}}
+   <style type="text/css">
+      tr.group td,
+      tr.group td:hover {
+          background: #ddd !important;
+      }
+   </style>
    <link rel="shortcut icon" href="favicon.ico" />
    <!-- BEGIN PAGE -->
       <div class="page-content">
@@ -9,26 +16,6 @@
             <!-- BEGIN PAGE HEADER-->
                <div class="row-fluid">
                   <div class="span12">
-                     <!-- BEGIN STYLE CUSTOMIZER -->
-                     <div class="color-panel hidden-phone">
-                        <div class="color-mode-icons icon-color"></div>
-                        <div class="color-mode-icons icon-color-close"></div>
-                        <div class="color-mode">
-                           <p>THEME COLOR</p>
-                           <ul class="inline">
-                              <li class="color-black current color-default" data-style="default"></li>
-                              <li class="color-blue" data-style="blue"></li>
-                              <li class="color-brown" data-style="brown"></li>
-                              <li class="color-purple" data-style="purple"></li>
-                              <li class="color-white color-light" data-style="light"></li>
-                           </ul>
-                           <label class="hidden-phone">
-                           <input type="checkbox" class="header" checked value="" />
-                           <span class="color-mode-label">Fixed Header</span>
-                           </label>                   
-                        </div>
-                     </div>
-                     <!-- END BEGIN STYLE CUSTOMIZER -->    
                      <!-- BEGIN PAGE TITLE & BREADCRUMB-->        
                      <h3 class="page-title">
                         အေရာင္းကုိယ္စားလွယ္ ႏွင့္ အေၾကြးစာရင္းမ်ား          
@@ -66,12 +53,15 @@
                                  </div>
                                  @endif
                               @endif
-                              <table class="table table-striped table-hover table-bordered" id="sample_editable_1">
+
+                              <table class="table table-striped table-hover table-bordered" id="tblExport">
                                  <thead>
                                     <tr>
                                        <th>ခရီးစဥ္</th>
+                                       <th>&nbsp;</th>
                                        <th>အခ်ိန္</th>
-                                       <th>Commission အမ်ိဳးအစား</th>
+                                       <th>Agent (Branches)</th>
+                                       <!-- <th>Commission အမ်ိဳးအစား</th> -->
                                        <th>Commission ပမာဏ</th>
                                     </tr>
                                  </thead>
@@ -80,8 +70,9 @@
                                           @foreach($response as $row)
                                              <tr>
                                                 <td>{{$row['tripname']}}</td>
-                                                <td>{{$row['trip']['time']}}</td>
-                                                <td>{{$row['commissiontype']['name']}}</td>
+                                                <td>{{$row['tripname']}} @if($row['trip']) [ {{$row['trip']['time']}} ] @else - @endif ( {{$row['commission']}} )</td>
+                                                <td>@if($row['trip']) {{$row['trip']['time']}} @else - @endif</td>
+                                                <td>@if($row['agent']) {{$row['agent']['name']}} @else - @endif</td>
                                                 <td>{{$row['commission']}}</td>
                                              </tr>
                                           @endforeach
@@ -101,14 +92,33 @@
          <!-- END PAGE CONTAINER-->    
       </div>
       <!-- END PAGE --> 
-   <script type="text/javascript" src="../../assets/data-tables/jquery.dataTables.js"></script>
-   <script type="text/javascript" src="../../assets/data-tables/DT_bootstrap.js"></script>
+   {{HTML::script('../../../js/jquery.dataTables.v1.10.4.min.js')}}
    
-   <script>
-      jQuery(document).ready(function() {  
-         // initiate layout and plugins
-         App.setPage("table_editable");
-         // App.init();
-      });
+   <script type="text/javascript">
+      $(document).ready(function() {
+          var table = $('#tblExport').DataTable({
+              "columnDefs": [
+                  { "visible": false, "targets": 1 }
+              ],
+              "order": [[ 1, 'asc' ]],
+              "lengthMenu": [[25, 50, -1], [25, 50, "All"]],
+              "pagingType": "full_numbers",
+              "drawCallback": function ( settings ) {
+                  var api = this.api();
+                  var rows = api.rows( {page:'current'} ).nodes();
+                  var last=null;
+                  
+                  api.column(1, {page:'current'} ).data().each( function ( group, i ) {
+                     var grouplength=$('.group').length;
+                     if ( last !== group ) {
+                        $(rows).eq( i ).before(
+                           '<tr class="group"><td colspan="5">'+group+'</td></tr>'
+                        );
+                        last = group;
+                      }
+                  } );
+              }
+          } );
+      } );
    </script>
 @stop

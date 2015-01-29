@@ -8,11 +8,21 @@ class HomeController extends \BaseController {
 	 *
 	 * @return Response
 	 */
+
+	// For Administrator Account to choose operator
+	public function chooseoperator(){
+		$response=Operator::get();
+		// return Response::json($operators);
+		return View::make('home.operatorlist', array('response'=>$response));
+	}
+
+
 	public function index()
 	{
 		$response=array();
     	$trip=array();
-    	$operator_id=Input::get('operator_id');
+    	$operator_id=Session::get('G_operator_id');
+    	// dd($operator_id);
     	if($operator_id !=''){
     		$objbusoccurance =BusOccurance::whereoperator_id($operator_id)->groupBy('from','to')->get(array('from','to'));
     	}else{
@@ -55,6 +65,7 @@ class HomeController extends \BaseController {
 		$to_city			=$from_to[1];
 		$trip_date 			=Input::get('departure_date');
 
+
 		if($operator_id && $from_city && $to_city && $trip_date){
 			$objtrip=BusOccurance::whereoperator_id($operator_id)
 						->wheredeparture_date($trip_date)
@@ -62,17 +73,17 @@ class HomeController extends \BaseController {
 						->whereto($to_city)
 						->orderBy('departure_time','asc')
 						->orderBy('classes','asc')
+						->wherestatus(0)
 						->get();
 		}elseif($operator_id && !$from_city && !$to_city){
-			$objtrip=BusOccurance::whereoperator_id($operator_id)->groupBy('departure_time')->get();
+			$objtrip=BusOccurance::whereoperator_id($operator_id)->wherestatus(0)->groupBy('departure_time')->get();
 		}else{
-			$objtrip=BusOccurance::groupBy('departure_time')->get();
+			$objtrip=BusOccurance::groupBy('departure_time')->wherestatus(0)->get();
 		}
 
 		$times=array();
 		if($objtrip){
 			foreach ($objtrip as $row) {
-				// dd($trip_id);
 				$temp['tripid']				= $row->id;
 				$temp['class_id']			= $row->classes;
 				$temp['bus_class']			= Classes::whereid($row->classes)->pluck('name');
@@ -82,6 +93,8 @@ class HomeController extends \BaseController {
 				$times[]					= $temp;
 			}
 		}
+
+		// return Response::json($times);
 		
 		$tmp_times=$this->msort($times,array("time"), $sort_flags=SORT_REGULAR,$order=SORT_ASC);
 		$e=0; $m=0;
@@ -184,12 +197,11 @@ class HomeController extends \BaseController {
     			$closeseat=CloseSeatInfo::wheretrip_id($objbusoccurance->trip_id)->whereseat_plan_id($objbusoccurance->seat_plan_id)->pluck('seat_lists');
 				$jsoncloseseat=json_decode($closeseat,true);
 
-				$k=0;
+				$k=0;$extra_city_id=null;$extra_city_price=0;
     			foreach ($objseatinfo as $seat) {
     				$temp['id']=$seat->id;
     				$checkoccupied_seat =SaleItem::wherebusoccurance_id($bus_id)
     												->whereseat_no($seat->seat_no)
-    				
     												->first();
     				$customer=array();
 					if($checkoccupied_seat){
@@ -203,7 +215,14 @@ class HomeController extends \BaseController {
 						if($objorder->agent_id !=0){
 							$agentname=Agent::whereid($objorder->agent_id)->pluck('name');
 						}
-						$customer=SaleItem::whereorder_id($checkoccupied_seat->order_id)->whereseat_no($seat->seat_no)->first(array('name','phone','nrc_no','ticket_no'));
+
+						$customer=SaleItem::whereorder_id($checkoccupied_seat->order_id)->whereseat_no($seat->seat_no)->first(array('name','phone','nrc_no','ticket_no','extra_city_id','extra_destination_id'));
+						if($customer->extra_city_id){
+							$extra_city_id=$customer->extra_city_id;
+							$customerinfo['extra_city']=City::whereid($customer->extra_city_id)->pluck('name');
+						}else{
+							$customerinfo['extra_city']=null;
+						}
 						// return Response::json($cubrid_save_to_glo(conn_identifier, oid, file_name)omer);
 						$customerinfo['name']	=$customer->name ? $customer->name : $objorder->name;
 						$customerinfo['phone']	=$objorder->phone;
@@ -236,6 +255,11 @@ class HomeController extends \BaseController {
 				$seat_list['operator_id']	=$operator_id;
 				$seat_list['from']			=City::whereid($from)->pluck('name');
 				$seat_list['to']			=City::whereid($to)->pluck('name');
+				$seat_list['from_to']		=$seat_list['from'].' => '. $seat_list['to'];
+				$seat_list['extra_city']    =null;
+				if($extra_city_id){
+					$seat_list['extra_city']=City::whereid($extra_city_id)->pluck('name');
+				}
 				$seat_list['from_city']		=$from;
 				$seat_list['to_city']		=$to;
 				$seat_list['departure_date']=$date;
@@ -262,7 +286,7 @@ class HomeController extends \BaseController {
 							}))
 							->get();
 		$agents=Agent::whereoperator_id($operator_id)->get();
-		// return Response::json($remarkgroup);
+		// return Response::json($seat_list);
     	return View::make('bus.chooseseat', array('response'=>$seat_list, 'related_bus'=>$buslist, 'operatorgroup'=>$operatorgroup, 'agents'=>$agents,'remarkgroup'=>$remarkgroup,'remark_seats'=>$remark_seats));
 	}
 
@@ -697,6 +721,7 @@ class HomeController extends \BaseController {
     		}
 
     	$message="Success.";
+    	$G_operator_id=Session::get('G_operator_id');
     	return Redirect::to('/')->with('message',$message);
 	}
 

@@ -72,7 +72,6 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li><a href="#"><i class="icon-user"></i> My Profile</a></li>
-                            <li><a href="#"><i class="icon-tasks"></i> My Tasks</a></li>
                             <li class="divider"></li>
                             <li><a href="/users-logout"><i class="icon-key"></i> Log Out</a></li>
                         </ul>
@@ -113,18 +112,7 @@
                 &nbsp;
                 </li>
 
-                @if($usertype=='agent')
-                    <li @if($currentroute=='age') class="has-sub " @else class="has-sub" @endif>
-                        <a href="javascript:;">
-                        <i class="icon-th-list"></i> 
-                        <span class="title">အေရာင်းကုိယ်စားလှယ် အေရာင်းစာရင်း</span>
-                        <span class="arrow "></span>
-                        </a>
-                        <ul class="sub">
-                            <li ><a href="/operators/agent/{{$agent_id}}">Oparator List Report</a></li>
-                        </ul>
-                    </li>
-                @endif
+                
                 @include('include.permission_menu')
 
                 <li @if($currentroute=='cli') class="" @endif>
@@ -135,9 +123,55 @@
                 </li>
 
             </ul>
+
             <!-- END SIDEBAR MENU -->
         </div>
+
         <!-- END SIDEBAR -->
+        @if(Auth::user()->role==3)
+            <?php
+                $currenturl =URL::full();
+                $concat="?";
+                $url='';
+                $agopparprefix=strpos($currenturl,'?agopt_id');
+                $agopparprefix2=strpos($currenturl,'&agopt_id');
+                $currenturl=str_replace('agopt_id=', '',$currenturl);
+                /*if($agopparprefix){
+                   $position= strpos($currenturl, '?agopt_id=');
+                    if($position){
+                        // $currenturl=substr($currenturl, 0, $position);
+                        $currenturl=str_replace('agopt_id=', '',$currenturl);
+                    } 
+                }elseif($agopparprefix2){
+                    $position= strpos($currenturl, '&agopt_id=');
+                    $url=$currenturl;
+                    if($position){
+                        // $currenturl=substr($currenturl, 0, $position);
+                        $currenturl=str_replace('agopt_id=', '',$currenturl);
+                    } 
+                }else{*/
+                    $checkurl=strpos($currenturl,'?');
+                    
+                    if($checkurl){
+                        $concat="&";
+                    }
+            ?>
+            <div class="btn-group pull-right">
+                <a class="btn blue" href="#" data-toggle="dropdown">
+                <i class="icon-user"></i> {{$myApp->operator_name.$url}}
+                <i class="icon-angle-down"></i>
+                </a>
+                <ul class="dropdown-menu">
+                    @if($myApp->objoperators)
+                        @foreach($myApp->objoperators as $operators)
+                            <li><a href="{{$currenturl.$concat}}agopt_id={{$operators->id}}" data-url="{{URL::full()}}agopt_id={{$operators->id}}" data-id="{{$operators->id}}" class="select_operator_id"><i class="icon-user"></i> {{$operators->name}}</a></li>
+                        @endforeach
+                    @endif
+                    <li class="divider"></li>
+                    <li><a href="{{$currenturl.$concat}}agopt_id=all" data-url="{{URL::full()}}agopt_id=" data-id="" class="select_operator_id"><i class="icon-user"></i> <b>All Operators</b></a></li>
+                </ul>
+            </div>
+        @endif
         @yield('content')
     </div>
     <!-- END CONTAINER -->
@@ -166,6 +200,32 @@
     <script>
         jQuery(document).ready(function() { 
             App.init(); // init the rest of plugins and elements
+
+            /*$('.select_operator_id').click(function(){
+                var id=$(this).data('id');
+                var url=$(this).data('url');
+                var checkhaspar=url.contains("?");
+                var concat="";
+                var index=0;
+                if(checkhaspar){
+                    concat="&";
+                    var checkhasagopt_id=url.contains("?agopt_id");
+                    index=url.indexOf("ago");
+                }else{
+                    concat="?";
+                    var checkhasagopt_id=url.contains("&agopt_id");
+                    index=url.indexOf("ago");
+                }
+
+                if(index){
+                    url=url.substring(index,-1);
+                }
+                alert(url+concat+"agopt_id="+id);
+
+
+                window.location.href=url+concat+"agopt_id="+id;
+            });*/
+
         });
     </script>   
     

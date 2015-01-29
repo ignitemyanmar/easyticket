@@ -69,6 +69,8 @@ App::error(function(Exception $exception, $code)
 App::before(function($request)
 {
     // Singleton (global) object
+
+    //date time for global
     App::singleton('MyDate', function(){
         $today = date("Y-m-d H:i:s",strtotime(date("Y-m-d H:i:s")) + ((60*60) * 6.5));
         return $today;
@@ -76,46 +78,125 @@ App::before(function($request)
     $myToday = App::make('MyDate');
     View::share('today', $myToday);
 
+    /******************************************
+    */
+        // Operator_id, Agent_id for Global
+            App::singleton('myApp', function(){
+                $app = new stdClass;
+                $currentroute=$url=Request::url(); 
+                $currentroute=substr($currentroute,15);
+                $segment=Request::segment(1);
+                $agentgroup_id=null;
+                $agent_ids=array();
+                $objoperators=array();
+                $app->agopt_ids=array();
+                $operator_ids =array();
+                if(Auth::check()) {
+                    if(Auth::user()->role==9 || Auth::user()->role==3){ //for agent and Administrator
+                        $operator_id=Input::get('id');//for admin when choose one operator
+                        if(!$segment && $operator_id){
+                            Session::put('G_operator_id', $operator_id);
+                        }else{
+                            /*if(Session::has('G_operator_id')){
+                                $operator_id=Session::get('G_operator_id');
+                            }*/
+                            $operator_id=null;
+                        }
 
+                        if(Session::has('G_operator_id')){
+                            $operator_id=Session::get('G_operator_id');
+                        }else{
+                            if($segment){
+                                $operator_id=Session::get('G_operator_id');
+                            }else{
+                                $operator_id=Input::get('id');
+                                Session::put('G_operator_id', $operator_id);
+                            }  
+                        }
 
+                        if(!$operator_id){
+                            $operator_id=OperatorGroupUser::whereuser_id(Auth::user()->id)->pluck('operator_id');
+                        }
 
-    
+                        $agentgroup_id=AgentGroup::whereuser_id(Auth::user()->id)->pluck('id');
+                        $app->agentgroup_id     =$agentgroup_id;
+                        
+                        if($agentgroup_id){
+                            $agent_ids              =Agent::whereagentgroup_id($agentgroup_id)->lists('id');
+                        }
 
-    App::singleton('myApp', function(){
-        $app = new stdClass;
-        $currentroute=$url=Request::url(); 
-		$currentroute=substr($currentroute,15);
-        if (Auth::check()) {
-            $operator_id=Operator::whereuser_id(Auth::user()->id)->pluck('id');
-            if(!$operator_id)
-                $operator_id=OperatorGroup::whereuser_id(Auth::user()->id)->pluck('operator_id');
-            $operatorgroup_id=OperatorGroup::whereuser_id(Auth::user()->id)->pluck('id');
-            if(!$operator_id){
-                $operator_id=OperatorGroupUser::whereuser_id(Auth::user()->id)->pluck('operator_id');
-                $operatorgroup_id=OperatorGroupUser::whereuser_id(Auth::user()->id)->pluck('operatorgroup_id');
-            }
-            $app->operator_id=$operator_id;
-            $app->operatorgroup_id=$operatorgroup_id;
-            // $app->isLogedin = TRUE;
-        }
-        else {
-            // $app->isLogedin = FALSE;
-        }
-        
-        if(strpos($currentroute,'foo') !== false){
-        	$app->currentroute="foo";
-        }else{
-        	$app->currentroute="bar";
-        }
+                        $app->agent_ids         =$agent_ids;
+                        $app->operator_id       =$operator_id;
+                        $app->operator_name     =Operator::whereid($operator_id)->pluck('name');
+                        $app->operator_name     =strtolower($app->operator_name);
+                        $app->operatorgroup_id  =OperatorGroup::whereuser_id(Auth::user()->id)->pluck('id');
+                        $app->objoperators      =$objoperators;
+                        
+                        if(Auth::user()->role==3){
+                            $agent_operator_id=Input::get('agopt_id');
+                            if($agent_operator_id){
+                                Session::put('agopt_id',$agent_operator_id);
+                            }else{
+                                if(Session::has('agopt_id')){
+                                    $agent_operator_id=Session::get('agopt_id');
+                                }
+                                // $agent_operator_id=null;
+                            }
 
-        
+                            if($agent_operator_id && $agent_operator_id !='all'){
+                                $objoperators=Operator::whereid($agent_operator_id)->get();
+                            }
+                            if($agent_ids){
+                                $operator_ids=SaleOrder::wherein('agent_id',$agent_ids)->groupBy('operator_id')->lists('operator_id');
+                            }
 
+                            if($operator_ids){
+                                $app->agopt_ids =$operator_ids;
+                                $objoperators=Operator::wherein('id',$operator_ids)->get();
+                            }
+                            $operator_name=Operator::whereid($agent_operator_id)->pluck('name');
+                            $app->operator_name=$operator_name ? $operator_name : "All Operator";
+                            $app->objoperators=$objoperators;
+                            
+                            if($agent_operator_id && $agent_operator_id !='all'){
+                                $agopt_ids[] =$agent_operator_id;
+                                $app->agopt_ids=$agopt_ids;
+                            }
+                        }
+                    }else{
+                        $operator_id=Operator::whereuser_id(Auth::user()->id)->pluck('id');
+                        if(!$operator_id){
+                            $operator_id=OperatorGroup::whereuser_id(Auth::user()->id)->pluck('operator_id');
+                        }
+                        
+                        $operatorgroup_id=OperatorGroup::whereuser_id(Auth::user()->id)->pluck('id');
+                        
+                        if(!$operator_id){
+                            $operator_id=OperatorGroupUser::whereuser_id(Auth::user()->id)->pluck('operator_id');
+                            $operatorgroup_id=OperatorGroupUser::whereuser_id(Auth::user()->id)->pluck('operatorgroup_id');
+                        }
 
-        $app->url="http://easyticket.dev";
-        return $app;
-    });
-    $app = App::make('myApp');
-    View::share('myApp', $app);
+                        $app->agentgroup_id     =$agentgroup_id;
+                        $app->agent_ids         =$agent_ids;
+                        $app->operator_id       =$operator_id;
+                        $app->operator_name=Operator::whereid($operator_id)->pluck('name');
+                        $app->operator_name=strtolower($app->operator_name);
+                        $app->operatorgroup_id=$operatorgroup_id;
+                        $app->objoperators=$objoperators;
+                    }
+                }
+                return $app;
+            });
+        // Call and Use for Controller and can use all Controllers  ...... eg.  $this->myGlob->operator_id;
+        // $this->myGlob=App::make('myApp');
+
+        // Assign for views and can use all views   ....... eg. $myApp->operator_id;
+            $app = App::make('myApp');
+            View::share('myApp', $app);
+
+    /*
+    ******************************************/
+
 });
 
 /*

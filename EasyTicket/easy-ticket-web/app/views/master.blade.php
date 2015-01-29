@@ -2,7 +2,7 @@
     <html>
     <head>
       <title>EazyTicket</title>
-      <meta property="og:image" content="http://www.EazyTicket.com/images/logo01.png"/>
+      <!-- <meta property="og:image" content=".png"/> -->
       {{HTML::style('../../images/favicon.ico',array('rel'=>'icon','type'=>'image/ico'))}}
       {{HTML::style('../../css/foundation.min.css')}}
       {{HTML::style('../../css/font.css')}}
@@ -20,7 +20,7 @@
     <body>  
     <style type="text/css">
         .title_bar{background: #01315A;height: 45px;}
-        .content_title{color:#fff; font-weight: bold;font-size: 24px; text-align: center;padding-top: 9px; font-family: "Zawgyi-One";}
+        .content_title{color:#fff; font-weight: bold;font-size: 24px; text-align: center;padding-top: 5px; font-family: "Zawgyi-One";}
         .user{font-size: 14px;float: right; font-weight: 200;padding-right: 10%; padding-top:9px; position: relative;}
         .user a{color:white; padding-left: 12px;}
         #drop > li > a {color: #333;}
@@ -47,6 +47,17 @@
       <?php $currentroute=Route::getCurrentRoute()->getPath();?>
       <div class="large-12 title_bar">
         <div class="content_title">
+          <div class="left">
+            @if(strpos($myApp->operator_name,'elite') !== false)
+              <a href="/alloperator"><img src="../img/elite.png" style="max-height:35px;margin-left:20px;"> <span>Elite Express</span></a>
+            @elseif(strpos($myApp->operator_name,'mandalar min') !== false)
+              <a href="/alloperator"><img src="../img/mandalarmin.png" style="max-height:35px;margin-left:20px;"> <span>Mandalar Min Express</span></a>
+            @elseif(strpos($myApp->operator_name,'shwe nan taw') !== false)
+              <a href="/alloperator"><img src="../img/snt.png" style="max-height:35px;margin-left:20px;"> <span>Shwe Nan Taw Express</span></a>
+            @else
+              <a href="/alloperator"><span>{{$myApp->operator_name}} Express</span></a>
+            @endif
+          </div>
           @if($currentroute=="departure-times")
           ကားထြက္မည့္အခ်ိန္ေရြးရန္
           @elseif($currentroute=="/")

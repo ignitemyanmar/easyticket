@@ -11,7 +11,10 @@ class BestSellerController extends \BaseController {
     public function trips()
 	{
 		$report_info 			=array();
-		$operator_id            =$this->myGlob->operator_id;
+        $operator_id            =$this->myGlob->operator_id;
+        $agent_ids              =$this->myGlob->agent_ids;
+		$agopt_ids              =$this->myGlob->agopt_ids;
+
 		$agent_id  				=Input::get('agent_id');
 		$today =Date('Y-m-d');
 		$s_date 				= Input::get('start_date') ? Input::get('start_date') : date('Y-m-d', strtotime($today.'-30 days'));
@@ -29,23 +32,71 @@ class BestSellerController extends \BaseController {
     	}
     	$trip_id = array();
     	if($s_date && $e_date && !$agent_id){
-    		$trip_id = SaleItem::whereoperator($operator_id)
-    								->where('departure_date','>=',$s_date)
-    								->where('departure_date','<=',$e_date)
-    								->selectRaw('trip_id, count(*) as count, SUM(price) as total')
-    								->groupBy('to')
-    								->orderBy('count','desc')
-    								->get();
+            if($agent_ids){
+                if($agopt_ids){
+                    $trip_id = SaleItem::wherein('agent_id',$agent_ids)
+                                    ->wherein('operator',$agopt_ids)
+                                    ->where('departure_date','>=',$s_date)
+                                    ->where('departure_date','<=',$e_date)
+                                    ->selectRaw('trip_id, count(*) as count, SUM(price) as total')
+                                    ->groupBy('to')
+                                    ->orderBy('count','desc')
+                                    ->get();
+                }else{
+                    $trip_id = SaleItem::wherein('agent_id',$agent_ids)
+                                    ->whereoperator($operator_id)
+                                    ->where('departure_date','>=',$s_date)
+                                    ->where('departure_date','<=',$e_date)
+                                    ->selectRaw('trip_id, count(*) as count, SUM(price) as total')
+                                    ->groupBy('to')
+                                    ->orderBy('count','desc')
+                                    ->get();    
+                }
+    		    
+            }else{
+                $trip_id = SaleItem::whereoperator($operator_id)
+                                    ->where('departure_date','>=',$s_date)
+                                    ->where('departure_date','<=',$e_date)
+                                    ->selectRaw('trip_id, count(*) as count, SUM(price) as total')
+                                    ->groupBy('to')
+                                    ->orderBy('count','desc')
+                                    ->get();
+            }
+
     	}
     	if($s_date && $e_date && $agent_id){
-    		$trip_id = SaleItem::whereoperator($operator_id)
-    								->where('departure_date','>=',$s_date)
-    								->where('departure_date','<=',$e_date)
-    								->whereagent_id($agent_id)
-    								->selectRaw('trip_id, count(*) as count, SUM(price) as total')
-    								->groupBy('to')
-    								->orderBy('count','desc')
-    								->get();
+            if($agent_ids){
+                if($agopt_ids){
+                    $trip_id = SaleItem::wherein('agent_id',$agent_ids)
+                                    ->wherein('operator',$agopt_ids)
+                                    ->where('departure_date','>=',$s_date)
+                                    ->where('departure_date','<=',$e_date)
+                                    ->whereagent_id($agent_id)
+                                    ->selectRaw('trip_id, count(*) as count, SUM(price) as total')
+                                    ->groupBy('to')
+                                    ->orderBy('count','desc')
+                                    ->get();
+                }else{
+                    $trip_id = SaleItem::wherein('agent_id',$agent_ids)->whereoperator($operator_id)
+                                    ->where('departure_date','>=',$s_date)
+                                    ->where('departure_date','<=',$e_date)
+                                    ->whereagent_id($agent_id)
+                                    ->selectRaw('trip_id, count(*) as count, SUM(price) as total')
+                                    ->groupBy('to')
+                                    ->orderBy('count','desc')
+                                    ->get();    
+                }
+    		    
+            }else{
+                $trip_id = SaleItem::whereoperator($operator_id)
+                                    ->where('departure_date','>=',$s_date)
+                                    ->where('departure_date','<=',$e_date)
+                                    ->whereagent_id($agent_id)
+                                    ->selectRaw('trip_id, count(*) as count, SUM(price) as total')
+                                    ->groupBy('to')
+                                    ->orderBy('count','desc')
+                                    ->get();                
+            }
     	}
     	$lists=array();
     	if($trip_id){
@@ -57,6 +108,9 @@ class BestSellerController extends \BaseController {
     				$list['from']				= $trips->from;
     				$list['to']					= $trips->to;
 	    			$list['trip'] 				= City::whereid($trips->from)->pluck('name') .' - '.City::whereid($trips->to)->pluck('name');
+                    if($agent_ids){
+                        $list['trip']           .=' ( '.Operator::whereid($trips->operator_id)->pluck('name'). " )";
+                    }
 	    			$list['classes']			= Classes::whereid($trips->class_id)->pluck('name');
 	    			$total_seat 				= SeatInfo::whereseat_plan_id($trips->seat_plan_id)->wherestatus(1)->count();
                     if(count($total_seat)>0 && $days>0){

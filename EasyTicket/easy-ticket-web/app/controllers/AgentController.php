@@ -54,7 +54,12 @@ class AgentController extends BaseController
   	public function showAgentList()
   	{
       $operator_id=$this->myGlob->operator_id;
-      $response   = $obj_agent = Agent::whereoperator_id($operator_id)->orderBy('id','desc')->orderBy('name','asc')->get();
+      $agent_ids=$this->myGlob->agent_ids;
+      if($agent_ids)
+        $response   = $obj_agent = Agent::wherein('id',$agent_ids)->whereoperator_id($operator_id)->orderBy('id','desc')->orderBy('name','asc')->get();
+      else
+        $response   = $obj_agent = Agent::whereoperator_id($operator_id)->orderBy('id','desc')->orderBy('name','asc')->get();
+
       $allagent   = Agent::all();
       $totalCount = count($allagent);
       $i=0;
@@ -173,7 +178,15 @@ class AgentController extends BaseController
     public function agentSaleList($id)
     {
       $report_info      =array();
-      $operator_id        =$this->myGlob->operator_id;
+      $operator_id      =$this->myGlob->operator_id;
+      $agent_ids        =$this->myGlob->agent_ids;
+      $agopt_ids        =$this->myGlob->agopt_ids;
+      $operator_ids     =array();
+      if($agopt_ids){
+        $operator_ids =$agopt_ids;
+      }else{
+        $operator_ids[] =$operator_id;
+      }
       $agent_status=$agent_id =$id;
       $trips          =Input::get('trips'); //for agent report or not
       $search=array();
@@ -207,16 +220,19 @@ class AgentController extends BaseController
       $order_ids=array();
 
       if($departure_time){
-        $trip_ids=Trip::whereoperator_id($operator_id)
+        $trip_ids=Trip::wherein('operator_id',$operator_ids)
                   ->wheretime($departure_time)->lists('id');
       }else{
-        $trip_ids=Trip::whereoperator_id($operator_id)
+        $trip_ids=Trip::wherein('operator_id',$operator_ids)
                   ->lists('id');
       }
-        
+
       if($trip_ids)
-        $order_ids=SaleItem::wherein('trip_id',$trip_ids)->where('departure_date','>=',$start_date)->where('departure_date','<=',$end_date)->groupBy('order_id')->lists('order_id');
-      
+        $order_ids=SaleItem::wherein('trip_id',$trip_ids)
+                  ->where('departure_date','>=',$start_date)
+                  ->where('departure_date','<=',$end_date)
+                  ->groupBy('order_id')->lists('order_id');
+
       if($order_ids)
           $order_ids=SaleOrder::wherein('id',$order_ids)->wherebooking(0)->lists('id');
 
@@ -242,7 +258,7 @@ class AgentController extends BaseController
             $sale_item = SaleItem::wherein('order_id', $order_ids)
                     ->selectRaw('order_id, count(*) as sold_seat, trip_id, price, foreign_price, departure_date, busoccurance_id, SUM(free_ticket) as free_ticket, agent_id')
                     ->whereagent_id($agent_id)
-                    ->groupBy('order_id')->orderBy('departure_date','asc')->get();  
+                    ->groupBy('order_id')->orderBy('departure_date','asc')->get();
           }
           elseif($agentgroup_id && !$agent_id)
           {

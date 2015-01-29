@@ -25,7 +25,9 @@ class CreditController extends \BaseController {
 
         $agent_ids=$objagentList=array();
         $operator_id=$this->myGlob->operator_id;
+        $agent_ids  =$this->myGlob->agent_ids;
         $objagent_groupid=array();
+        
         if($groupid){
             if($groupid =="All"){
                 $objagent_groupid=AgentGroup::lists('id');
@@ -34,19 +36,40 @@ class CreditController extends \BaseController {
             }
         }
 
+        if($this->myGlob->agentgroup_id){
+            $objagent_groupid=array();
+            $objagent_groupid[]=$this->myGlob->agentgroup_id;
+        }
+
         if($start_date && $end_date && $end_date !="All"){
-            $transaction_group_ids=AgentDeposit::where('pay_date','>=',$start_date)->where('pay_date','<=',$end_date)->lists('agentgroup_id');
+            if($agent_ids){
+                $transaction_group_ids=AgentDeposit::wherein('agent_id',$agent_ids)->where('pay_date','>=',$start_date)->where('pay_date','<=',$end_date)->lists('agentgroup_id');
+            }else{
+                $transaction_group_ids=AgentDeposit::where('pay_date','>=',$start_date)->where('pay_date','<=',$end_date)->lists('agentgroup_id');
+            }
         }elseif($start_date && $start_date !="All" && $end_date=="All"){
-            $transaction_group_ids=AgentDeposit::where('pay_date','>=',$start_date)->lists('agentgroup_id');
+            if($agent_ids){
+                $transaction_group_ids=AgentDeposit::wherein('agent_id',$agent_ids)->where('pay_date','>=',$start_date)->lists('agentgroup_id');
+            }else{
+                $transaction_group_ids=AgentDeposit::where('pay_date','>=',$start_date)->lists('agentgroup_id');
+            }
         }else{
-            $transaction_group_ids=AgentDeposit::lists('agentgroup_id');
+            if($agent_ids){
+                $transaction_group_ids=AgentDeposit::wherein('agent_id',$agent_ids)->lists('agentgroup_id');
+            }else{
+                $transaction_group_ids=AgentDeposit::lists('agentgroup_id');
+            }
         }
 
         $transaction_group_ids=array_intersect($objagent_groupid, $transaction_group_ids);
 
         $objagentgrouplist=array();
         if($transaction_group_ids){
-            $objagentgrouplist=AgentGroup::wherein('id',$transaction_group_ids)->with(array('agents'))->get();
+            if($agent_ids){
+                $objagentgrouplist=AgentGroup::whereid($this->myGlob->agentgroup_id)->wherein('id',$transaction_group_ids)->with(array('agents'))->get();
+            }else{
+                $objagentgrouplist=AgentGroup::wherein('id',$transaction_group_ids)->with(array('agents'))->get();
+            }
         }
         if($objagentgrouplist){
             foreach ($objagentgrouplist as $grp_key=>$res_agentgroup) {
@@ -194,7 +217,11 @@ class CreditController extends \BaseController {
 
         $search['agentgroup']="";
         $agentgroup=array();
-        $agentgroup=AgentGroup::whereoperator_id($operator_id)->get();
+        if($agent_ids){
+            $agentgroup=AgentGroup::whereid($this->myGlob->agentgroup_id)->whereoperator_id($operator_id)->get();
+        }else{
+            $agentgroup=AgentGroup::whereoperator_id($operator_id)->get();
+        }
         $search['agentgroup']=$agentgroup;
         $search['datestatus']=$datestatus;
         $search['start_date']=Input::get('start_date');
@@ -216,6 +243,9 @@ class CreditController extends \BaseController {
 	 */
 	public function second($groupid)
 	{
+        $operator_id=$this->myGlob->operator_id;
+        $agentgroup_id =$this->myGlob->agentgroup_id;
+        $glob_agent_ids     =$this->myGlob->agent_ids;
 
         $agent_id=Input::get('agent_id');
         $start_date=Input::get('start_date');
@@ -225,27 +255,29 @@ class CreditController extends \BaseController {
             $end_date=Input::get('end_date') ? date('Y-m-d',strtotime(Input:: get('end_date'))) :  "All";
         }
         $agent_ids=$objagentList=array();
-        if($groupid){
-            if($groupid !="All"){
-                $agent_ids=Agent::whereagentgroup_id($groupid)->lists('id');
+        if($glob_agent_ids){
+            $agent_ids=$glob_agent_ids;
+        }else{
+            if($groupid){
+                if($groupid !="All"){
+                    $agent_ids=Agent::whereagentgroup_id($groupid)->lists('id');
+                }
+                else{
+                    $agent_ids=Agent::lists('id');
+                }
             }
-            else{
-                $agent_ids=Agent::lists('id');
+            if($agent_id && $agent_id !="All"){
+                $agent_ids=array();
+                $agent_ids[]=$agent_id;
             }
         }
-        if($agent_id && $agent_id !="All"){
-            $agent_ids=array();
-            $agent_ids[]=$agent_id;
-        }
-        $operator_id=$this->myGlob->operator_id;
+
         if($agent_ids)
             $objagentList=Agent::wherein('id',$agent_ids)->whereoperator_id($operator_id)->orderBy('name')->get();
         
         if($objagentList){
             $groupname=AgentGroup::whereid($groupid)->pluck('name');
             $i=0;
-           
-
             foreach($objagentList as $objagent){
                 $agent_group_id=$objagent->agentgroup_id ? $objagent->agentgroup_id : '';
                 $objagentList[$i]=$objagent;
@@ -356,6 +388,9 @@ class CreditController extends \BaseController {
 
     public function detail($agent_id)
     {
+        $glob_agentgroup_id  =$this->myGlob->agentgroup_id;
+        $glob_agent_ids      =$this->myGlob->agent_ids;
+
         $groupid=Input::get('agentgroup_id');
         $start_date=Input::get('start_date');
         $end_date=Input::get('end_date');
@@ -365,20 +400,26 @@ class CreditController extends \BaseController {
         }
         // dd($start_date); 
         $agent_ids=$objagentList=array();
-        if($groupid){
-            if($groupid !="All"){
-                $agent_ids=Agent::whereagentgroup_id($groupid)->lists('id');
+        if($glob_agent_ids){
+            $agent_ids =$glob_agent_ids;
+            $groupid =$glob_agentgroup_id;
+        }else{
+            if($groupid){
+                if($groupid !="All"){
+                    $agent_ids=Agent::whereagentgroup_id($groupid)->lists('id');
+                }
+                else{
+                    $agent_ids=Agent::lists('id');
+                }
             }
-            else{
-                $agent_ids=Agent::lists('id');
-            }
-        }
-        if($agent_id && $agent_id != "All"){
-            $agent_ids=array();
-            $agent_ids[]=$agent_id;
-            $groupid=Agent::whereid($agent_id)->pluck('agentgroup_id');
+            if($agent_id && $agent_id != "All"){
+                $agent_ids=array();
+                $agent_ids[]=$agent_id;
+                $groupid=Agent::whereid($agent_id)->pluck('agentgroup_id');
 
+            }
         }
+        
         $operator_id=$this->myGlob->operator_id;
         if($agent_ids)
             $objagentList=Agent::wherein('id',$agent_ids)->whereoperator_id($operator_id)->orderBy('name')->get();

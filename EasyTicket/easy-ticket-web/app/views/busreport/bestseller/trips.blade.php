@@ -106,7 +106,7 @@
                               <div class="control-group">
                                  <label class="control-label" for="startdate">အစေန့ေရွးရန် (မှ)</label>
                                  <div class="controls">
-                                    <input id="startdate" name="start_date" class="m-wrap span12" type="text" value="{{$date}}">
+                                    <input id="startdate" name="start_date" class="m-wrap span12" type="text" value="{{$search['start_date']}}">
                                  </div>
                               </div>
                            </div>
@@ -114,7 +114,7 @@
                               <div class="control-group">
                                  <label class="control-label" for="enddate">အဆုံးေန့ေရွးရန်(အထိ)</label>
                                  <div class="controls">
-                                    <input id="enddate" name="end_date" class="m-wrap span12" type="text" value="{{$date}}">
+                                    <input id="enddate" name="end_date" class="m-wrap span12" type="text" value="{{$search['end_date']}}">
                                  </div>
                               </div>
                            </div>

@@ -33,7 +33,7 @@ class SeatOccupiedByBusController extends BaseController {
 		$responsecity		= $this->getCities($operator_ids,$from, $to);
 		$search['cities']=$cities;
 
-		$responsetime=$this->getTimes($operator_ids, $from, $to);
+		$responsetime=$this->getTime($operator_ids, $from, $to);
 		$search['times']=$responsetime;
 
 		
@@ -166,7 +166,7 @@ class SeatOccupiedByBusController extends BaseController {
     	return $cities;
     }
 
-    public function getTimes($operator_ids, $from_city, $to_city){
+    public function getTime($operator_ids, $from_city, $to_city){
 		if($operator_ids && $from_city && $to_city){
 			$objtrip=BusOccurance::wherein('operator_id',$operator_ids)->wherefrom($from_city)->whereto($to_city)->groupBy('departure_time')->get();
 		}elseif($operator_ids && !$from_city && !$to_city){

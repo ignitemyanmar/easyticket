@@ -93,7 +93,7 @@
                                        </div>
                                        <div class="span2">
                                           <div class="control-group">
-                                             <label class="control-label" for="departure_time">&nbsp;</label>
+                                             <label class="control-label" for="departure_time">Choose Remark</label>
                                              <div class="controls">
                                                 <select name="remark" class="m-wrap span12 chosen">
                                                    @if($remark)

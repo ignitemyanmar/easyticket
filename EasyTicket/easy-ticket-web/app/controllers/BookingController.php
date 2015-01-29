@@ -1,6 +1,7 @@
 <?php
 
 class BookingController extends \BaseController {
+
 	/**
 	 * Display a listing of the resource.
 	 *
@@ -8,6 +9,8 @@ class BookingController extends \BaseController {
 	 */
 	public function getBookingList()
 	{
+		$agent_ids  = $this->myGlob->agent_ids;
+		$agopt_ids  = $this->myGlob->agopt_ids;
 		$time=Input::get('departure_time');
 		//for departure time
 			$format_time=substr($time, 0,8);
@@ -28,13 +31,26 @@ class BookingController extends \BaseController {
 		}
 
 		// $response=SaleOrder::where('departure_date','>=', $start_date)->where('departure_date','<=', $end_date)->where('departure_datetime','like','%'.$format_departure_time.'%')->wherebooking(1)->with(array('agent','saleitems'))->get();
-		$response=SaleOrder::where('departure_date','>=', $start_date)->where('departure_date','<=', $end_date)->wherebooking(1)->with(array('agent','saleitems'))->get();
+		if($agent_ids){
+			if($agopt_ids){
+				$response=SaleOrder::wherein('operator_id',$agopt_ids)->wherein('agent_id',$agent_ids)->where('departure_date','>=', $start_date)->where('departure_date','<=', $end_date)->wherebooking(1)->with(array('agent','saleitems'))->get();
+			}else{
+				$response=SaleOrder::wherein('agent_id',$agent_ids)->where('departure_date','>=', $start_date)->where('departure_date','<=', $end_date)->wherebooking(1)->with(array('agent','saleitems'))->get();
+			}
+		}else{
+			$response=SaleOrder::where('departure_date','>=', $start_date)->where('departure_date','<=', $end_date)->wherebooking(1)->with(array('agent','saleitems'))->get();
+		}
 		$i=0;
 		foreach ($response as $row) {
 			if(count($row->saleitems)>0){
 				$from=City::whereid($row->saleitems[0]->from)->pluck('name');
 				$to=City::whereid($row->saleitems[0]->to)->pluck('name');
-				$response[$i]['trip']=$from.'-'.$to;
+				$response[$i]['trip']=$from.' => '.$to;
+				if($agent_ids){
+					$response[$i]['trip'] .=' ( '. Operator::whereid($row->operator_id)->pluck('name'). ' )';
+				}
+
+
 				$response[$i]['total_seat']=count($row->saleitems);
 				if($row->nationality=='foreign')
 				$response[$i]['total_amount']=count($row->saleitems) * $row->saleitems[0]->foreign_price;
@@ -99,8 +115,16 @@ class BookingController extends \BaseController {
 			}
 		}
 		
+		$search['start_date']=$this->getDate();
+		$search['end_date']=$this->getDate();
+		$operator_id =$this->myGlob->operator_id;
+		$times=array();
+		$from=$to=null;
+	    $times=$this->getTime($operator_id, $from, $to);
+	    $search['times']=$times;
+	    $search['time'] ='';
 		// return Response::json($response);
-		return View::make('busreport.booking.list', array('response'=>$response));
+		return View::make('busreport.booking.list', array('response'=>$response,'search'=>$search));
 
 	}
 

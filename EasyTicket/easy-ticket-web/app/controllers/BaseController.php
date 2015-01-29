@@ -91,7 +91,7 @@ class BaseController extends Controller {
 	}
 
 	// Time List
-	public function getTime($operator_id, $from_city, $to_city){
+	public static function getTime($operator_id, $from_city, $to_city){
 	    if($operator_id && $from_city && $to_city){
 	      $objtrip=BusOccurance::whereoperator_id($operator_id)->wherefrom($from_city)->whereto($to_city)->groupBy('departure_time')->get();
 	    }elseif($operator_id && !$from_city && !$to_city){

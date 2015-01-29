@@ -93,7 +93,7 @@
                                     <select id="from" name="from" class="m-wrap span10">
                                        @if(isset($search['cities']['from']))
                                           @foreach($search['cities']['from'] as $from)
-                                             <option value="{{$from['id']}}">{{$from['name']}}</option>
+                                             <option value="{{$from['id']}}"  @if($search['from']== $from['id']) selected @endif>{{$from['name']}}</option>
                                           @endforeach
                                        @endif
                                     </select>
@@ -111,7 +111,7 @@
                                     <select id="to" name="to" class="m-wrap span10">
                                        @if(isset($search['cities']['to']))
                                           @foreach($search['cities']['to'] as $to)
-                                             <option value="{{$to['id']}}">{{$to['name']}}</option>
+                                             <option value="{{$to['id']}}" @if($search['to']== $to['id']) selected @endif>{{$to['name']}}</option>
                                           @endforeach
                                        @endif
                                     </select>
@@ -122,11 +122,11 @@
                         <div class="clear-fix">&nbsp;</div>
 
                         <div class="row-fluid">
-                           <div class="span6">
+                           <div class="span8">
                               <div class="control-group">
                                  <label class="control-label" for="startdate">ထွက်ခွာသည့် ေန့ရက် ေရွးရန်</label>
                                  <div class="controls">
-                                    <input id="startdate" name="departure_date" class="m-wrap span12" type="text">
+                                    <input id="startdate" name="departure_date" class="m-wrap span12" type="text" value="{{$search['date']}}">
                                  </div>
                               </div>
                            </div>
@@ -140,7 +140,7 @@
                                        @if($search['times'])
                                              <option value="">All</option>
                                           @foreach($search['times'] as $time)
-                                             <option value="{{$time['time']}}">{{$time['time']}}</option>
+                                             <option value="{{$time['time']}}" @if($search['time']== $time['time']) selected @endif>{{$time['time']}}</option>
                                           @endforeach
                                        @endif
                                     </select>

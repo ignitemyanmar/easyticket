@@ -226,7 +226,7 @@
                   // { "visible": false, "targets": 2 }
               ],
               "order": [[ 2, 'asc' ]],
-              "displayLength": 25,
+              "lengthMenu": [[25, 50, -1], [25, 50, "All"]],
               "pagingType": "full_numbers",
               "drawCallback": function ( settings ) {
                   var api = this.api();

@@ -3,7 +3,12 @@ class AgentGroupController extends BaseController
 {
     public function showAgentgroupList()
     {
-      $objagentgroup = AgentGroup::orderBy('id','desc')->get();
+      $agentgroup_id =$this->myGlob->agentgroup_id;
+      if($agentgroup_id)
+        $objagentgroup = AgentGroup::whereid($agentgroup_id)->orderBy('id','desc')->get();
+      else
+        $objagentgroup = AgentGroup::orderBy('id','desc')->get();
+
       // return Response::json($objagentgroup);
       $response = $objagentgroup;
       $totalcount = AgentGroup::count();

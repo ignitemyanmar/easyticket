@@ -2531,6 +2531,7 @@ class SyncDatabaseController extends BaseController
 		$zip->open($zipFile, ZipArchive::CREATE);
 		$zip->addFile($addFile, $fileName);
 		$zip->close();
+		chmod($zipFile,0777);
 	}
 	/**
 	 * To Get File Dir.
@@ -2579,11 +2580,11 @@ class SyncDatabaseController extends BaseController
 			ftp_pasv($primary_connection,TRUE);
 			ftp_pasv($secondary_connection,TRUE);
 
-			$upload_status=ftp_nb_get($primary_connection, $toFile, $fromFile, $mode);
-			if($upload_status == FTP_FAILED){
-				dd('Can\'t upload data, Please check connection.');
+			$download_status=ftp_nb_get($primary_connection, $toFile, $fromFile, $mode);
+			if($download_status == FTP_FAILED){
+				dd('Can\'t download data, Please check connection.');
 			}
-			if($upload_status == FTP_MOREDATA){
+			if($download_status == FTP_MOREDATA){
 				// Second -> connected
 				$response['message'] = 'Connected to Server...';
 				$this->saveFile($sync_id, $response);
@@ -2593,9 +2594,8 @@ class SyncDatabaseController extends BaseController
 			$response['file_url']		= $toFile;
 			$response['total_size'] 	= $filesize;
 			$this->saveFile($sync_id, $response);
-			
-			while($upload_status == FTP_MOREDATA){
-			    $upload_status = ftp_nb_continue($primary_connection);
+			while($download_status == FTP_MOREDATA){
+			    $download_status = ftp_nb_continue($primary_connection);
 			}
 
 		} catch (Exception $e) {
@@ -2605,7 +2605,7 @@ class SyncDatabaseController extends BaseController
 		$this->saveFile($sync_id,$response);
 		ftp_close($primary_connection);
 		ftp_close($secondary_connection);
-		$this->deleteFile($sync_id);
+		//$this->deleteFile($sync_id);
 		return true;
 	}
 	/**

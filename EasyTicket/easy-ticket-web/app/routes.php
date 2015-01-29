@@ -104,6 +104,8 @@
 	Route::group(array('before' => 'fauth'), function()
 	{
 		Route::get('/', 								'HomeController@index');
+		Route::get('/alloperator', 						'HomeController@chooseoperator');
+
 		Route::get('/departure-times', 					'HomeController@getTimeList');
 		//14
 		Route::get('bus_seat_choose',					'HomeController@getchoosebusseat');
@@ -223,6 +225,10 @@
 		Route::post('delagent',          	'AgentController@postdelBusClass');
 		Route::get('deleteagent/{id}',   	'AgentController@getDeleteAgent');
 		Route::post('searchagent',       	'AgentController@postSearchAgent');
+
+		Route::get('agent-salelist/{id}',	'AgentController@agentSaleList');
+		Route::post('order/changeagent',	'AgentController@postagentchange');
+
 
 		Route::get('agentgroup/create',			'AgentGroupController@getAddagentgroup');
 		Route::get('agentgroup-actions/{id}',	'AgentGroupController@getAgentGroupActions');
@@ -453,11 +459,6 @@
 
 	Route::group(array('before' => 'oauth'), function()
 	{
-	    /*Route::get('/', function()
-	    {
-	        return View::make('hello');
-	    });*/
-
 	    Route::post('ticket_types',                     'ApiController@postTicketType');
 		Route::get('ticket_types',                      'ApiController@getTicketType');
 		Route::get('ticket_types/{id}',                 'ApiController@getTicketTypeById');
@@ -474,7 +475,6 @@
 	    Route::get('operator/trip/agentcommission',		'ApiController@getAgentCommissionListByTrip');
 	    Route::post('operator/agentcommission',			'ApiController@postAgentCommission');
 	    Route::get('operator/agentcommission',			'ApiController@getAgentCommission');
-		
 
 		Route::post('operator',                       	'ApiController@postOperator');
 		Route::get('operator',                  	  	'ApiController@getAllOperator');
@@ -503,8 +503,6 @@
 		Route::post('busoccurance/update/{id}',         'ApiController@updateBusOccurance');
 		Route::post('busoccurance/delete/{id}',         'ApiController@deleteBusOccurance');
 
-
-
 		Route::post('holidays', 						'ApiController@postHolidays');
 		Route::get('holidays/operator', 				'ApiController@getHolidaysbyOperator');
 
@@ -529,7 +527,6 @@
 		Route::post('triplists/holiday/delete',       'ApiController@postTripHolidaysdelete');
 		Route::get('triplists/holiday',               'ApiController@getTripHolidays');
 		Route::get('triplists/holiday/trip',          'ApiController@getTripHolidaysbyTrip');
-
 		
 		Route::get('trips',                       	  'ApiController@getTrip');
 		Route::get('seatplan/tripcreate/{opertorid}', 'ApiController@getSeatPlanforTripcreate');
@@ -541,7 +538,6 @@
 		Route::get('busclasses/{id}',			  	  'ApiController@getClassesinfo');
 		Route::post('busclasses/update/{id}',		  'ApiController@getClassesUpdate');
 		Route::post('busclasses/delete/{id}',		  'ApiController@getClassesdelete');
-		
 
 		Route::get('seatlayouts',					  'ApiController@getSeatLayouts');
 		Route::get('seatplansbyoperator',			  'ApiController@getSeatplans');
@@ -581,7 +577,6 @@
 		Route::post('commissiontype/update/{id}',	  'ApiController@getCommissiontypeUpdate');
 		Route::post('commissiontype/delete/{id}',	  'ApiController@getCommissiontypeDelete');
 
-
 		Route::get('report/agent/childs',             'ApiController@getAgentgroupbyid');
 		Route::get('report/operator/agents', 		  'ApiController@getAgentsByOperatorRp');
 		Route::get('report/agent/operators', 		  'ApiController@getOperatorsByAgentRp');
@@ -598,7 +593,6 @@
 		Route::get('report/operator/seatplan',        		'ApiController@getSeatOccupancyReport');
 		
 		Route::get('report/trips/operator/{id}',      		'ApiController@getTripsByOperator');
-
 
 		Route::post('report/customer/update',          		'ApiController@postCustomerInfoUpdate');
 		
@@ -672,6 +666,8 @@
 
 		Route::get('booking/notify', 						'ApiController@getNotiBooking');
 
+		Route::post('ticket_delete', 						'ApiController@ticketdelete');
+
 	});
 
 	Route::get('downloadbusjson/{sync_id}', 							'SyncDatabaseController@downloadBusJsonfromServer');
@@ -731,7 +727,7 @@
 	Route::get('getupprogress/{sync_id}',					'SyncDatabaseController@getUploadProgress');
 	Route::get('getdownprogress/{sync_id}',					'SyncDatabaseController@getDownloadedProgress');
 
-	Route::get('autorun/{op_id}',							'ApiController@tripautocreate');
+	Route::get('autorun',									'TestController@autoRun');
 
 	Route::get('404', function()
 	{

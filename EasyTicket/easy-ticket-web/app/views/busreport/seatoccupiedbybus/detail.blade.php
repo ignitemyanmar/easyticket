@@ -155,7 +155,7 @@
                                  <ul class="trip_info">
                                     <h3>ခရီးစဥ္ အခ်က္အလက္မ်ား</h3>
                                     <li>ကားနံပါတ္: <span style="margin-left:250px;">{{$response['seat_plan']['bus_no']}}</span></li>
-                                    <li>ခရီးစဥ္ : <span style="margin-left:250px;">{{$response['seat_plan']['from'].'-'. $response['seat_plan']['to']}}</span></li>
+                                    <li>ခရီးစဥ္ : <span style="margin-left:250px;">{{$response['seat_plan']['from'].' =>'. $response['seat_plan']['to']}}</span></li>
                                     <li>ကားအမ်ုိဳးအစား : <span style="margin-left:250px;">{{$response['seat_plan']['class']}}</span></li>
                                     <li>ကားထြက္မည့္ေန႕: <span style="margin-left:250px;">{{date('d/m/Y',strtotime($response['seat_plan']['date']))}}</span></li>
                                     <li>အခ်ိန္ : <span style="margin-left:250px;">{{$response['seat_plan']['time']}}</span></li>
@@ -241,7 +241,7 @@
                               <ul class="trip_info">
                                  <h3>ခရီးစဥ္ အခ်က္အလက္မ်ား</h3>
                                  <li><span>ကားနံပါတ္</span>: {{$response['seat_plan']['bus_no']}}</li>
-                                 <li><span>ခရီးစဥ္ </span>: {{$response['seat_plan']['from'].'-'. $response['seat_plan']['to']}}</li>
+                                 <li><span>ခရီးစဥ္ </span>: {{$response['seat_plan']['from'].' => '. $response['seat_plan']['to']}}</li>
                                  <li><span>ကားအမ်ုိဳးအစား </span>: {{$response['seat_plan']['class']}}</li>
                                  <li><span>ကားထြက္မည့္ေန႕</span>: {{date('d/m/Y',strtotime($response['seat_plan']['date']))}}</li>
                                  <li><span>အခ်ိန္ </span>: {{$response['seat_plan']['time']}}</li>
@@ -286,7 +286,8 @@
                                                             <div class="checkboxframe">
                                                                <label>
                                                                   <span></span>
-                                                                  <div class="fit-a {{$taken}} zawgyi-one" title="{{$rows['agent_name']}}" id="{{$rows['seat_no']}}">{{$rows['customer']['name']}}<br> {{$rows['customer']['phone']}}<br> {{$rows['ticket_no']}}<br> {{$rows['customer']['nrc_no']}}<br> &nbsp;{{$rows['agent_name']}}</div>
+
+                                                                  <div class="fit-a {{$taken}} zawgyi-one" title="{{$rows['agent_name']}}" id="{{$rows['seat_no']}}">@if($rows['extra_city']) <b style="position:absolute; top:0; right:0;background:#000;">+ Extend City</b> <br>@endif {{$rows['customer']['name']}}<br> {{$rows['customer']['phone']}}<br> {{$rows['ticket_no']}}<br> {{$rows['customer']['nrc_no']}}<br> &nbsp;{{$rows['agent_name']}}</div>
                                                                   <input type="hidden" value="{{$rows['price']}}" class="price{{$rows['seat_no']}}">
                                                                   <input type="hidden" value="{{$rows['seat_no']}}" class="seatno{{$rows['seat_no']}}">
                                                                </label>

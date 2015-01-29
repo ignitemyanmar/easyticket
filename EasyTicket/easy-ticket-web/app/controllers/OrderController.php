@@ -71,7 +71,25 @@ class OrderController extends \BaseController {
 	 * @param  int  $id
 	 * @return Response
 	 */
-
+	// Time List
+	public static function getTime($operator_id, $from_city, $to_city){
+	    if($operator_id && $from_city && $to_city){
+	      $objtrip=BusOccurance::whereoperator_id($operator_id)->wherefrom($from_city)->whereto($to_city)->groupBy('departure_time')->get();
+	    }elseif($operator_id && !$from_city && !$to_city){
+	      $objtrip=BusOccurance::whereoperator_id($operator_id)->groupBy('departure_time')->get();
+	    }else{
+	      $objtrip=BusOccurance::groupBy('departure_time')->get();
+	    }
+	    $times=array();
+	    if($objtrip){
+	      foreach ($objtrip as $row) {
+	        $temp['tripid']=$row->id;
+	        $temp['time']=$row->departure_time;
+	        $times[]=$temp;
+	      }
+	    }
+	    return $times; 
+	}
 	
 	public function deleteNotConfirmOrder($id){
 		$saleOrder = SaleOrder::whereid($id)->where('name','=','')->where('total_amount','=','')->first();
@@ -103,7 +121,19 @@ class OrderController extends \BaseController {
 		}
 
 		$operator_id=$this->myGlob->operator_id;
-		$response=SaleOrder::whereoperator_id($operator_id)->where('orderdate','>=',$start_date)->where('orderdate','<=',$end_date)->whereremark_type($remark_type)->with(array('agent','saleitems'))->get();
+		$agent_ids=$this->myGlob->agent_ids;
+		$agopt_ids=$this->myGlob->agopt_ids;
+		if($agent_ids){
+			if($agopt_ids){
+				$response=SaleOrder::wherein('agent_id',$agent_ids)->wherein('operator_id',$agopt_ids)->where('orderdate','>=',$start_date)->where('orderdate','<=',$end_date)->whereremark_type($remark_type)->with(array('agent','saleitems'))->get();
+			}else{
+				$response=SaleOrder::wherein('agent_id',$agent_ids)->whereoperator_id($operator_id)->where('orderdate','>=',$start_date)->where('orderdate','<=',$end_date)->whereremark_type($remark_type)->with(array('agent','saleitems'))->get();
+			}
+		}
+		else{
+			$response=SaleOrder::whereoperator_id($operator_id)->where('orderdate','>=',$start_date)->where('orderdate','<=',$end_date)->whereremark_type($remark_type)->with(array('agent','saleitems'))->get();
+		}
+
 		// return Response::json($response);
 		if($response){
 			$i=0;
@@ -113,6 +143,9 @@ class OrderController extends \BaseController {
 					$to=City::whereid($orders->saleitems[0]->to)->pluck('name');
 					$from_to=$from.'-'.$to;
 					$response[$i]['from_to']=$from_to;
+					if($agent_ids){
+						$response[$i]['from_to'] .= ' [ '.Operator::whereid($orders->operator_id)->pluck('name') .' ]';
+					}
 					$busclass=Classes::whereid($orders->saleitems[0]->class_id)->pluck('name');
 					$response[$i]['busclass']=$busclass;
 					$departure_time=BusOccurance::whereid($orders->saleitems[0]->busoccurance_id)->pluck('departure_time');

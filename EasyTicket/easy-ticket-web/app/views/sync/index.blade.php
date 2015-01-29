@@ -75,19 +75,43 @@
                                     <div class="modal-header">
                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
                                        <h3>Sync</h3>
+                                       <h5>Please wait, we are transferring your data...</h5>
                                     </div>
                                     <div class="modal-body">
-                                       <p><h5>Please wait, we are transferring your data...</h5></p>
-                                       <p>Message: <span id="message">Connecting to Server...</span></p>
-                                       <p>File:<span id="file"></span></p>
+                                       <div id="upload_list" style="display:none;">
+                                          <p class="alert" id="up_pg_sale_order"><strong>1.Message:</strong> <span id="message-up_pg_sale_order">Wainting for connect to Server...</span></p>
+                                          <p class="alert" id="up_pg_bus_payment"><strong>2.Message:</strong> <span id="message-up_pg_payment">Wainting for connect to Server...</span></p>
+                                       </div>
+                                       <div id="download_list" style="display:none;">
+                                          <p class="alert" id="pg_bus"><strong>1.Message:</strong> <span id="message-pg_bus">Wainting for connect to Server...</span></p>
+                                          <p class="alert" id="pg_trip"><strong>2.Message:</strong> <span id="message-pg_trip">Wainting for connect to Server...</span></p>
+                                          <p class="alert" id="pg_del_trip"><strong>3.Message:</strong> <span id="message-pg_del_trip">Wainting for connect to Server...</span></p>
+                                          <p class="alert" id="pg_seating_plan"><strong>4.Message:</strong> <span id="message-pg_seating_plan">Wainting for connect to Server...</span></p>
+                                          <p class="alert" id="pg_agent"><strong>5.Message:</strong> <span id="message-pg_agent">Wainting for connect to Server...</span></p>
+                                          <p class="alert" id="pg_agent_group"><strong>6.Message:</strong> <span id="message-pg_agent_group">Wainting for connect to Server...</span></p>
+                                          <p class="alert" id="pg_city"><strong>7.Message:</strong> <span id="message-pg_city">Wainting for connect to Server...</span></p>
+                                          <p class="alert" id="pg_extra_destination"><strong>8.Message:</strong> <span id="message-pg_extra_destination">Wainting for connect to Server...</span></p>
+                                          <p class="alert" id="pg_classes"><strong>9.Message:</strong> <span id="message-pg_classes">Wainting for connect to Server...</span></p>
+                                          <p class="alert" id="pg_agent_commission"><strong>10.Message:</strong> <span id="message-pg_agent_commission">Wainting for connect to Server...</span></p>
+                                          <p class="alert" id="pg_cls_seatinfo"><strong>11.Message:</strong> <span id="message-pg_cls_seatinfo">Wainting for connect to Server...</span></p>
+                                          <p class="alert" id="pg_commission_type"><strong>12.Message:</strong> <span id="message-pg_commission_type">Wainting for connect to Server...</span></p>
+                                          <p class="alert" id="pg_op_group"><strong>13.Message:</strong> <span id="message-pg_op_group">Wainting for connect to Server...</span></p>
+                                          <p class="alert" id="pg_opg_user"><strong>14.Message:</strong> <span id="message-pg_opg_user">Wainting for connect to Server...</span></p>
+                                          <p class="alert" id="pg_user"><strong>15.Message:</strong> <span id="message-pg_user">Wainting for connect to Server...</span></p>
+                                          <p class="alert" id="pg_operator"><strong>16.Message:</strong> <span id="message-pg_operator">Wainting for connect to Server...</span></p>
+                                          <p class="alert" id="pg_seat_info"><strong>17.Message:</strong> <span id="message-pg_seat_info">Wainting for connect to Server...</span></p>
+                                          <p class="alert" id="pg_saleorder"><strong>18.Message:</strong> <span id="message-pg_saleorder">Wainting for connect to Server...</span></p>
+                                          <p class="alert" id="pg_del_saleorder"><strong>19.Message:</strong> <span id="message-pg_del_saleorder">Wainting for connect to Server...</span></p>
+                                       </div>
+                                       
+                                    </div>
+                                    <div class="modal-footer">
                                        <div id="file_upload" style="display:none;">
                                           <p>Lenght: <span id="uploaded"></span> kb</p>
                                           <div class="progress progress-striped progress-warning">
                                              <div style="width: 0%;" class="bar"></div>
                                           </div>
                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
                                        <button class="btn red" data-dismiss="modal" aria-hidden="true">Close</button>
                                     </div>
                                  </div>
@@ -242,27 +266,45 @@
 
    $('#sync_to_server').click(function(){
       $('.progress-striped').addClass('active');
-      $('#message').html('Connecting to server...');
-      $('#file').html('');
-      syncSaleOrderToServer('pg_saleorder_to_server');
+      $('#upload_list').show();
+      $('#download_list').hide(); 
+      syncSaleOrderToServer('up_pg_sale_order');
    });
 
+   /*
+    * jqXHR Response Callback
+    */
+   var jqxhrUploadResponse = function(response, _obj, _obj_name){
+      
+         $('.progress-striped').removeClass('active');
+
+         if(progressUploadInterval) {
+            $('#'+_obj).removeClass('alert-info');
+            $('#'+_obj).addClass('alert-success');
+            $('#message-'+_obj).remove();
+            $('#'+_obj).append('<span>Successfully sync to ['+_obj_name+'].</span><button class="close" data-dismiss="alert"></button>')
+            clearInterval(progressUploadInterval);
+         }
+   }
+
    var syncSaleOrderToServer = function(sync_id){
+      var that = sync_id;
+      $('#'+that).addClass('alert-info');
       $.ajax({
         type: "GET",
         url: "/uploadjson/"+sync_id,
         data: null
       })
       .done(function( response ) {
-         syncPaymantToServer(sync_id);
-         if(progressUploadInterval) {
-            clearInterval(progressUploadInterval);
-         }
+         jqxhrUploadResponse(response, that, 'Sale Order');
+         syncPaymantToServer('up_pg_payment');
       });
       progressUploadCallback(sync_id);
    }
 
    var syncPaymantToServer = function(sync_id){
+      var that = sync_id;
+      $('#'+that).addClass('alert-info');
       $('.progress-striped').addClass('active');
       $('#message').html('Connecting to server...');
       $('#file').html('');
@@ -279,7 +321,7 @@
             $('.alert').show();
             $('.alert').addClass('alert-success');
             $('.alert span').html(response.message);
-            $('#myModal1').modal('hide');
+            //$('#myModal1').modal('hide');
          }
          else if(response.status_code === 0){
             // alert( "Error: " + response.message);
@@ -293,10 +335,8 @@
             $('#myModal1').modal('hide');
             
          }
+         jqxhrUploadResponse(response, that, 'Sale Order');
 
-         if(progressUploadInterval) {
-            clearInterval(progressUploadInterval);
-         }
          
       });
 
@@ -305,58 +345,23 @@
 
    $('#sync_from_server').click(function(){
       $('.progress-striped').addClass('active');
-      $('#message').html('Connecting to server...');
-      $('#file').html('');
-       syncBusOccourence('pg_bus');
-      // syncTrip('pg_trip');    
-      // syncDeleteTrip('pg_del_trip'); 
-      // syncSeatingPlan('pg_seating_plan');
-      // syncAgent('pg_agent');   
-      // syncCity('pg_city');   
-      // syncExtraDestination('pg_extra_destination'); 
-      // syncClasses('pg_classes');   
-      // syncAgentCommission('pg_agent_commission');
-      // syncCloseSeatInfo('pg_cls_seatinfo');    
-      // syncCommissionType('pg_commission_type');   
-      // syncOperatorGroup('pg_op_group');  
-      // syncOperatorGroupUser('pg_opg_user'); 
-      // syncOperator('pg_operator');    
-      // syncUser('pg_user');   
-      // syncSeatInfo('pg_seat_info'); 
-      // syncSaleOrder('pg_saleorder'); 
-      // syncDeleteSaleOrder('pg_del_saleorder');      
+      $('#download_list').show();
+      $('#upload_list').hide();     
+      syncBusOccourence('pg_bus');
    });
 
-   $('#sync_from_server1').click(function(){
-      $('.progress-striped').addClass('active');
-               
-   });
    /*
     * jqXHR Response Callback
     */
-   var jqxhrResponse = function(response){
-      $('.progress-striped').removeClass('active');
-         //alert(JSON.stringify(response));
-         // if(response.status_code === 1){
-         //    $('.alert').removeClass('alert-success alert-error');
-         //    $('.alert').show();
-         //    $('.alert').addClass('alert-success');
-         //    $('.alert span').html(response.message);
-         //    $('#myModal1').modal('hide');
-         // }
-         // else if(response.status_code === 0){
-         //    $('.alert').removeClass('alert-success alert-error');
-         //    $('.alert').show();
-         //    $('.alert').addClass('alert-error');
-         //    $('.alert span').html(response.message);
-         //    $('#myModal1').modal('hide');
+   var jqxhrResponse = function(response, _obj, _obj_name){
+      
+         $('.progress-striped').removeClass('active');
 
-         // }else{
-         //    alert(JSON.stringify(response));
-         //    $('#myModal1').modal('hide');
-
-         // }
          if(progressDownloadInterval) {
+            $('#'+_obj).removeClass('alert-info');
+            $('#'+_obj).addClass('alert-success');
+            $('#message-'+_obj).remove();
+            $('#'+_obj).append('<span>Successfully sync to ['+_obj_name+'].</span><button class="close" data-dismiss="alert"></button>')
             clearInterval(progressDownloadInterval);
          }
    }
@@ -365,15 +370,18 @@
     */
    $('#sync_bus_from_server').click(function(){
       syncBusOccourence('pg_bus');
+      
    });
    var syncBusOccourence = function(sync_id){
+      var that = sync_id;
+      $('#'+that).addClass('alert-info');
       $.ajax({
         type: "GET",
         url: "/downloadbusjson/"+sync_id,
         data: null
       })
       .done(function( response ) {
-         jqxhrResponse(response);
+         jqxhrResponse(response, that, 'Bus Occourance');
          syncTrip('pg_trip');      
       });
       progressDownloadCallback(sync_id);
@@ -382,13 +390,15 @@
       syncTrip('pg_trip');      
    });
    var syncTrip = function(sync_id){
+      var that = sync_id;
+      $('#'+that).addClass('alert-info');
       $.ajax({
         type: "GET",
         url: "/downloadtripjson/"+sync_id,
         data: null
       })
       .done(function( response ) {
-         jqxhrResponse(response);
+         jqxhrResponse(response, that, 'Trip');
          syncDeleteTrip('pg_del_trip');         
       });
       progressDownloadCallback(sync_id);
@@ -397,13 +407,15 @@
       syncDeleteTrip('pg_del_trip');      
    });
    var syncDeleteTrip = function(sync_id){
+      var that = sync_id;
+      $('#'+that).addClass('alert-info');
       $.ajax({
         type: "GET",
         url: "/downloaddeletetripjson/"+sync_id,
         data: null
       })
       .done(function( response ) {
-         jqxhrResponse(response);
+         jqxhrResponse(response, that, 'Deleted Trip');
          syncSeatingPlan('pg_seating_plan');        
       });
       progressDownloadCallback(sync_id);
@@ -412,13 +424,15 @@
       syncSeatingPlan('pg_seating_plan');      
    });
    var syncSeatingPlan = function(sync_id){
+      var that = sync_id;
+      $('#'+that).addClass('alert-info');
       $.ajax({
         type: "GET",
         url: "/downloadseatingplanjson/"+sync_id,
         data: null
       })
       .done(function( response ) {
-         jqxhrResponse(response);
+         jqxhrResponse(response, that, 'Seating Plan');
          syncAgent('pg_agent');        
       });
       progressDownloadCallback(sync_id);
@@ -427,13 +441,15 @@
       syncAgent('pg_agent');      
    });
    var syncAgent = function(sync_id){
+      var that = sync_id;
+      $('#'+that).addClass('alert-info');
       $.ajax({
         type: "GET",
         url: "/downloadagentjson/"+sync_id,
         data: null
       })
       .done(function( response ) {
-         jqxhrResponse(response);
+         jqxhrResponse(response, that, 'Agent');
          syncAgentGroup('pg_agent_group');         
       });
       progressDownloadCallback(sync_id);
@@ -442,13 +458,15 @@
       syncAgentGroup('pg_agent_group');      
    });
    var syncAgentGroup = function(sync_id){
+      var that = sync_id;
+      $('#'+that).addClass('alert-info');
       $.ajax({
         type: "GET",
         url: "/downloadagentgroupjson/"+sync_id,
         data: null
       })
       .done(function( response ) {
-         jqxhrResponse(response); 
+         jqxhrResponse(response, that, 'Agent Group'); 
          syncCity('pg_city');        
       });
       progressDownloadCallback(sync_id);
@@ -457,13 +475,15 @@
       syncCity('pg_city');      
    });
    var syncCity = function(sync_id){
+      var that = sync_id;
+      $('#'+that).addClass('alert-info');
       $.ajax({
         type: "GET",
         url: "/downloadcityjson/"+sync_id,
         data: null
       })
       .done(function( response ) {
-         jqxhrResponse(response);
+         jqxhrResponse(response, that, 'City');
          syncExtraDestination('pg_extra_destination');         
       });
       progressDownloadCallback(sync_id);
@@ -473,13 +493,15 @@
    });
 
    var syncExtraDestination = function(sync_id){
+      var that = sync_id;
+      $('#'+that).addClass('alert-info');
       $.ajax({
         type: "GET",
         url: "/downloadextradestinationjson/"+sync_id,
         data: null
       })
       .done(function( response ) {
-         jqxhrResponse(response);
+         jqxhrResponse(response, that, 'Extra Destination');
          syncClasses('pg_classes');         
       });
       progressDownloadCallback(sync_id);
@@ -490,13 +512,15 @@
    });
 
    var syncClasses = function(sync_id){
+      var that = sync_id;
+      $('#'+that).addClass('alert-info');
       $.ajax({
         type: "GET",
         url: "/downloadclassesjson/"+sync_id,
         data: null
       })
       .done(function( response ) {
-         jqxhrResponse(response);
+         jqxhrResponse(response, that, 'Bus Class');
          syncAgentCommission('pg_agent_commission');         
       });
       progressDownloadCallback(sync_id);
@@ -507,13 +531,15 @@
    });
 
    var syncAgentCommission = function(sync_id){
+      var that = sync_id;
+      $('#'+that).addClass('alert-info');
       $.ajax({
         type: "GET",
         url: "/downloadagentcommissionjson/"+sync_id,
         data: null
       })
       .done(function( response ) {
-         jqxhrResponse(response);
+         jqxhrResponse(response, that, 'Agent Commission');
          syncCloseSeatInfo('pg_cls_seatinfo');         
       });
       progressDownloadCallback(sync_id);
@@ -523,13 +549,15 @@
       syncCloseSeatInfo('pg_cls_seatinfo');      
    });
    var syncCloseSeatInfo = function(sync_id){
+      var that = sync_id;
+      $('#'+that).addClass('alert-info');
       $.ajax({
         type: "GET",
         url: "/downloadcloseseatinfojson/"+sync_id,
         data: null
       })
       .done(function( response ) {
-         jqxhrResponse(response);
+         jqxhrResponse(response, that, 'Closed Seat Info');
          syncCommissionType('pg_commission_type');         
       });
       progressDownloadCallback(sync_id);
@@ -540,13 +568,15 @@
    });
 
    var syncCommissionType = function(sync_id){
+      var that = sync_id;
+      $('#'+that).addClass('alert-info');
       $.ajax({
         type: "GET",
         url: "/downloadcomissiontypejson/"+sync_id,
         data: null
       })
       .done(function( response ) {
-         jqxhrResponse(response); 
+         jqxhrResponse(response, that, 'Commission Type'); 
          syncOperatorGroup('pg_op_group');        
       });
       progressDownloadCallback(sync_id);
@@ -557,13 +587,15 @@
    });
 
    var syncOperatorGroup = function(sync_id){
+      var that = sync_id;
+      $('#'+that).addClass('alert-info');
       $.ajax({
         type: "GET",
         url: "/downloadoperatorgroupjson/"+sync_id,
         data: null
       })
       .done(function( response ) {
-         jqxhrResponse(response); 
+         jqxhrResponse(response, that, 'Operator Group'); 
          syncOperatorGroupUser('pg_opg_user');        
       });
       progressDownloadCallback(sync_id);
@@ -574,13 +606,15 @@
    });
 
    var syncOperatorGroupUser = function(sync_id){
+      var that = sync_id;
+      $('#'+that).addClass('alert-info');
       $.ajax({
         type: "GET",
         url: "/downloadoperatorgroupuserjson/"+sync_id,
         data: null
       })
       .done(function( response ) {
-         jqxhrResponse(response);
+         jqxhrResponse(response, that, 'Operator Group User');
          syncUser('pg_user');         
       });
       progressDownloadCallback(sync_id);
@@ -590,13 +624,15 @@
       syncUser('pg_user');      
    });
    var syncUser = function(sync_id){
+      var that = sync_id;
+      $('#'+that).addClass('alert-info');
       $.ajax({
         type: "GET",
         url: "/downloaduserjson/"+sync_id,
         data: null
       })
       .done(function( response ) {
-         jqxhrResponse(response);  
+         jqxhrResponse(response, that, 'User');  
          syncOperator('pg_operator');       
       });
       progressDownloadCallback(sync_id);
@@ -605,13 +641,15 @@
       syncOperator('pg_operator');      
    });
    var syncOperator = function(sync_id){
+      var that = sync_id;
+      $('#'+that).addClass('alert-info');
       $.ajax({
         type: "GET",
         url: "/downloadoperatorjson/"+sync_id,
         data: null
       })
       .done(function( response ) {
-         jqxhrResponse(response);
+         jqxhrResponse(response, that, 'Operator');
          syncSeatInfo('pg_seat_info');         
       });
       progressDownloadCallback(sync_id);
@@ -620,13 +658,15 @@
       syncSeatInfo('pg_seat_info');      
    });
    var syncSeatInfo = function(sync_id){
+      var that = sync_id;
+      $('#'+that).addClass('alert-info');
       $.ajax({
         type: "GET",
         url: "/downloadseatinfojson/"+sync_id,
         data: null
       })
       .done(function( response ) {
-         jqxhrResponse(response);  
+         jqxhrResponse(response, that, 'Seat Info');  
          syncSaleOrder('pg_saleorder');       
       });
       progressDownloadCallback(sync_id);
@@ -635,13 +675,15 @@
       syncSaleOrder('pg_saleorder');      
    });
    var syncSaleOrder = function(sync_id){
+      var that = sync_id;
+      $('#'+that).addClass('alert-info');
       $.ajax({
         type: "GET",
         url: "/downloadsaleorderjson/"+sync_id,
         data: null
       })
       .done(function( response ) {
-         jqxhrResponse(response);
+         jqxhrResponse(response, that, 'Sale Order');
          syncDeleteSaleOrder('pg_del_saleorder');         
       });
       progressDownloadCallback(sync_id);
@@ -650,6 +692,8 @@
       syncDeleteSaleOrder('pg_del_saleorder');      
    });
    var syncDeleteSaleOrder = function(sync_id){
+      var that = sync_id;
+      $('#'+that).addClass('alert-info');
       $.ajax({
         type: "GET",
         url: "/downloaddeletesaleorderjson/"+sync_id,
@@ -676,7 +720,7 @@
             $('#myModal1').modal('hide');
 
          }
-         jqxhrResponse(response);         
+         jqxhrResponse(response, that, 'Deleted Sale Order');         
       });
       progressDownloadCallback(sync_id);
    }
@@ -694,8 +738,7 @@
             response = jQuery.parseJSON(data);
             if(response !== null){
                console.log(JSON.stringify(data));
-               $('#message').html(response.message != "undefined"? response.message : '');
-               $('#file').html(response.file_url != "undefined"? response.file_url : '');
+               $('#message-'+sync_id).html(response.message != "undefined"? response.message : '');
                if(response.progress > 0){
                   $('#file_upload').show()
                   $('#uploaded').html(response.uploaded_size + '/'+ response.total_size);
@@ -725,10 +768,9 @@
             response = jQuery.parseJSON(data);
             if(response !== null){
                console.log(JSON.stringify(data));
-               $('#message').html(response.message != "undefined"? response.message : '');
-               $('#file').html(response.file_url != "undefined"? response.file_url : '');
+               $('#message-'+sync_id).html(response.message != "undefined"? response.message : '');
                if(response.progress > 0){
-                  $('#file_upload').show()
+                  $('#file_upload').show();
                   $('#uploaded').html(response.downloaded + '/'+ response.total_size);
                   $('.bar').css({'width':+response.progress+'%'});
                }else{

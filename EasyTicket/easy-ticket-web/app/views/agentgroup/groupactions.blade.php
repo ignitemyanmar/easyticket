@@ -116,19 +116,24 @@
                                  </div>
 
                                  <div class="clear">&nbsp;</div>
-                                 <div class="row-fluid">
+                                 <div class="row-fluid hide">
                                     <div class="span4">
                                        <label><input type="radio" class="span4" value="2" name="commission_id">Percentage</label>
                                     </div>
                                     <div class="span4">
-                                       <label><input type="radio" class="span4" value="1" name="commission_id">Fixed</label>
+                                       <label><input type="radio" class="span4" value="1" name="commission_id" checked="">Fixed</label>
                                     </div>
                                  </div>
 
                                  <div class="clear">&nbsp;</div>
                                  <div class="row-fluid">
                                     <div class="span12">
-                                       <input type="text" class="span9" name="commission">
+                                       <div class="control-group">
+                                          <label for="from">Commission</label>
+                                          <div class="controls">
+                                             <input type="text" class="span9" name="commission">
+                                          </div>
+                                       </div>
                                     </div>
                                  </div>
 

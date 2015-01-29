@@ -93,7 +93,9 @@
                                                 <label class="control-label" for="from">Agent Group</label>
                                                 <div class="controls">
                                                    <select name="agentgroup" class="m-wrap span12 chosen" id="agentgroup">
+                                                      @if(!$myApp->agentgroup_id)
                                                       <option value="All">All</option>
+                                                      @endif
                                                       @if(isset($search['agentgroup']))
                                                          @foreach($search['agentgroup'] as $rows)
                                                             <option value="{{$rows['id']}}" @if($rows['id']==$search['agentgroup_id']) selected @endif>{{$rows['name']}}</option>

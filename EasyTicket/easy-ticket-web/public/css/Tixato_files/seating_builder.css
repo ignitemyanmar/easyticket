@@ -1,5 +1,4 @@
-.fit-a{color:white;text-align:center; padding-top: 39px;font-size: 12px !important;line-height: 17px;}
-.fit-a strong{font-size: 15px !important;}
+.fit-a{color:white;text-align:center; padding-top: 39px;}
 .checkboxframe input[type="checkbox"]{
   margin:9px;
   position: absolute;
@@ -69,7 +68,8 @@ body .ui-tooltip, .arrow:after {
 .ui-tooltip {
     padding: 8px;
     position: absolute;
-      box-shadow: 0 0 5px #aaa;
+    box-shadow: 0 0 5px #aaa;
+    font-family: "Zawgyi-One" !important;
    }
    body .ui-tooltip {
     border-width: 2px;

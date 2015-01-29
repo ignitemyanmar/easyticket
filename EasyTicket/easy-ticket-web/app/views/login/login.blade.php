@@ -10,7 +10,7 @@
 
             <div class="form-actions">&nbsp;
               @if(Session::has('message') && Session::get('message'))
-                <div style="display: block;" class="alert alert-error hide">
+                <div style="display: block;" class="alert alert-error">
                   <button class="close" data-dismiss="alert"></button>
                   <span>Email is already used.</span>
                 </div>

@@ -9,17 +9,21 @@ class PermissionController extends \BaseController {
 	 */
 	public function index()
 	{
-		$userrole=array('2','4','8');//2 is staffs, 4 is supervisors, 8 is Manager
+		$userrole=array(2,3,4,8,9);//2 is staffs, 4 is supervisors, 8 is Manager
 		$response=array();
 		$response=UserPermission::wherein('role',$userrole)->get();
 		if($response){
 			foreach ($response as $key => $permission) {
 				if($permission->role==2){
 					$role="Staff";
+				}elseif($permission->role==3){
+					$role="Agent";
 				}elseif($permission->role==4){
 					$role="Supervisors";
-				}else{
+				}elseif($permission->role==8){
 					$role="Manager";
+				}else{
+					$role="Administrator";
 				}
 				$response[$key]['header']=$role. "<div style='float:right'><a href='permission-edit/".$permission->role."'   class='btn blue-stripe delete'>ျပင္ရန္</a></div>";
 			}
@@ -34,7 +38,7 @@ class PermissionController extends \BaseController {
 	 */
 	public function create()
 	{
-		$response['role']=array("2"=>"Staff","4"=>"Supervisors", "8"=>"Manager");
+		$response['role']=array("2"=>"Staff","3"=>"Agent","4"=>"Supervisors", "8"=>"Manager","9"=>"Administrator");
 		$response['menu']=array(
 								"ေန႔စဥ္ အေရာင္းစာရင္း",
 								"ကားခ်ဳပ္အေရာင္းစာရင္း",
@@ -102,7 +106,7 @@ class PermissionController extends \BaseController {
 	 */
 	public function edit($role)
 	{
-		$response['role']=array("2"=>"Staff","4"=>"Supervisors", "8"=>"Manager");
+		$response['role']=array("2"=>"Staff","3"=>"Agent","4"=>"Supervisors", "8"=>"Manager","9"=>"Administrator");
 		$response['menu']=array(
 								"ေန႔စဥ္ အေရာင္းစာရင္း",
 								"ကားခ်ဳပ္အေရာင္းစာရင္း",
@@ -167,7 +171,4 @@ class PermissionController extends \BaseController {
 		$message['info']="Successfully delete one record.";
 		return Redirect::to('permission')->with('message',$message);
 	}
-
-	
-
 }

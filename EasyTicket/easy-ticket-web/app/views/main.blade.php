@@ -22,7 +22,7 @@
 <body class="login">
   <!-- BEGIN LOGO -->
   <div class="logo">
-    <!-- <img src="assets/img/logo-big1.png" alt="" />  -->
+    <img src="../img/elite.png" alt="" /> 
   </div>
     @yield('content')
   <div class="copyright">

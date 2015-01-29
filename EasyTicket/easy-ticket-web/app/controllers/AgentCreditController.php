@@ -737,51 +737,63 @@ class AgentCreditController extends \BaseController {
 
     public function postAgentCommission()
     {
-        $agent_id       =Input::get('agent_id');
+        $group_id       =Input::get('agent_id');
         $trip_id        =Input::get('trip_id');
         $commission_id  =Input::get('commission_id');
         $commission     =Input::get('commission');
-        $check_exiting=AgentCommission::whereagent_id($agent_id)->wheretrip_id($trip_id)->first();
-        if($check_exiting){
-            $check_exiting->commission_id=$commission_id;
-            $check_exiting->commission=$commission;
-            $check_exiting->update();
-            $message='Successfully Update one record.';
-            return Redirect::to('/report/agentcredit/'.$agent_id)->with('message',$message);
+        $agent_ids=Agent::whereagentgroup_id($group_id)->lists('id');
+        $objagentgroup =AgentGroup::whereid($group_id)->first();
+        $objagentgroup ->commission=$commission;
+        $objagentgroup ->update();
+        $message='';
+        if($agent_ids){
+            foreach ($agent_ids as $agent_id) {
+                $check_exiting=AgentCommission::whereagent_id($agent_id)->wheretrip_id($trip_id)->first();
+                if($check_exiting){
+                    $check_exiting->commission_id=$commission_id;
+                    $check_exiting->commission=$commission;
+                    $check_exiting->update();
+                }else{
+                    $objagentcommission=new AgentCommission();
+                    $objagentcommission->agent_id=$agent_id;
+                    $objagentcommission->trip_id=$trip_id;
+                    $objagentcommission->commission_id=$commission_id;
+                    $objagentcommission->commission=$commission;
+                    $objagentcommission->save();
+                }
+                
+            }
+            
+            $message='Successfully save one record.'; 
         }
-        $objagentcommission=new AgentCommission();
-        $objagentcommission->agent_id=$agent_id;
-        $objagentcommission->trip_id=$trip_id;
-        $objagentcommission->commission_id=$commission_id;
-        $objagentcommission->commission=$commission;
-        $objagentcommission->save();
-        $message='Successfully save one record.';
-        return Redirect::to('/report/agentcredit/'.$agent_id)->with('message',$message);
+        return Redirect::to('/agentgroup-actions/'.$group_id)->with('message',$message);
     }
 
     public function getAgentCommission($id)
     {
         $operator_id    =$this->myGlob->operator_id;
         $trip_ids=Trip::whereoperator_id($operator_id)->lists('id');
+        $agent_ids=Agent::whereagentgroup_id($id)->lists('id');
         $response=array();
         if($trip_ids){
-            $response=AgentCommission::whereagent_id($id)->wherein('trip_id',$trip_ids)
-                        ->with(array(
-                            'agent'=>function($query){
-                                $query->addSelect(array('id','name'));
-                            },
-                            'trip',
-                            'commissiontype'
-                        ))
-                        ->get();
+            if($agent_ids){
+                $response=AgentCommission::wherein('agent_id',$agent_ids)->wherein('trip_id',$trip_ids)
+                    ->with(array(
+                        'agent'=>function($query){
+                            $query->addSelect(array('id','name'));
+                        },
+                        'trip',
+                        'commissiontype'
+                    ))
+                    ->get();
+            }
+            
         }
-        $i=0;
         if($response){
-            foreach ($response as $row) {
+            foreach ($response as $i => $row) {
                 $from=City::whereid($row->trip->from)->pluck('name');
                 $to=City::whereid($row->trip->to)->pluck('name');
-                $response[$i]['tripname']=$from.'-'.$to;
-                $i++;
+                $response[$i]['tripname']=$from.' - '.$to;
             }
         }
 
@@ -832,15 +844,20 @@ class AgentCreditController extends \BaseController {
 	{
         $cash=Input::get('cash') ? Input::get('cash') : 2;
 		$operator_id=$this->myGlob->operator_id;
-    	$response =SaleOrder::where('operator_id','=',$operator_id)
-    							->where('agent_id','=',$agent_id)
-    							// ->wherecash_credit(2)
-    							->with(array('saleitems'=> function($query) {
-																$query->wherefree_ticket(0);
-							 								}))
+        $agent_ids=Agent::whereagentgroup_id($agent_id)->lists('id');
+        $response=array();
+        if($agent_ids){
+            $response =SaleOrder::where('operator_id','=',$operator_id)
+                                ->wherein('agent_id',$agent_ids)
+                                // ->wherecash_credit(2)
+                                ->with(array('saleitems'=> function($query) {
+                                                                $query->wherefree_ticket(0);
+                                                            }))
                                 ->wherecash_credit($cash)
                                 ->orderBy('id','desc')
-								->get(array('id', 'orderdate','departure_date', 'agent_id', 'operator_id','cash_credit'));
+                                ->get(array('id', 'orderdate','departure_date', 'agent_id', 'operator_id','cash_credit'));    
+        }
+    	
 
     	$filter=array();
 		if($response){

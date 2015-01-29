@@ -271,6 +271,7 @@ class TripController extends \BaseController {
 		$ever_close = isset($input['ever_close']) ? $input['ever_close'] : 0;
 		$remark 	= $input['remark'];
 		$trip_id 	= $input['trip_id'];
+		// dd($input['date_range']);
 		if($ever_close == 0){
 			$date_range = explode("-",$input['date_range']);
 			$start_date = date('Y-m-d', strtotime($date_range[0]));
@@ -294,6 +295,7 @@ class TripController extends \BaseController {
 			$busoccurance = BusOccurance::wheretrip_id($trip_id)->where('departure_date','>=',$start_date)->where('departure_date','<=',$end_date)->lists('id');
 		else
 			$busoccurance = BusOccurance::wheretrip_id($trip_id)->where('departure_date','>=',$start_date)->lists('id');
+
 
 		if($busoccurance){
 			foreach ($busoccurance as $id) {

@@ -24,7 +24,7 @@
                      <ul class="breadcrumb">
                         <li>
                            <i class="icon-home"></i>
-                           <a href="/report/dailycarandadvancesale?operator_id={{Session::get('operator_id')}}">ပင္မစာမ်က္ႏွာ</a> 
+                           <a href="/report/dailycarandadvancesale?access_token={{Auth::user()->access_token}}&operator_id={{Session::get('operator_id')}}">ပင္မစာမ်က္ႏွာ</a> 
                            <span class="icon-angle-right"></span>
                         </li>
                         <li><a href="#">ကားခ်ဳပ္အေရာင္းစာရင္း</a></li>
@@ -70,7 +70,7 @@
                                           <td>{{$tripbydaily['sold_seats']}}</td>
                                           <td>{{$tripbydaily['total_amount']}}</td>
                                           <td>
-                                             <a class="btn mini green-stripe imagechange" id="" href="/report/dailybydeparturedate/busid?bus_id={{$tripbydaily['id']}}">အေသးစိတ္ၾကည့္ရန္</a>
+                                             <a class="btn mini green-stripe imagechange" id="" href="/report/dailybydeparturedate/busid?access_token={{Auth::user()->access_token}}&bus_id={{$tripbydaily['id']}}">အေသးစိတ္ၾကည့္ရန္</a>
                                           </td>
                                        </tr>
                                     @endforeach
@@ -86,6 +86,7 @@
                         <h3 class="form-section">ကားခ်ဳပ္အေရာင္းစာရင္း ရွာရန္</h3>
                         <div class="row-fluid">
                            <div class="span11">
+                                 <input type="hidden" name="access_token" value="{{Auth::user()->access_token}}">
                                  <input type="hidden" value="{{$search['operator_id']}}" name="operator_id">
                               <div class="control-group">
                                  <label class="control-label" for="from">ထွက်ခွာသည့် ြမို့ ေရွးရန်</label>

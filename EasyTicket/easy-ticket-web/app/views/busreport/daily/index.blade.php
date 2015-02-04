@@ -32,7 +32,7 @@
                      <ul class="breadcrumb">
                         <li>
                            <i class="icon-home"></i>
-                           <a href="/report/dailycarandadvancesale?operator_id={{Session::get('operator_id')}}">ပင္မစာမ်က္ႏွာ</a> 
+                           <a href="/report/dailycarandadvancesale?access_token={{Auth::user()->access_token}}&operator_id={{Session::get('operator_id')}}">ပင္မစာမ်က္ႏွာ</a> 
                            <span class="icon-angle-right"></span>
                         </li>
                         <li><a href="#">ေန႔စဥ္ အေရာင္းစာရင္း</a></li>
@@ -67,6 +67,7 @@
                               <form class="form-search" action="/report/dailycarandadvancesale/search">
                                  <div class="chat-form">
                                     <div class="input-cont">   
+                                       <input type="hidden" name="access_token" value="{{Auth::user()->access_token}}">
                                        <input placeholder="Choose Date..." class="m-wrap" type="text" id="startdate" name="date" data-date-format="dd/mm/yyyy" value="{{date('d/m/Y', strtotime(Session::get('search_daily_date')))}}">
                                     </div>
                                     <button type="submit" class="btn green">Search &nbsp; <i class="m-icon-swapright m-icon-white"></i></button>
@@ -85,9 +86,10 @@
                                     <th>ကားအမ်ိဴးအစား</th>
                                     <th>ခုံအေရ အတြက္</th>
                                     <th>အခမဲ႕ လက္မွတ္ </th>
+                                    <th>Discount </th>
                                     <th>ေစ်းႏုန္း</th>
-                                    <th>စုုစုုေပါင္း</th>
-                                    <th><a class="btn small green blue-stripe imagechange" id="" href="/report/dailycarandadvancesale/detail?date={{date('Y-m-d', strtotime(Session::get('search_daily_date')))}}">အေသးစိတ္(All)</a></th>
+                                    <th>% ႏုတ္ျပီး စုစုေပါင္း</th>
+                                    <th><a class="btn small green blue-stripe imagechange" id="" href="/report/dailycarandadvancesale/detail?access_token={{Auth::user()->access_token}}&date={{date('Y-m-d', strtotime(Session::get('search_daily_date')))}}">အေသးစိတ္(All)</a></th>
                                  </tr>
                               </thead>
                                  @if($dailyforbus)
@@ -102,10 +104,11 @@
                                              <td>{{$result['class_name']}}</td>
                                              <td>{{$result['sold_seat']}}</td>
                                              <td>{{$result['free_ticket']}}</td>
+                                             <td>{{$result['discount']}}</td>
                                              <td>{{$result['local_price']}}</td>
                                              <td>{{$result['total_amount']}}</td>
                                              <td>
-                                                <a class="btn mini green-stripe imagechange" id="" href="/report/dailycarandadvancesale/detail?bus_id={{$result['bus_id']}}&date={{date('Y-m-d', strtotime(Session::get('search_daily_date')))}}">အေသးစိတ္ၾကည့္ရန္</a>
+                                                <a class="btn mini green-stripe imagechange" id="" href="/report/dailycarandadvancesale/detail?access_token={{Auth::user()->access_token}}&bus_id={{$result['bus_id']}}&date={{date('Y-m-d', strtotime(Session::get('search_daily_date')))}}">အေသးစိတ္ၾကည့္ရန္</a>
                                              </td>
                                           </tr>
                                           <?php $dailyforbustotal +=$result['total_amount']; ?>
@@ -118,6 +121,7 @@
                                           <th colspan="4">&nbsp;</th>
                                           <th colspan="4" class="" align="right">ယေန႕ေရာင္းရေငြစုစုေပါင္း</th>
                                           <th>: {{$dailyforbustotal}} KS</th>
+                                          <th>&nbsp;</th>
                                        </tr>
                                    </tfoot>
                                  @endif
@@ -157,7 +161,7 @@
                   api.column(1, {page:'current'} ).data().each( function ( group, i ) {
                       if ( last !== group ) {
                           $(rows).eq( i ).before(
-                              '<tr class="group"><td colspan="9">'+group+'</td></tr>'
+                              '<tr class="group"><td colspan="10">'+group+'</td></tr>'
                           );
        
                           last = group;

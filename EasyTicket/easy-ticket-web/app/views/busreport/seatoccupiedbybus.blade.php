@@ -26,7 +26,7 @@
                            <span class="icon-angle-right"></span>
                         </li>
                         <li>
-                           <a href="/itemlist">Trip List</a>
+                           <a href="/itemlist?access_token={{Auth::user()->access_token}}">Trip List</a>
                            <span class="icon-angle-right"></span>
                         </li>
                         <li><a href="#">Trip list reports</a></li>
@@ -94,6 +94,7 @@
                   <div class="responsive span4 border padding-10" data-tablet="span4" data-desktop="span4">
                      <form action="/report/seatoccupiedbytrip" method="get" class="horizontal-form">
                         <h3 class="form-section">Search trips report by date</h3>
+                        <input type="hidden" name="access_token" value="{{Auth::user()->access_token}}">
                         <div class="row-fluid">
                            <div class="span12">
                               <input type="hidden" value="{{$search['operator_id']}}" name="operator_id">

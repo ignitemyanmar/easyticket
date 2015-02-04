@@ -17,7 +17,7 @@
                      <ul class="breadcrumb">
                         <li>
                            <i class="icon-home"></i>
-                           <a href="/report/dailycarandadvancesale?operator_id={{Session::get('operator_id')}}">ပင္မစာမ်က္ႏွာ</a> 
+                           <a href="/report/dailycarandadvancesale?access_token={{Auth::user()->access_token}}&operator_id={{Session::get('operator_id')}}">ပင္မစာမ်က္ႏွာ</a> 
                            <span class="icon-angle-right"></span>
                         </li>
                         <li><a href="#">ကားအလုိက္ေရာင္းရေသာ လက္မွတ္စာရင္း</a></li>
@@ -60,8 +60,8 @@
                                           <td>{{$result['sold_tickets']}}</td>
                                           <td>{{$result['total_amount']}}</td>
                                           <td>
-                                             <a class="btn mini green-stripe imagechange" id="" href="/report/seatoccupiedbybus/detail?bus_id={{$result['bus_id']}}">ခုံနံပါတ္ႏွင့္ဝယ္သူတြဲၾကည့္ရန္</a>
-                                             <a class="btn mini green-stripe imagechange" id="" href="/report/dailybydeparturedate/detail?bus_id={{$result['bus_id']}}&agent_id={{$result['agent_id']}}">အေသးစိတ္ၾကည့္ရန္</a>
+                                             <a class="btn mini green-stripe imagechange" id="" href="/report/seatoccupiedbybus/detail?access_token={{Auth::user()->access_token}}&bus_id={{$result['bus_id']}}">ခုံနံပါတ္ႏွင့္ဝယ္သူတြဲၾကည့္ရန္</a>
+                                             <a class="btn mini green-stripe imagechange" id="" href="/report/dailybydeparturedate/detail?access_token={{Auth::user()->access_token}}&bus_id={{$result['bus_id']}}&agent_id={{$result['agent_id']}}">အေသးစိတ္ၾကည့္ရန္</a>
                                           </td>
                                        </tr>
                                     @endforeach

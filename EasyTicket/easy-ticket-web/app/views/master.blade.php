@@ -47,17 +47,20 @@
       <?php $currentroute=Route::getCurrentRoute()->getPath();?>
       <div class="large-12 title_bar">
         <div class="content_title">
-          <div class="left">
-            @if(strpos($myApp->operator_name,'elite') !== false)
-              <a href="/alloperator"><img src="../img/elite.png" style="max-height:35px;margin-left:20px;"> <span>Elite Express</span></a>
-            @elseif(strpos($myApp->operator_name,'mandalar min') !== false)
-              <a href="/alloperator"><img src="../img/mandalarmin.png" style="max-height:35px;margin-left:20px;"> <span>Mandalar Min Express</span></a>
-            @elseif(strpos($myApp->operator_name,'shwe nan taw') !== false)
-              <a href="/alloperator"><img src="../img/snt.png" style="max-height:35px;margin-left:20px;"> <span>Shwe Nan Taw Express</span></a>
-            @else
-              <a href="/alloperator"><span>{{$myApp->operator_name}} Express</span></a>
-            @endif
-          </div>
+          @if(Auth::user()->role==9 || Auth::user()->role==3)
+            <div class="left">
+              @if(strpos($myApp->operator_name,'Mandalar Min') !== false)
+                <a href="/alloperator"><img src="../img/Mandalar Min.png" style="max-height:35px;margin-left:20px;"> <span>Mandalar Min Express</span></a>
+              @elseif(strpos($myApp->operator_name,'mandalar min') !== false)
+                <a href="/alloperator"><img src="../img/mandalarmin.png" style="max-height:35px;margin-left:20px;"> <span>Mandalar Min Express</span></a>
+              @elseif(strpos($myApp->operator_name,'shwe nan taw') !== false)
+                <a href="/alloperator"><img src="../img/snt.png" style="max-height:35px;margin-left:20px;"> <span>Shwe Nan Taw Express</span></a>
+              @else
+                <a href="/alloperator"><span>{{$myApp->operator_name}} Express</span></a>
+              @endif
+            </div>
+          @endif
+          
           @if($currentroute=="departure-times")
           ကားထြက္မည့္အခ်ိန္ေရြးရန္
           @elseif($currentroute=="/")
@@ -67,7 +70,7 @@
           @if(Auth::check())
             <div class="user">
               @if(Session::get('bookingcount') > 0) 
-                <a href="/todaybookings" target="_blank"><span class="noti red">{{Session::get('bookingcount')}}</span></a>
+                <a href="/todaybookings?access_token={{Auth::user()->access_token}}" target="_blank"><span class="noti red">{{Session::get('bookingcount')}}</span></a>
               @endif
               <a href="#" data-dropdown="drop" class=""><i class="icon-user"></i>&nbsp; {{Auth::user()->name}}</a>
               <br> 

@@ -39,82 +39,130 @@ class UserController extends BaseController
 
   public function getFLogin()
   {
+    if(Auth::check()){
+      return Redirect::to("/all-trips?access_token=".Auth::user()->access_token);
+    }
     return View::make('login.login');
   }
 
   public function postFrontLogin(){
-      $user = array(
-              'email' => Input::get('username'),
-              'password' => Input::get('password')
-          );
-      if (Auth::attempt($user)) {
-        if(Auth::user()->role==9){
-          $operator_ids=Operator::lists('id');
-          if($operator_ids){
-            foreach ($operator_ids as $operator_id) {
+      $username = Input::get('username');
+      $password = Input::get('password');
+      
+      $curl = curl_init( "http://192.168.1.101/oauth/access_token" );
+      curl_setopt( $curl, CURLOPT_POST, true );
+      curl_setopt( $curl, CURLOPT_POSTFIELDS, array(
+          'client_id'     => '721689',
+          'client_secret' => 'onlineSale@EasyTickeTadmiM',
+          'grant_type'    => 'password',
+          'scope'         => 'sale,booking',
+          'state'         => '123456789',
+          'username'      => $username,
+          'password'      => $password
+      ) );
+      curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
+      $auth = curl_exec( $curl );
+      $auth = json_decode($auth);
+      $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+      curl_close($curl);
+      if($http_status == 200){
+        $user = array(
+                'email' => $username,
+                'password' => $password
+              );
+        if(Auth::attempt($user)){
+          if(Auth::check()){
+            if(Auth::user()->role==9){
+              $operator_ids=Operator::lists('id');
+              if($operator_ids){
+                foreach ($operator_ids as $operator_id) {
+                  $this->tripautocreate($operator_id);
+                }
+              }
+              return '/alloperator?access_token='.Auth::user()->access_token;
+            }else{
+              $operator_id=OperatorGroup::whereuser_id(Auth::user()->id)->pluck('operator_id');
+                if(!$operator_id){
+                    $operator_id=OperatorGroupUser::whereuser_id(Auth::user()->id)->pluck('operator_id');
+                }
               $this->tripautocreate($operator_id);
+              return "/all-trips?access_token=".Auth::user()->access_token;
             }
           }
-          return '/alloperator';
-        }else{
-          $operator_id=OperatorGroup::whereuser_id(Auth::user()->id)->pluck('operator_id');
-            if(!$operator_id){
-                $operator_id=OperatorGroupUser::whereuser_id(Auth::user()->id)->pluck('operator_id');
-            }
-          $this->tripautocreate($operator_id);
-          return "/";
         }
-
-        
       }else{
-        return 'Invalid email and password!';
+        return 'Unauthorized user access.';
       }
   }
 
   public function getFrontLogout(){
     Auth::logout();
-        return Redirect::route('signin')
+        return Redirect::to('/')
             ->with('flash_notice', 'You are successfully logged out.');
   }
 
 
   public function getLogin()
   {
+    if(Auth::check()){
+        if(Auth::user()->type == "operator"){
+          $operator_id=Operator::whereuser_id(Auth::user()->id)->pluck('id');
+          return Redirect::to("report/dailycarandadvancesale?access_token=".Auth::user()->access_token."&operator_id=".$operator_id);
+        }elseif(Auth::user()->type == "agent"){
+          $agent_id=Agent::whereuser_id(Auth::user()->id)->pluck('id');
+          return Redirect::to("report/dailycarandadvancesale?access_token=".Auth::user()->access_token."&operator_id=all");
+        }else{
+          
+        }
+    }
     return View::make('admin.login');
   }
 
   public function postLogin(){
-    $user = array(
-            'email' => Input::get('username'),
-            'password' => Input::get('password')
-        );
-        
-          if (Auth::attempt($user)) {
-            $id=Auth::user()->id;
-            $type=Auth::user()->type;
-            if($type=="operator"){
-              $operator_id=Operator::whereuser_id($id)->pluck('id');
-              return "report/dailycarandadvancesale?operator_id=".$operator_id;
-            }elseif($type=="agent"){
-              $agent_id=Agent::whereuser_id($id)->pluck('id');
-              return "report/dailycarandadvancesale?operator_id=all";
-            }else{
-              
-            }
-          }else{
-            return 'Invalid email and password!';
-          }
+      $username = Input::get('username');
+      $password = Input::get('password');
 
-        // authentication failure! lets go back to the login page
-        return Redirect::to('easyticket-admin')
-            ->with('flash_error', 'Your username/password combination was incorrect.')
-            ->withInput();
+      $curl = curl_init( "http://192.168.1.101/oauth/access_token" );
+      curl_setopt( $curl, CURLOPT_POST, true );
+      curl_setopt( $curl, CURLOPT_POSTFIELDS, array(
+          'client_id'     => '721685',
+          'client_secret' => 'IgniteAdmin721685',
+          'grant_type'    => 'password',
+          'scope'         => 'admin, sale, booking',
+          'state'         => '123456789',
+          'username'      => $username,
+          'password'      => $password
+      ) );
+      curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
+      $auth = curl_exec( $curl );
+      $auth = json_decode($auth);
+      $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+      curl_close($curl);
+      if($http_status == 200){
+        $user = array(
+                'email' => $username,
+                'password' => $password
+              );
+        if(Auth::attempt($user)){
+          if(Auth::check()){
+              if(Auth::user()->type == "operator"){
+                $operator_id=Operator::whereuser_id(Auth::user()->id)->pluck('id');
+                return "report/dailycarandadvancesale?access_token=".Auth::user()->access_token."&operator_id=".$operator_id;
+              }elseif(Auth::user()->type == "agent"){
+                return "report/dailycarandadvancesale?access_token=".Auth::user()->access_token."&operator_id=all";
+              }else{
+                return "report/dailycarandadvancesale?access_token=".Auth::user()->access_token."&operator_id=all";
+              }
+          }
+        }
+      }else{
+        return "easyticket-admin";
+      }
   }
 
   public function getLogout(){
     Auth::logout();
-
-        return Redirect::route('easyticket-admin')
+        return Redirect::to('/easyticket-admin')
             ->with('flash_notice', 'You are successfully logged out.');
   }
 

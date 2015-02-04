@@ -38,7 +38,7 @@
 									<a href="/">Home</a> 
 									<i class="icon-angle-right"></i>
 								</li>
-								<li><a href="/dashboard">Dashboard</a></li>
+								<li><a href="/dashboard?access_token={{Auth::user()->access_token}}">Dashboard</a></li>
 								<li class="pull-right no-text-shadow">
 									<div id="dashboard-report-range" class="dashboard-date-range tooltips no-tooltip-on-touch-device responsive" data-tablet="" data-desktop="tooltips" data-placement="top" data-original-title="Change dashboard date range">
 										<i class="icon-calendar"></i>
@@ -71,7 +71,7 @@
 										<div class="desc">									
 										</div>
 									</div>
-									<a class="more" href="/report/agent/trip/dateranges?operator_id={{$operator['id']}}&agent_id={{$response['agent_id']}}">
+									<a class="more" href="/report/agent/trip/dateranges?access_token={{Auth::user()->access_token}}&operator_id={{$operator['id']}}&agent_id={{$response['agent_id']}}">
 									Trip list <i class="m-icon-swapright m-icon-white"></i>
 									</a>						
 								</div>

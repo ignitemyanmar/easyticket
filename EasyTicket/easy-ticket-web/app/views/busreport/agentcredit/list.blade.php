@@ -59,6 +59,7 @@
                            </div>
                            <div class="search-default">
                                  <form action="/report/agentscredits/search" method="get">
+                                 <input type="hidden" class="access_token" name="access_token" value="{{Auth::user()->access_token}}">
                                        <div class="row-fluid">
                                           <div class="span2">
                                              <div class="control-group">
@@ -177,7 +178,7 @@
                                        <th>Receivable</th>
                                        <th>Receipt</th>
                                        <th class="span3">Closing Balance</th>
-                                       <th><a class="btn small green blue-stripe" href="/report/agentcreditlist/group/{{$search['agentgroup_id']}}?&agent_id={{$search['agent_id']}}&start_date={{$search['start_date']}}&end_date={{$search['end_date']}}">အေသးစိတ္ All</a></th>
+                                       <th><a class="btn small green blue-stripe" href="/report/agentcreditlist/group/{{$search['agentgroup_id']}}?access_token={{Auth::user()->access_token}}&agent_id={{$search['agent_id']}}&start_date={{$search['start_date']}}&end_date={{$search['end_date']}}">အေသးစိတ္ All</a></th>
                                     </tr>
                                  </thead>
                                        @if($response)
@@ -228,7 +229,7 @@
                                                                <td>{{number_format( $row['receipt'] , 0 , '.' , ',' )}}</td>
                                                                <td><span @if($row['closing_balance'] < 0)  class="noti" @endif>{{str_replace('-',"",number_format($row['closing_balance'],'0','.',','))}}</span></td>
                                                                <td>
-                                                                  <a class="btn mini green-stripe" href="/report/agentcreditlist/group/{{$row['agentgroup_id']}}?agent_id={{$row['id']}}&start_date={{$search['start_date']}}&end_date={{$search['end_date']}}">အေသးစိတ္ၾကည့္မည္</a>
+                                                                  <a class="btn mini green-stripe" href="/report/agentcreditlist/group/{{$row['agentgroup_id']}}?access_token={{Auth::user()->access_token}}&agent_id={{$row['id']}}&start_date={{$search['start_date']}}&end_date={{$search['end_date']}}">အေသးစိတ္ၾကည့္မည္</a>
                                                                </td>
                                                             </tr>
                                                          @endif
@@ -347,11 +348,12 @@
             {
                agentgroup_id=0;
             }
+            var _token = $('.access_token').val();
             var result='<select name="agent_id" class="m-wrap span12 chosen">';
                   result+='<option value="All">All</option>';
             $('#agent_id').html('');
             $('#agent_id').addClass('loader');
-            $.get('/agentbranches/'+agentgroup_id,function(data){
+            $.get('/agentbranches/'+agentgroup_id+'?access_token='+_token,function(data){
                var selected='';
                for(var i=0; i<data.length; i++){
 

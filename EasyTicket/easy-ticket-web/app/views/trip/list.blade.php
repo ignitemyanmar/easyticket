@@ -12,7 +12,7 @@
                         
                      <!-- BEGIN PAGE TITLE & BREADCRUMB-->        
                      <h3 class="page-title">
-                        Dashboard            
+                        Trip List            
                         <small></small>
                      </h3>
                      <ul class="breadcrumb">
@@ -21,7 +21,7 @@
                            <a href="/">Home</a> 
                            <i class="icon-angle-right"></i>
                         </li>
-                        <li><a href="/dashboard">Dashboard</a></li>
+                        <li><a href="#">Trip List</a></li>
                         
                      </ul>
                      <!-- END PAGE TITLE & BREADCRUMB-->
@@ -118,7 +118,7 @@
                                  <tbody>
                                     @foreach($response as $trip)
                                           <tr>
-                                             <td class="hidden-phone span2">{{$trip['from_city']->name.'=>'.$trip['to_city']->name}} @if($trip['extendcity'])
+                                             <td class="hidden-phone span2">{{$trip['from_city']->name.'=>'.$trip['to_city']->name}}@if($trip['ownseat']) <em style="color:red;">*</em> @endif @if($trip['extendcity'])
                                              <span class="label label-info mini">{{City::whereid($trip['extendcity']->city_id)->pluck('name');}}</span> @endif
                                              @if($trip->ever_close == 0)
                                                 @if((strtotime($trip->from_close_date) >= strtotime(date('Y-m-d'))) && (strtotime(date('Y-m-d')) <= strtotime($trip->to_close_date)))

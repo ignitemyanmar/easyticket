@@ -108,7 +108,7 @@ return array(
     | Whether or not the state parameter is required in the query string
     |
     */
-    'state_param' => false,
+    'state_param' => true,
 
     /*
     |--------------------------------------------------------------------------
@@ -118,7 +118,7 @@ return array(
     | Whether or not the scope parameter is required in the query string
     |
     */
-    'scope_param' => false,
+    'scope_param' => true,
 
     /*
     |--------------------------------------------------------------------------
@@ -171,7 +171,7 @@ return array(
     | This is useful to only allow specific clients to use some scopes
     |
     */
-    'limit_clients_to_scopes' => false,
+    'limit_clients_to_scopes' => true,
 
     /*
     |--------------------------------------------------------------------------
@@ -182,7 +182,7 @@ return array(
     | This is useful to allow certain scopes to be used only with certain grant types
     |
     */
-    'limit_scopes_to_grants' => false,
+    'limit_scopes_to_grants' => true,
 
     /*
     |--------------------------------------------------------------------------

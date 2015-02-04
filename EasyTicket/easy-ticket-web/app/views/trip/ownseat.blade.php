@@ -33,7 +33,7 @@
 
    .controls .control-label{text-align: left;}
 
-   .operator_0{background:#5586c8;} /*elite*/
+   .operator_0{background:#5586c8;} /*Mandalar Min*/
    .operator_1{background:#FF8514;} /*gov*/
    .operator_2{background:#4BFFFF;} /*Aung Minglar*/
    .operator_3{background:#B08620;} /*Mindama*/

@@ -2,6 +2,7 @@
 @section('content')
    <style type="text/css">
    .ticket, .price{border:1px solid #35AA47; background: #D8D8D8; padding: 2px 9px; }
+   .zawgyi-one{font-family: "Zawgyi-One" !important;}
    </style>
    <link rel="stylesheet" href="assets/data-tables/DT_bootstrap.css" />
    <link rel="stylesheet" type="text/css" href="../../../../assets/chosen-bootstrap/chosen/chosen.css" />
@@ -169,10 +170,10 @@
                                                    </a>
                                                    <ul class="dropdown-menu"> 
                                                       <li>
-                                                        <a class="delete" href="/order-delete/{{ $order['id'] }}"><i class="icon-list"></i>ေဘာက္ခ်ာ တစ္ခုလုံးဖ်က္မည္။</a>
+                                                        <a class="delete zawgyi-one" href="/order-delete/{{ $order['id'] }}"><i class="icon-list"></i>ေဘာက္ခ်ာ တစ္ခုလုံးဖ်က္မည္။</a>
                                                       </li>
                                                       <li>
-                                                        <a href="/order-tickets/{{ $order['id'] }}"><i class="icon-list"></i>လက္မွတ္တစ္ခု ခ်င္းစီ ဖ်က္မည္။</a>
+                                                        <a class="zawgyi-one" href="/order-tickets/{{ $order['id'] }}"><i class="icon-list"></i>လက္မွတ္တစ္ခု ခ်င္းစီ ဖ်က္မည္။</a>
                                                       </li>
                                                       <li class="divider"></li>
                                                    </ul>

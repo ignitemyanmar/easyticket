@@ -368,7 +368,7 @@ class HomeController extends \BaseController {
     		    $can_buy=true;
     			$group_operator_id=$this->myGlob->operatorgroup_id;
     			$objsaleorder=new SaleOrder();
-    			$max_order_id =$objsaleorder->id= $this->generateAutoID($group_operator_id);
+    			$max_order_id =$objsaleorder->id= $this->generateAutoID($operator_id,$group_operator_id);
 	    		$objsaleorder->orderdate 		=$this->Date;
 	    		$objsaleorder->departure_date 	= $departure_date;
 	    		$objsaleorder->departure_datetime= $departure_datetime;
@@ -508,7 +508,7 @@ class HomeController extends \BaseController {
     		$can_buy=true;
     			$group_operator_id=$this->myGlob->operatorgroup_id;
 	    		$objsaleorder=new SaleOrder();
-	    		$order_id=$objsaleorder->id = $this->generateAutoID($group_operator_id);
+	    		$order_id=$objsaleorder->id = $this->generateAutoID($operator_id, $group_operator_id);
 	    		// dd($this->generateAutoID($group_operator_id));
 	    		$objsaleorder->orderdate=$this->Date;
 	    		$objsaleorder->departure_date=$departure_date;
@@ -694,6 +694,7 @@ class HomeController extends \BaseController {
     			$total_amount 				= $objsaleorder->total_amount - $objsaleorder->agent_commission;
     			$objdepositpayment_trans	= new AgentDeposit();
 	    		$objdepositpayment_trans->agent_id 	 		= $objsaleorder->agent_id;
+	    		$objdepositpayment_trans->agentgroup_id 	=Agent::whereid($objsaleorder->agent_id)->pluck('agentgroup_id');
 	    		$objdepositpayment_trans->operator_id		= $objsaleorder->operator_id;
 	    		$objdepositpayment_trans->total_ticket_amt	= $total_amount;
 	    		$today 										= date("Y-m-d");
@@ -722,7 +723,7 @@ class HomeController extends \BaseController {
 
     	$message="Success.";
     	$G_operator_id=Session::get('G_operator_id');
-    	return Redirect::to('/')->with('message',$message);
+    	return Redirect::to('/all-trips?access_token='.Auth::user()->access_token)->with('message',$message);
 	}
 
 	public function deleteSaleOrder($id){
@@ -802,7 +803,7 @@ class HomeController extends \BaseController {
 
 	
 
-	public function generateAutoID($prefix){
+	/*public function generateAutoID($prefix){
 		$prefix=$prefix."_";
     	$autoid 			= 0;
     	$last_order_id 		= SaleOrder::where('id','like',$prefix.'%')->orderBy('id','desc')->limit('1')->pluck('id');
@@ -833,6 +834,67 @@ class HomeController extends \BaseController {
     		$inc_value = ++$last_order_value;
     		$autoid = "0".$inc_value;
     	}elseif($last_order_value >= 999999 && $last_order_value <9999999){
+    		$inc_value = ++$last_order_value;
+    		$autoid = $inc_value;
+    	}
+    	return $prefix.$autoid;
+    }*/
+    public function generateAutoID($operator_id, $operator_gp_id){
+    	$prefix_opr = 0;
+    	$prefix_gp_opr = 0;
+    	// Generate Operator ID;
+    	if($operator_id >= 0 && $operator_id <=9){
+    		$prefix_opr = "000".$operator_id;
+    	}elseif($operator_id > 9 && $operator_id <=99){
+    		$prefix_opr = "00".$operator_id;
+    	}elseif($operator_id > 99 && $operator_id <=999){
+    		$prefix_opr = "0".$operator_id;
+    	}elseif($operator_id > 999 && $operator_id <=9999){
+    		$prefix_opr = $operator_id;
+    	}
+    	// Generate Operator Group ID;
+    	if($operator_gp_id >= 0 && $operator_gp_id <=9){
+    		$prefix_gp_opr = "000".$operator_gp_id;
+    	}elseif($operator_gp_id > 9 && $operator_gp_id <=99){
+    		$prefix_gp_opr = "00".$operator_gp_id;
+    	}elseif($operator_gp_id > 99 && $operator_gp_id <=999){
+    		$prefix_gp_opr = "0".$operator_gp_id;
+    	}elseif($operator_gp_id > 999 && $operator_gp_id <=9999){
+    		$prefix_gp_opr = $operator_gp_id;
+    	}
+    	$prefix = $prefix_opr.$prefix_gp_opr;
+    	$autoid 			= 0;
+    	// Get Last ID Value;
+    	$last_order_id 		= SaleOrder::where('id','like',$prefix.'%')->orderBy('id','desc')->limit('1')->pluck('id');
+    	if($last_order_id){
+    		$last_order_value 	= (int) substr($last_order_id, strlen($prefix));
+    	}else{
+    		return $prefix."00000001";
+    	}
+
+		//Auto Digit 8    	
+    	if($last_order_value >= 0 && $last_order_value <9){
+    		$inc_value = ++$last_order_value;
+    		$autoid = "0000000".$inc_value;
+    	}elseif($last_order_value >= 9 && $last_order_value <99){
+    		$inc_value = ++$last_order_value;
+    		$autoid = "000000".$inc_value;
+    	}elseif($last_order_value >= 99 && $last_order_value <999){
+    		$inc_value = ++$last_order_value;
+    		$autoid = "00000".$inc_value;
+    	}elseif($last_order_value >= 999 && $last_order_value <9999){
+    		$inc_value = ++$last_order_value;
+    		$autoid = "0000".$inc_value;
+    	}elseif($last_order_value >= 9999 && $last_order_value <99999){
+    		$inc_value = ++$last_order_value;
+    		$autoid = "000".$inc_value;
+    	}elseif($last_order_value >= 99999 && $last_order_value <999999){
+    		$inc_value = ++$last_order_value;
+    		$autoid = "00".$inc_value;
+    	}elseif($last_order_value >= 999999 && $last_order_value <9999999){
+    		$inc_value = ++$last_order_value;
+    		$autoid = "0".$inc_value;
+    	}elseif($last_order_value >= 9999999 && $last_order_value <99999999){
     		$inc_value = ++$last_order_value;
     		$autoid = $inc_value;
     	}

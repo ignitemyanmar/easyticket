@@ -52,6 +52,7 @@
 									</div>
 									<br>
 									@endif
+									<input type="hidden" name="access_token" value="{{Auth::user()->access_token}}">
 									<input type="hidden" id="order_id" value="{{$objorder->id}}">
 
 									<div class="row">

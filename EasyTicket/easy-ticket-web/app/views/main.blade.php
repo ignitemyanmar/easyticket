@@ -22,7 +22,7 @@
 <body class="login">
   <!-- BEGIN LOGO -->
   <div class="logo">
-    <img src="../img/elite.png" alt="" /> 
+    <!-- <img src="../img/Mandalar Min.png" alt="" />  -->
   </div>
     @yield('content')
   <div class="copyright">

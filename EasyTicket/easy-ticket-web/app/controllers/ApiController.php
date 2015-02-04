@@ -1474,228 +1474,6 @@ class ApiController extends BaseController
 
 	}
 
-	// public static function tripautocreate($operator_id){
-	// 	if(!$operator_id){
-	// 		return false;
-	// 	}
-	// 	$today = App::make('MyDate');
-	// 	$day=date('d', strtotime($today));
-	// 	if($day <1){
-	// 		return false;
-	// 	}
-	// 	$maxbusoccurance=BusOccurance::max('id');
-	// 	$objtrips  =Trip::whereoperator_id($operator_id)->get();
-
-	// 	$response=array();
-	// 	if($objtrips){
-	// 		foreach ($objtrips as $trip) {
-	// 			if(strtolower($trip->available_day)=='daily'){
-	// 				$trip_id 			=$trip->id;
-	// 				$bus_no 			=BusOccurance::wheretrip_id($trip->id)->pluck('bus_no');
-	// 				$bus_no 			=$bus_no !=null ? $bus_no : "-";
-	// 				$today 				=$today;
-	// 				$year 				=date('Y');
-	// 				$nextYear			=$year + 1;
-	// 				$cMonth 			=date('m');
-	// 				$checkdate 			=date('d', strtotime($today));
-	// 				$month 				=date("Y-m-d", strtotime("+1 month", strtotime($today)));
-	// 				$nextMonth 			=date("m", strtotime($month));
-	// 				$days_in_currentMonth=cal_days_in_month(CAL_GREGORIAN,$cMonth,$year);
-	// 				$days_in_nextMonth  =cal_days_in_month(CAL_GREGORIAN,$nextMonth,$nextYear);
-
-	// 				$tocreateoccuranceCMonth=array();
-	// 				$tocreateoccurance=array();
-	// 				for($j=1; $j<=$days_in_currentMonth; $j++){
-	// 					$tocreateoccurance[]=$year.'-'.$cMonth.'-'.sprintf("%02s", $j);
-	// 				}
-	// 				for($i=1; $i<=$days_in_nextMonth; $i++){
-	// 					if($cMonth==12){
-	// 						$year=$nextYear;
-	// 						$nextMonth='01';
-	// 					}							
-	// 					$tocreateoccurance[]=$year.'-'.$nextMonth.'-'.sprintf("%02s", $i);
-	// 				}
-	// 				// return Response::json($tocreateoccurance);
-					
-	// 				if($trip_id && $tocreateoccurance){
-	// 					$checkbusoccurances =BusOccurance::wheretrip_id($trip_id)->wheredeparture_date($tocreateoccurance[0])->first();
-	// 					if($checkbusoccurances){
-
-	// 					}else{
-	// 						$objtrip 			=Trip::whereid($trip_id)->first();
-	// 						$tirp_id			=$objtrip->id;
-	// 						$seat_plan_id		=$objtrip->seat_plan_id;
-	// 						$operator_id		=$objtrip->operator_id;
-	// 						$from 				=$objtrip->from;
-	// 						$to 				=$objtrip->to;
-	// 						$class_id			=$objtrip->class_id;
-	// 						$price 				=$objtrip->price;
-	// 						$foreign_price		=$objtrip->foreign_price == 0 ? $objtrip->price : $objtrip->foreign_price;
-	// 						$commission			=$objtrip->commission;
-	// 						$time 				=$objtrip->time;
-	// 						$remark 			=$objtrip->remark;
-	// 						foreach ($tocreateoccurance as $departure_date) {
-	// 							//if close with from-to date;
-	// 							$status 			= (strtotime($departure_date) >= strtotime($objtrip->from_close_date)) && (strtotime($departure_date) <= strtotime($objtrip->to_close_date))  ? 1 : 0;
-	// 							//else if ever close;
-	// 							$status 			= $objtrip->ever_close == 1 && strtotime($departure_date) >= strtotime($objtrip->from_close_date) ? 1 : $status;
-
-	// 							$obj_busoccurance 	=new BusOccurance();
-	// 							$obj_busoccurance->seat_plan_id 	=$seat_plan_id;
-	// 							$obj_busoccurance->bus_no 			=$bus_no;
-	// 							$obj_busoccurance->from 			=$from;
-	// 							$obj_busoccurance->to 				=$to;
-	// 							$obj_busoccurance->classes 			=$class_id;
-	// 							$obj_busoccurance->departure_date 	=$departure_date;
-	// 							$obj_busoccurance->departure_time 	=$time;
-	// 							$obj_busoccurance->price 			=$price;
-	// 							$obj_busoccurance->foreign_price	=$foreign_price;
-	// 							$obj_busoccurance->commission		=$commission;
-	// 							$obj_busoccurance->operator_id 		=$operator_id;
-	// 							$obj_busoccurance->trip_id 			=$trip_id;
-	// 							$obj_busoccurance->status 			=$status;
-	// 							$obj_busoccurance->remark 			=$remark;
-	// 							$checkbusoccurances=BusOccurance::wheretrip_id($trip_id)->wheredeparture_date($departure_date)->wheredeparture_time($time)->whereclasses($class_id)->first();
-	// 							if($checkbusoccurances){
-									
-	// 							}else{
-	// 								$obj_busoccurance->save();
-	// 							}
-	// 						}	
-	// 					}
-						
-	// 				}
-	// 			}elseif(substr($trip->available_day, 0,1)=='2'){
-	// 			}else{
-	// 				$trip_id 	  =$trip->id;
-	// 				$availableDays=$trip->available_day;
-	// 				$bus_no 			=BusOccurance::wheretrip_id($trip->id)->pluck('bus_no');
-	// 				$bus_no 			=$bus_no !=null ? $bus_no : "-";
-	// 				$jsondays=explode('-', $availableDays);
-	// 				/** 
-	// 				 *change available days to index
-	// 				 * @return availabledayindexs
-	// 				 */
-	// 				$availabledayindexs=array();
-	// 				foreach ($jsondays as $value) {
-	// 					$index=0;
-	// 					switch ($value) {
-	// 						case 'Sat':
-	// 							$index=6;
-	// 							break;
-	// 						case 'Sun':
-	// 							$index=0;
-	// 							break;
-	// 						case 'Mon':
-	// 							$index=1;
-	// 							break;
-	// 						case 'Tue':
-	// 							$index=2;
-	// 							break;
-	// 						case 'Wed':
-	// 							$index=3;
-	// 							break;
-	// 						case 'Thurs':
-	// 							$index=4;
-	// 							break;
-	// 						case 'Fri':
-	// 							$index=5;
-	// 							break;
-							
-	// 						default:
-	// 							break;
-	// 					}
-	// 					$availabledayindexs[]=$index;
-	// 				}
-
-	// 				$year 				=date('Y');
-	// 				$checkdate 			=date('d', strtotime($today));
-	// 				$month 				= date("Y-m-d", strtotime("+1 month", strtotime($today)));
-	// 				$currentMonth 		=date("m");
-	// 				$nextMonth 			=date("m", strtotime($month));
-	// 				$nextYear			=$year + 1;
-	// 				$days_in_currentMonth=cal_days_in_month(CAL_GREGORIAN,$currentMonth,$year);
-	// 				$days_in_nextMonth  =cal_days_in_month(CAL_GREGORIAN,$nextMonth,$nextYear);
-					
-	// 				$end_date=strtotime($year.'-'.$nextMonth.'-'.$days_in_nextMonth);
-	// 				$start_date=$year.'-'.$currentMonth.'-01';
-	// 				$now = strtotime($start_date);
-	// 				$customdays=array();
-	// 				while (date("Y-m-d", $now) != date("Y-m-d", $end_date)) {
-	// 				    $day_index = date("w", $now);
-	// 				    foreach ($availabledayindexs as $value) {
-	// 				    	if ($day_index == $value) {
-	// 					    	$customdate=date('Y-m-d', $now);
-	// 					    	$customdays[]=$customdate;
-	// 					    }
-	// 				    }
-					    
-	// 				    $now = strtotime(date("Y-m-d", $now) . "+1 day");
-	// 				}
-					
-	// 				if(count($customdays)>0 && $trip_id){
-	// 					// $checkbusoccurances =BusOccurance::wheretrip_id($trip_id)->wheredeparture_date($customdays[0])->first();
-	// 					// if($checkbusoccurances){
-	// 					// }else{
-	// 						$objtrip=Trip::whereid($trip_id)->first();
-	// 						if($objtrip){
-	// 							$trip_id			=$objtrip->id;
-	// 							$operator_id		=$objtrip->operator_id;
-	// 							$from				=$objtrip->from;
-	// 							$to					=$objtrip->to;
-	// 							$class_id			=$objtrip->class_id;
-	// 							$price 				=$objtrip->price;
-	// 							$foreign_price		=$objtrip->foreign_price == 0 ? $objtrip->price : $objtrip->foreign_price;
-	// 							$commission 		=$objtrip->commission;
-	// 							$time 				=$objtrip->time;
-	// 							$seat_plan_id		=$objtrip->seat_plan_id ? $objtrip->seat_plan_id : 1;
-	// 							$remark 			=$objtrip->remark;
-
-	// 							$today=$today;
-	// 							$count_days=count($customdays);
-	// 							// return Response::json($available_day);
-	// 							foreach ($customdays as $departure_date) {
-	// 								//if close with from-to date;
-	// 								$status 			= (strtotime($departure_date) >= strtotime($objtrip->from_close_date)) && (strtotime($departure_date) <= strtotime($objtrip->to_close_date)) ? 1 : 0;
-	// 								//else if ever close;
-	// 								$status 			= $objtrip->ever_close == 1 && strtotime($departure_date) >= strtotime($objtrip->from_close_date) ? 1 : $status;
-	// 								$objbusoccurance=new BusOccurance();
-	// 								$objbusoccurance->seat_plan_id	=$seat_plan_id;
-	// 								$objbusoccurance->bus_no		=$bus_no;
-	// 								$objbusoccurance->from			=$from;
-	// 								$objbusoccurance->to			=$to;
-	// 								$objbusoccurance->classes		=$class_id;
-	// 								$objbusoccurance->departure_date=$departure_date;
-	// 								$objbusoccurance->departure_time=$time;
-	// 								$objbusoccurance->price			=$price;
-	// 								$objbusoccurance->foreign_price	=$foreign_price;
-	// 								$objbusoccurance->commission	=$commission;
-	// 								$objbusoccurance->operator_id	=$operator_id;
-	// 								$objbusoccurance->trip_id		=$trip_id;
-	// 								$objbusoccurance->status 		=$status;
-	// 								$objbusoccurance->remark 		=$remark;
-	// 								$checkbusoccurances=BusOccurance::wheretrip_id($trip_id)->wheredeparture_date($departure_date)->wheredeparture_time($time)->whereclasses($class_id)->first();
-	// 								if(!$checkbusoccurances){
-	// 									$objbusoccurance->save();
-	// 								}
-	// 							}
-	// 						}
-	// 					//}
-	// 				}
-	// 			}
-	// 		}
-
-	// 		$currentmaxid=BusOccurance::max('id');
-	// 		if($maxbusoccurance==$currentmaxid){
-	// 			$response['message']="This trip already have been created for this month!";
-	// 		}else{
-	// 			$response['message']="Successfully has been created for this month.";
-	// 		}
-	// 	}
-	// 	// return Response::json($response);
-
-	// }
-
 	public function putTrip($id){
 		$objtrip		=Trip::find($id);
 		$from			=Input::get('from');
@@ -3189,23 +2967,23 @@ class ApiController extends BaseController
     	$prefix_opr = 0;
     	$prefix_gp_opr = 0;
     	// Generate Operator ID;
-    	if($operator_id >= 0 && $operator_id <9){
+    	if($operator_id >= 0 && $operator_id <=9){
     		$prefix_opr = "000".$operator_id;
-    	}elseif($operator_id >= 9 && $operator_id <99){
+    	}elseif($operator_id > 9 && $operator_id <=99){
     		$prefix_opr = "00".$operator_id;
-    	}elseif($operator_id >= 99 && $operator_id <999){
+    	}elseif($operator_id > 99 && $operator_id <=999){
     		$prefix_opr = "0".$operator_id;
-    	}elseif($operator_id >= 999 && $operator_id <9999){
+    	}elseif($operator_id > 999 && $operator_id <=9999){
     		$prefix_opr = $operator_id;
     	}
     	// Generate Operator Group ID;
-    	if($operator_gp_id >= 0 && $operator_gp_id <9){
+    	if($operator_gp_id >= 0 && $operator_gp_id <=9){
     		$prefix_gp_opr = "000".$operator_gp_id;
-    	}elseif($operator_gp_id >= 9 && $operator_gp_id <99){
+    	}elseif($operator_gp_id > 9 && $operator_gp_id <=99){
     		$prefix_gp_opr = "00".$operator_gp_id;
-    	}elseif($operator_gp_id >= 99 && $operator_gp_id <999){
+    	}elseif($operator_gp_id > 99 && $operator_gp_id <=999){
     		$prefix_gp_opr = "0".$operator_gp_id;
-    	}elseif($operator_gp_id >= 999 && $operator_gp_id <9999){
+    	}elseif($operator_gp_id > 999 && $operator_gp_id <=9999){
     		$prefix_gp_opr = $operator_gp_id;
     	}
     	$prefix = $prefix_opr.$prefix_gp_opr;
@@ -3219,28 +2997,28 @@ class ApiController extends BaseController
     	}
 
 		//Auto Digit 8    	
-    	if($last_order_value >= 0 && $last_order_value <9){
+    	if($last_order_value >= 0 && $last_order_value <=9){
     		$inc_value = ++$last_order_value;
     		$autoid = "0000000".$inc_value;
-    	}elseif($last_order_value >= 9 && $last_order_value <99){
+    	}elseif($last_order_value > 9 && $last_order_value <=99){
     		$inc_value = ++$last_order_value;
     		$autoid = "000000".$inc_value;
-    	}elseif($last_order_value >= 99 && $last_order_value <999){
+    	}elseif($last_order_value > 99 && $last_order_value <=999){
     		$inc_value = ++$last_order_value;
     		$autoid = "00000".$inc_value;
-    	}elseif($last_order_value >= 999 && $last_order_value <9999){
+    	}elseif($last_order_value > 999 && $last_order_value <=9999){
     		$inc_value = ++$last_order_value;
     		$autoid = "0000".$inc_value;
-    	}elseif($last_order_value >= 9999 && $last_order_value <99999){
+    	}elseif($last_order_value > 9999 && $last_order_value <=99999){
     		$inc_value = ++$last_order_value;
     		$autoid = "000".$inc_value;
-    	}elseif($last_order_value >= 99999 && $last_order_value <999999){
+    	}elseif($last_order_value > 99999 && $last_order_value <=999999){
     		$inc_value = ++$last_order_value;
     		$autoid = "00".$inc_value;
-    	}elseif($last_order_value >= 999999 && $last_order_value <9999999){
+    	}elseif($last_order_value > 999999 && $last_order_value <=9999999){
     		$inc_value = ++$last_order_value;
     		$autoid = "0".$inc_value;
-    	}elseif($last_order_value >= 9999999 && $last_order_value <99999999){
+    	}elseif($last_order_value > 9999999 && $last_order_value <=99999999){
     		$inc_value = ++$last_order_value;
     		$autoid = $inc_value;
     	}
@@ -3325,7 +3103,7 @@ class ApiController extends BaseController
     		}*/
 
     		
-
+    		$total_discount = 0;
 
     		foreach ($json_tickets as $rows) {
     			$objsaleitems=SaleItem::whereorder_id($sale_order_no)->whereseat_no($rows->seat_no)->wherebusoccurance_id($rows->busoccurance_id)->first();
@@ -3339,6 +3117,7 @@ class ApiController extends BaseController
     				$objsaleitems->free_ticket		= 1;
     				$objsaleitems->free_ticket_remark = $rows->free_ticket_remark;
     			}
+    			$objsaleitems->discount 			=$rows->discount ? $rows->discount : 0;
 				$objsaleitems->agent_id 		=$agent_id; 
 				if($extra_dest_id != 0){
 					$extra_destination 					= ExtraDestination::whereid($extra_dest_id)->first();
@@ -3348,7 +3127,7 @@ class ApiController extends BaseController
 					$objsaleitems->extra_city_id		= $extra_destination->city_id;
 				} 			
     			$objsaleitems->update();
-
+    			$total_discount += $rows->discount ? $rows->discount : 0;
     			$seat_plan_id=BusOccurance::whereid($rows->busoccurance_id)->pluck('seat_plan_id');
     			$changestatus=SeatInfo::whereseat_plan_id($seat_plan_id)->whereseat_no($rows->seat_no)->first();
     			if($changestatus){
@@ -3401,12 +3180,15 @@ class ApiController extends BaseController
     		//Payment Transaction
     		if($booking == 0){
     			$total_amount 				= $objsaleorder->total_amount - $objsaleorder->agent_commission;
+    			$total_amount 				= $total_amount - $total_discount;
     			$objdepositpayment_trans	= new AgentDeposit();
 	    		$objdepositpayment_trans->agent_id 	 		= $objsaleorder->agent_id;
+	    		$objdepositpayment_trans->agentgroup_id 	=Agent::whereid($objsaleorder->agent_id)->pluck('agentgroup_id');
 	    		$objdepositpayment_trans->operator_id		= $objsaleorder->operator_id;
 	    		$objdepositpayment_trans->total_ticket_amt	= $total_amount;
 	    		$today 										= $this->today;
 	    		$objdepositpayment_trans->pay_date			= $today;
+	    		$objdepositpayment_trans->order_ids			= '["'.$objsaleorder->id.'"]';
 	    		$objdepositpayment_trans->payment 			= 0;
 	    		$agentdeposit 				= AgentDeposit::whereagent_id($objsaleorder->agent_id)->whereoperator_id($objsaleorder->operator_id)->orderBy('id','desc')->first();
 	    		if($agentdeposit){
@@ -3420,7 +3202,7 @@ class ApiController extends BaseController
 	    		$objdepositpayment_trans->save();
 
 	    		$saleOrder = SaleOrder::whereid($objsaleorder->id)->first();
-	    		$saleOrder->cash_credit = 1;
+	    		$saleOrder->cash_credit = 2;
 	    		$saleOrder->update();
     		}
     	}
@@ -3529,10 +3311,11 @@ class ApiController extends BaseController
     public function getSaleOrder(){
     	$response 		=array();
     	$operator_id 	=Input::get('operator_id');
-    	$departure_date 	=Input::get('departure_date');
+    	$departure_date =Input::get('departure_date');
     	$from 	 		=Input::get('from');
     	$to 	 		=Input::get('to');
     	$time 			=Input::get('time');
+    	$book_code 		=Input::get('book_code');
     	if(!$operator_id){
     		$response['status']=0;
     		$response['message']='Required Any Parameter.';
@@ -3560,6 +3343,12 @@ class ApiController extends BaseController
 					->get(array('id', 'orderdate', 'created_at', 'agent_id', 'operator_id'));
     		}
     		
+		}else if($book_code){
+			$response=SaleOrder::with(array('saleitems'))
+					->whereid($book_code)
+    				->wherebooking(1)
+    				->whereoperator_id($operator_id)
+					->get(array('id', 'orderdate', 'created_at', 'agent_id', 'operator_id'));
 		}else{
 			$response=SaleOrder::with(array('saleitems'))
     				->wherebooking(1)

@@ -6,7 +6,7 @@
     @else
     <!-- BEGIN LOGIN -->
         <div class="logo">
-          <!-- <img src="../img/elite.png" alt="" style="max-width:130px;">  -->
+          <!-- <img src="../img/Mandalar Min.png" alt="" style="max-width:130px;">  -->
         </div>
         <div class="content">
           <!-- BEGIN LOGIN FORM -->

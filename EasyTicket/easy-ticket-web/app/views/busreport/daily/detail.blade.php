@@ -46,11 +46,11 @@
                      <ul class="breadcrumb">
                         <li>
                            <i class="icon-home"></i>
-                           <a href="/report/dailycarandadvancesale?operator_id={{Session::get('operator_id')}}">ပင္မစာမ်က္ႏွာ</a> 
+                           <a href="/report/dailycarandadvancesale?access_token={{Auth::user()->access_token}}&operator_id={{Session::get('operator_id')}}">ပင္မစာမ်က္ႏွာ</a> 
                            <span class="icon-angle-right"></span>
                         </li>
                         <li>
-                           <a href="/report/dailycarandadvancesale/search?date={{$orderdate}}&operator_id={{$V_operator_id}}">ေန႔စဥ္ အေရာင္းစာရင္း</a>
+                           <a href="/report/dailycarandadvancesale/search?access_token={{Auth::user()->access_token}}&date={{$orderdate}}&operator_id={{$V_operator_id}}">ေန႔စဥ္ အေရာင္းစာရင္း</a>
                            <span class="icon-angle-right"></span>
                         </li>
                         <li>
@@ -94,7 +94,7 @@
                            </div>
                            <div id="contents">
                               <div id="printable">
-                                 <h3>Elite Express Public Company Limited</h3>
+                                 <h3>Mandalar Min Express Public Company Limited</h3>
                                  <h3>Sale Details</h3>
                                  
                               </div>
@@ -102,7 +102,7 @@
                                  <thead>
                                     <tr>
                                        <td  colspan="14">
-                                          <h3 align="center">Elite Express Public Company Limited</h3>
+                                          <h3 align="center">Mandalar Min Express Public Company Limited</h3>
                                           <h4 align="center">ေန႔စဥ္ အေရာင္းစာရင္း အေသးစိတ္</h4>
                                        </td>
                                     </tr>
@@ -133,6 +133,7 @@
                                        <th>ဝယ္သူ</th>
                                        <th>ခုံအေရ အတြက္</th>
                                        <th>အခမဲ႕ လက္မွတ္ </th>
+                                       <th>Discount</th>
                                        <th>ေစ်းႏုန္း</th>
                                        <th>ရွင္းႏႈန္း</th>
                                        <th>စုုစုုေပါင္း</th>
@@ -172,6 +173,7 @@
                                                    <td>{{$result['buyer_name']}}</td>
                                                    <td>{{$result['sold_seat']}}</td>
                                                    <td>{{$result['free_ticket']}}</td>
+                                                   <td>{{$result['discount']}}</td>
                                                    <td>{{$result['price']}}</td>
                                                    <td>{{$result['price']-$result['commission']}} ({{$result['commission']}})</td>
                                                    <td>{{$result['total_amount']}}</td>
@@ -197,6 +199,7 @@
                                           <th>: {{$G_totalticket}}</th>
                                           <th colspan="2" class="text-right">Grand Total</th>
                                           <th>: {{$Org_totalamount}}</th>
+                                          <th>&nbsp;</th>
                                           <th>&nbsp;</th>
                                           <th colspan="2" class="text-right">% ႏုတ္ျပီး စုစုေပါင္း</th>
                                           <th style="text-align:right;">: {{$G_totalamount}}</th>
@@ -236,7 +239,7 @@
                   api.column(2, {page:'current'} ).data().each( function ( group, i ) {
                       if ( last !== group ) {
                           $(rows).eq( i ).before(
-                              '<tr class="group"><td colspan="12">'+group+'</td></tr>'
+                              '<tr class="group"><td colspan="13">'+group+'</td></tr>'
                           );
        
                           last = group;

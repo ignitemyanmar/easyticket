@@ -23,7 +23,7 @@
                      <ul class="breadcrumb">
                         <li>
                            <i class="icon-home"></i>
-                           <a href="/report/dailycarandadvancesale?operator_id={{Session::get('operator_id')}}">ပင္မစာမ်က္ႏွာ</a> 
+                           <a href="/report/dailycarandadvancesale?access_token={{Auth::user()->access_token}}&operator_id={{Session::get('operator_id')}}">ပင္မစာမ်က္ႏွာ</a> 
                            <span class="icon-angle-right"></span>
                         </li>
                         <li>
@@ -66,7 +66,7 @@
                                           <td>{{ $trips['sold_total_seat']}}</td>
                                           <td>{{ $trips['total_amount']}}</td>
                                           <td>
-                                             <a class="btn mini green-stripe imagechange" id="" href="/report/bestseller/tripdetail?operator_id={{$search['operator_id']}}&agent_id={{$search['agent_id']}}&start_date={{$search['start_date']}}&end_date={{$search['end_date']}}&from={{$trips['from']}}&to={{$trips['to']}}">အေသးစိတ္ၾကည့္ရန္</a>
+                                             <a class="btn mini green-stripe imagechange" id="" href="/report/bestseller/tripdetail?access_token={{Auth::user()->access_token}}&operator_id={{$search['operator_id']}}&agent_id={{$search['agent_id']}}&start_date={{$search['start_date']}}&end_date={{$search['end_date']}}&from={{$trips['from']}}&to={{$trips['to']}}">အေသးစိတ္ၾကည့္ရန္</a>
                                           </td>
                                        </tr>
                                     @endforeach
@@ -79,6 +79,7 @@
                   </div>
                   <div class="responsive span4 border padding-10" data-tablet="span4" data-desktop="span4">
                      <form action="/report/bestseller/trip" method="get" class="horizontal-form">
+                        <input type="hidden" name="access_token" value="{{Auth::user()->access_token}}">
                         <h3 class="form-section">အေရာင္းရဆုံး ခရီးစဥ္ စာရင္းမ်ား</h3>
                         <div class="row-fluid">
                            <div class="span11">

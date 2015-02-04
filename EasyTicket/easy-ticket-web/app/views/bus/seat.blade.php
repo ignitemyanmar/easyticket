@@ -396,7 +396,7 @@
 				</div>
 				<div style="clear:both">&nbsp;</div>
 				<div class="large-12 columns">
-					<h3 class="hdtitle" style="padding:0px;"><a>Elite JJ</a></h3>
+					<h3 class="hdtitle" style="padding:0px;"><a>Mandalar Min JJ</a></h3>
 					<p><b>Yangon Mandalay Trip</b></p>
 					<p>Sat: Feb 22, 2014 <b>(7:00 pm)</b></p>
 				</div>

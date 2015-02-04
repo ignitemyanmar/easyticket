@@ -51,6 +51,8 @@ App::error(function(Exception $exception, $code)
 	Log::error($exception);
 	switch ($code)
 	{
+        case 401:
+            return Redirect::to('404');
 	    case 403:
 	        return Response::view('errors.403', array(), 403);
 

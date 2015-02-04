@@ -793,7 +793,8 @@ class AgentCreditController extends \BaseController {
             foreach ($response as $i => $row) {
                 $from=City::whereid($row->trip->from)->pluck('name');
                 $to=City::whereid($row->trip->to)->pluck('name');
-                $response[$i]['tripname']=$from.' - '.$to;
+                $class=Classes::whereid($row->trip->class_id)->pluck('name');
+                $response[$i]['tripname']=$from.' - '.$to.' ['. $class .' ]';
             }
         }
 
@@ -858,6 +859,7 @@ class AgentCreditController extends \BaseController {
                                 ->get(array('id', 'orderdate','departure_date', 'agent_id', 'operator_id','cash_credit'));    
         }
     	
+        // return Response::json($response);
 
     	$filter=array();
 		if($response){
@@ -932,8 +934,8 @@ class AgentCreditController extends \BaseController {
         }
         ksort($responsegrouping);
 
-    	$agent_name=Agent::whereid($agent_id)->pluck('name');
-    	$agent_balance=AgentDeposit::whereagent_id($agent_id)->orderBy('id','desc')->pluck('balance');
+    	$agent_name=AgentGroup::whereid($agent_id)->pluck('name');
+    	$agent_balance=AgentDeposit::whereagentgroup_id($agent_id)->orderBy('id','desc')->pluck('balance');
         $parameter['agent_id']=$agent_id;
         $parameter['operator_id']=$this->myGlob->operator_id;
         $parameter['cash']=$cash;

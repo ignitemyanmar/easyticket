@@ -83,7 +83,7 @@
                                        <div class="controls">
                                           <select name="operator" id='operator' class="m-wrap span12">
                                           @foreach($operator as $rows)
-                                                <option value="{{$rows->id}}" @if(strtolower($rows->name)=="elite") selected @endif>{{$rows->name}}</option>
+                                                <option value="{{$rows->id}}" @if(strtolower($rows->name)=="Mandalar Min") selected @endif>{{$rows->name}}</option>
                                           @endforeach      
                                           </select>    
                                        </div>

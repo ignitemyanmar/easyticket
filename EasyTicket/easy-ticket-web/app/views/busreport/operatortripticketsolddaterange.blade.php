@@ -36,7 +36,7 @@
                      <ul class="breadcrumb">
                         <li>
                            <i class="icon-home"></i>
-                           <a href="/report/dailycarandadvancesale?operator_id={{Session::get('operator_id')}}">ပင္မစာမ်က္ႏွာ</a> 
+                           <a href="/report/dailycarandadvancesale?access_token={{Auth::user()->access_token}}&operator_id={{Session::get('operator_id')}}">ပင္မစာမ်က္ႏွာ</a> 
                            <span class="icon-angle-right"></span>
                         </li>
                         <li>
@@ -84,6 +84,7 @@
                            </div>
                            <div class="span10">
                                  <form action="/report/operator/trip/dateranges" method="get" class="horizontal-form">
+                                    <input type="hidden" name="access_token" class="access_token" value="{{Auth::user()->access_token}}">
                                     @if($search['trips']!=1)
                                        <div class="row-fluid">
                                           <div class="span3">
@@ -135,9 +136,11 @@
                                                    <select name="from" class="m-wrap span12 chosen" id="from">
                                                       <option value="all">All</option>
                                                       @if($search['cities'])
-                                                         @foreach($search['cities']['from'] as $from)
-                                                            <option value="{{$from['id']}}" @if($from['id']==$search['from']) selected @endif>{{$from['name']}}</option>
-                                                         @endforeach
+                                                         @if(isset($search['cities']['from']))
+                                                            @foreach($search['cities']['from'] as $from)
+                                                               <option value="{{$from['id']}}" @if($from['id']==$search['from']) selected @endif>{{$from['name']}}</option>
+                                                            @endforeach
+                                                         @endif
                                                       @endif
                                                    </select>
                                                 </div>
@@ -151,9 +154,11 @@
                                                 <div class="controls" id='to'>
                                                    <select name="to" class="m-wrap span12 chosen">
                                                       @if($search['cities'])
-                                                         @foreach($search['cities']['to'] as $to)
-                                                            <option value="{{$to['id']}}" @if($to['id']==$search['to']) selected @endif>{{$to['name']}}</option>
-                                                         @endforeach
+                                                         @if(isset($search['cities']['to']))
+                                                            @foreach($search['cities']['to'] as $to)
+                                                               <option value="{{$to['id']}}" @if($to['id']==$search['to']) selected @endif>{{$to['name']}}</option>
+                                                            @endforeach
+                                                         @endif
                                                       @endif
                                                    </select>
                                                 </div>
@@ -303,10 +308,11 @@
                                     <th>ကားအမ်ိဴးအစား</th>
                                     <th>ခုံအေရ အတြက္</th>
                                     <th>အခမဲ႕ လက္မွတ္ </th>
+                                    <th>Discount </th>
                                     <th>ေစ်းႏုန္း</th>
                                     <th>စုုစုုေပါင္း</th>
                                     <th>% ႏုတ္ျပီး စုုစုုေပါင္း</th>
-                                    <th style="width:0;"><a class="btn small green blue-stripe imagechange" id="" href="/triplist/{{$search['start_date'].','.$search['end_date']}}/daily?f={{$search['from']}}&t={{$search['to']}}&agentgroup={{$search['agentgroup_id']}}&a={{$search['agent_id']}}&agentrp={{$search['agent_rp']}}&time={{$search['time']}}">အေသးစိတ္(All)</a></th>
+                                    <th style="width:0;"><a class="btn small green blue-stripe imagechange" id="" href="/triplist/{{$search['start_date'].','.$search['end_date']}}/daily?access_token={{Auth::user()->access_token}}&f={{$search['from']}}&t={{$search['to']}}&agentgroup={{$search['agentgroup_id']}}&a={{$search['agent_id']}}&agentrp={{$search['agent_rp']}}&time={{$search['time']}}">အေသးစိတ္(All)</a></th>
                                  </tr>
                               </thead>
                                  @if($response)
@@ -335,11 +341,12 @@
                                                    <td>{{$result['class_name']}}</td>
                                                    <td>{{$result['sold_seat']}}</td>
                                                    <td>{{$result['free_ticket']}}</td>
+                                                   <td>{{$result['discount']}}</td>
                                                    <td>{{$result['local_price']}}</td>
                                                    <td>{{$result['total_amount']}}</td>
                                                    <td>{{$result['percent_total']}}</td>
                                                    <td>
-                                                      <a class="btn mini green-stripe imagechange" id="" href="/triplist/{{$result['departure_date']}}/daily?bus_id={{$result['bus_id']}}&a={{$result['agent_id']}}&agentrp={{$search['agent_rp']}}">အေသးစိတ္ၾကည့္ရန္</a>
+                                                      <a class="btn mini green-stripe imagechange" id="" href="/triplist/{{$result['departure_date']}}/daily?access_token={{Auth::user()->access_token}}&bus_id={{$result['bus_id']}}&a={{$result['agent_id']}}&agentrp={{$search['agent_rp']}}">အေသးစိတ္ၾကည့္ရန္</a>
                                                    </td>
                                                 </tr>
                                                 <?php 
@@ -374,6 +381,7 @@
                                           <th>{{$G_total_amount}}</th>
                                           <th colspan="2" class="text-right">% ႏုတ္ျပီး စုစုေပါင္း =</th>
                                           <th>{{$G_prc_total_amount}}</th>
+                                          <th>&nbsp;</th>
                                        </tr>
                                     </tfoot>
                                  @endif
@@ -414,7 +422,7 @@
                   api.column(1, {page:'current'} ).data().each( function ( group, i ) {
                       if ( last !== group ) {
                           $(rows).eq( i ).before(
-                              '<tr class="group"><th colspan="11">'+group+'</th></tr>'
+                              '<tr class="group"><th colspan="12">'+group+'</th></tr>'
                           );
        
                           last = group;
@@ -473,11 +481,12 @@
          {
             agentgroup_id=0;
          }
+         var _token = $('.access_token').val();
          var result='<select name="agent_id" class="m-wrap span12 chosen">';
                result+='<option value="All">All</option>';
          $('#agent_id').html('');
          $('#agent_id').addClass('loader');
-         $.get('/agentbranches/'+agentgroup_id,function(data){
+         $.get('/agentbranches/'+agentgroup_id+'?access_token='+_token,function(data){
             for(var i=0; i<data.length; i++){
                result +='<option value="'+data[i].id+'">'+data[i].name+'</option>';
             }

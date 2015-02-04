@@ -70,8 +70,16 @@ class AgentGroupController extends BaseController
 
     public function getDeleteAgentgroup($id)
     {
+      $checkexisting = AgentDeposit::whereagentgroup_id($id)->first();
+      if($checkexisting){
+        $message['status']=0;
+        $message['info']="Can't delete this Group.";
+        return Redirect::to('agentgrouplist')->with('message',$message);
+      }
+      $message['status']=1;
+      $message['info']="Successfully delete one record.";
       $affectedRows1 = AgentGroup::where('id','=',$id)->delete();
-      return Redirect::to('agentgrouplist');
+      return Redirect::to('agentgrouplist')->with('message',$message);
     }
 
     public function postdelAgentgroup()

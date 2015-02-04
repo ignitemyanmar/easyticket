@@ -111,6 +111,7 @@
 	<div id="calen_darviews" class="reveal-modal medium" data-reveal> 
 		<form action="/departure-times" method="get">
 			<h2>ခရီးသြားမည့္ ေန႕ေရြးရန္</h2> 
+			<input type="hidden" name="access_token" value="<?php echo Auth::user()->access_token; ?>">
 			<input type="hidden" name="trip" id="from_to_id">
 			<div class="myCalendar" id="calendar_view"></div>
 			<input type="hidden" id="departure_date" name="departure_date" value="<?php echo $today; ?>">

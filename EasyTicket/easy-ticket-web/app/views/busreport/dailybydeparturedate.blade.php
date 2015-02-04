@@ -83,6 +83,7 @@
                         <h3 class="form-section">Search trips report by date</h3>
                         <div class="row-fluid">
                            <div class="span11">
+                                 <input type="hidden" name="access_token" value="{{Auth::user()->access_token}}">
                                  <input type="hidden" value="{{$search['operator_id']}}" name="operator_id">
                               <div class="control-group">
                                  <label class="control-label" for="from">From</label>

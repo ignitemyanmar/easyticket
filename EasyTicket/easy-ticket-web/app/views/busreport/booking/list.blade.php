@@ -50,6 +50,7 @@
                                  @endif
                               @endif
                               <form action="/report/booking" method="get" class="horizontal-form">
+                                    <input type="hidden" name="access_token" value="{{Auth::user()->access_token}}">
                                     <div class="clear-fix">&nbsp;</div>
                                     <div class="row-fluid">
                                        <div class="span3">
@@ -121,8 +122,8 @@
                                                    <td>{{ $booking['total_amount']}}</td>
                                                    @if(Auth::user()->role != 2)
                                                       <td>
-                                                         <a class="btn large red-stripe delete" href="/report/booking/delete/{{$booking->id}}">ဖ်က္မည္</a>
-                                                         <a class="btn mini green-stripe" href="/cartview/{{$booking->id}}">အတည္ျပဳမည္</a>
+                                                         <a class="btn large red-stripe delete" href="/report/booking/delete/{{$booking->id}}?access_token={{Auth::user()->access_token}}">ဖ်က္မည္</a>
+                                                         <a class="btn mini green-stripe" href="/cartview/{{$booking->id}}?access_token={{Auth::user()->access_token}}">အတည္ျပဳမည္</a>
                                                       </td>
                                                    @endif
                                                 </tr>
@@ -137,8 +138,8 @@
                                                       <td>{{ $booking['total_amount']}}</td>
                                                       @if(Auth::user()->role != 2)
                                                          <td>
-                                                            <a class="btn large red-stripe delete" href="/report/booking/delete/{{$booking->id}}">ဖ်က္မည္</a>
-                                                            <a class="btn mini green-stripe" href="/cartview/{{$booking->id}}">အတည္ျပဳမည္</a>
+                                                            <a class="btn large red-stripe delete" href="/report/booking/delete/{{$booking->id}}?access_token={{Auth::user()->access_token}}">ဖ်က္မည္</a>
+                                                            <a class="btn mini green-stripe" href="/cartview/{{$booking->id}}?access_token={{Auth::user()->access_token}}">အတည္ျပဳမည္</a>
                                                          </td>
                                                       @endif
                                                    </tr>

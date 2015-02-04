@@ -23,7 +23,7 @@
                      <ul class="breadcrumb">
                         <li>
                            <i class="icon-home"></i>
-                           <a href="/report/dailycarandadvancesale?operator_id={{Session::get('operator_id')}}">ပင္မစာမ်က္ႏွာ</a> 
+                           <a href="/report/dailycarandadvancesale?access_token={{Auth::user()->access_token}}&operator_id={{Session::get('operator_id')}}">ပင္မစာမ်က္ႏွာ</a> 
                            <span class="icon-angle-right"></span>
                         </li>
                         <li>
@@ -62,7 +62,7 @@
                                           <td>{{ $tripbydaily['purchased_total_seat']}}/{{ $tripbydaily['total_seat']}}</td>
                                           <td>{{ $tripbydaily['total_amout']}}</td>
                                           <td>
-                                             <a class="btn mini green-stripe imagechange" id="" href="/triplist/{{$tripbydaily['order_date']}}/daily?operator_id={{$search['operator_id']}}&from_city={{$search['from']}}&to_city={{$search['to']}}&date={{$tripbydaily['order_date']}}&time={{$search['time']}}">အေသးစိတ္ၾကည့္ရန္</a>
+                                             <a class="btn mini green-stripe imagechange" id="" href="/triplist/{{$tripbydaily['order_date']}}/daily?access_token={{Auth::user()->access_token}}&operator_id={{$search['operator_id']}}&from_city={{$search['from']}}&to_city={{$search['to']}}&date={{$tripbydaily['order_date']}}&time={{$search['time']}}">အေသးစိတ္ၾကည့္ရန္</a>
                                           </td>
                                        </tr>
                                     @endforeach
@@ -76,6 +76,7 @@
                   <div class="responsive span4 border padding-10" data-tablet="span4" data-desktop="span4">
                      <form action="/report/operator/trip/dateranges" method="get" class="horizontal-form">
                         <h3 class="form-section">အစေန့မှ အဆုံးေန့အတွင်း အေရာင်း စာရင်း ရွာရန္ abc</h3>
+                        <input type="hidden" name="access_token" value="{{Auth::user()->access_token}}">
                         <input type="hidden" value="{{$search['operator_id']}}" name="operator_id">
                         <div class="row-fluid">
                            <div class="span11">

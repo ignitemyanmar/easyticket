@@ -247,6 +247,11 @@ class TripController extends \BaseController {
 	public function destroy($id)
 	{
 		$trip = Trip::whereid($id)->first();
+		
+		if($check_exiting_sale){
+			return Redirect::to('trip-list')->with('message',"Can't delete trip, sale records have this trip.");
+		}
+
 		if($trip){
 			Trip::whereid($id)->delete();
 			BusOccurance::wheretrip_id($id)->delete();
@@ -258,7 +263,15 @@ class TripController extends \BaseController {
 	public function triplists(){
 		$operator_id=$this->myGlob->operator_id;
 		$response=Trip::whereoperator_id($operator_id)->with(array('operator','from_city','to_city','busclass','seat_plan','extendcity'))->orderBy('id','desc')->get();
-		// return Response::json($response);
+		foreach ($response as $key => $value) {
+			$ownseat = CloseSeatInfo::wheretrip_id($value->id)->first();
+			if($ownseat){
+				$response[$key]->ownseat = true;
+			}else{
+				$response[$key]->ownseat = false;
+			}
+		}
+		//return Response::json($response);
 		return View::make('trip.list', array('response'=>$response));
 	}
 

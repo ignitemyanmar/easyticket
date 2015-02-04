@@ -47,17 +47,20 @@
       <?php $currentroute=Route::getCurrentRoute()->getPath();?>
       <div class="large-12 title_bar">
         <div class="content_title">
-          <div class="left">
-            <?php if(strpos($myApp->operator_name,'elite') !== false): ?>
-              <a href="/alloperator"><img src="../img/elite.png" style="max-height:35px;margin-left:20px;"> <span>Elite Express</span></a>
-            <?php elseif(strpos($myApp->operator_name,'mandalar min') !== false): ?>
-              <a href="/alloperator"><img src="../img/mandalarmin.png" style="max-height:35px;margin-left:20px;"> <span>Mandalar Min Express</span></a>
-            <?php elseif(strpos($myApp->operator_name,'shwe nan taw') !== false): ?>
-              <a href="/alloperator"><img src="../img/snt.png" style="max-height:35px;margin-left:20px;"> <span>Shwe Nan Taw Express</span></a>
-            <?php else: ?>
-              <a href="/alloperator"><span><?php echo $myApp->operator_name; ?> Express</span></a>
-            <?php endif; ?>
-          </div>
+          <?php if(Auth::user()->role==9 || Auth::user()->role==3): ?>
+            <div class="left">
+              <?php if(strpos($myApp->operator_name,'Mandalar Min') !== false): ?>
+                <a href="/alloperator"><img src="../img/Mandalar Min.png" style="max-height:35px;margin-left:20px;"> <span>Mandalar Min Express</span></a>
+              <?php elseif(strpos($myApp->operator_name,'mandalar min') !== false): ?>
+                <a href="/alloperator"><img src="../img/mandalarmin.png" style="max-height:35px;margin-left:20px;"> <span>Mandalar Min Express</span></a>
+              <?php elseif(strpos($myApp->operator_name,'shwe nan taw') !== false): ?>
+                <a href="/alloperator"><img src="../img/snt.png" style="max-height:35px;margin-left:20px;"> <span>Shwe Nan Taw Express</span></a>
+              <?php else: ?>
+                <a href="/alloperator"><span><?php echo $myApp->operator_name; ?> Express</span></a>
+              <?php endif; ?>
+            </div>
+          <?php endif; ?>
+          
           <?php if($currentroute=="departure-times"): ?>
           ကားထြက္မည့္အခ်ိန္ေရြးရန္
           <?php elseif($currentroute=="/"): ?>
@@ -67,7 +70,7 @@
           <?php if(Auth::check()): ?>
             <div class="user">
               <?php if(Session::get('bookingcount') > 0): ?> 
-                <a href="/todaybookings" target="_blank"><span class="noti red"><?php echo Session::get('bookingcount'); ?></span></a>
+                <a href="/todaybookings?access_token=<?php echo Auth::user()->access_token; ?>" target="_blank"><span class="noti red"><?php echo Session::get('bookingcount'); ?></span></a>
               <?php endif; ?>
               <a href="#" data-dropdown="drop" class=""><i class="icon-user"></i>&nbsp; <?php echo Auth::user()->name; ?></a>
               <br> 

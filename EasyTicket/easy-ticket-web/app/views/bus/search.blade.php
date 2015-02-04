@@ -52,7 +52,7 @@
 								<!-- <option value="">All</option> -->
 								@if($response['operators'])
 									@foreach($response['operators'] as $operator)
-										@if($operator['name']=='ELITE')
+										@if($operator['name']=='Mandalar Min')
 										<option value="{{$operator['id']}}">{{$operator['name']}}</option>
 										@endif
 									@endforeach

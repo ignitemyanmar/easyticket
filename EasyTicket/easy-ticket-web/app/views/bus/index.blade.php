@@ -88,7 +88,7 @@
 							<img src="bannerphoto/bus.jpg">
 						</div>
 						<div class="large-9 columns listdesc">
-							<p><span>Bus Name </span> Elite /JJ</p>
+							<p><span>Bus Name </span> Mandalar Min /JJ</p>
 							<p><span>From - To</span>Yangon - Mandalay</p>
 							<p><span>Date</span> 20.2.2014 </p>
 							<b>Time </b><br>
@@ -130,7 +130,7 @@
 							<img src="bannerphoto/bus.jpg">
 						</div>
 						<div class="large-9 columns listdesc">
-							<p><span>Bus Name </span> Elite /JJ 2</p>
+							<p><span>Bus Name </span> Mandalar Min /JJ 2</p>
 							
 							<p><span>From - To</span>Yangon - Mandalay</p>
 							<p><span>Date</span> 20.2.2014 </p>
@@ -174,7 +174,7 @@
 							<img src="bannerphoto/bus.jpg">
 						</div>
 						<div class="large-9 columns listdesc">
-							<p><span>Bus Name </span> Elite /JJ 3</p>
+							<p><span>Bus Name </span> Mandalar Min /JJ 3</p>
 							
 							<p><span>From - To</span>Yangon - Mandalay</p>
 							<p><span>Date</span> 20.2.2014 </p>
@@ -262,7 +262,7 @@
 							<img src="bannerphoto/bus.jpg">
 						</div>
 						<div class="large-9 columns listdesc">
-							<p><span>Bus Name </span> Elite /JJ</p>
+							<p><span>Bus Name </span> Mandalar Min /JJ</p>
 							
 							<p><span>From - To</span>Yangon - Mandalay</p>
 							<p><span>Date</span> 20.2.2014 </p>

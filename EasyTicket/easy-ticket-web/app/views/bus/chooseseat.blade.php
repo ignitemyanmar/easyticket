@@ -11,7 +11,7 @@
 		border-color: #EED3D7;}
 
 		.colorbox{width:24px; height:24px;float:left;margin-right:8px;}
-		.operator_0{background:#5586c8;} /*elite*/
+		.operator_0{background:#5586c8;} /*Mandalar Min*/
 		.operator_1{background:#FF8514;} /*gov*/
 	   	.operator_2{background:#4BFFFF;} /*Aung Minglar*/
 	   	.operator_3{background:#B08620;} /*Mindama*/
@@ -58,7 +58,7 @@
 	      	 	<div class="check-a">
 			        @if($response['seat_list'])
 			        	<?php $current_url=Route::getCurrentRoute()->getPath(); $k=1;  $columns=$response['column'];?>
-
+			        	<input type="hidden" value="{{Auth::user()->access_token}}" id="access_token">
 						<input type="hidden" value="{{$current_url}}" id='current_url'>
 						<input type="hidden" value="{{$response['bus_id']}}" name='busoccurance_id' id='busoccurance_id'>
 						<input type="hidden" value="{{$response['class_id']}}" name='class_id' id='class_id'>
@@ -67,7 +67,6 @@
 						<input type="hidden" value="{{$response['operator_id']}}" name='operatorid' id="operator_id">
 						<input type="hidden" value="{{$response['departure_date']}}" name='departure_date' id="departure_date">
 						<input type="hidden" value="{{$response['departure_time']}}" name='departure_time' id="departure_time">
-						<!-- <input type="hidden" value="WR8INtJJetDDd8pCDrpIEx7pCxMx6P1OxOoBDQqT" name='access_token' id="access_token"> -->
 			        	@foreach($response['seat_list'] as $rows)
 				        	@if($k%$columns == 1)
 				        	<div class="large-1 small-1 columns">&nbsp;</div>
@@ -205,7 +204,7 @@
 					<div style="border-bottom:4px dotted #333;">&nbsp;</div>
 					<!-- <p>Yangon Mandaly trip long time is 6hours. This bus is one stop at something township.</p> -->
 					<br>
-					<a href="/bookinglist/{{$response['bus_id']}}" target="_blank" class="button btn1 small">ၾကိဳတင္မွာယူထားေသာ စာရင္းသုိ႕ =></a>
+					<a href="/bookinglist/{{$response['bus_id']}}?access_token={{Auth::user()->access_token}}" target="_blank" class="button btn1 small">ၾကိဳတင္မွာယူထားေသာ စာရင္းသုိ႕ =></a>
 					
 				</div>
 				<div class="clear">&nbsp;</div>
@@ -346,6 +345,7 @@
 				}
 		$('#order').click(function(){
 				$('.indicator').addClass('loading');
+				var _token = $('#access_token').val();
 				var busid=$('#busoccurance_id').val();
 				var operator_id=$('#operator_id').val();
 				var agent_id=$('#agent_id').val();
@@ -376,7 +376,8 @@
 		        $.ajax({
 		        	type:'POST',
 		        	url:'/saletickets',
-		        	data:{	operator_id:operator_id,
+		        	data:{	access_token: _token,
+		        			operator_id:operator_id,
 		        			agent_id:agent_id,
 		        			seat_list:stringparameter,
 		        			from_city:from,
@@ -396,17 +397,17 @@
 		        		$('#warning').html(result.message);
 		        		$.bootstrapGrowl(result.message, option_info);
 		        		document.getElementById('warning').style.display='block';
-		        		var parameters="?operator_id="+operator_id+"&from_city="+from+"&to_city="+to+"&date="+departure_date+"&time="+departure_time+"&class_id="+class_id+"&bus_no=-";
+		        		var parameters="?access_token="+_token+"&operator_id="+operator_id+"&from_city="+from+"&to_city="+to+"&date="+departure_date+"&time="+departure_time+"&class_id="+class_id+"&bus_no=-";
 		        		window.location.href='/'+current_url+parameters;
 		        		return false;
 		        	}else if(result.can_buy==true){
 		        		if(result.booking=="1"){
 		        			$.bootstrapGrowl("Successfully your booking!.", option_success);
-		        			var parameters="?operator_id="+operator_id+"&from_city="+from+"&to_city="+to+"&date="+departure_date+"&time="+departure_time+"&class_id="+class_id+"&bus_no=-";
+		        			var parameters="?access_token="+_token+"&operator_id="+operator_id+"&from_city="+from+"&to_city="+to+"&date="+departure_date+"&time="+departure_time+"&class_id="+class_id+"&bus_no=-";
 		        			window.location.href='/'+current_url+parameters;
 		        			return false;	
 		        		}
-		        		window.location.href='/cartview/'+result.sale_order_no;
+		        		window.location.href='/cartview/'+result.sale_order_no+'?access_token='+_token;
 		        	}
 		        });  
 

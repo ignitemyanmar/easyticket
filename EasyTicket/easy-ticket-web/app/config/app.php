@@ -38,7 +38,7 @@ return array(
 	| ahead and set this to a sensible default for you out of the box.
 	|
 	*/
-
+	
 	'timezone' => 'UTC',
 
 	/*
@@ -65,7 +65,7 @@ return array(
 	|
 	*/
 
-	'key' => 'YourSecretKey!!!',
+	'key' => 'dYzxXzu8MYyWyhEDawCumvhegFQquPwj',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -107,8 +107,7 @@ return array(
 		'Illuminate\View\ViewServiceProvider',
 		'Illuminate\Workbench\WorkbenchServiceProvider',
 		'LucaDegasperi\OAuth2Server\OAuth2ServerServiceProvider',
-		'Gloudemans\Shoppingcart\ShoppingcartServiceProvider',
-		'Liebig\Cron\CronServiceProvider'
+		'BigName\BackupManager\Integrations\Laravel\BackupManagerServiceProvider',
 
 	),
 
@@ -175,7 +174,6 @@ return array(
 		'URL'             => 'Illuminate\Support\Facades\URL',
 		'Validator'       => 'Illuminate\Support\Facades\Validator',
 		'View'            => 'Illuminate\Support\Facades\View',
-		'Cart'            => 'Gloudemans\Shoppingcart\Facades\Cart',
 		'AuthorizationServer' => 'LucaDegasperi\OAuth2Server\Facades\AuthorizationServerFacade',
 		'ResourceServer' => 'LucaDegasperi\OAuth2Server\Facades\ResourceServerFacade',
 

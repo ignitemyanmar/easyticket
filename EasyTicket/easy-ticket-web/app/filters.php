@@ -34,6 +34,7 @@ App::after(function($request, $response)
 */
 Route::filter('fauth', function()
 {
+	//vendor/laravel/frameword/illumiminate/Auth/Guard.php    use function fguest()
 	if (Auth::fguest()) return Redirect::guest('signin');
 });
 

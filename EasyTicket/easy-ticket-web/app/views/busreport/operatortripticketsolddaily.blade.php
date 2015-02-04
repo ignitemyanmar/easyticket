@@ -65,7 +65,7 @@
                      <ul class="breadcrumb">
                         <li>
                            <i class="icon-home"></i>
-                           <a href="/report/dailycarandadvancesale?operator_id={{Session::get('operator_id')}}">ပင္မစာမ်က္ႏွာ</a> 
+                           <a href="/report/dailycarandadvancesale?access_token={{Auth::user()->access_token}}&operator_id={{Session::get('operator_id')}}">ပင္မစာမ်က္ႏွာ</a> 
                            <span class="icon-angle-right"></span>
                         </li>
                         <li>
@@ -107,14 +107,14 @@
                            </div>
                            <div id="contents">
                               <div id="printable">
-                                 <h3>Elite Express Public Company Limited</h3>
+                                 <h3>Mandalar Min Express Public Company Limited</h3>
                                  <h3>Sale Details</h3>
                               </div>
                               <table class="table table-striped table-advance table-hover" id="tblExport">
                                  <thead>
                                     <tr>
                                        <td  colspan="13">
-                                          <h3 align="center">Elite Express Public Company Limited</h3>
+                                          <h3 align="center">Mandalar Min Express Public Company Limited</h3>
                                           <h4 align="center">{{$pagetitle}} အေသးစိတ္</h4>
                                        </td>
                                     </tr>
@@ -153,6 +153,7 @@
                                        <th>ဝယ္ယူ သည့္ေန႔</th>
                                        <th>ခုံအေရ အတြက္</th>
                                        <th>အခမဲ႕ လက္မွတ္ </th>
+                                       <th>Discount </th>
                                        <th>ေစ်းႏုန္း</th>
                                        <th>ရွင္းႏႈန္း</th>
                                        <th>စုုစုုေပါင္း</th>
@@ -175,10 +176,8 @@
                                              @foreach($rows as $result)
                                                 <?php 
                                                    $totalticket +=$result['sold_seat'];
-                                                   // $totalamount +=$result['total_amount'];
+                                                   $totalamount +=$result['total_amount'];
                                                    $org_totalamount +=$tmptotalamount=($result['sold_seat'] - $result['free_ticket']) * $result['price'];
-                                                   $tmptotalamount -=($result['sold_seat'] - $result['free_ticket']) * $result['commission'];
-                                                   $totalamount +=$tmptotalamount;
                                                 ?> 
                                                 <tr>
                                                    <!-- <td></td> -->
@@ -196,9 +195,10 @@
                                                    <td>{{date('d/m/Y',strtotime($result['order_date']))}}</td>
                                                    <td>{{$result['sold_seat']}}</td>
                                                    <td>{{$result['free_ticket']}}</td>
+                                                   <td>{{$result['discount']}}</td>
                                                    <td>{{$result['price']}}</td>
                                                    <td>{{$result['price']-$result['commission']}} ({{$result['commission']}})</td>
-                                                   <td>{{$tmptotalamount}}</td>
+                                                   <td>{{$result['total_amount']}}</td>
                                                 </tr>
                                                 
                                              @endforeach
@@ -219,6 +219,7 @@
                                         <th>: {{$G_totalticket}}</th>
                                         <th colspan="3" class="text-right">Grand Total :</th>
                                         <th style="text-align:right;">{{$Org_totalamount}}</th>
+                                        <th>&nbsp;</th>
                                         <th colspan="3" class="text-right">% ႏုတ္ျပီး စုစုေပါင္း =</th>
                                         <th style="text-align:right;">{{$G_totalamount}}</th>
                                       </tr>
@@ -257,7 +258,7 @@
                   api.column(2, {page:'current'} ).data().each( function ( group, i ) {
                       if ( last !== group ) {
                           $(rows).eq( i ).before(
-                              '<tr class="group"><th colspan="8">'+group+'</th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th></tr>'
+                              '<tr class="group"><th colspan="9">'+group+'</th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th></tr>'
                           );
        
                           last = group;

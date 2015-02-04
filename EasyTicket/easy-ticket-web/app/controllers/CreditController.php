@@ -158,9 +158,9 @@ class CreditController extends \BaseController {
                             
                             $parameter='';
                             if(!$objagent['agentgroup_id']){
-                                $parameter='?agent_id='.$objagent['id']."&start_date=".$start_date."&end_date=".$end_date;
+                                $parameter='?access_token='.Auth::user()->access_token.'&agent_id='.$objagent['id']."&start_date=".$start_date."&end_date=".$end_date;
                             }else{
-                                $parameter="?start_date=".$start_date."&end_date=".$end_date;
+                                $parameter="?access_token=".Auth::user()->access_token."&start_date=".$start_date."&end_date=".$end_date;
                             }
                             $groupheader='<a class="btn mini purple blue-stripe" href="/report/agentcreditlist/group/'.$objagent->agentgroup_id.$parameter.'" style="float:right; right:0;margin-left:25px;">အေသးစိတ္ All</a>';
                             $L_openingbalance +=$opening_balance;
@@ -283,7 +283,7 @@ class CreditController extends \BaseController {
                 $objagentList[$i]=$objagent;
                 $objagentList[$i]['agentgroup_name']=$groupname;
                 $L_agent_id=$agent_group_id ? "All" : $objagent->id;
-                $groupheader='<a class="btn mini blue green-stripe" href="/report/agentcreditlist/paymentdetail/'.$L_agent_id.'?agentgroup_id='.$agent_group_id.'start_date='.$start_date.'&end_date='.$end_date.'" style="float:right; right:0;margin-left:25px;">အေသးစိတ္ All</a>';
+                $groupheader='<a class="btn mini blue green-stripe" href="/report/agentcreditlist/paymentdetail/'.$L_agent_id.'?access_token='.Auth::user()->access_token.'&agentgroup_id='.$agent_group_id.'start_date='.$start_date.'&end_date='.$end_date.'" style="float:right; right:0;margin-left:25px;">အေသးစိတ္ All</a>';
                 $groupname=AgentGroup::whereid($objagent->agentgroup_id)->pluck('name');
                 $groupname=$groupname ? $groupname : $objagent->name;
 

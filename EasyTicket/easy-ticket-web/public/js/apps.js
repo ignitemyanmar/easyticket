@@ -1,8 +1,9 @@
 $(function(){
       // checkextendcity();
+     var _token = $('.access_token').val();
      $('#seatplanview').html('');      
      seatplan_id=$('#seatplan').val();
-     links="/trip/seatplan/"+seatplan_id;
+     links="/trip/seatplan/"+seatplan_id+"?access_token="+_token;
      $.ajax({
        type: "GET",
        url: links,
@@ -14,7 +15,7 @@ $(function(){
      $('#seatplan').change(function(){
         $('#seatplanview').html('');      
         seatplan_id=$(this).val();
-        links="/trip/seatplan/"+seatplan_id;
+        links="/trip/seatplan/"+seatplan_id+"?access_token="+_token;
         $.ajax({
           type: "GET",
           url: links,

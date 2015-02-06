@@ -2963,6 +2963,22 @@ class ApiController extends BaseController
     	}
     	return $prefix.$autoid;
     }*/
+
+    public function generateAutoIDNewFormat($operator_id, $operator_gp_id){
+    	$prefix_opr 	= sprintf('%04s',$operator_id);
+    	$prefix_gp_opr = sprintf('%04s',$operator_gp_id);
+    	$prefix = $prefix_opr.$prefix_gp_opr;
+    	// Get Last ID Value;
+    	$last_order_id 		= SaleOrder::where('id','like',$prefix.'%')->orderBy('id','desc')->limit('1')->pluck('id');
+    	if($last_order_id){
+    		$last_order_value 	= (int) substr($last_order_id, strlen($prefix));
+    	}else{
+    		return $prefix."00000001";
+    	}
+
+    	return $prefix.sprintf('%08s', ++$last_order_value);
+    }
+
     public function generateAutoID($operator_id, $operator_gp_id){
     	$prefix_opr = 0;
     	$prefix_gp_opr = 0;
@@ -2997,28 +3013,28 @@ class ApiController extends BaseController
     	}
 
 		//Auto Digit 8    	
-    	if($last_order_value >= 0 && $last_order_value <=9){
+    	if($last_order_value >= 0 && $last_order_value <9){
     		$inc_value = ++$last_order_value;
     		$autoid = "0000000".$inc_value;
-    	}elseif($last_order_value > 9 && $last_order_value <=99){
+    	}elseif($last_order_value >= 9 && $last_order_value <99){
     		$inc_value = ++$last_order_value;
     		$autoid = "000000".$inc_value;
-    	}elseif($last_order_value > 99 && $last_order_value <=999){
+    	}elseif($last_order_value >= 99 && $last_order_value <999){
     		$inc_value = ++$last_order_value;
     		$autoid = "00000".$inc_value;
-    	}elseif($last_order_value > 999 && $last_order_value <=9999){
+    	}elseif($last_order_value >= 999 && $last_order_value <9999){
     		$inc_value = ++$last_order_value;
     		$autoid = "0000".$inc_value;
-    	}elseif($last_order_value > 9999 && $last_order_value <=99999){
+    	}elseif($last_order_value >= 9999 && $last_order_value <99999){
     		$inc_value = ++$last_order_value;
     		$autoid = "000".$inc_value;
-    	}elseif($last_order_value > 99999 && $last_order_value <=999999){
+    	}elseif($last_order_value >= 99999 && $last_order_value <999999){
     		$inc_value = ++$last_order_value;
     		$autoid = "00".$inc_value;
-    	}elseif($last_order_value > 999999 && $last_order_value <=9999999){
+    	}elseif($last_order_value >= 999999 && $last_order_value <9999999){
     		$inc_value = ++$last_order_value;
     		$autoid = "0".$inc_value;
-    	}elseif($last_order_value > 9999999 && $last_order_value <=99999999){
+    	}elseif($last_order_value >= 9999999 && $last_order_value <99999999){
     		$inc_value = ++$last_order_value;
     		$autoid = $inc_value;
     	}
@@ -3087,21 +3103,6 @@ class ApiController extends BaseController
 	    			$agent_id=$objagent->id;
 	    		}
 	    	}
-    		/*$same=true;	
-    		foreach ($json_tickets as $rows) {
-    			$same_saleitems=SaleItem::whereorder_id($sale_order_no)->wheredevice_id($device_id)->whereseat_no($rows->seat_no)->wherebusoccurance_id($rows->busoccurance_id)->first();
-    			if(!$same_saleitems){
-    				$same=false;
-    				SaleItem::whereorder_id($sale_order_no)->wheredevice_id($device_id)->delete();
-    			}
-    		}	
-    		if($same==false){
-    			$response['device_id']=$device_id;
-				$response['status']=$same;
-				$response['message']='Sorry. Some ticket have been taken by another customer.';
-				return Response::json($response);
-    		}*/
-
     		
     		$total_discount = 0;
 
@@ -3156,7 +3157,11 @@ class ApiController extends BaseController
 
     		$total_commission=0;
     		$trip_id=BusOccurance::whereid($json_tickets[0]->busoccurance_id)->pluck('trip_id');
-    		$objagent=AgentCommission::whereagent_id($agent_id)->wheretrip_id($trip_id)->first();
+    		$objagent=AgentCommission::whereagent_id($agent_id)
+    									->wheretrip_id($trip_id)
+    									->where('start_date','<=',$objsaleorder->orderdate)
+                                        ->where('end_date','>=',$objsaleorder->orderdate)
+                                        ->first();
     		$total_ticket=count($json_tickets);
     		if($objagent){
     			$commission=CommissionType::whereid($objagent->commission_id)->pluck('name');

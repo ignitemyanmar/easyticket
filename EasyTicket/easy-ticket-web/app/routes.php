@@ -139,10 +139,7 @@
 		dd('finished! create records is '.$i.' duplicate records is '.$k);
 	});
 	
-	
 	// Route::get('tripautocreate',       				'ApiController@tripautocreate');
-
-		
 
 	Route::get('operators/agent/{id}',				'ReportController@getOperatorsbyAgent');
 	Route::get('agents/operator/{id}',				'ReportController@getAgentsbyOperator');
@@ -388,6 +385,8 @@
 
 			Route::get('define-ownseat/{id}',		'TripController@ownseat');
 			Route::post('define-ownseat',			'TripController@postownseat');
+
+			Route::get('ownseatbytrip/{id}',				'TripController@ownseatbytrip');
 
 			Route::get('closetrip/{id}',			'TripController@closeTrip');
 			Route::post('closetrip',				'TripController@saveCloseTrip');

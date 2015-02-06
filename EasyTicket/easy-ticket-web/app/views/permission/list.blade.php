@@ -29,7 +29,7 @@
                      <ul class="breadcrumb">
                         <li>
                            <i class="icon-home"></i>
-                           <a href="/report/dailycarandadvancesale?operator_id={{Session::get('operator_id')}}">ပင္မစာမ်က္ႏွာ</a> 
+                           <a href="/report/dailycarandadvancesale?operator_id={{Session::get('operator_id')}}?{{$myApp->access_token}}">ပင္မစာမ်က္ႏွာ</a> 
                            <i class="icon-angle-right"></i>
                         </li>
                         <li><a href="#">လုပ္ပုိင္ခြင့္မ်ား</a></li>
@@ -51,7 +51,7 @@
                            <div class="portlet-body">
                               <div class="clearfix">
                                  <div class="btn-group">
-                                    <a href="/permission-create">
+                                    <a href="/permission-create?{{$myApp->access_token}}">
                                     <button id="" class="btn green">
                                     အသစ္ထည့္မည္ <i class="icon-plus"></i>
                                     </button>
@@ -98,7 +98,7 @@
                                             @endif</td>
                                          <td>{{$rows->menu}}</td>
                                          <td style="text-align:center;">
-                                            <a href="permission-delete/{{$rows->id}}" class="btn red-stripe delete">ဖ်က္ရန္</a>
+                                            <a href="permission-delete/{{$rows->id}}?{{$myApp->access_token}}" class="btn red-stripe delete">ဖ်က္ရန္</a>
                                          </td>
                                       </tr>
                                     @endforeach

@@ -47,13 +47,12 @@ class SeatLayoutController extends BaseController
   		$seatlayout->column 		      = $column;
   		$seatlayout->seat_list 		    = $substring;
   		$result=$seatlayout->save();
-      	return Redirect::to('/seatlayoutlist');
+      	return Redirect::to('/seatlayoutlist?'.$this->myGlob->access_token);
 
   	}
 
   	public function showSeatLayoutList()
   	{
-      // $operator_id=OperatorGroup::whereuser_id(Auth::user()->id)->pluck('operator_id');
       $response   	= $obj_seatlayout = SeatingLayout::orderBy('id','desc')->get();
   		$allSeatLayout 	= SeatingLayout::all();
       	$totalCount 	= count($allSeatLayout);
@@ -174,7 +173,7 @@ class SeatLayoutController extends BaseController
                                   'row'=>$row,
                                   'column'=> $column,
                                   'seat_list'=>$substring));
-      return Redirect::to('/seatlayoutlist');
+      return Redirect::to('/seatlayoutlist?'.$this->myGlob->access_token);
         
     }
 
@@ -186,11 +185,11 @@ class SeatLayoutController extends BaseController
       if($seatplan_ids)
         $checktrips=Trip::wherein('seat_plan_id', $seatplan_ids)->lists('id');
       if($checktrips){
-        return Redirect::to('/seatlayoutlist')->with('message',"Can't delete this seat layout for has links with trips.");
+        return Redirect::to('/seatlayoutlist?'.$this->myGlob->access_token)->with('message',"Can't delete this seat layout for has links with trips.");
       }
       SeatingLayout::where('id','=',$id)->delete();
       SeatingPlan::whereseat_layout_id($id)->delete();
-      return Redirect::to('/seatlayoutlist')->with('message','Successfully delete one record.');
+      return Redirect::to('/seatlayoutlist?'.$this->myGlob->access_token)->with('message','Successfully delete one record.');
     }
 
     public function postdelSeatLayout()
@@ -198,13 +197,13 @@ class SeatLayoutController extends BaseController
       $todeleterecorts = Input::get('recordstoDelete');
       if(count($todeleterecorts)==0)
       {
-        return Redirect::to("/seatlayoutlist");
+        return Redirect::to('/seatlayoutlist?'.$this->myGlob->access_token);
       }
       foreach($todeleterecorts as $recid)
       {
         $result = SeatingLayout::where('id','=',$recid)->delete();
       }
-      return Redirect::to("/seatlayoutlist");
+      return Redirect::to('/seatlayoutlist?'.$this->myGlob->access_token);
     }
 
     public function postSearchSeatLayout()

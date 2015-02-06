@@ -53,76 +53,6 @@
                               <div class="actions">
                               </div>
                            </div>
-                           <!-- <div class="row-fluid search-default">
-                                 <form action="/report/agentscredits/search" method="get">
-                                       <div class="span2">
-                                          <div class="control-group">
-                                             <label class="control-label">All Date</label>
-                                             <div class="controls">
-                                                <select name="cbodate" class="chosen span12" id='alldate'>
-                                                   <option value="All" @if($search['datestatus']=="All") selected @endif>All</option>
-                                                   <option value="Custom" @if($search['datestatus']=="Custom") selected @endif>Custom</option>
-                                                </select>
-                                             </div>
-                                          </div>
-                                       </div>
-                                       <div class="span2">
-                                          <div class="control-group" id="daterange">
-                                             <label class="control-label" for="startdate">အစေန့ေရွးရန်</label>
-                                             <div class="controls">
-                                                <input id="startdate" data-date-format="dd-mm-yyyy" name="start_date" class="m-wrap span12 m-ctrl-medium date-picker" size="16" type="text" value="{{date('d-m-Y', strtotime($search['start_date']))}}">
-                                             </div>
-                                          </div>
-                                       </div>
-                                       <div class="span2">
-                                          <div class="control-group" id="daterange1">
-                                             <label class="control-label" for="enddate">အဆုံးေန့ေရွးရန်</label>
-                                             <div class="controls">
-                                                <input id="enddate" data-date-format="dd-mm-yyyy" name="end_date" class="m-wrap span12 m-ctrl-medium  date-picker" size="16" type="text" value="{{date('d-m-Y', strtotime($search['end_date']))}}">
-                                             </div>
-                                          </div>
-                                       </div>
-
-                                       <div class="span3">
-                                          <div class="control-group">
-                                             <label class="control-label" for="from">Agent Group</label>
-                                             <div class="controls">
-                                                <select name="agentgroup" class="m-wrap span12 chosen" id="agentgroup">
-                                                   <option value="All">All</option>
-                                                   @if(isset($search['agentgroup']))
-                                                      @foreach($search['agentgroup'] as $rows)
-                                                         <option value="{{$rows['id']}}" @if($rows['id']==$search['agentgroup_id']) selected @endif>{{$rows['name']}}</option>
-                                                      @endforeach
-                                                   @endif
-                                                </select>
-                                             </div>
-                                             
-                                          </div>
-                                       </div>
-                                       <div class="span3 responsive">
-                                          <div class="control-group">
-                                             <label class="control-label" for="from">ဂိတ်ခွဲများ</label>
-                                             <div class="controls" id="agent_id">
-                                                <select name="agent_id" class="m-wrap span12 chosen">
-                                                   <option value="All">All</option>
-                                                   @if($search['agent'])
-                                                      @foreach($search['agent'] as $row)
-                                                         <option value="{{$row['id']}}" @if($row['id']==$search['agent_id']) selected @endif>{{$row['name']}}</option>
-                                                      @endforeach
-                                                   @endif
-                                                </select>
-                                             </div>
-
-                                          </div>
-                                       </div>
-
-                                       
-                                       <div class="clear-fix">&nbsp;</div>
-
-                                       <input type="hidden" value="{{$search['end_date'].' to '. $search['end_date']}}" id="report_date">
-                                       <button type="submit" class="btn green pull-right">Search &nbsp; <i class="m-icon-swapright m-icon-white"></i></button>
-                                 </form>
-                           </div> -->
                            <div class="clear-fix">&nbsp;</div>
 
                            <div class="portlet-body">
@@ -145,7 +75,12 @@
                                        <th>Receivable</th>
                                        <th>Receipt</th>
                                        <th class="span3">Closing Balance</th>
-                                       <th><a class="btn small green blue-stripe" href="/report/agentcreditlist/paymentdetail/{{$search['agent_id']}}?&agentgroup_id={{$search['agentgroup_id']}}&start_date={{$search['start_date']}}&end_date={{$search['end_date']}}">Detail All</a></th>
+                                       <th>
+                                       @if(Auth::user()->role==3)
+                                          -
+                                       @else
+                                          <a class="btn small green blue-stripe" href="/report/agentcreditlist/paymentdetail/{{$search['agent_id']}}?&agentgroup_id={{$search['agentgroup_id']}}&start_date={{$search['start_date']}}&end_date={{$search['end_date']}}&access_token={{Auth::user()->access_token}}">Detail All</a></th>
+                                       @endif
                                     </tr>
                                  </thead>
                                        @if($response)
@@ -167,7 +102,7 @@
                                                          <td>{{$row['receipt']}}</td>
                                                          <td><span @if($row['closing_balance'] < 0) class="noti" @endif>{{str_replace("-","",$row['closing_balance'])}} </span></td>
                                                          <td>
-                                                            <a class="btn mini green-stripe" href="/report/agentcreditlist/paymentdetail/{{$rows['id']}}?start_date={{$pay_date}}&end_date=All">အေသးစိတ္ၾကည့္မည္</a>
+                                                            <a class="btn mini green-stripe" href="/report/agentcreditlist/paymentdetail/{{$rows['id']}}?start_date={{$pay_date}}&end_date=All&access_token={{Auth::user()->access_token}}">အေသးစိတ္ၾကည့္မည္</a>
                                                          </td>
                                                       </tr>
                                                 @endforeach
@@ -204,7 +139,7 @@
                   },
               ],
               "order": [],
-              "displayLength": 25,
+              "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
               "pagingType": "full_numbers",
               "drawCallback": function ( settings ) {
                   var api = this.api();

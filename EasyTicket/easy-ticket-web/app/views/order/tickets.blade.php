@@ -84,22 +84,18 @@
                                                    </a>
                                                    <ul class="dropdown-menu"> 
                                                       <li>
-                                                        <a class="delete" href="/order-tickets/delete/{{$ticket->id}}"><i class="icon-trash"></i>Delete</a>
+                                                        <a class="delete" href="/order-tickets/delete/{{$ticket->id}}?{{$myApp->access_token}}"><i class="icon-trash"></i>Delete</a>
                                                       </li>
                                                       <li>
-                                                        <a  href="/orderlist"><i class="icon-list"></i>Order List</a>
+                                                        <a  href="/orderlist?{{$myApp->access_token}}"><i class="icon-list"></i>Order List</a>
                                                       </li>
                                                       <li class="divider"></li>
                                                    </ul>
                                                 </div>
-                                                <!-- <a class="btn large green-stripe edit" href="/order-tickets/delete/{{$ticket->id}}">Delete</a> -->
-                                                <!-- <a class="btn large red-stripe delete" href="/orderlist">Order List</a> -->
                                              </td>
                                           </tr>
                                     @endforeach
-                                       <!-- <tr>
-                                          <td colspan="8"><input type="submit" class="btn red" value="Delete"></td>
-                                       </tr> -->
+                                      
                                     </form>
                                     
                                  </tbody>

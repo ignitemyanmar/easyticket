@@ -34,6 +34,7 @@
                   <div class="responsive span12" data-tablet="span12" data-desktop="span12">
                      <!-- <form action="/addagent" class="horizontal-form" method= "post" enctype="multipart/form-data"> -->
                      <form id="addnew-form" class="form-horizontal" action = "/user-update/{{$user_info->id}}" method= "post" enctype="">    
+                        <input type="hidden" value="{{$myApp->v_access_token}}" name="access_token">
                         <div class="portlet box light-grey">
                            <div class="portlet-title">
                               <h4><i class="icon-user"></i>User အခ်က္အလက္မ်ား ျပင္ရန္</h4>

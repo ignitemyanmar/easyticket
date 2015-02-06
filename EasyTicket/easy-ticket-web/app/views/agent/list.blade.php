@@ -22,19 +22,14 @@
             <!-- BEGIN PAGE HEADER-->
                <div class="row-fluid">
                   <div class="span12">
-                     <!-- BEGIN PAGE TITLE & BREADCRUMB-->        
-                     <?php 
-                        // $orderdate=$response[0]['departure_date']; 
-                        $orderdate=Session::get('search_daily_date'); 
-                        $V_operator_id=Session::get('operator_id');
-                     ?>
+                     
                      <h3 class="page-title">
                         အေရာင္းကုိယ္စားလွယ္မ်ား          
                      </h3>
                      <ul class="breadcrumb">
                         <li>
                            <i class="icon-home"></i>
-                           <a href="/report/dailycarandadvancesale?operator_id={{Session::get('operator_id')}}">ပင္မစာမ်က္ႏွာ</a> 
+                           <a href="/report/dailycarandadvancesale?operator_id={{Session::get('operator_id')}}&access_token={{Auth::user()->access_token}}">ပင္မစာမ်က္ႏွာ</a> 
                            <i class="icon-angle-right"></i>
                         </li>
                         <li><a href="#">အေရာင္းကုိယ္စားလွယ္မ်ား</a></li>
@@ -56,7 +51,7 @@
                            <div class="portlet-body">
                               <div class="clearfix">
                                  <div class="btn-group">
-                                    <a href="/agents/create">
+                                    <a href="/agents/create?access_token={{Auth::user()->access_token}}">
                                     <button id="" class="btn green">
                                     အသစ္ထည့္မည္ <i class="icon-plus"></i>
                                     </button>
@@ -159,13 +154,13 @@
                                                     </a>
                                                     <ul class="dropdown-menu"> 
                                                       <li>
-                                                        <a href="/agent-update/{{ $agent['id'] }}"><i class="icon-pencil"></i> ျပင္ရန္</a>
+                                                        <a href="/agent-update/{{ $agent['id'] }}?access_token={{Auth::user()->access_token}}"><i class="icon-pencil"></i> ျပင္ရန္</a>
                                                       </li>
                                                       <li>
-                                                        <a href="deleteagent/{{ $agent['id'] }}"><i class="icon-trash"></i>ဖ်က္ရန္</a>
+                                                        <a href="deleteagent/{{ $agent['id'] }}?access_token={{Auth::user()->access_token}}"><i class="icon-trash"></i>ဖ်က္ရန္</a>
                                                       </li>
                                                       <li>
-                                                        <a href="agent-salelist/{{ $agent['id'] }}"><i class="icon-list"></i>အေရာင္းစာရင္းမ်ား</a>
+                                                        <a href="agent-salelist/{{ $agent['id'] }}?access_token={{Auth::user()->access_token}}"><i class="icon-list"></i>အေရာင္းစာရင္းမ်ား</a>
                                                       </li>
                                                       <li class="divider"></li>
                                                     </ul>

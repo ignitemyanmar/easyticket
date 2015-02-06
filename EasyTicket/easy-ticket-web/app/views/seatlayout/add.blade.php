@@ -36,8 +36,8 @@
 
             <!-- BEGIN PAGE CONTENT-->
               <form action="/addseatlayout" method="post" class="horizontal-form" enctype="multipart/form-data">
-
-               <div class="row-fluid">
+                <input type="hidden" name="access_token" value="{{$myApp->v_access_token}}">
+                <div class="row-fluid">
                   <div class="responsive span8" data-tablet="span8" data-desktop="span8">
                      <div class="portlet box light-grey">
                         <div class="portlet-title">
@@ -120,17 +120,18 @@
 <!-- END PAGE -->
 <script type="text/javascript" src="../../assets/data-tables/jquery.dataTables.js"></script>
 <script>
+  
   $('#btnseatlayout').click(function(){
         var tickettypeid=$('#ticket_type_id').val();
         var row=$('#row').val();
         var column=$('#column').val();
-         $.ajax({
+        var access_token={{json_encode($myApp->access_token)}};
+          $.ajax({
                 type:'GET',
-                url:'/seatlayoutframe',
+                url:'/seatlayoutframe?'+access_token,
                 data:{tickettypeid:tickettypeid,row:row,column:column}
               }).done(function(result){
                 $('#seatlayoutframe').html(result);
-                
               });
          return false;
       });

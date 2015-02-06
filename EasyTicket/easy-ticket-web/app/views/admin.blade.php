@@ -128,7 +128,7 @@
         </div>
 
         <!-- END SIDEBAR -->
-        @if(Auth::user()->role==3)
+        @if(Auth::user()->role==3 || Auth::user()->role==9)
             <?php
                 $currenturl =URL::full();
                 $concat="?";
@@ -136,20 +136,6 @@
                 $agopparprefix=strpos($currenturl,'?agopt_id');
                 $agopparprefix2=strpos($currenturl,'&agopt_id');
                 $currenturl=str_replace('agopt_id=', '',$currenturl);
-                /*if($agopparprefix){
-                   $position= strpos($currenturl, '?agopt_id=');
-                    if($position){
-                        // $currenturl=substr($currenturl, 0, $position);
-                        $currenturl=str_replace('agopt_id=', '',$currenturl);
-                    } 
-                }elseif($agopparprefix2){
-                    $position= strpos($currenturl, '&agopt_id=');
-                    $url=$currenturl;
-                    if($position){
-                        // $currenturl=substr($currenturl, 0, $position);
-                        $currenturl=str_replace('agopt_id=', '',$currenturl);
-                    } 
-                }else{*/
                     $checkurl=strpos($currenturl,'?');
                     
                     if($checkurl){

@@ -356,7 +356,6 @@
 				var departure_time=$('#departure_time').val();
 				var customer_name=$('#customer_name').val();
 				var phone_no=$('#phone_no').val();
-				var access_token=$('#access_token').val();
 				var booking=$('#booking:checked').val();
 
 				if(booking==undefined){booking=0;}
@@ -388,9 +387,8 @@
 		        			customer_name:customer_name,
 		        			phone_no:phone_no,
 		        			booking:booking,
-		        			access_token:access_token}
+		        			}
 		        }).done(function(result){
-		        	
 		        	$('.indicator').removeClass('loading');
 		        	console.log(result);
 		        	if(result.can_buy==false){

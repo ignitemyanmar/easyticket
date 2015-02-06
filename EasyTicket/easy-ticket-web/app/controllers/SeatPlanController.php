@@ -27,7 +27,7 @@ class SeatPlanController extends BaseController
 									->whereseat_layout_id($seatlayout_id)->first();
 		if($checkseatplan){
 			$response['message']='This record is already exit';
-			return Redirect::to('/seatplanlist');
+			return Redirect::to('/seatplanlist?'.$this->myGlob->access_token);
 		}	
 		
 		$j=0;$i=0;
@@ -74,7 +74,7 @@ class SeatPlanController extends BaseController
 		$objseatplanupdate					=SeatingPlan::whereid($seatplanid)->first();
 		$objseatplanupdate->name=$seat_plan_name;
 		$objseatplanupdate->update();
-		return Redirect::to('/seatplanlist');
+		return Redirect::to('/seatplanlist?'.$this->myGlob->access_token);
 	}
 
 	public function postSeatPlan()
@@ -125,7 +125,7 @@ class SeatPlanController extends BaseController
     {
       $obj_seatplan = SeatingPlan::find($id);
        if(count($obj_seatplan)==0){
-        return Redirect::to('seatplanlist');
+        return Redirect::to('seatplanlist?'.$this->myGlob->access_token);
        }
        $seatplan['id'] 			   = $id;
        $seatplan['operator_id']    = $obj_seatplan->operator_id;
@@ -185,17 +185,17 @@ class SeatPlanController extends BaseController
 			$j++;
 		}
 
-      return Redirect::to('/seatplanlist');
+      return Redirect::to('/seatplanlist?'.$this->myGlob->access_token);
     }
 
     public function getDeleteSeatPlan($id)
     {
     	$seatplan_id=Trip::whereseat_plan_id($id)->first();
     	if($seatplan_id){
-      		return Redirect::to('/seatplanlist');
+      		return Redirect::to('/seatplanlist?'.$this->myGlob->access_token);
     	}
       	$affectedRows1 = SeatingPlan::where('id','=',$id)->delete();
-      	return Redirect::to('/seatplanlist');
+      	return Redirect::to('/seatplanlist?'.$this->myGlob->access_token);
     }
 
     public function postdelSeatPlan()
@@ -203,13 +203,13 @@ class SeatPlanController extends BaseController
       $todeleterecorts = Input::get('recordstoDelete');
       if(count($todeleterecorts)==0)
       {
-        return Redirect::to("/seatplanlist");
+        return Redirect::to('/seatplanlist?'.$this->myGlob->access_token);
       }
       foreach($todeleterecorts as $recid)
       {
         $result = SeatingPlan::where('id','=',$recid)->delete();
       }
-      return Redirect::to("/seatplanlist");
+      return Redirect::to('/seatplanlist?'.$this->myGlob->access_token);
     }
 
     public function postSearchSeatPlan()

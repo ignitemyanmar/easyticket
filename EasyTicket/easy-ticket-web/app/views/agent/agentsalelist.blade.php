@@ -24,11 +24,12 @@
          <div id="portlet-changeagent" class="modal hide">
             <div class="modal-header">
                <button data-dismiss="modal" class="close" type="button"></button>
-               <h3>အေရာင္းကုိယ္စားလွယ္ ေျပာင္းရန္</h3>
+               <h3 class="Zawgyi-One">အေရာင္းကုိယ္စားလွယ္ ေျပာင္းရန္</h3>
             </div>
             <div class="modal-body">
                <div id="trip_label"></div>
                <form action="/order/changeagent" method="post">
+                  <input type="hidden" name="access_token" value="{{$myApp->v_access_token}}">
                   <div class="control-group">
                      <label class="control-label">Choose Agent</label>
                      <div class="controls">
@@ -95,6 +96,7 @@
                            <div class="span12">
                                  <input type="hidden" value="{{$search['agent_rp']}}" id="hdagent_rp">
                                  <form action="/agent-salelist/{{$search['agent_id']}}" method="get" class="horizontal-form">
+                                       <input type="hidden" value="{{$myApp->v_access_token}}" name="access_token">
                                        <div class="clear-fix">&nbsp;</div>
                                        <div class="row-fluid">
                                           <div class="span3">
@@ -159,7 +161,7 @@
                                     <th>ေစ်းႏုန္း</th>
                                     <th>စုုစုုေပါင္း</th>
                                     <th>% ႏုတ္ျပီး စုုစုုေပါင္း</th>
-                                    <th><a class="btn small green blue-stripe imagechange" id="" href="/triplist/{{$search['start_date'].','.$search['end_date']}}/daily?f={{$search['from']}}&t={{$search['to']}}&agentgroup={{$search['agentgroup_id']}}&a={{$search['agent_id']}}&agentrp={{$search['agent_rp']}}&time={{$search['time']}}">အေသးစိတ္(All)</a></th>
+                                    <th><a class="btn small green blue-stripe imagechange" id="" href="/triplist/{{$search['start_date'].','.$search['end_date']}}/daily?f={{$search['from']}}&t={{$search['to']}}&agentgroup={{$search['agentgroup_id']}}&a={{$search['agent_id']}}&agentrp={{$search['agent_rp']}}&time={{$search['time']}}&{{$myApp->access_token}}">အေသးစိတ္(All)</a></th>
                                  </tr>
                               </thead>
                                  @if($response)
@@ -200,7 +202,7 @@
                                                          </a>
                                                          <ul class="dropdown-menu"> 
                                                             <li>
-                                                              <a href="/triplist/{{$result['order_date']}}/daily?bus_id={{$result['bus_id']}}&a={{$result['agent_id']}}&agentrp={{$search['agent_rp']}}"><i class="icon-list"></i>အေသးစိတ္ၾကည့္ရန္</a>
+                                                              <a href="/triplist/{{$result['order_date']}}/daily?bus_id={{$result['bus_id']}}&a={{$result['agent_id']}}&agentrp={{$search['agent_rp']}}&{{$myApp->access_token}}"><i class="icon-list"></i>အေသးစိတ္ၾကည့္ရန္</a>
                                                             </li>
                                                             <li>
                                                                <input type="hidden" value="<h4>{{$result['from_to'].' ('.$result['class_name'].') </h4>'.$departuredate. ' ('.$result['time'].')'}} <br><br>" class="trip_info">

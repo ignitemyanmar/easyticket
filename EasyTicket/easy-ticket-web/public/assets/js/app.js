@@ -1557,6 +1557,7 @@ var App = function () {
                             $('.loader').hide();
                             return false;
                         }else{
+                            // alert(result);
                             window.location.href=result;
                         }
                 });
@@ -1788,7 +1789,7 @@ var App = function () {
                   url: "/userlogin",
                   data: {username:email, password:password}
                     }).done(function( result ) {
-                        if(result=='Invalid email and password!'){
+                        if(result=='Login Fail!'){
                             alert(result);
                             $('.loader').hide();
                             return false;
@@ -2593,29 +2594,19 @@ var App = function () {
         $('#form-date-range').daterangepicker({
             ranges: {
                 'Today': ['today', 'today'],
-                'Yesterday': ['yesterday', 'yesterday'],
-                'Last 7 Days': [Date.today().add({
-                    days: -6
-                }), 'today'],
-                'Last 30 Days': [Date.today().add({
-                    days: -29
-                }), 'today'],
                 'This Month': [Date.today().moveToFirstDayOfMonth(), Date.today().moveToLastDayOfMonth()],
-                'Last Month': [Date.today().moveToFirstDayOfMonth().add({
-                    months: -1
-                }), Date.today().moveToFirstDayOfMonth().add({
-                    days: -1
-                })]
             },
             opens: 'right',
-            format: 'MM/dd/yyyy',
+            // format: 'MM/dd/yyyy',
+            format: 'dd-MM-yyyy',
             separator: ' to ',
             startDate: Date.today().add({
-                days: -29
+                days: 0//-29
+                // days: -29
             }),
             endDate: Date.today(),
-            minDate: '01/01/2012',
-            maxDate: '12/31/2014',
+            // minDate: '01/01/2012',
+            // maxDate: '12/31/2014',
             locale: {
                 applyLabel: 'Submit',
                 fromLabel: 'From',
@@ -2630,12 +2621,13 @@ var App = function () {
         },
 
         function (start, end) {
-            $('#form-date-range span').html(start.toString('MMMM d, yyyy') + ' - ' + end.toString('MMMM d, yyyy'));
+            $('#form-date-range span').html(start.toString('dd-MM-yyyy') + ' - ' + end.toString('dd-MM-yyyy'));
+            $('#form-date-range #hddaterange').val(start.toString('yyyy-MM-dd') + ',' + end.toString('yyyy-MM-dd'));
         });
 
         $('#form-date-range span').html(Date.today().add({
-            days: -29
-        }).toString('MMMM d, yyyy') + ' - ' + Date.today().toString('MMMM d, yyyy'));
+            days: 0 //-29
+        }).toString('dd-MM-yyyy') + ' - ' + Date.today().toString('dd-MM-yyyy'));
 
 
         if (!jQuery().datepicker || !jQuery().timepicker) {

@@ -16,7 +16,7 @@
        background: #ddd !important;
    }
    tbody td, thead th{border-right: 1px solid #ddd;}
-   table{border-top: 1px solid #ddd;}
+   table{border-top: 1px solid #ddd; }
    .text-right{text-align: right !important;}
 </style>
 

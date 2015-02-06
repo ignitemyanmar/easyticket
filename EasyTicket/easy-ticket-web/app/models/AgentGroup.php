@@ -7,5 +7,9 @@
 		public function agents(){
 			return $this->hasMany('Agent','agentgroup_id');
 		}
+
+		public function operator(){
+			return $this->belongsTo('Operator','operator_id');
+		}
 	}
 ?>

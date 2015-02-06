@@ -1,0 +1,45 @@
+<div id="seating-map-wrapper">
+    <div id="seating-map-creator">
+      	 	<div class="check-a">
+		        <?php if($response['seat_list']): ?>
+		        	<?php $k=1;  $columns=$response['column'];?>
+		        	<?php foreach($response['seat_list'] as $rows): ?>
+			        	
+			        	<?php if($k%$columns == 1): ?>
+    					<div class="row-fluid">
+			        	<div class="span1 small-1">&nbsp;</div>
+		      	 		<?php endif; ?>
+		      	 		<div class="span2 small-2 ">
+					        <?php if($rows['status']==0): ?>
+					        	<div class="span2 small-2">&nbsp;</div>
+					        <?php else: ?>
+					        	<div class="checkboxframe">
+						            <label>
+						                <span></span>
+						                <?php 
+						                	if($rows['status'] != 1){
+						                		$disabled="disabled";
+						                		$taken="taken";
+						                	}else{
+						                		$disabled=''; 
+						                 		$taken='available';	
+						                	}
+						                 ?>
+						                <input class="radios" type="checkbox" multiple="multiple" value="<?php echo $rows['seat_no']; ?>" name="tickets" <?php echo $disabled; ?>>
+						                <div class="fit-a <?php echo $taken; ?>" title="<?php echo $rows['seat_no']; ?>" id=""><?php echo $rows['seat_no']; ?></div>
+						            </label>
+						        </div>
+					        <?php endif; ?>
+					        
+			        	</div>
+			        	<?php if($k%$columns==0): ?>
+			        		<div class="span3 small-2">&nbsp;</div>
+			        	</div>
+					   		<div style="clear:both;height:0px;">&nbsp;</div>
+					    <?php endif; ?>
+	      	 			<?php $k++;?>
+				    <?php endforeach; ?>
+				<?php endif; ?>
+		    </div>
+    </div>
+</div>

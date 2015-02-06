@@ -26,15 +26,6 @@
 				&nbsp;
 			</div>
 			<div class="large-8 columns">
-				<!-- <div class="row slideframe" style="padding:10px 1px;">
-					<div class="callbacks_container">
-					    <ul class="rslidescs" id="slider0">
-					        <li>
-					          <img src="bannerphoto/bus.jpg" alt="">
-					        </li>
-					    </ul>
-				    </div>
-				</div>	 -->
 				<br>
 				<form action="/triplist" method="get" class="pannel" style="padding:0;">
 					<div class="row">

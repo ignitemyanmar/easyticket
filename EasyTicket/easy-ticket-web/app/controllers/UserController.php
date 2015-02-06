@@ -49,9 +49,19 @@ class UserController extends BaseController
       $username = Input::get('username');
       $password = Input::get('password');
       
-      $curl = curl_init( "http://192.168.1.101/oauth/access_token" );
+      $curl = curl_init( "http://easyticketsub.dev/oauth/access_token" );
       curl_setopt( $curl, CURLOPT_POST, true );
       curl_setopt( $curl, CURLOPT_POSTFIELDS, array(
+          'client_id'     => '721685',
+          'client_secret' => 'IgniteAdmin721685',
+          'grant_type'    => 'password',
+          'scope'         => 'admin, sale, booking',
+          'state'         => '123456789',
+          'username'      => $username,
+          'password'      => $password
+      ) );
+      
+      /*curl_setopt( $curl, CURLOPT_POSTFIELDS, array(
           'client_id'     => '721689',
           'client_secret' => 'onlineSale@EasyTickeTadmiM',
           'grant_type'    => 'password',
@@ -59,7 +69,7 @@ class UserController extends BaseController
           'state'         => '123456789',
           'username'      => $username,
           'password'      => $password
-      ) );
+      ) );*/
       curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
       $auth = curl_exec( $curl );
       $auth = json_decode($auth);
@@ -72,7 +82,7 @@ class UserController extends BaseController
               );
         if(Auth::attempt($user)){
           if(Auth::check()){
-            if(Auth::user()->role==9){
+            if(Auth::user()->role==9 || Auth::user()->role==3){
               $operator_ids=Operator::lists('id');
               if($operator_ids){
                 foreach ($operator_ids as $operator_id) {
@@ -91,7 +101,7 @@ class UserController extends BaseController
           }
         }
       }else{
-        return 'Unauthorized user access.';
+        return 'Login Fail!';
       }
   }
 
@@ -122,7 +132,7 @@ class UserController extends BaseController
       $username = Input::get('username');
       $password = Input::get('password');
 
-      $curl = curl_init( "http://192.168.1.101/oauth/access_token" );
+      $curl = curl_init( "http://easyticketsub.dev/oauth/access_token" );
       curl_setopt( $curl, CURLOPT_POST, true );
       curl_setopt( $curl, CURLOPT_POSTFIELDS, array(
           'client_id'     => '721685',
@@ -156,7 +166,7 @@ class UserController extends BaseController
           }
         }
       }else{
-        return "easyticket-admin";
+        return "easyticket-admin?".$this->myGlob->access_token;
       }
   }
 
@@ -395,21 +405,29 @@ class UserController extends BaseController
    * @return response
    */
   public function index(){
+    $agopt_ids=$this->myGlob->agopt_ids;
     $user_ids=array();
-    $user_id=OperatorGroup::whereoperator_id($this->myGlob->operator_id)->lists('user_id');
-
-    $user_id_group=OperatorGroupUser::whereoperator_id($this->myGlob->operator_id)->lists('user_id');
+    $user_id =$user_id_group= array();
+    if(Auth::user()->role==9){
+      $user_id=OperatorGroup::lists('user_id');
+      $user_id_group=OperatorGroupUser::lists('user_id');
+    }else{
+      $user_id=OperatorGroup::whereoperator_id($this->myGlob->operator_id)->lists('user_id');
+      $user_id_group=OperatorGroupUser::whereoperator_id($this->myGlob->operator_id)->lists('user_id');
+    }
     $user_ids=array_unique(array_merge($user_id, $user_id_group));
-
     $response=array();
+
     if($user_ids){
       $response=User::wherein('id', $user_ids)->get(); 
       if($response){
         foreach ($response as $key => $rows) {
           if($rows->role==8){
-            $role="Manager";
+            $role="Manager / Operator";
           }elseif($rows->role==4){
             $role="Supervisor";
+          }elseif($rows->role==3){
+            $role="Agent";
           }else{
             $role="Staff";
           }
@@ -441,13 +459,25 @@ class UserController extends BaseController
    */
   public function create(){
     $response=array();
-    $response['role']=array('2'=>"Staff", '4'=>"Supervisor", '8'=>"Manager");
-    $operator_group=OperatorGroup::whereoperator_id($this->myGlob->operator_id)
+    $response['role']=array('2'=>"Staff", '3'=>"Agent", '4'=>"Supervisor", '8'=>"Manager");
+    $agopt_ids=$this->myGlob->agopt_ids;
+    if($agopt_ids){
+      $operator_group=OperatorGroup::wherein('operator_id',$agopt_ids)
                                   ->with(array(
                                     'user'=>function($q){ $q->addSelect(array('id','name'));}
                                   ))->get(array('id','user_id'));
-    
+    }else{
+      $operator_group=OperatorGroup::whereoperator_id($this->myGlob->operator_id)
+                                  ->with(array(
+                                    'user'=>function($q){ $q->addSelect(array('id','name'));}
+                                  ))->get(array('id','user_id'));
+    }
     $response['operator_group']=$operator_group;
+    $agentgroups=array();
+    if(Auth::user()->role==9){
+      $agentgroups=AgentGroup::all();
+    }
+    $response['agentgroup']=$agentgroups;
     return View::make('user.add', array('response'=>$response));
   }
 
@@ -462,6 +492,10 @@ class UserController extends BaseController
     $password     =Input::get('password');
     $role         =Input::get('role');
     $type         =Input::get('type');
+    $agentgroup_id=Input::get('agentgroup_id');
+    if($role==3){
+      $type ="Agent";
+    }
     $group_user   =Input::get('group_user');
     $groupuser_id =Input::get('groupuser_id');
 
@@ -469,7 +503,7 @@ class UserController extends BaseController
     if($checkexisting){
       $message['status']=0;
       $message['info']="Email is already used.";
-      return Redirect::to('user-list')->with('message',$message);
+      return Redirect::to('user-list?'.$this->myGlob->access_token)->with('message',$message);
     }
     $objuser            =new User();
     $objuser->name      =$name;
@@ -492,10 +526,13 @@ class UserController extends BaseController
       $objgroupuser->user_id          =$user_id;
       $objgroupuser->save();
     }
+    if($agentgroup_id){
+      AgentGroup::whereid($agentgroup_id)->update(array('user_id'=>$user_id));
+    }
 
     $message['status']=1;
     $message['info']="Successfully save one user.";
-    return Redirect::to('user-list')->with('message', $message);
+    return Redirect::to('user-list?access_token='.Auth::user()->access_token)->with('message', $message);
   }
 
   /**
@@ -549,7 +586,7 @@ class UserController extends BaseController
     if($checkexisting){
       $message['status']=0;
       $message['info']="Email is already used.";
-      return Redirect::to('user-list')->with('message',$message);
+      return Redirect::to('user-list?'.$this->myGlob->access_token)->with('message',$message);
     }
     $objuser            =User::find($id);
     $objuser->name      =$name;
@@ -586,7 +623,7 @@ class UserController extends BaseController
 
     $message['status']=1;
     $message['info']="Successfully save one user.";
-    return Redirect::to('user-list')->with('message', $message);
+    return Redirect::to('user-list?'.$this->myGlob->access_token)->with('message', $message);
   }
   
 
@@ -599,7 +636,7 @@ class UserController extends BaseController
     User::whereid($id)->delete();
     $message['status']=1;
     $message['info']="Successfully delete one record.";
-    return Redirect::to('user-list')->with('message', $message);
+    return Redirect::to('user-list?'.$this->myGlob->access_token)->with('message', $message);
   } 
 
 }

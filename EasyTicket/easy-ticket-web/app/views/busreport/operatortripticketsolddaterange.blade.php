@@ -409,7 +409,7 @@
       $(document).ready(function() {
           var table = $('#sample_editable_1').DataTable({
               "columnDefs": [
-                  // { "visible": false, "targets": 2 }
+                  // { "visible": false, "targets": 1 }
               ],
               "order": [[ 1, 'asc' ]],
               "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
@@ -444,6 +444,9 @@
    </script>
    <script type="text/javascript">
       $(function(){
+         var agentgroup_id=$('#agentgroup').val();
+         loadagentbranches(agentgroup_id);
+
          // App.setPage("table_editable");
          $('.page-container').addClass('sidebar-closed');
          $('.chosen').chosen();
@@ -475,18 +478,14 @@
          $('chosen').chosen();
       }
 
-      $('#agentgroup').change(function(){
-         var agentgroup_id=$(this).val();
-         if(agentgroup_id=="All")
-         {
-            agentgroup_id=0;
-         }
+      function loadagentbranches(agentgroup_id){
          var _token = $('.access_token').val();
          var result='<select name="agent_id" class="m-wrap span12 chosen">';
                result+='<option value="All">All</option>';
          $('#agent_id').html('');
          $('#agent_id').addClass('loader');
          $.get('/agentbranches/'+agentgroup_id+'?access_token='+_token,function(data){
+
             for(var i=0; i<data.length; i++){
                result +='<option value="'+data[i].id+'">'+data[i].name+'</option>';
             }
@@ -494,7 +493,16 @@
             $('#agent_id').removeClass('loader');
             $('#agent_id').html(result);
             $('.chosen').chosen();
+
          });
+      }
+      $('#agentgroup').change(function(){
+         var agentgroup_id=$(this).val();
+         if(agentgroup_id=="All")
+         {
+            agentgroup_id=0;
+         }
+         loadagentbranches(agentgroup_id);
       });
    </script>
 @stop

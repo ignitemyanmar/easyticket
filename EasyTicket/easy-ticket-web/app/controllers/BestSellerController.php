@@ -34,7 +34,16 @@ class BestSellerController extends \BaseController {
     	if($s_date && $e_date && !$agent_id){
             if($agent_ids){
                 if($agopt_ids){
-                    $trip_id = SaleItem::wherein('agent_id',$agent_ids)
+                    if(Auth::User()->role==9){
+                        $trip_id = SaleItem::wherein('operator',$agopt_ids)
+                                    ->where('departure_date','>=',$s_date)
+                                    ->where('departure_date','<=',$e_date)
+                                    ->selectRaw('trip_id, count(*) as count, SUM(price) as total')
+                                    ->groupBy('to')
+                                    ->orderBy('count','desc')
+                                    ->get();
+                    }else{
+                        $trip_id = SaleItem::wherein('agent_id',$agent_ids)
                                     ->wherein('operator',$agopt_ids)
                                     ->where('departure_date','>=',$s_date)
                                     ->where('departure_date','<=',$e_date)
@@ -42,6 +51,8 @@ class BestSellerController extends \BaseController {
                                     ->groupBy('to')
                                     ->orderBy('count','desc')
                                     ->get();
+                    }
+                    
                 }else{
                     $trip_id = SaleItem::wherein('agent_id',$agent_ids)
                                     ->whereoperator($operator_id)
@@ -67,7 +78,17 @@ class BestSellerController extends \BaseController {
     	if($s_date && $e_date && $agent_id){
             if($agent_ids){
                 if($agopt_ids){
-                    $trip_id = SaleItem::wherein('agent_id',$agent_ids)
+                    if(Auth::user()->role==9){
+                        $trip_id = SaleItem::wherein('operator',$agopt_ids)
+                                    ->where('departure_date','>=',$s_date)
+                                    ->where('departure_date','<=',$e_date)
+                                    ->whereagent_id($agent_id)
+                                    ->selectRaw('trip_id, count(*) as count, SUM(price) as total')
+                                    ->groupBy('to')
+                                    ->orderBy('count','desc')
+                                    ->get();
+                    }else{
+                        $trip_id = SaleItem::wherein('agent_id',$agent_ids)
                                     ->wherein('operator',$agopt_ids)
                                     ->where('departure_date','>=',$s_date)
                                     ->where('departure_date','<=',$e_date)
@@ -76,6 +97,9 @@ class BestSellerController extends \BaseController {
                                     ->groupBy('to')
                                     ->orderBy('count','desc')
                                     ->get();
+                    }
+
+                    
                 }else{
                     $trip_id = SaleItem::wherein('agent_id',$agent_ids)->whereoperator($operator_id)
                                     ->where('departure_date','>=',$s_date)
@@ -133,7 +157,9 @@ class BestSellerController extends \BaseController {
 		$search['start_date']=$s_date;
 		$search['end_date']=$e_date;
 		$agent_ids=SaleOrder::whereoperator_id($operator_id)->where('agent_id','!=',0)->groupBy('agent_id')->lists('agent_id');
-		$agent=Agent::wherein('id',$agent_ids)->get();
+		$agent=array();
+        if($agent_ids)
+            $agent=Agent::wherein('id',$agent_ids)->get();
 		$search['agent']=$agent;
 		$response=$lists;
 		// return Response::json($lists);
@@ -149,6 +175,7 @@ class BestSellerController extends \BaseController {
 	public function tripdetail()
 	{
     	$operator_id 	= Input::get('operator_id');
+        $agopt_ids      =$this->myGlob->agopt_ids;
     	$agent_id 		= Input::get('agent_id');
     	$s_date 		= Input::get('start_date');
     	$e_date 		= Input::get('end_date');
@@ -167,29 +194,58 @@ class BestSellerController extends \BaseController {
     	}
     	$trip_id = array();
     	if($s_date && $e_date && !$agent_id){
-    		$trip_id = SaleItem::whereoperator($operator_id)
-    								->where('departure_date','>=',$s_date)
-    								->where('departure_date','<=',$e_date)
-    								->wherefrom($from)
-    								->whereto($to)
-    								->selectRaw('trip_id, count(*) as count, SUM(price) as total')
-    								->groupBy('trip_id')
-    								->orderBy('count','desc')
-    								->orderBy('total','desc')
-    								->get();
+            if($agopt_ids){
+                $trip_id = SaleItem::wherein('operator',$agopt_ids)
+                                    ->where('departure_date','>=',$s_date)
+                                    ->where('departure_date','<=',$e_date)
+                                    ->wherefrom($from)
+                                    ->whereto($to)
+                                    ->selectRaw('trip_id, count(*) as count, SUM(price) as total')
+                                    ->groupBy('trip_id')
+                                    ->orderBy('count','desc')
+                                    ->orderBy('total','desc')
+                                    ->get();    
+            }else{
+                $trip_id = SaleItem::whereoperator($operator_id)
+                                    ->where('departure_date','>=',$s_date)
+                                    ->where('departure_date','<=',$e_date)
+                                    ->wherefrom($from)
+                                    ->whereto($to)
+                                    ->selectRaw('trip_id, count(*) as count, SUM(price) as total')
+                                    ->groupBy('trip_id')
+                                    ->orderBy('count','desc')
+                                    ->orderBy('total','desc')
+                                    ->get();  
+            }
+    		
     	}
     	if($s_date && $e_date && $agent_id){
-    		$trip_id = SaleItem::whereoperator($operator_id)
-    								->where('departure_date','>=',$s_date)
-    								->where('departure_date','<=',$e_date)
-    								->wherefrom($from)
-    								->whereto($to)
-    								->whereagent_id($agent_id)
-    								->selectRaw('trip_id, count(*) as count, SUM(price) as total')
-    								->groupBy('trip_id')
-    								->orderBy('count','desc')
-    								->orderBy('total','desc')
-    								->get();
+            if($agopt_ids){
+                $trip_id = SaleItem::wherein('operator',$agopt_ids)
+                                    ->where('departure_date','>=',$s_date)
+                                    ->where('departure_date','<=',$e_date)
+                                    ->wherefrom($from)
+                                    ->whereto($to)
+                                    ->whereagent_id($agent_id)
+                                    ->selectRaw('trip_id, count(*) as count, SUM(price) as total')
+                                    ->groupBy('trip_id')
+                                    ->orderBy('count','desc')
+                                    ->orderBy('total','desc')
+                                    ->get();
+            }else{
+                $trip_id = SaleItem::whereoperator($operator_id)
+                                    ->where('departure_date','>=',$s_date)
+                                    ->where('departure_date','<=',$e_date)
+                                    ->wherefrom($from)
+                                    ->whereto($to)
+                                    ->whereagent_id($agent_id)
+                                    ->selectRaw('trip_id, count(*) as count, SUM(price) as total')
+                                    ->groupBy('trip_id')
+                                    ->orderBy('count','desc')
+                                    ->orderBy('total','desc')
+                                    ->get();    
+            }
+    		
     	}
     	$lists=array();
     	if($trip_id){

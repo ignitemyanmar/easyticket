@@ -148,7 +148,7 @@
       $(document).ready(function() {
           var table = $('#tblExport').DataTable({
               "columnDefs": [
-                  // { "visible": false, "targets": 2 }
+                  { "visible": false, "targets": 1 }
               ],
               "order": [[ 1, 'asc' ]],
               "lengthMenu": [[25, 50, -1], [25, 50, "All"]],

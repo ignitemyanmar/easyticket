@@ -12,29 +12,6 @@
             <!-- BEGIN PAGE HEADER-->   
                <div class="row-fluid">
                   <div class="span12">
-                     <!-- BEGIN STYLE CUSTOMIZER -->
-                     <div class="color-panel hidden-phone">
-                        <div class="color-mode-icons icon-color"></div>
-                        <div class="color-mode-icons icon-color-close"></div>
-                        <div class="color-mode">
-                           <p>THEME COLOR</p>
-                           <ul class="inline">
-                              <li class="color-black current color-default" data-style="default"></li>
-                              <li class="color-blue" data-style="blue"></li>
-                              <li class="color-brown" data-style="brown"></li>
-                              <li class="color-purple" data-style="purple"></li>
-                              <li class="color-white color-light" data-style="light"></li>
-                           </ul>
-                           <label class="hidden-phone">
-                           <input type="checkbox" class="header" checked value="" />
-                           <span class="color-mode-label">Fixed Header</span>
-                           </label>                    
-                        </div>
-                     </div>
-                     <?php 
-                        $orderdate=Session::get('search_daily_date'); 
-                        $V_operator_id=Session::get('operator_id');
-                     ?>
                      <!-- END BEGIN STYLE CUSTOMIZER -->   
                      <h3 class="page-title">
                         အေရာင္းကုိယ္စားလွယ္ အခ်က္အလက္ျပင္ရန္
@@ -55,8 +32,9 @@
 
             <!-- BEGIN PAGE CONTENT-->
                <div class="row-fluid">
-                  <div class="responsive span8" data-tablet="span8" data-desktop="span8">
-                     <form id="addnew-form" class="horizontal-form" action = "/updateagent/{{$response['agent']['id']}}" method= "post" enctype="multipart/form-data">    
+                  <div class="responsive span9" data-tablet="span9" data-desktop="span9">
+                     <form id="addnew-form" class="form-horizontal" action = "/updateagent/{{$response['agent']['id']}}" method= "post" enctype="multipart/form-data">    
+                        <input type="hidden" value="{{$myApp->v_access_token}}" name="access_token">
                         <div class="portlet box light-grey">
                            <div class="portlet-title">
                               <h4><i class="icon-user"></i>အေရာင္းကုိယ္စားလွယ္ အခ်က္အလက္မ်ား </h4>
@@ -66,7 +44,7 @@
                            <div class="portlet-body">
 
                               <div class="row-fluid">
-                                 <div class="span6">
+                                 <div class="span9">
                                     <div class="control-group">
                                        <label class="control-label" for="name">Agent Group</label>
                                        <div class="controls">
@@ -83,7 +61,7 @@
                               <div class="clear-fix">&nbsp;</div>
 
                               <div class="row-fluid">
-                                 <div class="span6">
+                                 <div class="span9">
                                     <div class="control-group">
                                        <label class="control-label" for="name">အမည်</label>
                                        <div class="controls">
@@ -94,7 +72,7 @@
                                  </div>
                               </div>
                               <div class="row-fluid">
-                                 <div class="span6">
+                                 <div class="span9">
                                     <div class="control-group">
                                        <label class="control-label" for="address">လိပ်စာ</label>
                                        <div class="controls">
@@ -104,7 +82,7 @@
                                  </div>
                               </div>
                               <div class="row-fluid">
-                                 <div class="span6">
+                                 <div class="span9">
                                     <div class="control-group">
                                        <label class="control-label" for="phone">ဖုန်းနံပါတ်</label>
                                        <div class="controls">
@@ -113,33 +91,69 @@
                                     </div>
                                  </div>
                               </div>
-                              <div class="row-fluid">
-                                 <div class="span6">
-                                    <div class="control-group">
-                                       <label class="control-label" for="comission">ေကာ်မၡင် အမျိုးအစား</label>
-                                       <div class="controls">
-                                             <select name="comissiontype" id='comission' class="m-wrap span12">
-                                                @foreach($response['comissiontype'] as $objcomissiontype)
-                                                   <option value="{{$objcomissiontype->id}}" @if( $objcomissiontype['id']==$response['agent']['commission_id']) selected @endif>{{$objcomissiontype['name']}}</option>
-                                                @endforeach   
-                                             </select> 
+
+                              <div class="control-group">
+                                 <label class="control-label">ေကာ်မစ်ၡင်</label>
+                                 <div class="controls">
+                                    <label class="radio">
+                                       <div id="uniform-undefined" class="radio">
+                                          <span class="">
+                                             <div id="uniform-undefined" class="radio">
+                                                <span class="">
+                                                   <input style="opacity: 0;" type="radio" name="rdo_commission_type" value="0" class="chkcommission" @if($response['agent']['commission'] == 0) checked="" @endif>
+                                                   <!-- <input style="opacity: 0;" name="day" class="departuredays" value="daily" checked="" type="radio"> -->
+                                                </span>
+                                             </div>
+                                          </span>
+                                       </div>
+                                       ခရီးစဥ်အလုိက်သတ်မှတ်မည်
+                                    </label>
+                                    <label class="radio">
+                                       <div id="uniform-undefined" class="radio">
+                                          <span class="checked">
+                                             <div id="uniform-undefined" class="radio">
+                                                <span class="checked">
+                                                   <input type="radio" name="rdo_commission_type" value="1" class="chkcommission" @if($response['agent']['commission'] > 0) checked="" @endif>
+                                                </span>
+                                             </div>
+                                          </span>
+                                       </div>
+                                       အေရာင်းကုိယ်စားလှယ်အလုိက်သတ်မှတ်မည်။
+                                    </label>
+                                 </div>
+                              </div>
+
+                              <div id="commission_frame" @if($response['agent']['commission'] > 0) style="display:block" @else style="display:none;" @endif>
+                                 <div class="row-fluid">
+                                    <div class="span9">
+                                       <div class="control-group">
+                                          <label class="control-label" for="comission">ေကာ်မၡင် အမျိုးအစား</label>
+                                          <div class="controls">
+                                                <select name="comissiontype" id='comission' class="m-wrap span12">
+                                                   @foreach($response['comissiontype'] as $objcomissiontype)
+                                                      <option value="{{$objcomissiontype->id}}" @if( $objcomissiontype['id']==$response['agent']['commission_id']) selected @endif>{{$objcomissiontype['name']}}</option>
+                                                   @endforeach   
+                                                </select> 
+                                          </div>
+                                       </div>
+                                    </div>
+                                 </div>
+                                 <div class="row-fluid">
+                                    <div class="span9">
+                                       <div class="control-group">
+                                          <label class="control-label" for="commission">ေကာ်မၡင်နုန်း</label>
+                                          <div class="controls">
+                                             <input  name="comission" class="m-wrap span12" required="required" value="{{$response['agent']['commission']}}" type="text" id="commission">
+                                          </div>
                                        </div>
                                     </div>
                                  </div>
                               </div>
-                              <div class="row-fluid">
-                                 <div class="span6">
-                                    <div class="control-group">
-                                       <label class="control-label" for="commission">ေကာ်မၡင်နုန်း</label>
-                                       <div class="controls">
-                                          <input  name="comission" class="m-wrap span12" required="required" value="{{$response['agent']['commission']}}" type="text">
-                                       </div>
-                                    </div>
-                                 </div>
-                              </div>
+
+                              
                               
                               <div class="row-fluid">
-                                 <div class="span6">
+                                 <div class="span9">
                                     <div class="control-group">
                                        <div class="controls">
                                        <label>
@@ -152,7 +166,7 @@
 
                               <div class="cleardiv">&nbsp;</div>
                               <div class="controls">
-                                    <input type = "submit" value = "ျပင္မည္" class="btn green button-submit" id="btn_create" />
+                                    <button type ="submit" class="btn green"> ျပင္မည္ <i class="m-icon-swapright m-icon-white"></i></button> 
                                  <!-- <button style="display: inline-block;" type="submit" class="btn green button-submit">Submit</button> -->
                               </div>
                            </div>
@@ -167,4 +181,18 @@
    </div>
 <!-- END PAGE -->  
    {{HTML::script('../../assets/chosen-bootstrap/chosen/chosen.jquery.min.js')}}
+   <script type="text/javascript" src="../../assets/uniform/jquery.uniform.min.js"></script>
+   <script type="text/javascript">
+      $('.chkcommission').each(function(){
+        $(this).click(function(){
+          var val_radio=$(this).val();
+          if(val_radio=="1"){
+             $('#commission_frame').show();
+          }else{
+             $('#commission_frame').hide();
+             $('#commission').val("0");
+          }
+        });
+      }); 
+   </script>
 @stop

@@ -25,7 +25,7 @@ class PermissionController extends \BaseController {
 				}else{
 					$role="Administrator";
 				}
-				$response[$key]['header']=$role. "<div style='float:right'><a href='permission-edit/".$permission->role."'   class='btn blue-stripe delete'>ျပင္ရန္</a></div>";
+				$response[$key]['header']=$role. "<div style='float:right'><a href='permission-edit/".$permission->role."?".$this->myGlob->access_token."'   class='btn blue-stripe delete'>ျပင္ရန္</a></div>";
 			}
 		}
 		return View::make('permission.list', array('response'=>$response));
@@ -70,6 +70,7 @@ class PermissionController extends \BaseController {
 	{
 		$role=Input::get('role');
 		$premissions=Input::get('permission');
+		UserPermission::whererole($role)->delete();
 
 		if(count($premissions)>0){
 			foreach ($premissions as $key => $permission) {
@@ -80,10 +81,10 @@ class PermissionController extends \BaseController {
 			}
 			$message['status']=1;
 			$message['info']="Successfully save.";
-			return Redirect::to('permission')->with('message',$message);
+			return Redirect::to('permission?'.$this->myGlob->access_token)->with('message',$message);
 		}
 			
-		return Redirect::to('permission');	
+		return Redirect::to('permission?'.$this->myGlob->access_token);	
 		
 	}
 
@@ -152,10 +153,10 @@ class PermissionController extends \BaseController {
 			}
 			$message['status']=1;
 			$message['info']=" Successfully save.";
-			return Redirect::to('permission')->with('message',$message);
+			return Redirect::to('permission?'.$this->myGlob->access_token)->with('message',$message);
 		}
 			
-		return Redirect::to('permission');
+		return Redirect::to('permission?'.$this->myGlob->access_token);
 	}
 
 	/**
@@ -169,6 +170,6 @@ class PermissionController extends \BaseController {
 		UserPermission::whereid($id)->delete();
 		$message['status']=1;
 		$message['info']="Successfully delete one record.";
-		return Redirect::to('permission')->with('message',$message);
+		return Redirect::to('permission?'.$this->myGlob->access_token)->with('message',$message);
 	}
 }

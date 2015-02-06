@@ -9,29 +9,10 @@
             <!-- BEGIN PAGE HEADER-->
                <div class="row-fluid">
                   <div class="span12">
-                     <!-- BEGIN STYLE CUSTOMIZER -->
-                     <div class="color-panel hidden-phone">
-                        <div class="color-mode-icons icon-color"></div>
-                        <div class="color-mode-icons icon-color-close"></div>
-                        <div class="color-mode">
-                           <p>THEME COLOR</p>
-                           <ul class="inline">
-                              <li class="color-black current color-default" data-style="default"></li>
-                              <li class="color-blue" data-style="blue"></li>
-                              <li class="color-brown" data-style="brown"></li>
-                              <li class="color-purple" data-style="purple"></li>
-                              <li class="color-white color-light" data-style="light"></li>
-                           </ul>
-                           <label class="hidden-phone">
-                           <input type="checkbox" class="header" checked value="" />
-                           <span class="color-mode-label">Fixed Header</span>
-                           </label>                   
-                        </div>
-                     </div>
-                     <!-- END BEGIN STYLE CUSTOMIZER -->    
+                      
                      <!-- BEGIN PAGE TITLE & BREADCRUMB-->        
                      <h3 class="page-title">
-                        Dashboard            
+                        Bus Classes            
                         <small></small>
                      </h3>
                      <ul class="breadcrumb">
@@ -40,7 +21,7 @@
                            <a href="/">Home</a> 
                            <i class="icon-angle-right"></i>
                         </li>
-                        <li><a href="/dashboard">Dashboard</a></li>
+                        <li><a href="#">Bus Classes</a></li>
                         
                      </ul>
                      <!-- END PAGE TITLE & BREADCRUMB-->
@@ -59,7 +40,7 @@
                            <div class="portlet-body">
                               <div class="clearfix">
                                  <div class="btn-group">
-                                    <a href="/busclass/create">
+                                    <a href="/busclass/create?{{$myApp->access_token}}">
                                     <button id="" class="btn green">
                                     Add New <i class="icon-plus"></i>
                                     </button>
@@ -99,10 +80,10 @@
                                                 <tr>
                                                    <td>{{$busclass['name']}}</td>
                                                    <td style="text-align:center;">
-                                                         <a href="/busclass-update/{{ $busclass['id'] }}"  class="btn green button-submit">Edit</a><br><br>
+                                                         <a href="/busclass-update/{{ $busclass['id'] }}?{{$myApp->access_token}}"  class="btn green button-submit">Edit</a><br><br>
                                                    </td>
                                                    <td style="text-align:center;">
-                                                         <a href="deletebusclass/{{ $busclass['id'] }}"   class="btn green button-submit">Delete</a>
+                                                         <a href="deletebusclass/{{ $busclass['id'] }}?{{$myApp->access_token}}"   class="btn green button-submit">Delete</a>
                                                    </td>
                                                 </tr>
                                     @endforeach

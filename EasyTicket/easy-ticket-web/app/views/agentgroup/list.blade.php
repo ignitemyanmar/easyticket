@@ -1,6 +1,6 @@
 @extends('../admin')
 @section('content')
-   <link rel="stylesheet" href="assets/data-tables/DT_bootstrap.css" />
+   <link rel="stylesheet" href="../../../../css/jquery.dataTables.v1.10.4.css" />
    <link rel="shortcut icon" href="favicon.ico" />
    <!-- BEGIN PAGE -->
       <div class="page-content">
@@ -39,7 +39,7 @@
                            <div class="portlet-body">
                               <div class="clearfix">
                                  <div class="btn-group">
-                                    <a href="/agentgroup/create">
+                                    <a href="/agentgroup/create?{{$myApp->access_token}}">
                                     <button id="" class="btn green">
                                     Add New <i class="icon-plus"></i>
                                     </button>
@@ -81,8 +81,8 @@
                                  
                                     @foreach($response as $agent)
                                                 <tr>
-                                                   <td>{{$agent['name']}}</td>
-                                                   <td><a href="/agentgroupchildlist/{{ $agent['id'] }}"  class="btn blue button-submit">View Branches <i class="m-icon-swapright m-icon-white"></i></a><br><br></td>
+                                                   <td>{{$agent['name']}} @if(Auth::user()->role==3 || Auth::user()->role==9) @if($agent->operator) [ {{$agent->operator->name}} ] @endif @endif</td>
+                                                   <td><a href="/agentgroupchildlist/{{ $agent['id'] }}?access_token={{Auth::user()->access_token}}"  class="btn blue button-submit">View Branches <i class="m-icon-swapright m-icon-white"></i></a><br><br></td>
                                                    <td>
                                                          <div class="btn-group">
                                                             <a class="btn blue" href="#" data-toggle="dropdown">
@@ -90,9 +90,9 @@
                                                             <i class="icon-angle-down"></i>
                                                             </a>
                                                             <ul class="dropdown-menu"> 
-                                                               <li><a href="/agentgroup-update/{{ $agent['id'] }}"><i class="icon-pencil"></i> Edit</a></li>
-                                                               <li><a href="/agentgroup-actions/{{ $agent['id'] }}"><i class="icon-plus"></i> Entry Payments</a></li>
-                                                               <li><a href="/deleteagentgroup/{{ $agent['id'] }}"><i class="icon-remove"></i> Delete</a></li>
+                                                               <li><a href="/agentgroup-update/{{ $agent['id'] }}?access_token={{Auth::user()->access_token}}"><i class="icon-pencil"></i> Edit</a></li>
+                                                               <li><a href="/agentgroup-actions/{{ $agent['id'] }}?access_token={{Auth::user()->access_token}}"><i class="icon-plus"></i> Entry Payments</a></li>
+                                                               <li><a href="/deleteagentgroup/{{ $agent['id'] }}?access_token={{Auth::user()->access_token}}"><i class="icon-remove"></i> Delete</a></li>
                                                                <li class="divider"></li>
                                                                <!-- <li><a href="#"><i class="i"></i> Full Settings</a></li> -->
                                                             </ul>
@@ -122,13 +122,22 @@
          <!-- END PAGE CONTAINER-->    
       </div>
       <!-- END PAGE --> 
-   <script type="text/javascript" src="assets/data-tables/jquery.dataTables.js"></script>
-   <script type="text/javascript" src="assets/data-tables/DT_bootstrap.js"></script>
-   <script>
-      jQuery(document).ready(function() {       
-         // initiate layout and plugins
-         App.setPage("table_editable");
-         // App.init();
-      });
+   <script type="text/javascript" src="../../../../js/jquery.dataTables.v1.10.4.min.js"></script>
+   <script type="text/javascript">
+      $(document).ready(function() {
+          var table = $('.table').DataTable({
+              "columnDefs": [
+                  // { "visible": false, "targets": 0 }
+              ],
+              "order": [[ 0, 'asc' ]],
+              "lengthMenu": [[25, 50, -1], [25, 50, "All"]],
+              "pagingType": "full_numbers",
+              "drawCallback": function ( settings ) {
+                  var api = this.api();
+                  var rows = api.rows( {page:'current'} ).nodes();
+                  var last=null;
+              }
+          } );
+      } );
    </script>
 @stop

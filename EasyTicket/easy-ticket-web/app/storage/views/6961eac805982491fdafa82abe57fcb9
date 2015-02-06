@@ -1,0 +1,165 @@
+<?php $__env->startSection('content'); ?>
+<style type="text/css">
+   .padding-10{padding: 5px 10px;}
+</style>
+      <?php echo HTML::style('../../src/select2.css'); ?>
+      <?php echo HTML::style('../../css/jquery-ui.css'); ?>
+<!-- BEGIN PAGE -->  
+   <div class="page-content">
+      <!-- BEGIN PAGE CONTAINER-->
+         <div class="container-fluid">
+            <!-- BEGIN PAGE HEADER-->   
+               <div class="row-fluid">
+                  <div class="span12">
+                     <?php 
+                        $orderdate=Session::get('search_daily_date'); 
+                        $V_operator_id=Session::get('operator_id');
+                     ?>
+                     <h3 class="page-title">
+                        အေရာင္းရဆုံး ခရီးစဥ္ စာရင္းမ်ား
+                        <!-- <small>form wizard sample</small> -->
+                     </h3>
+                     <ul class="breadcrumb">
+                        <li>
+                           <i class="icon-home"></i>
+                           <a href="/report/dailycarandadvancesale?access_token=<?php echo Auth::user()->access_token; ?>&operator_id=<?php echo Session::get('operator_id'); ?>">ပင္မစာမ်က္ႏွာ</a> 
+                           <span class="icon-angle-right"></span>
+                        </li>
+                        <li>
+                           <a href="#">
+                           အေရာင္းရဆုံး ခရီးစဥ္ စာရင္းမ်ား
+                           </a>
+                        </li>
+                     </ul>
+                  </div>
+               </div>
+            <!-- END PAGE HEADER-->
+
+            <!-- BEGIN PAGE CONTENT-->
+               <div class="row-fluid">
+                  <div class="responsive span8" data-tablet="span8" data-desktop="span8">
+                     <div class="portlet box light-grey">
+                        <div class="portlet-title">
+                           <h4><i class="icon-user"></i>
+                           အေရာင္းရဆုံး ခရီးစဥ္ စာရင္းမ်ား
+                           </h4>
+                           <div class="actions">
+                           </div>
+                        </div>
+
+                        <div class="portlet-body">
+                           <table class="table table-striped table-bordered table-advance table-hover">
+                              <thead>
+                                 <tr>
+                                    <th>ခရီးစဥ္</th>
+                                    <th>စုစုေပါင္းခုံ</th>
+                                    <th>ေရာင္းရေငြစုစုေပါင္း</th>
+                                    <th>-</th>
+                                 </tr>
+                              </thead>
+                              <tbody>
+                                 <?php if($response): ?>
+                                    <?php foreach($response as $trips): ?>
+                                       <tr>
+                                          <td><?php echo $trips['trip']; ?></td>
+                                          <td><?php echo $trips['sold_total_seat']; ?></td>
+                                          <td><?php echo $trips['total_amount']; ?></td>
+                                          <td>
+                                             <a class="btn mini green-stripe imagechange" id="" href="/report/bestseller/tripdetail?access_token=<?php echo Auth::user()->access_token; ?>&operator_id=<?php echo $search['operator_id']; ?>&agent_id=<?php echo $search['agent_id']; ?>&start_date=<?php echo $search['start_date']; ?>&end_date=<?php echo $search['end_date']; ?>&from=<?php echo $trips['from']; ?>&to=<?php echo $trips['to']; ?>">အေသးစိတ္ၾကည့္ရန္</a>
+                                          </td>
+                                       </tr>
+                                    <?php endforeach; ?>
+                                 <?php endif; ?>
+
+                              </tbody>
+                           </table>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="responsive span4 border padding-10" data-tablet="span4" data-desktop="span4">
+                     <form action="/report/bestseller/trip" method="get" class="horizontal-form">
+                        <input type="hidden" name="access_token" value="<?php echo Auth::user()->access_token; ?>">
+                        <h3 class="form-section">အေရာင္းရဆုံး ခရီးစဥ္ စာရင္းမ်ား</h3>
+                        <div class="row-fluid">
+                           <div class="span11">
+                              <input type="hidden" value="<?php echo $search['operator_id']; ?>" name="operator_id">
+                              <div class="control-group">
+                                 <label class="control-label" for="from">ဂိတ်ခွဲများ</label>
+                                 <div class="controls">
+                                    <select id="agents" name="agent_id" class="m-wrap span10">
+                                       <option value="">All</option>
+                                       <?php if($search['agent']): ?>
+                                          <?php foreach($search['agent'] as $row): ?>
+                                             <option value="<?php echo $row['id']; ?>"><?php echo $row['name']; ?></option>
+                                          <?php endforeach; ?>
+                                       <?php endif; ?>
+                                    </select>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="clear-fix">&nbsp;</div>
+
+                        <?php $date=date('Y-m-d'); ?>
+                        <div class="row-fluid">
+                           <div class="span6">
+                              <div class="control-group">
+                                 <label class="control-label" for="startdate">အစေန့ေရွးရန် (မှ)</label>
+                                 <div class="controls">
+                                    <input id="startdate" name="start_date" class="m-wrap span12" type="text" value="<?php echo $search['start_date']; ?>">
+                                 </div>
+                              </div>
+                           </div>
+                           <div class="span6">
+                              <div class="control-group">
+                                 <label class="control-label" for="enddate">အဆုံးေန့ေရွးရန်(အထိ)</label>
+                                 <div class="controls">
+                                    <input id="enddate" name="end_date" class="m-wrap span12" type="text" value="<?php echo $search['end_date']; ?>">
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+
+                        <div class="form-actions clearfix">
+                           <button type="submit" class="btn green button-submit">ရွာရန္</button>
+                        </div>
+
+                     </form>
+                  </div>
+               </div>
+            <!-- END PAGE CONTENT-->         
+         </div>
+      <!-- END PAGE CONTAINER-->
+   </div>
+<!-- END PAGE -->  
+   <script type="text/javascript" src="../../assets/data-tables/jquery.dataTables.js"></script>
+   <?php echo HTML::script('../../src/jquery-ui.js'); ?>
+   <?php echo HTML::script('../../src/select2.min.js'); ?>
+   <script type="text/javascript">
+      $(function(){
+         $('#agents').select2();
+         $('#from').select2();
+         $('#to').select2();
+         $('#departure_time').select2();
+         var date = new Date();
+         var m = date.getMonth(), d = date.getDate()-30, y = date.getFullYear();
+         $("#startdate").datepicker({
+            minDate: new Date(y, m, d),
+            numberOfMonth: 2,
+            onSelect: function(dateStr) {
+                  var min = $(this).datepicker('getDate');
+            },
+            dateFormat: 'yy-mm-dd'
+         });
+         $("#enddate").datepicker({
+            minDate: new Date(y, m, d),
+            numberOfMonth: 2,
+            onSelect: function(dateStr) {
+                  var min = $(this).datepicker('getDate');
+            },
+            dateFormat: 'yy-mm-dd'
+         });
+      });
+   </script>
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('../admin', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

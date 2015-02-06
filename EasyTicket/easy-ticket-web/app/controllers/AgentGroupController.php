@@ -3,11 +3,22 @@ class AgentGroupController extends BaseController
 {
     public function showAgentgroupList()
     {
-      $agentgroup_id =$this->myGlob->agentgroup_id;
-      if($agentgroup_id)
-        $objagentgroup = AgentGroup::whereid($agentgroup_id)->orderBy('id','desc')->get();
-      else
-        $objagentgroup = AgentGroup::orderBy('id','desc')->get();
+      $operator_ids=array();
+      $agopt_ids =$this->myGlob->agopt_ids;
+      if($agopt_ids){
+        $operator_ids=$agopt_ids;
+      }else{
+        $operator_ids[]=$this->myGlob->operator_id;
+      }
+      $agentgroup_id=$this->myGlob->agentgroup_id;
+      if(Auth::user()->role==3){
+          $objagentgroup = AgentGroup::wherein('operator_id',$operator_ids)->whereuser_id(Auth::user()->id)->with('operator')->orderBy('id','desc')->get();
+      }else{
+        if($agentgroup_id)
+          $objagentgroup = AgentGroup::whereid($agentgroup_id)->with('operator')->orderBy('id','desc')->get();
+        else
+          $objagentgroup = AgentGroup::orderBy('id','desc')->with('operator')->get();  
+      }
 
       // return Response::json($objagentgroup);
       $response = $objagentgroup;
@@ -27,7 +38,7 @@ class AgentGroupController extends BaseController
       if($checkexisting){
         $message['status']=0;
         $message['info']="This record is already exit.";
-        return Redirect::to('/agentgrouplist')->with('message', $message);
+        return Redirect::to('/agentgrouplist?'.$this->myGlob->access_token)->with('message', $message);
       }
 
       $objagentgroup = new AgentGroup();
@@ -35,7 +46,7 @@ class AgentGroupController extends BaseController
       $result = $objagentgroup->save();
       $message['status']=1;
       $message['info']="Successfully save one record.";
-      return Redirect::to('/agentgrouplist')->with('message', $message);
+      return Redirect::to('/agentgrouplist?'.$this->myGlob->access_token)->with('message', $message);
     }
 
     public function AgentGroupChildList($id)
@@ -56,7 +67,9 @@ class AgentGroupController extends BaseController
       $operator_id=$this->myGlob->operator_id;
       $trips=Trip::whereoperator_id($operator_id)->with(array('from_city','to_city','busclass'))->get();
 
-      return View::make('agentgroup.groupactions', array('response'=>$response,'trips'=>$trips));;
+      $date_range['start_date']=$this->getDate();
+      $date_range['end_date']=$this->getDate();
+      return View::make('agentgroup.groupactions', array('response'=>$response,'trips'=>$trips,'date_range'=>$date_range));;
       // return View::make('agentgroup.gropuactions');
     }
 
@@ -65,7 +78,7 @@ class AgentGroupController extends BaseController
       AgentGroup::where('id','=',$id)->update(array('name'=>Input::get('name')));
       $message['status']=1;
       $message['info']="Successfully update one record.";
-      return Redirect::to('agentgrouplist')->with('message', $message);
+      return Redirect::to('agentgrouplist?'.$this->myGlob->access_token)->with('message', $message);
     }
 
     public function getDeleteAgentgroup($id)
@@ -74,12 +87,12 @@ class AgentGroupController extends BaseController
       if($checkexisting){
         $message['status']=0;
         $message['info']="Can't delete this Group.";
-        return Redirect::to('agentgrouplist')->with('message',$message);
+        return Redirect::to('agentgrouplist?'.$this->myGlob->access_token)->with('message',$message);
       }
       $message['status']=1;
       $message['info']="Successfully delete one record.";
       $affectedRows1 = AgentGroup::where('id','=',$id)->delete();
-      return Redirect::to('agentgrouplist')->with('message',$message);
+      return Redirect::to('agentgrouplist?'.$this->myGlob->access_token)->with('message',$message);
     }
 
     public function postdelAgentgroup()

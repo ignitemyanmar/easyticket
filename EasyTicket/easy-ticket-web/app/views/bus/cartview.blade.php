@@ -39,15 +39,16 @@
 						<tbody>
 							<tr>
 								<td>
-									@if($objexendcity)
+									@if(count($objexendcity)>0)
 									<div class="row">
 										<div class="large-4 columns">ဆက္သြားမည့္ျမိဳ႕</div>
 										<div class="large-8 columns">
-											<select name="extra_dest_id" id="extendcity">
+											<select name="extra_dest_id" id="extendcity" name="extend_city_id">
 												<option value="0">ဆက္သြားမည့္ျမိဳ႕ ေရြးရန္</option>
-												<option value="{{$objexendcity->id}}">{{$objexendcity->city->name}}</option>
+												@foreach($objexendcity as $rows)
+													<option value="{{$rows->id}}">{{$rows->city->name.' ( '. $rows->local_price. ' )'}}</option>
+												@endforeach
 											</select>
-											<input type="hidden" value="{{$objexendcity->city_id}}" name="extend_city_id">
 										</div>
 									</div>
 									<br>

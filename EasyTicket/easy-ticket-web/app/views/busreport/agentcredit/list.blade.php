@@ -178,7 +178,13 @@
                                        <th>Receivable</th>
                                        <th>Receipt</th>
                                        <th class="span3">Closing Balance</th>
-                                       <th><a class="btn small green blue-stripe" href="/report/agentcreditlist/group/{{$search['agentgroup_id']}}?access_token={{Auth::user()->access_token}}&agent_id={{$search['agent_id']}}&start_date={{$search['start_date']}}&end_date={{$search['end_date']}}">အေသးစိတ္ All</a></th>
+                                       <th>
+                                          @if(Auth::user()->role==3)
+                                             -
+                                          @else
+                                             <a class="btn small green blue-stripe" href="/report/agentcreditlist/group/{{$search['agentgroup_id']}}?access_token={{Auth::user()->access_token}}&agent_id={{$search['agent_id']}}&start_date={{$search['start_date']}}&end_date={{$search['end_date']}}">အေသးစိတ္ All</a>
+                                          @endif
+                                       </th>
                                     </tr>
                                  </thead>
                                        @if($response)

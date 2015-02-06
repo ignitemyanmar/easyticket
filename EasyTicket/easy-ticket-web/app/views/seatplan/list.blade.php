@@ -39,7 +39,7 @@
                            <div class="portlet-body">
                               <div class="clearfix">
                                  <div class="btn-group">
-                                    <a href="/seatplans/create">
+                                    <a href="/seatplans/create?{{$myApp->access_token}}">
                                     <button id="" class="btn green">
                                     Add New <i class="icon-plus"></i>
                                     </button>
@@ -86,15 +86,15 @@
                                             <td>{{$seatplan['ticket_type_id']}}</td>
                                             <td>{{$seatplan['operator_id']}}</td>
                                             <td style="text-align:center;">
-                                              <a href="/seatplan/update/{{ $seatplan['id'] }}"  class="btn green button-submit">Edit</a><br><br>
+                                              <a href="/seatplan/update/{{ $seatplan['id'] }}?{{$myApp->access_token}}"  class="btn green button-submit">Edit</a><br><br>
                                             </td>
                                              @if(Auth::user()->role!=2)
                                                 <td>
-                                                   <a href="deleteseatplan/{{ $seatplan['id'] }}"   class="btn green delete button-submit">Delete</a>
+                                                   <a href="deleteseatplan/{{ $seatplan['id'] }}?{{$myApp->access_token}}"   class="btn green delete button-submit">Delete</a>
                                                 </td>
                                              @endif
                                             <td>
-                                                <a href="/seatplandetail/{{$seatplan['id']}}/seat_plan_id?seatplan_id={{$seatplan['id']}}&operator_id={{$seatplan['operator_id']}}&name={{$seatplan['name']}}&ticket_type_id={{$seatplan['ticket_type_id']}}"   class="btn green button-submit">Detail</a>
+                                                <a href="/seatplandetail/{{$seatplan['id']}}/seat_plan_id?seatplan_id={{$seatplan['id']}}&operator_id={{$seatplan['operator_id']}}&name={{$seatplan['name']}}&ticket_type_id={{$seatplan['ticket_type_id']}}&{{$myApp->access_token}}"   class="btn green button-submit">Detail</a>
                                             </td>
                                         </tr>
                                     @endforeach

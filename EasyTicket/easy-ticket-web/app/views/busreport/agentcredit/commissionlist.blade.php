@@ -18,8 +18,8 @@
                   <div class="span12">
                      <!-- BEGIN PAGE TITLE & BREADCRUMB-->        
                      <h3 class="page-title">
-                        အေရာင္းကုိယ္စားလွယ္ ႏွင့္ အေၾကြးစာရင္းမ်ား          
-                        <small></small>
+                        {{$groupname}}        
+                        <small>ခရီးစဥ္အလုိက္ ေကာ္မစ္ရွင္မ်ား</small>
                      </h3>
                      <ul class="breadcrumb">
                         <li>
@@ -41,7 +41,7 @@
                         <!-- BEGIN EXAMPLE TABLE PORTLET-->
                         <div class="portlet box blue">
                            <div class="portlet-title">
-                              <h4><i class="icon-edit"></i>အေရာင္းကုိယ္စားလွယ္ ႏွင့္ အေၾကြးစာရင္းမ်ား</h4>
+                              <h4><i class="icon-edit"></i>ခရီးစဥ္အလုိက္ ေကာ္မစ္ရွင္မ်ား </h4>
                            </div>
                            <div class="portlet-body">
                               @if(Session::has('message'))
@@ -60,7 +60,7 @@
                                        <th>ခရီးစဥ္</th>
                                        <th>&nbsp;</th>
                                        <th>အခ်ိန္</th>
-                                       <th>Agent (Branches)</th>
+                                       <th>Date</th>
                                        <!-- <th>Commission အမ်ိဳးအစား</th> -->
                                        <th>Commission ပမာဏ</th>
                                     </tr>
@@ -70,9 +70,9 @@
                                           @foreach($response as $row)
                                              <tr>
                                                 <td>{{$row['tripname']}}</td>
-                                                <td>{{$row['tripname']}} @if($row['trip']) [ {{$row['trip']['time']}} ] @else - @endif ( {{$row['commission']}} )</td>
+                                                <td>{{$row['tripname']}} @if($row['trip']) [ {{$row['trip']['time']}} ] @else - @endif</td>
                                                 <td>@if($row['trip']) {{$row['trip']['time']}} @else - @endif</td>
-                                                <td>@if($row['agent']) {{$row['agent']['name']}} @else - @endif</td>
+                                                <td>{{date('d/m/Y',strtotime($row['start_date'])) .' - '.date('d/m/Y', strtotime($row['end_date']))}}</td>
                                                 <td>{{$row['commission']}}</td>
                                              </tr>
                                           @endforeach

@@ -37,6 +37,7 @@
                   <div class="responsive span12" data-tablet="span12" data-desktop="span12">
                      <!-- <form action="/addagent" class="horizontal-form" method= "post" enctype="multipart/form-data"> -->
                      <form id="addnew-form" class="horizontal-form" action = "/premission-create" method= "post" enctype="">    
+                        <input type="hidden" name="access_token" value="{{$myApp->v_access_token}}">
                         <div class="portlet box light-grey">
                            <div class="portlet-title">
                               <h4><i class="icon-user"></i>လုပ္ပုိင္ခြင့္မ်ား သတ္မွတ္ရန္</h4>

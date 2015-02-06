@@ -79,7 +79,7 @@ $menulist['အေရာင္းကုိယ္စားလွယ္မ်ား
 
 $menulist['ေရာင္းျပီးလက္မွတ္မ်ား ဖ်က္ရန္']    ="<li if($currentroute=='ord')class=''
                                                     >
-                                                    <a href='/orderlist?access_token=".Auth::user()->access_token."?access_token=".Auth::user()->access_token."'>
+                                                    <a href='/orderlist?access_token=".Auth::user()->access_token."'>
                                                     <i class='icon-th-list'></i> 
                                                     <span class='title'>ေရာင်းြပီးလက်မှတ်များ ဖျက်ရန်</span>
                                                     </a>
@@ -93,8 +93,8 @@ $menulist['ျမိဳ႕မ်ား']                          ="<li if($curr
                                                     <span class='arrow '></span>
                                                     </a>
                                                     <ul class='sub'>
-                                                        <li ><a href='/city/create?access_token=".Auth::user()->access_token."?access_token=".Auth::user()->access_token."'>ြမို့ အသစ်ထည့်သွင်းြခင်း</a></li>
-                                                        <li ><a href='/citylist?access_token=".Auth::user()->access_token."?access_token=".Auth::user()->access_token."'>ြမို့များ</a></li>
+                                                        <li ><a href='/city/create?access_token=".Auth::user()->access_token."'>ြမို့ အသစ်ထည့်သွင်းြခင်း</a></li>
+                                                        <li ><a href='/citylist?access_token=".Auth::user()->access_token."'>ြမို့များ</a></li>
                                                     </ul>
                                                 </li>";
 

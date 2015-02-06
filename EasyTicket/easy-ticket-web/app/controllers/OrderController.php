@@ -101,7 +101,7 @@ class OrderController extends \BaseController {
 			}
 		}
 		$message="Successfully delete order.";
-		return Redirect::to('orderlist')->with('message',$message);
+		return Redirect::to('orderlist?'.$this->myGlob->access_token)->with('message',$message);
 	}
 
 	public function orderlist(){
@@ -125,7 +125,11 @@ class OrderController extends \BaseController {
 		$agopt_ids=$this->myGlob->agopt_ids;
 		if($agent_ids){
 			if($agopt_ids){
-				$response=SaleOrder::wherein('agent_id',$agent_ids)->wherein('operator_id',$agopt_ids)->where('orderdate','>=',$start_date)->where('orderdate','<=',$end_date)->whereremark_type($remark_type)->with(array('agent','saleitems'))->get();
+				if(Auth::user()->role==9){
+					$response=SaleOrder::wherein('operator_id',$agopt_ids)->where('orderdate','>=',$start_date)->where('orderdate','<=',$end_date)->whereremark_type($remark_type)->with(array('agent','saleitems'))->get();
+				}else{
+					$response=SaleOrder::wherein('agent_id',$agent_ids)->wherein('operator_id',$agopt_ids)->where('orderdate','>=',$start_date)->where('orderdate','<=',$end_date)->whereremark_type($remark_type)->with(array('agent','saleitems'))->get();
+				}
 			}else{
 				$response=SaleOrder::wherein('agent_id',$agent_ids)->whereoperator_id($operator_id)->where('orderdate','>=',$start_date)->where('orderdate','<=',$end_date)->whereremark_type($remark_type)->with(array('agent','saleitems'))->get();
 			}
@@ -196,7 +200,7 @@ class OrderController extends \BaseController {
 		SaleOrder::whereid($id)->delete();
 		// AgentDeposit::whereorder_ids('["'.$id.'"]')->delete();
 		$message="Successfully delete order.";
-		return Redirect::to('orderlist')->with('message',$message);
+		return Redirect::to('orderlist?'.$this->myGlob->access_token)->with('message',$message);
 	}
 
 	public function del_order_history_trans($id){
@@ -252,7 +256,7 @@ class OrderController extends \BaseController {
 				try {
 					DeleteSaleItem::create($result->toarray());
 				} catch (Exception $e) {
-					return Redirect::to('orderlist')->with('message','Database Exception occured!'.$e);
+					return Redirect::to('orderlist?'.$this->myGlob->access_token)->with('message','Database Exception occured!'.$e);
 				}
 			}
 		}
@@ -307,7 +311,7 @@ class OrderController extends \BaseController {
 			SaleOrder::whereid($orderid)->delete();
 		}
 		$message="Successfully delete ticket.";
-		return Redirect::to('/order-tickets/'.$orderid)->with('message',$message);
+		return Redirect::to('/order-tickets/'.$orderid.'?'.$this->myGlob->access_token)->with('message',$message);
 	}
 
 
@@ -366,7 +370,7 @@ class OrderController extends \BaseController {
 	    		$objdepositpayment_trans->save();
 
 			} catch (Exception $e) {
-				return Redirect::to('orderlist')->with('message','Database Exception occured!');	
+				return Redirect::to('orderlist?'.$this->myGlob->access_token)->with('message','Database Exception occured!');	
 			}
 		}
 
@@ -395,7 +399,7 @@ class OrderController extends \BaseController {
 				$objdeletesaleitem->departure_date=$objsaleitem->departure_date;
 				$objdeletesaleitem->save();
 			} catch (Exception $e) {
-				return Redirect::to('orderlist')->with('message','Database Exception occured!');
+				return Redirect::to('orderlist?'.$this->myGlob->access_token)->with('message','Database Exception occured!');
 			}
 		}
 	}

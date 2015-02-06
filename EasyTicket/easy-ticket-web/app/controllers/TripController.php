@@ -192,9 +192,15 @@ class TripController extends \BaseController {
 
 	public function getEditExtendTrip($id)
 	{
+		$formatid=explode('-', $id);
+		$tripid=$extid=null;
+		if($formatid){
+			$tripid=$formatid[0];
+			$extid=$formatid[1];
+		}
 		$objcities=City::all();
-		$response=Trip::whereid($id)->with(array('from_city','to_city','busclass'))->orderBy('id','asc')->first();
-		$extendcity=ExtraDestination::wheretrip_id($id)->first();
+		$response=Trip::whereid($tripid)->with(array('from_city','to_city','busclass'))->orderBy('id','asc')->first();
+		$extendcity=ExtraDestination::whereid($extid)->first();
 		return View::make('trip.editextendcity', array('response'=>$response, 'cities'=>$objcities,'extendcity'=>$extendcity));
 	}
 
@@ -247,9 +253,9 @@ class TripController extends \BaseController {
 	public function destroy($id)
 	{
 		$trip = Trip::whereid($id)->first();
-		
+		$check_exiting_sale=SaleItem::wheretrip_id($id)->first();
 		if($check_exiting_sale){
-			return Redirect::to('trip-list')->with('message',"Can't delete trip, sale records have this trip.");
+			return Redirect::to('trip-list?access_token='.Auth::user()->access_token)->with('message',"Can't delete trip, sale records have this trip.");
 		}
 
 		if($trip){
@@ -257,21 +263,33 @@ class TripController extends \BaseController {
 			BusOccurance::wheretrip_id($id)->delete();
 			DeleteTrip::create($trip->toarray());
 		}
-		return Redirect::to('trip-list')->with('message','Successfully delete trip.');
+		return Redirect::to('trip-list?access_token='.Auth::user()->access_token)->with('message','Successfully delete trip.');
 	}
 
 	public function triplists(){
 		$operator_id=$this->myGlob->operator_id;
-		$response=Trip::whereoperator_id($operator_id)->with(array('operator','from_city','to_city','busclass','seat_plan','extendcity'))->orderBy('id','desc')->get();
-		foreach ($response as $key => $value) {
-			$ownseat = CloseSeatInfo::wheretrip_id($value->id)->first();
-			if($ownseat){
-				$response[$key]->ownseat = true;
-			}else{
-				$response[$key]->ownseat = false;
-			}
+		$agopt_ids	=$this->myGlob->agopt_ids;
+		if($agopt_ids){
+			$response=Trip::wherein('operator_id',$agopt_ids)->with(array('operator','from_city','to_city','busclass','seat_plan',
+						'extendcity',
+						'closeseat'=>function($q){
+							$q->orderBy('id','desc')
+							->addSelect('id','trip_id','seat_plan_id','start_date','end_date')
+							->get();
+						}
+						))->orderBy('id','desc')->get();
+		}else{
+			$response=Trip::whereoperator_id($operator_id)->with(array('operator','from_city','to_city','busclass','seat_plan',
+						'extendcity',
+						'closeseat'=>function($q){
+							$q->orderBy('id','desc')
+							->addSelect('id','trip_id','seat_plan_id','start_date','end_date')
+							->get();
+						}
+						))->orderBy('id','desc')->get();
 		}
-		//return Response::json($response);
+		
+		// return Response::json($response);
 		return View::make('trip.list', array('response'=>$response));
 	}
 
@@ -319,7 +337,7 @@ class TripController extends \BaseController {
 			}
 		}
 		$response="Successfully has been closed for this trip.";
-		return Redirect::to('trip-list')->with('message',$response);;
+		return Redirect::to('trip-list?access_token='.Auth::user()->access_token)->with('message',$response);;
 
 	}
 
@@ -357,7 +375,7 @@ class TripController extends \BaseController {
 			
 			$obj_busoccurance->save();
 			$response="Successfully has been created for this day.";
-			return Redirect::to('trip-list')->with('message',$response);;	
+			return Redirect::to('trip-list?access_token='.Auth::user()->access_token)->with('message',$response);;	
 	}
 
 	public function postBusOccuranceDailyCreate($operator_id, $trip_id){
@@ -535,14 +553,14 @@ class TripController extends \BaseController {
 					}else{
 						$response['message']="Successfully has been created for this month.";
 					}
-					return Redirect::to('trip-list');
+					return Redirect::to('trip-list?access_token='.Auth::user()->access_token);
 					// return Response::json($response);
 				}
 			}
 		}
 		$response['message']="This trip has been created for this month.";
 		// return Response::json($response);	
-		return Redirect::to('trip-list');	
+		return Redirect::to('trip-list?access_token='.Auth::user()->access_token);	
 	}
 
 	public function postBusOccuranceAutoCreateCustom($operator_id, $trip_id, $availableDays){
@@ -677,10 +695,28 @@ class TripController extends \BaseController {
 	}
 
 	public function ownseat($id){
+		$start_date=$end_date=$this->getDate();
+		$date_range=Input::get('date_range');
+		$DateRange=array();
+		$DateRange['start_date']=$start_date;
+		$DateRange['end_date']=$end_date;
+		if($date_range){
+			$date_range=explode(',', $date_range);
+			$DateRange['start_date']=$start_date=$date_range[0];
+			$DateRange['end_date']=$end_date=$date_range[1];
+		}
 		$operator_id=$this->myGlob->operator_id;
 		$objtrip=Trip::whereid($id)->first();
 		$seatplan=SeatingPlan::find($objtrip->seat_plan_id);
-		$closeseat=CloseSeatInfo::wheretrip_id($objtrip->id)->whereseat_plan_id($objtrip->seat_plan_id)->pluck('seat_lists');
+		$closeseat=CloseSeatInfo::wheretrip_id($objtrip->id)
+									->whereseat_plan_id($objtrip->seat_plan_id)
+									->whereBetween('start_date',array($start_date,$end_date))
+									->orwhereBetween('end_date',array($start_date,$end_date))
+									->orwhere(function($query) use($start_date, $end_date) {
+										$query->where('start_date','<=',$start_date)
+											 ->where('end_date','>=',$end_date);
+									})
+									->pluck('seat_lists');
 		$jsoncloseseat=json_decode($closeseat,true);
 		$from=City::whereid($objtrip->from)->pluck('name');
 		$to=City::whereid($objtrip->to)->pluck('name');
@@ -739,18 +775,119 @@ class TripController extends \BaseController {
 		}
 
 		// return Response::json($response);
+		return View::make('trip.ownseat', array('response'=>$response,'operatorgroup'=>$operatorgroup, 'operator_id'=>$operator_id, 'tripinfo'=>$tripinfo,'jsoncloseseat'=>$jsoncloseseat,'date_range'=>$DateRange));
+	}
 
-		return View::make('trip.ownseat', array('response'=>$response,'operatorgroup'=>$operatorgroup, 'operator_id'=>$operator_id, 'tripinfo'=>$tripinfo,'jsoncloseseat'=>$jsoncloseseat));
+	public function ownseatdaterange($id){
+		$date_range=Input::get('date_range');
+			
+		$date_range=explode(',', $date_range);
+		if($date_range){
+			$start_date	=$date_range[0];
+			$end_date 	=$date_range[1];
+		}else{
+			$start_date	=$this->getDate();
+			$end_date 	=$this->getDate();
+		}
+		
+		// dd($start_date.','.$end_date);
+		$operator_id=$this->myGlob->operator_id;
+		$objtrip=Trip::whereid($id)->first();
+		$seatplan=SeatingPlan::find($objtrip->seat_plan_id);
+		$closeseat=CloseSeatInfo::wheretrip_id($objtrip->id)
+									->whereseat_plan_id($objtrip->seat_plan_id)
+									->whereBetween('start_date',array($start_date,$end_date))
+									->orwhereBetween('end_date',array($start_date,$end_date))
+									->orwhere(function($query) use($start_date, $end_date) {
+										$query->where('start_date','<=',$start_date)
+											 ->where('end_date','>=',$end_date);
+									})
+									->pluck('seat_lists');
+		$jsoncloseseat=json_decode($closeseat,true);
+
+		$from=City::whereid($objtrip->from)->pluck('name');
+		$to=City::whereid($objtrip->to)->pluck('name');
+		$tripinfo['from_to']=$from.'=>'.$to;
+		$tripinfo['class']=Classes::whereid($objtrip->class_id)->pluck('name');
+		$tripinfo['available_day']=$objtrip->available_day;
+		$tripinfo['time']=$objtrip->time;
+		$tripinfo['price']=$objtrip->price;
+		$tripinfo['foreign_price']=$objtrip->foreign_price;
+		$tripinfo['seat_plan_id']=$objtrip->seat_plan_id;
+		$tripinfo['trip_id']=$id;
+
+		$response=array();
+    	if($seatplan){
+			$objseatlayout=SeatingLayout::whereid($seatplan->seat_layout_id)->first();
+			if($objseatlayout){
+				$templayout['name']=$seatplan->name;
+				$templayout['row']=$objseatlayout->row;
+				$templayout['column']=$objseatlayout->column;
+			}
+			$seat_info=array();
+			$objseatinfo=SeatInfo::whereseat_plan_id($seatplan->id)->get();
+			$seat_info=array();
+			if($objseatinfo){
+				foreach ($objseatinfo as $seats) {
+					$seattemp['seat_no']=$seats->seat_no;
+					$seattemp['status']=$seats->status;
+					$seat_info[]=$seattemp;
+				}
+			}
+			$templayout['seat_list']=$seat_info;
+			$response=$templayout;
+		}
+		$operatorgroup=OperatorGroup::whereoperator_id($operator_id)->with(
+							array('user' => function($query)
+							{
+							    $query->addSelect(array('id','name'));
+							}))
+							->get();
+
+		if(!$jsoncloseseat){
+			if(is_null($closeseat)){
+				$jsoncloseseat=$response['seat_list'];
+			}else{
+				$jsoncloseseat=$seatplan->seat_list;
+				$jsoncloseseat=json_decode($jsoncloseseat,true);
+			}
+
+			$j=0;
+			foreach($jsoncloseseat as $rowseatinfo){
+				$jsoncloseseat[$j]['operatorgroup_id']=0;
+				$j++;
+			}
+		}
+
+		// return Response::json($response);
+		return View::make('trip.ownseatbydaterange', array('response'=>$response,'operatorgroup'=>$operatorgroup, 'operator_id'=>$operator_id, 'tripinfo'=>$tripinfo,'jsoncloseseat'=>$jsoncloseseat));
 	}
 
 	public function postownseat(){
 		$operator_id=$this->myGlob->operator_id;
+		$date_range=Input::get('hddaterange');
+		$start_date =$end_date =$this->getDate();
+		if($date_range){
+			$date_range=explode(',', $date_range);
+			$start_date=$date_range[0];
+			$end_date=$date_range[1];
+		}
 		$user_id=Auth::user()->id;
 		$color=Input::get('color');
 		$trip_id=Input::get('trip_id');
 		$seat_plan_id=Input::get('seat_plan_id');
 		$chosen_seats=Input::get('seats');
 		$operatorgroup_id=Input::get('operatorgroup_id');
+		$check_exiting=CloseSeatInfo::wheretrip_id($trip_id)
+									->whereseat_plan_id($seat_plan_id)
+									->whereBetween('start_date',array($start_date,$end_date))
+									->orwhereBetween('end_date',array($start_date,$end_date))
+									->orwhere(function($query) use($start_date, $end_date) {
+										$query->where('start_date','<=',$start_date)
+											 ->where('end_date','>=',$end_date);
+									})
+									->first();
+
 		$objseatinfo=SeatInfo::whereseat_plan_id($seat_plan_id)->get();
 
 		if($objseatinfo){
@@ -772,7 +909,7 @@ class TripController extends \BaseController {
 			}
 		}
 
-		$check_exiting=CloseSeatInfo::wheretrip_id($trip_id)->whereseat_plan_id($seat_plan_id)->first();
+		// $check_exiting=CloseSeatInfo::wheretrip_id($trip_id)->whereseat_plan_id($seat_plan_id)->first();
 		if(!$chosen_seats){
 			CloseSeatInfo::wheretrip_id($trip_id)->whereseat_plan_id($seat_plan_id)->delete();
 			$message="Successfully Clear Own Seat.";
@@ -814,13 +951,35 @@ class TripController extends \BaseController {
 			$objcloseseat->trip_id=$trip_id;
 			$objcloseseat->seat_plan_id=$seat_plan_id;
 			$objcloseseat->seat_lists=$objseatinfo;
+			$objcloseseat->start_date=$start_date;
+			$objcloseseat->end_date=$end_date;
 			$objcloseseat->save();
 		}
 		
 		$message="Successfully define Close Seats.";
-		return Redirect::to('trip-list')->with('message',$message);
+		return Redirect::to('trip-list?access_token='.Auth::user()->access_token)->with('message',$message);
+	}
 
-		// return Response::json($stringseatlist);
+	public function destroyownseat($id){
+		CloseSeatInfo::whereid($id)->delete();
+		$message="Successfully delete one Record.";
+		return Redirect::to('trip-list')->with('message',$message);
+	}
+
+	public function ownseatbytrip($trip_id){
+		$operator_id=$this->myGlob->operator_id;
+		$response=Trip::whereid($trip_id)->whereoperator_id($operator_id)->with(array('operator','from_city','to_city','busclass','seat_plan',
+						'extendcity',
+						'closeseat'=>function($q){
+							$q->orderBy('id','desc')
+							->addSelect('id','trip_id','seat_plan_id','start_date','end_date')
+							->get();
+						}
+						))->orderBy('id','desc')->first();
+
+		// return Response::json($response);
+		return View::make('trip.ownseatbydates', array('trip'=>$response));
+
 	}
 
 }

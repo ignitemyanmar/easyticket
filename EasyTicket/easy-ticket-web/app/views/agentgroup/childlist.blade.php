@@ -56,7 +56,7 @@
                            <div class="portlet-body">
                               <div class="clearfix">
                                  <div class="btn-group">
-                                    <a href="/agents/create">
+                                    <a href="/agents/create?access_token={{Auth::user()->access_token}}">
                                     <button id="" class="btn green">
                                     အသစ္ထည့္မည္ <i class="icon-plus"></i>
                                     </button>
@@ -100,10 +100,10 @@
                                          <td>{{$agent['commission']}} @if($agent['commission_id']==2) % @endif</td>
                                          <td>@if($agent['owner']==1) Owner @else - @endif</td>
                                          <td style="text-align:center;">
-                                               <a href="/agent-update/{{ $agent['id'] }}"  class="btn green">ျပင္ရန္</a><br><br>
+                                               <a href="/agent-update/{{ $agent['id'] }}?access_token={{Auth::user()->access_token}}"  class="btn green">ျပင္ရန္</a><br><br>
                                          </td>
                                          <td style="text-align:center;">
-                                               <a href="deleteagent/{{ $agent['id'] }}"   class="btn green">ဖ်က္ရန္</a>
+                                               <a href="deleteagent/{{ $agent['id'] }}?access_token={{Auth::user()->access_token}}"   class="btn green">ဖ်က္ရန္</a>
                                          </td>
                                       </tr>
                                   @endforeach

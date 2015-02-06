@@ -66,7 +66,12 @@ class CreditController extends \BaseController {
         $objagentgrouplist=array();
         if($transaction_group_ids){
             if($agent_ids){
-                $objagentgrouplist=AgentGroup::whereid($this->myGlob->agentgroup_id)->wherein('id',$transaction_group_ids)->with(array('agents'))->get();
+                if($this->myGlob->agentgroup_id){
+                    $objagentgrouplist=AgentGroup::whereid($this->myGlob->agentgroup_id)->wherein('id',$transaction_group_ids)->with(array('agents'))->get();
+                }else{
+                    if($this->myGlob->agentgroup_ids)
+                    $objagentgrouplist=AgentGroup::wherein('id',$this->myGlob->agentgroup_ids)->wherein('id',$transaction_group_ids)->with(array('agents'))->get();
+                }
             }else{
                 $objagentgrouplist=AgentGroup::wherein('id',$transaction_group_ids)->with(array('agents'))->get();
             }
@@ -245,6 +250,7 @@ class CreditController extends \BaseController {
 	{
         $operator_id=$this->myGlob->operator_id;
         $agentgroup_id =$this->myGlob->agentgroup_id;
+        $agopt_ids =$this->myGlob->agopt_ids;
         $glob_agent_ids     =$this->myGlob->agent_ids;
 
         $agent_id=Input::get('agent_id');
@@ -255,7 +261,7 @@ class CreditController extends \BaseController {
             $end_date=Input::get('end_date') ? date('Y-m-d',strtotime(Input:: get('end_date'))) :  "All";
         }
         $agent_ids=$objagentList=array();
-        if($glob_agent_ids){
+        if($glob_agent_ids && !$groupid){
             $agent_ids=$glob_agent_ids;
         }else{
             if($groupid){
@@ -272,9 +278,19 @@ class CreditController extends \BaseController {
             }
         }
 
-        if($agent_ids)
-            $objagentList=Agent::wherein('id',$agent_ids)->whereoperator_id($operator_id)->orderBy('name')->get();
-        
+        if($agent_ids){
+            if($agopt_ids){
+                $objagentList=Agent::wherein('id',$agent_ids)
+                            ->wherein('operator_id',$agopt_ids)
+                            ->orderBy('name')->get();
+            }else{
+                $objagentList=Agent::wherein('id',$agent_ids)
+                            ->whereoperator_id($operator_id)
+                            ->orderBy('name')->get();    
+            }
+            
+        }
+
         if($objagentList){
             $groupname=AgentGroup::whereid($groupid)->pluck('name');
             $i=0;
@@ -419,11 +435,22 @@ class CreditController extends \BaseController {
 
             }
         }
+        if($agent_id && $agent_id !='All'){
+            $agent_ids=array();
+            $agent_ids[]=$agent_id;
+        }
         
+        // dd($agent_ids);
         $operator_id=$this->myGlob->operator_id;
-        if($agent_ids)
-            $objagentList=Agent::wherein('id',$agent_ids)->whereoperator_id($operator_id)->orderBy('name')->get();
-        
+        $agopt_ids=$this->myGlob->agopt_ids;
+        if($agent_ids){
+            if($agopt_ids){
+                $objagentList=Agent::wherein('id',$agent_ids)->wherein('operator_id',$agopt_ids)->orderBy('name')->get();
+            }else{
+                $objagentList=Agent::wherein('id',$agent_ids)->whereoperator_id($operator_id)->orderBy('name')->get();
+            }
+        }
+
         if($objagentList){
             $groupname=AgentGroup::whereid($groupid)->pluck('name');
             $i=0;
@@ -487,8 +514,17 @@ class CreditController extends \BaseController {
                         $temp['total_amount']=0;
                         $temp['agent_commission']=0;
                         $temp['balanceforward']=0;
+                        $temp['receipt']=0;
+                        $temp['deleted_flag'] =0;
+                        $temp['opening_balance']=0;
+                        $temp['receivable']=0;
+                        $temp['closing_balance']=0;
                         
-                        $objagentdeposit=AgentDeposit::wherepay_date($res_paydate)->whereagent_id($objagent->id)->whereoperator_id($operator_id)->get();
+                        if($agopt_ids){
+                            $objagentdeposit=AgentDeposit::wherepay_date($res_paydate)->whereagent_id($objagent->id)->wherein('operator_id',$agopt_ids)->get();
+                        }else{
+                            $objagentdeposit=AgentDeposit::wherepay_date($res_paydate)->whereagent_id($objagent->id)->whereoperator_id($operator_id)->get();
+                        }                     
                         if(count($objagentdeposit)>0){
                             foreach ($objagentdeposit as $rows) {
                                 if($rows->payment==0)

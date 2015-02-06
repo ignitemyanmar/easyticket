@@ -59,6 +59,7 @@ class HomeController extends \BaseController {
 
 	public function getTimeList(){
 		$operator_id		=$this->myGlob->operator_id;
+		
 		$from_to=Input::get('trip');
 		$from_to=explode(',', $from_to);
 		$from_city			=$from_to[0];
@@ -147,7 +148,6 @@ class HomeController extends \BaseController {
     	$time 			=Input::get('time');
     	$class_id		=Input::get('class_id');
     	$bus_no			=Input::get('bus_no');
-
     	$objbusoccurance =	BusOccurance::wherefrom($from)
     									->whereto($to)
     									->wheredeparture_date($date)
@@ -194,7 +194,11 @@ class HomeController extends \BaseController {
     		if($objseatinfo){
     			$seats=array();
 
-    			$closeseat=CloseSeatInfo::wheretrip_id($objbusoccurance->trip_id)->whereseat_plan_id($objbusoccurance->seat_plan_id)->pluck('seat_lists');
+    			$closeseat=CloseSeatInfo::wheretrip_id($objbusoccurance->trip_id)
+    										->whereseat_plan_id($objbusoccurance->seat_plan_id)
+    										->where('start_date','<=',$date)
+    										->where('end_date','>=',$date)
+    										->pluck('seat_lists');
 				$jsoncloseseat=json_decode($closeseat,true);
 
 				$k=0;$extra_city_id=null;$extra_city_price=0;
@@ -285,7 +289,22 @@ class HomeController extends \BaseController {
 							    $query->addSelect(array('id','name'));
 							}))
 							->get();
-		$agents=Agent::whereoperator_id($operator_id)->get();
+
+		$agopt_ids = $this->myGlob->agopt_ids;
+		$agentgroup_id = $this->myGlob->agentgroup_id;
+		if($agopt_ids){
+			if(Auth::user()->role==9 || Auth::user()->role==3){
+				if($agentgroup_id){
+					$agents=Agent::whereagentgroup_id($agentgroup_id)->get();
+				}else{
+					$agents=Agent::get();
+				}
+			}else{
+				$agents=Agent::wherein('operator_id',$agopt_ids)->get();
+			}
+		}else{
+			$agents=Agent::whereoperator_id($operator_id)->get();
+		}
 		// return Response::json($seat_list);
     	return View::make('bus.chooseseat', array('response'=>$seat_list, 'related_bus'=>$buslist, 'operatorgroup'=>$operatorgroup, 'agents'=>$agents,'remarkgroup'=>$remarkgroup,'remark_seats'=>$remark_seats));
 	}
@@ -367,6 +386,7 @@ class HomeController extends \BaseController {
     			$response['message']="Successfully your purchase or booking tickets.";
     		    $can_buy=true;
     			$group_operator_id=$this->myGlob->operatorgroup_id;
+    			$operator_id=$this->myGlob->operator_id;
     			$objsaleorder=new SaleOrder();
     			$max_order_id =$objsaleorder->id= $this->generateAutoID($operator_id,$group_operator_id);
 	    		$objsaleorder->orderdate 		=$this->Date;
@@ -412,7 +432,7 @@ class HomeController extends \BaseController {
 	    			}
 	    		}
     		} catch (Exception $e) {
-    			$response['message']="Sorry! Something was worng.";
+    			$response['message']="Sorry! Something was worng.".$e;
     			$response['can_buy']= false;
     			$response['sale_order_no'] = $available_orderid;
 	    		return Response::json($response);
@@ -507,6 +527,7 @@ class HomeController extends \BaseController {
 	    	$response['message']="Successfully your purchase or booking tickets.";
     		$can_buy=true;
     			$group_operator_id=$this->myGlob->operatorgroup_id;
+    			$operator_id=$this->myGlob->operator_id;
 	    		$objsaleorder=new SaleOrder();
 	    		$order_id=$objsaleorder->id = $this->generateAutoID($operator_id, $group_operator_id);
 	    		// dd($this->generateAutoID($group_operator_id));
@@ -538,11 +559,26 @@ class HomeController extends \BaseController {
 	}
 
 	public function getcart($id){
+		$agopt_ids =$this->myGlob->agopt_ids;
 		$objorder=SaleOrder::whereid($id)->first();
 		$objsaleitems=SaleItem::whereorder_id($id)->get();
 		$tickets=array();
 		$operator_id=$this->myGlob->operator_id;
-		$agents=Agent::whereoperator_id($operator_id)->get();
+		$agentgroup_id=$this->myGlob->agentgroup_id;
+		if($agopt_ids){
+			if(Auth::user()->role == 9 || Auth::user()->role == 3 ){
+				if($agentgroup_id){
+					$agents=Agent::whereagentgroup_id($agentgroup_id)->get();
+				}else{
+					$agents=Agent::get();
+				}
+			}else{
+				$agents=Agent::wherein('operator_id',$agopt_ids)->get();
+			}
+		}else{
+			$agents=Agent::whereoperator_id($operator_id)->get();
+		}
+		// return Response::json($agopt_ids);
 		$objexendcity=array();
 		$customer_name="";
 		$phone_no="";
@@ -559,7 +595,7 @@ class HomeController extends \BaseController {
 				$temp['operator']		=Operator::whereid($ticket['operator'])->pluck('name');
 				$objbus 				=BusOccurance::whereid($ticket['busoccurance_id'])->first();
 				$trip_id=$objbus->trip_id;
-				$objexendcity=ExtraDestination::wheretrip_id($trip_id)->with('city')->first();
+				$objexendcity=ExtraDestination::wheretrip_id($trip_id)->with('city')->get();
 				// return Response::json($objexendcity);
 				$temp['price']			=0;
 				$temp['foreign_price']	=0;
@@ -635,7 +671,11 @@ class HomeController extends \BaseController {
     			if($objsaleorder && $objsaleitems){
     				if($i==0){
 	    				$busoccuranceid=$busoccurance_id[$i];
-	    				$objagent_commission=AgentCommission::whereagent_id($agent_id)->wheretrip_id($objsaleitems->trip_id)->first();
+	    				$objagent_commission=AgentCommission::whereagent_id($agent_id)
+	    													->wheretrip_id($objsaleitems->trip_id)
+	    													->where('start_date','<=',$orderdate)
+	                                                        ->where('end_date','>=',$orderdate)
+	    													->first();
 	    				if($objagent_commission){
 	    					if($objagent_commission->commission_id==1){
 	    						$commission=$objagent_commission->commission;
@@ -801,45 +841,22 @@ class HomeController extends \BaseController {
 		//
 	}
 
-	
-
-	/*public function generateAutoID($prefix){
-		$prefix=$prefix."_";
-    	$autoid 			= 0;
+	public function generateAutoID($operator_id, $operator_gp_id){
+    	$prefix_opr 	= sprintf('%04s',$operator_id);
+    	$prefix_gp_opr = sprintf('%04s',$operator_gp_id);
+    	$prefix = $prefix_opr.$prefix_gp_opr;
+    	// Get Last ID Value;
     	$last_order_id 		= SaleOrder::where('id','like',$prefix.'%')->orderBy('id','desc')->limit('1')->pluck('id');
     	if($last_order_id){
     		$last_order_value 	= (int) substr($last_order_id, strlen($prefix));
     	}else{
-    		return $prefix."0000001";
+    		return $prefix."00000001";
     	}
-    	// $last_order_value=substr($last_order_id, count($prefix));
 
-    	
-    	if($last_order_value >= 0 && $last_order_value <9){
-    		$inc_value = ++$last_order_value;
-    		$autoid = "000000".$inc_value;
-    	}elseif($last_order_value >= 9 && $last_order_value <99){
-    		$inc_value = ++$last_order_value;
-    		$autoid = "00000".$inc_value;
-    	}elseif($last_order_value >= 99 && $last_order_value <999){
-    		$inc_value = ++$last_order_value;
-    		$autoid = "0000".$inc_value;
-    	}elseif($last_order_value >= 999 && $last_order_value <9999){
-    		$inc_value = ++$last_order_value;
-    		$autoid = "000".$inc_value;
-    	}elseif($last_order_value >= 9999 && $last_order_value <99999){
-    		$inc_value = ++$last_order_value;
-    		$autoid = "00".$inc_value;
-    	}elseif($last_order_value >= 99999 && $last_order_value <999999){
-    		$inc_value = ++$last_order_value;
-    		$autoid = "0".$inc_value;
-    	}elseif($last_order_value >= 999999 && $last_order_value <9999999){
-    		$inc_value = ++$last_order_value;
-    		$autoid = $inc_value;
-    	}
-    	return $prefix.$autoid;
-    }*/
-    public function generateAutoID($operator_id, $operator_gp_id){
+    	return $prefix.sprintf('%08s', ++$last_order_value);
+    }
+
+    public function generateAutoIDFFormat($operator_id, $operator_gp_id){
     	$prefix_opr = 0;
     	$prefix_gp_opr = 0;
     	// Generate Operator ID;

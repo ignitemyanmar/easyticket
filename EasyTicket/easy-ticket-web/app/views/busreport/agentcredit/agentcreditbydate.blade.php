@@ -166,7 +166,7 @@
                                                       <td>{{$row['receipt']}}</td>
                                                       <td><span @if($row['closing_balance'] < 0) class="noti" @endif>{{str_replace("-","",$row['closing_balance'])}} </span></td>
                                                       <td>
-                                                         <a class="btn mini green-stripe" href="/report/agentcredit/{{$rows['id']}}">အေသးစိတ္ၾကည့္မည္</a>
+                                                         <a class="btn mini green-stripe" href="/report/agentcredit/{{$rows['id']}}?access_token={{Auth::user()->access_token}}">အေသးစိတ္ၾကည့္မည္</a>
                                                       </td>
                                                    </tr>
                                                 @endforeach

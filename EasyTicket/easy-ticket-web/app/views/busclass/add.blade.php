@@ -1,5 +1,6 @@
 @extends('../admin')
 @section('content')
+{{HTML::style('../../assets/chosen-bootstrap/chosen/chosen.css')}}
 <style type="text/css">
    .padding-5{padding: 5px;}
 </style>
@@ -10,26 +11,6 @@
             <!-- BEGIN PAGE HEADER-->   
                <div class="row-fluid">
                   <div class="span12">
-                     <!-- BEGIN STYLE CUSTOMIZER -->
-                     <div class="color-panel hidden-phone">
-                        <div class="color-mode-icons icon-color"></div>
-                        <div class="color-mode-icons icon-color-close"></div>
-                        <div class="color-mode">
-                           <p>THEME COLOR</p>
-                           <ul class="inline">
-                              <li class="color-black current color-default" data-style="default"></li>
-                              <li class="color-blue" data-style="blue"></li>
-                              <li class="color-brown" data-style="brown"></li>
-                              <li class="color-purple" data-style="purple"></li>
-                              <li class="color-white color-light" data-style="light"></li>
-                           </ul>
-                           <label class="hidden-phone">
-                           <input type="checkbox" class="header" checked value="" />
-                           <span class="color-mode-label">Fixed Header</span>
-                           </label>                    
-                        </div>
-                     </div>
-                     <!-- END BEGIN STYLE CUSTOMIZER -->   
                      <h3 class="page-title">
                         Add New Bus Class
                         <!-- <small>form wizard sample</small> -->
@@ -54,6 +35,7 @@
                <div class="row-fluid">
                   <div class="responsive span8" data-tablet="span8" data-desktop="span8">
                      <form id="addnew-form" class="horizontal-form" action = "/addbusclass" method= "post" enctype="multipart/form-data">    
+                        <input type="hidden" name="access_token" value="{{$myApp->v_access_token}}">
                         <div class="portlet box light-grey">
                            <div class="portlet-title">
                               <h4><i class="icon-user"></i>Bus Class Information</h4>
@@ -77,7 +59,7 @@
                                     <div class="control-group">
                                        <label class="control-label" for="operator">Operator Name</label>
                                        <div class="controls">
-                                             <select name="operator" id='operator' class="m-wrap span12">
+                                             <select name="operator" class="m-wrap span12 chosen">
                                                 @foreach($operator as $rows)
                                                    <option value="{{$rows->id}}">{{$rows->name}}</option>
                                                 @endforeach   
@@ -102,5 +84,6 @@
       <!-- END PAGE CONTAINER-->
    </div>
 <!-- END PAGE -->  
-   <script type="text/javascript" src="../../assets/data-tables/jquery.dataTables.js"></script>
+   {{HTML::script('../../assets/chosen-bootstrap/chosen/chosen.jquery.min.js')}}
+
 @stop

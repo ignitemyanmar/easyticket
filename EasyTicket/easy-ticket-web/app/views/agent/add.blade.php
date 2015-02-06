@@ -30,9 +30,10 @@
 
             <!-- BEGIN PAGE CONTENT-->
                <div class="row-fluid">
-                  <div class="responsive span8" data-tablet="span8" data-desktop="span8">
+                  <div class="responsive span9" data-tablet="span9" data-desktop="span9">
                      <!-- <form action="/addagent" class="horizontal-form" method= "post" enctype="multipart/form-data"> -->
-                     <form id="addnew-form" class="horizontal-form" action = "/addagent" method= "post" enctype="multipart/form-data">    
+                     <form id="addnew-form" class="form-horizontal" action = "/addagent" method= "post" enctype="multipart/form-data">    
+                        <input type="hidden" name="access_token" value="{{$myApp->v_access_token}}">
                         <div class="portlet box light-grey">
                            <div class="portlet-title">
                               <h4><i class="icon-user"></i>အေရာင္းကုိယ္စားလွယ္ အခ်က္အလက္မ်ား </h4>
@@ -42,7 +43,7 @@
                            <input type="hidden" name="operator_id" value="{{$operator_id}}">
                            <div class="portlet-body">
                               <div class="row-fluid">
-                                 <div class="span6">
+                                 <div class="span9">
                                     <div class="control-group">
                                        <label class="control-label" for="name">Agent Group</label>
                                        <div class="controls">
@@ -59,7 +60,7 @@
                               <div class="clear-fix">&nbsp;</div>
 
                               <div class="row-fluid">
-                                 <div class="span6">
+                                 <div class="span9">
                                     <div class="control-group">
                                        <label class="control-label" for="name">အေရာင်းကုိယ်စားလှယ်အမည်</label>
                                        <div class="controls">
@@ -69,7 +70,7 @@
                                  </div>
                               </div>
                               <div class="row-fluid">
-                                 <div class="span6">
+                                 <div class="span9">
                                     <div class="control-group">
                                        <label class="control-label" for="address">လိပ်စာ</label>
                                        <div class="controls">
@@ -79,7 +80,7 @@
                                  </div>
                               </div>
                               <div class="row-fluid">
-                                 <div class="span6">
+                                 <div class="span9">
                                     <div class="control-group">
                                        <label class="control-label" for="phone">ဖုန်းနံပါတ်</label>
                                        <div class="controls">
@@ -88,38 +89,73 @@
                                     </div>
                                  </div>
                               </div>
-                              <div class="row-fluid">
-                                 <div class="span6">
-                                    <div class="control-group">
-                                       <label class="control-label" for="comission">ေကာ်မၡင် အမျိုးအစား</label>
-                                       <div class="controls">
-                                             <select name="comissiontype" id='comission' class="m-wrap span12">
-                                                @foreach($commission as $rows)
-                                                   <option value="{{$rows->id}}">{{$rows->name}}</option>
-                                                @endforeach   
-                                             </select> 
+
+                              <div class="control-group">
+                                 <label class="control-label">ေကာ်မစ်ၡင်</label>
+                                 <div class="controls">
+                                    <label class="radio">
+                                       <div id="uniform-undefined" class="radio">
+                                          <span class="">
+                                             <div id="uniform-undefined" class="radio">
+                                                <span class="">
+                                                   <input style="opacity: 0;" type="radio" name="rdo_commission_type" value="0" class="chkcommission" checked="">
+                                                   <!-- <input style="opacity: 0;" name="day" class="departuredays" value="daily" checked="" type="radio"> -->
+                                                </span>
+                                             </div>
+                                          </span>
+                                       </div>
+                                       ခရီးစဥ်အလုိက်သတ်မှတ်မည်
+                                    </label>
+                                    <label class="radio">
+                                       <div id="uniform-undefined" class="radio">
+                                          <span class="">
+                                             <div id="uniform-undefined" class="radio">
+                                                <span class="checked">
+                                                   <input type="radio" name="rdo_commission_type" value="1" class="chkcommission" >
+                                                </span>
+                                             </div>
+                                          </span>
+                                       </div>
+                                       အေရာင်းကုိယ်စားလှယ်အလုိက်သတ်မှတ်မည်။
+                                    </label>
+                                 </div>
+                              </div>
+
+                              <div id="commission_frame" style="display:none">
+                                 <div class="row-fluid">
+                                    <div class="span9">
+                                       <div class="control-group">
+                                          <label class="control-label" for="comission">ေကာ်မစ်ၡင် အမျိုးအစား</label>
+                                          <div class="controls">
+                                                <select name="comissiontype" id='comission' class="m-wrap span12">
+                                                   @foreach($commission as $rows)
+                                                      <option value="{{$rows->id}}">{{$rows->name}}</option>
+                                                   @endforeach   
+                                                </select> 
+                                          </div>
                                        </div>
                                     </div>
                                  </div>
-                              </div>
-                              <div class="row-fluid">
-                                 <div class="span6">
-                                    <div class="control-group">
-                                       <label class="control-label" for="commission">ေကာ်မၡင်နုန်း</label>
-                                       <div class="controls">
-                                          <input  name="commission" class="m-wrap span12" placeholder="eg.100 or 10 percent" type="text">
+                                 <div class="row-fluid">
+                                    <div class="span9">
+                                       <div class="control-group">
+                                          <label class="control-label" for="commission">ေကာ်မစ်ၡင်နုန်း</label>
+                                          <div class="controls">
+                                             <input  name="commission" class="m-wrap span12" placeholder="eg.100 or 10 percent" type="text">
+                                          </div>
                                        </div>
                                     </div>
                                  </div>
                               </div>
 
                               <div class="row-fluid">
-                                 <div class="span6">
+                                 <div class="span9">
                                     <div class="control-group">
+                                       <label class="control-label">Owner</label>
                                        <div class="controls">
-                                       <label>
-                                          <input  name="owner" class="span3" value="1" type="checkbox" style="float:left !important;margin-left:0;"><p style="padding-top:.7rem;">Owner</p>
-                                       </label>
+                                          <label class="checkbox">
+                                          <div id="uniform-undefined" class="checker"><span class=""><input name="owner" style="opacity: 0;" value="" type="checkbox"></span></div> &nbsp;
+                                          </label>
                                        </div>
                                     </div>
                                  </div>
@@ -142,4 +178,30 @@
    </div>
 <!-- END PAGE --> 
    {{HTML::script('../../assets/chosen-bootstrap/chosen/chosen.jquery.min.js')}}
+   <script type="text/javascript" src="../../assets/uniform/jquery.uniform.min.js"></script>
+   <script type="text/javascript">
+      $(function(){
+         choosecommission('.chkcommission');
+      });
+
+      function choosecommission(chkcommission){
+        var val_radio=$(chkcommission).val();
+         if(val_radio=="1"){
+            $('#commission_frame').show();
+         }else{
+            $('#commission_frame').hide();
+         }   
+      }
+
+      $('.chkcommission').each(function(){
+        $(this).click(function(){
+          var val_radio=$(this).val();
+          if(val_radio=="1"){
+             $('#commission_frame').show();
+          }else{
+             $('#commission_frame').hide();
+          }
+        });
+      }); 
+   </script>
 @stop

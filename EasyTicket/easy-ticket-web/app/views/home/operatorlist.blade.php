@@ -20,7 +20,7 @@
 			@endif
 				<div class="large-6 medium-6 small-12 columns nopadding">
 					<div class="operatorlist">
-						<a href="/?id={{$row->id}}"> 
+						<a href="/?agopt_id={{$row->id}}"> 
 							{{$row->name}}
 							<br>
 							<span>Express</span>

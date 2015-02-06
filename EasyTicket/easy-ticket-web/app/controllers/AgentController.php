@@ -11,7 +11,11 @@ class AgentController extends BaseController
     public function getAddagent()
   	{   
 	  	$agent =Agent::all();
-	  	$agentgroup = AgentGroup::all();
+      if(Auth::user()->role==3){
+        $agentgroup=AgentGroup::whereuser_id(Auth::user()->id)->get();
+      }else{
+        $agentgroup = AgentGroup::all();
+      }
 	  	$commission = CommissionType::all();
       $operator_id=$this->myGlob->operator_id;
 	  	return View::make('agent.add',array('agent'=>$agent,'agentgroup'=>$agentgroup,'commission'=>$commission, 'operator_id'=> $operator_id));
@@ -21,6 +25,9 @@ class AgentController extends BaseController
   	public function postAddagent()
     {
       $operator_id  =$this->myGlob->operator_id;
+      if(!$operator_id){
+        $operator_id=Operator::orderBy('id','desc')->pluck('id');
+      }
       $agentgroup_id=Input::get('agentgroup_id');
       $name         =Input::get('name');
       $phone        =Input::get('phone');
@@ -32,7 +39,7 @@ class AgentController extends BaseController
       if($check_exiting){
         $message['status']=0;
         $message['info']="This record is already exit.";
-        return Redirect::to('/agentlist')->with('message', $message);
+        return Redirect::to('/agentlist?access_token='.Auth::user()->access_token)->with('message', $message);
       }
       $objagent           =new Agent();
       $objagent->agentgroup_id=$agentgroup_id;
@@ -47,19 +54,28 @@ class AgentController extends BaseController
       $objagent->save();
       $message['status']=1;
       $message['info']="Successfully insert agent.";
-      return Redirect::to('/agentlist')->with('message', $message);
+      return Redirect::to('/agentlist?access_token='.Auth::user()->access_token)->with('message', $message);
     }
 
     // Agent List
   	public function showAgentList()
   	{
       $operator_id=$this->myGlob->operator_id;
+      $agopt_ids=$this->myGlob->agopt_ids;
       $agent_ids=$this->myGlob->agent_ids;
-      if($agent_ids)
-        $response   = $obj_agent = Agent::wherein('id',$agent_ids)->whereoperator_id($operator_id)->orderBy('id','desc')->orderBy('name','asc')->get();
-      else
+      // dd($agent_ids);
+      if($agent_ids){
+        if($agopt_ids){
+          $response   = $obj_agent = Agent::wherein('id',$agent_ids)->orderBy('id','desc')->orderBy('name','asc')->get();
+        }else{
+          $response   = $obj_agent = Agent::wherein('id',$agent_ids)->whereoperator_id($operator_id)->orderBy('id','desc')->orderBy('name','asc')->get();
+        }
+      }
+      else{
         $response   = $obj_agent = Agent::whereoperator_id($operator_id)->orderBy('id','desc')->orderBy('name','asc')->get();
+      }
 
+      // return Response::json($response);
       $allagent   = Agent::all();
       $totalCount = count($allagent);
       $i=0;
@@ -129,7 +145,7 @@ class AgentController extends BaseController
                     'commission' =>Input::get('comission'),
                     'owner'      =>Input::get('owner'),
                     ));
-      return Redirect::to('/agentlist');
+      return Redirect::to('/agentlist?access_token='.Auth::user()->access_token);
     }
     
     public function getDeleteAgent($id)
@@ -141,12 +157,12 @@ class AgentController extends BaseController
         $affectedRows1 = Agent::where('id','=',$id)->delete();
         $message['status']="0";
         $message['info']="Successfully delete.";
-        return Redirect::to('/agentlist')->with('message', $message);
+        return Redirect::to('/agentlist?'.$this->myGlob->access_token)->with('message', $message);
       }
       $message['status']="1";
       $message['info']="This agent has transactions, so you can't delete.";
 
-      return Redirect::to('/agentlist')->with('message', $message);
+      return Redirect::to('/agentlist?'.$this->myGlob->access_token)->with('message', $message);
     }
     
     public function postdelAgent()

@@ -12,6 +12,7 @@ class BookingController extends \BaseController {
 	{
 		$agent_ids  = $this->myGlob->agent_ids;
 		$agopt_ids  = $this->myGlob->agopt_ids;
+		$agentgroup_id  = $this->myGlob->agentgroup_id;
 		$time=Input::get('departure_time');
 		//for departure time
 			$format_time=substr($time, 0,8);
@@ -34,7 +35,11 @@ class BookingController extends \BaseController {
 		// $response=SaleOrder::where('departure_date','>=', $start_date)->where('departure_date','<=', $end_date)->where('departure_datetime','like','%'.$format_departure_time.'%')->wherebooking(1)->with(array('agent','saleitems'))->get();
 		if($agent_ids){
 			if($agopt_ids){
-				$response=SaleOrder::wherein('operator_id',$agopt_ids)->wherein('agent_id',$agent_ids)->where('departure_date','>=', $start_date)->where('departure_date','<=', $end_date)->wherebooking(1)->with(array('agent','saleitems'))->get();
+				if(Auth::user()->role==9){
+					$response=SaleOrder::wherein('operator_id',$agopt_ids)->where('departure_date','>=', $start_date)->where('departure_date','<=', $end_date)->wherebooking(1)->with(array('agent','saleitems'))->get();
+				}else{
+					$response=SaleOrder::wherein('operator_id',$agopt_ids)->wherein('agent_id',$agent_ids)->where('departure_date','>=', $start_date)->where('departure_date','<=', $end_date)->wherebooking(1)->with(array('agent','saleitems'))->get();
+				}
 			}else{
 				$response=SaleOrder::wherein('agent_id',$agent_ids)->where('departure_date','>=', $start_date)->where('departure_date','<=', $end_date)->wherebooking(1)->with(array('agent','saleitems'))->get();
 			}
@@ -86,7 +91,12 @@ class BookingController extends \BaseController {
 
 	public function getBookingListByBus($id)
 	{
-		$order_ids=SaleItem::wherebusoccurance_id($id)->lists('order_id');
+		$agopt_ids =$this->myGlob->agopt_ids;
+		if($agopt_ids){
+			$order_ids=SaleItem::wherein('operator',$agopt_ids)->wherebusoccurance_id($id)->lists('order_id');
+		}else{
+			$order_ids=SaleItem::wherebusoccurance_id($id)->lists('order_id');
+		}
 		$response=array();
 		if($order_ids){
 			$response=SaleOrder::wherein('id',$order_ids)->wherebooking(1)->with(array('agent','saleitems'))->get();
@@ -131,7 +141,17 @@ class BookingController extends \BaseController {
 
 	public function getTodayBookingList()
 	{
-		$order_ids=SaleOrder::where('departure_date','=',$this->getDate())->wherebooking(1)->lists('id');
+		$agopt_ids  = $this->myGlob->agopt_ids;
+		$agent_ids  = $this->myGlob->agent_ids;
+		if($agopt_ids){
+			if($agent_ids){
+				$order_ids=SaleOrder::wherein('operator_id',$agopt_ids)->wherein('agent_id',$agent_ids)->where('departure_date','=',$this->getDate())->wherebooking(1)->lists('id');
+			}else{
+				$order_ids=SaleOrder::wherein('operator_id',$agopt_ids)->where('departure_date','=',$this->getDate())->wherebooking(1)->lists('id');
+			}
+		}else{
+			$order_ids=SaleOrder::where('departure_date','=',$this->getDate())->wherebooking(1)->lists('id');
+		}
 		$response=array();
 		if($order_ids){
 			$response=SaleOrder::wherein('id',$order_ids)->wherebooking(1)->with(array('agent','saleitems'))->get();
@@ -273,7 +293,7 @@ class BookingController extends \BaseController {
 		}
 		
 		$message="Successfully delete one record.";
-		return Redirect::to('/report/booking')->with('message',$message);
+		return Redirect::to('/report/booking?access_token='.Auth::user()->access_token)->with('message',$message);
 	}
 
 	/**

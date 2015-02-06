@@ -61,7 +61,7 @@
 								@endif
 									<div class="large-4 medium-4 small-12 columns nopadding stripe-morning left">
 										<?php 
-											$link="operator_id=".$response['operator_id']."&from_city=".$response['from']."&to_city=".$response['to']."&date=".$response['date']."&time=".$row['time']."&class_id=".$row['class_id']."&bus_no=-";
+											$link="access_token=".Auth::user()->access_token."&operator_id=".$response['operator_id']."&from_city=".$response['from']."&to_city=".$response['to']."&date=".$response['date']."&time=".$row['time']."&class_id=".$row['class_id']."&bus_no=-";
 										?>
 										<a href="/bus_seat_choose?{{$link}}">
 											<div class="row tripframe-morning">

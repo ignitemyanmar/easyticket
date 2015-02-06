@@ -34,7 +34,7 @@
             <!-- BEGIN PAGE CONTENT-->
                <div class="row-fluid">
                   <div class="responsive span8" data-tablet="span8" data-desktop="span8">
-                     <form id="addnew-form" class="horizontal-form" action = "/updateagentgroup/{{$agentgroup->id}}" method= "post" enctype="multipart/form-data">    
+                     <form id="addnew-form" class="horizontal-form" action ="/updateagentgroup/{{$agentgroup->id}}" method= "post">    
                         <div class="portlet box light-grey">
                            <div class="portlet-title">
                               <h4><i class="icon-user"></i>AgentGroup Information</h4>
@@ -52,6 +52,7 @@
                                     </div>
                                  </div>
                               </div>
+                              <input type="hidden" value="{{$myApp->v_access_token}}" name="access_token">
                               
                               <div class="cleardiv">&nbsp;</div>
                               <div class="controls">

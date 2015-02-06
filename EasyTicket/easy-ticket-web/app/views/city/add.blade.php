@@ -10,26 +10,7 @@
             <!-- BEGIN PAGE HEADER-->   
                <div class="row-fluid">
                   <div class="span12">
-                     <!-- BEGIN STYLE CUSTOMIZER -->
-                     <div class="color-panel hidden-phone">
-                        <div class="color-mode-icons icon-color"></div>
-                        <div class="color-mode-icons icon-color-close"></div>
-                        <div class="color-mode">
-                           <p>THEME COLOR</p>
-                           <ul class="inline">
-                              <li class="color-black current color-default" data-style="default"></li>
-                              <li class="color-blue" data-style="blue"></li>
-                              <li class="color-brown" data-style="brown"></li>
-                              <li class="color-purple" data-style="purple"></li>
-                              <li class="color-white color-light" data-style="light"></li>
-                           </ul>
-                           <label class="hidden-phone">
-                           <input type="checkbox" class="header" checked value="" />
-                           <span class="color-mode-label">Fixed Header</span>
-                           </label>                    
-                        </div>
-                     </div>
-                     <!-- END BEGIN STYLE CUSTOMIZER -->   
+                     
                      <h3 class="page-title">
                       &nbsp; ျမိဳ႕ အသစ္ထည့္သြင္းမည္
                         <!-- <small>form wizard sample</small> -->
@@ -41,7 +22,7 @@
                      <ul class="breadcrumb">
                         <li>
                            <i class="icon-home"></i>
-                           <a href="/report/dailycarandadvancesale?operator_id={{Session::get('operator_id')}}">ပင္မစာမ်က္ႏွာ</a> 
+                           <a href="/report/dailycarandadvancesale?operator_id={{Session::get('operator_id')}}&{{$myApp->access_token}}">ပင္မစာမ်က္ႏွာ</a> 
                            <span class="icon-angle-right"></span>
                         </li>
                         <li>
@@ -57,6 +38,7 @@
                <div class="row-fluid">
                   <div class="responsive span8" data-tablet="span8" data-desktop="span8">
                      <form id="addnew-form" class="horizontal-form" action = "/addcity" method= "post" enctype="multipart/form-data">    
+                        <input type="hidden" name="access_token" value="{{$myApp->v_access_token}}">
                         <div class="portlet box light-grey">
                            <div class="portlet-title">
                               <h4><i class="icon-user"></i>ျမိဳ႕အခ်က္အလက္မ်ား</h4>

@@ -59,6 +59,7 @@
                                  @endif
                               @endif
                               <form action="/orderlist" method="get" class="horizontal-form">
+                                    <input type="hidden" value="{{$myApp->v_access_token}}" name="access_token">
                                     <div class="clear-fix">&nbsp;</div>
                                     <div class="row-fluid">
                                        <div class="span3">
@@ -170,10 +171,10 @@
                                                    </a>
                                                    <ul class="dropdown-menu"> 
                                                       <li>
-                                                        <a class="delete zawgyi-one" href="/order-delete/{{ $order['id'] }}"><i class="icon-list"></i>ေဘာက္ခ်ာ တစ္ခုလုံးဖ်က္မည္။</a>
+                                                        <a class="delete zawgyi-one" href="/order-delete/{{ $order['id'] }}?{{$myApp->access_token}}"><i class="icon-list"></i>ေဘာက္ခ်ာ တစ္ခုလုံးဖ်က္မည္။</a>
                                                       </li>
                                                       <li>
-                                                        <a class="zawgyi-one" href="/order-tickets/{{ $order['id'] }}"><i class="icon-list"></i>လက္မွတ္တစ္ခု ခ်င္းစီ ဖ်က္မည္။</a>
+                                                        <a class="zawgyi-one" href="/order-tickets/{{ $order['id'] }}?{{$myApp->access_token}}"><i class="icon-list"></i>လက္မွတ္တစ္ခု ခ်င္းစီ ဖ်က္မည္။</a>
                                                       </li>
                                                       <li class="divider"></li>
                                                    </ul>

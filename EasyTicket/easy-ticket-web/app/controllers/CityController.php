@@ -13,12 +13,12 @@ class CityController extends BaseController
       if($checkcity){
         $message['status']=0; 
         $message['info']="Alerady exit.";
-        return Redirect::to('/citylist')->with('message', $message);
+        return Redirect::to('/citylist?'.$this->myGlob->access_token)->with('message', $message);
       }
       $objcity = new City();
       $objcity->name=$name;
       $result = $objcity->save();
-      return Redirect::to('/citylist');
+      return Redirect::to('/citylist?'.$this->myGlob->access_token);
   	}
 
   	public function showCityList()
@@ -38,21 +38,22 @@ class CityController extends BaseController
     {
       $city = new City();
       $affectedRows= City::where('id','=',$id)->update(array('name'=>Input::get('name')));
-      return Redirect::to('citylist');
+      return Redirect::to('citylist?'.$this->myGlob->access_token);
     }
 
     public function getDeleteCity($id)
     {
       $checkcity=Trip::wherefrom($id)->orwhere('to','=',$id)->first();
+      $checkextcity=ExtraDestination::wherecity_id($id)->first();
       $message['status']=1; 
       $message['info']="Successfully delete city."; 
-      if($checkcity){
+      if($checkcity || $checkextcity){
         $message['status']=0; 
         $message['info']="This city can't delete.";
-        return Redirect::to('citylist')->with('message',$message);
+        return Redirect::to('citylist?'.$this->myGlob->access_token)->with('message',$message);
       }
       $affectedRows1 = City::where('id','=',$id)->delete();
-      return Redirect::to('citylist')->with('message',$message);
+      return Redirect::to('citylist?'.$this->myGlob->access_token)->with('message',$message);
     }
 
     public function postdelCity()
@@ -60,13 +61,13 @@ class CityController extends BaseController
       $todeleterecorts = Input::get('recordstoDelete');
       if(count($todeleterecorts)==0)
       {
-        return Redirect::to("/citylist");
+        return Redirect::to("/citylist?".$this->myGlob->access_token);
       }
       foreach($todeleterecorts as $recid)
       {
         $result = City::where('id','=',$recid)->delete();
       }
-      return Redirect::to("/citylist");
+      return Redirect::to("/citylist?".$this->myGlob->access_token);
     }
     
     public function postSearchCity()

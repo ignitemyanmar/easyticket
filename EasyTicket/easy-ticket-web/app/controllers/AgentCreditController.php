@@ -727,7 +727,7 @@ class AgentCreditController extends \BaseController {
             $objagentdeposit->save();
             $message="Successfully save one record.";
             // return Response::json($response);
-            return Redirect::to('agentgroup-actions/'.$agentgroup_id)->with('message',$message);
+            return Redirect::to('agentgroup-actions/'.$agentgroup_id."?".$this->myGlob->access_token)->with('message',$message);
         } catch (Exception $e) {
             $response['status']=0;
             $response['message']=$e->errorInfo[2];
@@ -741,24 +741,51 @@ class AgentCreditController extends \BaseController {
         $trip_id        =Input::get('trip_id');
         $commission_id  =Input::get('commission_id');
         $commission     =Input::get('commission');
+        $date_range     =Input::get('hddaterange');
+        $start_date     =$this->getDate();
+        $end_date       =$this->getDate();
+        if($date_range){
+            $date_range=explode(',', $date_range);
+            $start_date=$date_range[0];
+            $end_date  =$date_range[1];
+        }
+
         $agent_ids=Agent::whereagentgroup_id($group_id)->lists('id');
         $objagentgroup =AgentGroup::whereid($group_id)->first();
-        $objagentgroup ->commission=$commission;
-        $objagentgroup ->update();
+        if($objagentgroup){
+            $objagentgroup ->commission=$commission;
+            $objagentgroup ->update();
+        }
+       
         $message='';
         if($agent_ids){
             foreach ($agent_ids as $agent_id) {
-                $check_exiting=AgentCommission::whereagent_id($agent_id)->wheretrip_id($trip_id)->first();
+                $check_exiting=AgentCommission::whereagent_id($agent_id)
+                                                ->wheretrip_id($trip_id)
+                                                ->where(function($query) use($start_date,$end_date){
+                                                    $query->whereBetween('start_date',array($start_date,$end_date))
+                                                            ->orwhereBetween('end_date',array($start_date,$end_date))    
+                                                            ->orwhere(function($query) use($start_date, $end_date) {
+                                                                $query->where('start_date','<=',$start_date)
+                                                                     ->where('end_date','>=',$end_date);
+                                                            });
+                                                })                                                
+                                                ->first();
+
                 if($check_exiting){
+                    $check_exiting->agentgroup_id=$group_id;
                     $check_exiting->commission_id=$commission_id;
                     $check_exiting->commission=$commission;
                     $check_exiting->update();
                 }else{
                     $objagentcommission=new AgentCommission();
+                    $objagentcommission->agentgroup_id=$group_id;
                     $objagentcommission->agent_id=$agent_id;
                     $objagentcommission->trip_id=$trip_id;
                     $objagentcommission->commission_id=$commission_id;
-                    $objagentcommission->commission=$commission;
+                    $objagentcommission->commission =$commission;
+                    $objagentcommission->start_date =$start_date;
+                    $objagentcommission->end_date   =$end_date;
                     $objagentcommission->save();
                 }
                 
@@ -766,26 +793,35 @@ class AgentCreditController extends \BaseController {
             
             $message='Successfully save one record.'; 
         }
-        return Redirect::to('/agentgroup-actions/'.$group_id)->with('message',$message);
+        return Redirect::to('/agentgroup-actions/'.$group_id.'?'.$this->myGlob->access_token)->with('message',$message);
     }
 
     public function getAgentCommission($id)
     {
+        $start_date=$end_date=$this->getDate();
+        $date_range=Input::get('date_range');
+        if($date_range){
+            $date_range=explode(',', $date_range);
+            $start_date=$date_range[0];
+            $end_date=$date_range[1];
+        }
         $operator_id    =$this->myGlob->operator_id;
         $trip_ids=Trip::whereoperator_id($operator_id)->lists('id');
         $agent_ids=Agent::whereagentgroup_id($id)->lists('id');
         $response=array();
         if($trip_ids){
             if($agent_ids){
-                $response=AgentCommission::wherein('agent_id',$agent_ids)->wherein('trip_id',$trip_ids)
-                    ->with(array(
-                        'agent'=>function($query){
-                            $query->addSelect(array('id','name'));
-                        },
-                        'trip',
-                        'commissiontype'
-                    ))
-                    ->get();
+                $response=AgentCommission::wherein('agent_id',$agent_ids)
+                            ->wherein('trip_id',$trip_ids)
+                            ->with(array(
+                                'agent'=>function($query){
+                                    $query->addSelect(array('id','name'));
+                                },
+                                'trip',
+                                'commissiontype'
+                            ))
+                            ->groupBy('agentgroup_id','trip_id','start_date')
+                            ->get();
             }
             
         }
@@ -793,13 +829,15 @@ class AgentCreditController extends \BaseController {
             foreach ($response as $i => $row) {
                 $from=City::whereid($row->trip->from)->pluck('name');
                 $to=City::whereid($row->trip->to)->pluck('name');
-                $class=Classes::whereid($row->trip->class_id)->pluck('name');
-                $response[$i]['tripname']=$from.' - '.$to.' ['. $class .' ]';
+                $response[$i]['tripname']=$from.' => '.$to;
+                $response[$i]['trip_group']=$from.' => '.$to. ' ( '.$row->trip->time.' )';
             }
         }
 
-        // return Response::json($response);
-        return View::make('busreport.agentcredit.commissionlist', array('response'=>$response));
+        $branches   = Agent::whereagentgroup_id($id)->lists('name');
+        $groupname  = AgentGroup::whereid($id)->pluck('name');
+        // return Response::json($branches);
+        return View::make('busreport.agentcredit.commissionlist', array('response'=>$response,'branches'=>$branches,'groupname'=>$groupname));
     }
 
 
@@ -811,8 +849,8 @@ class AgentCreditController extends \BaseController {
     	$credit     	=Input::get('credit');
     	$objagentdeposit=new AgentDeposit();
     	try {
-    		$check_exiting=AgentDeposit::whereagent_id($agent_id)->whereoperator_id($operator_id)->orderBy('id','desc')->first();
-    		$objagentdeposit->agent_id=$agent_id;
+    		$check_exiting=AgentDeposit::whereagentgroup_id($agent_id)->whereoperator_id($operator_id)->orderBy('id','desc')->first();
+            $objagentdeposit->agentgroup_id=$agent_id;
     		$objagentdeposit->operator_id=$operator_id;
 	    	$objagentdeposit->deposit_date=$deposit_date;
 	    	if(!$check_exiting){
@@ -832,10 +870,10 @@ class AgentCreditController extends \BaseController {
 	    	$objagentdeposit->save();
 	    	$message="Successfully save one record.";
     		// return Response::json($response);
-    		return Redirect::to('report/agentcredit/'.$agent_id)->with('message',$message);
+    		return Redirect::to('agentgroup-actions/'.$agent_id.'?'.$this->myGlob->access_token)->with('message',$message);
     	} catch (Exception $e) {
     		$message=$e->errorInfo[2];
-    		return Redirect::to('report/agentcredit/'.$agent_id)->with('message',$message);
+    		return Redirect::to('agentgroup-actions/'.$agent_id.'?'.$this->myGlob->access_token)->with('message',$message);
 
     	}
     }
@@ -850,7 +888,6 @@ class AgentCreditController extends \BaseController {
         if($agent_ids){
             $response =SaleOrder::where('operator_id','=',$operator_id)
                                 ->wherein('agent_id',$agent_ids)
-                                // ->wherecash_credit(2)
                                 ->with(array('saleitems'=> function($query) {
                                                                 $query->wherefree_ticket(0);
                                                             }))
@@ -934,8 +971,8 @@ class AgentCreditController extends \BaseController {
         }
         ksort($responsegrouping);
 
-    	$agent_name=AgentGroup::whereid($agent_id)->pluck('name');
-    	$agent_balance=AgentDeposit::whereagentgroup_id($agent_id)->orderBy('id','desc')->pluck('balance');
+    	$agent_name=Agent::whereid($agent_id)->pluck('name');
+        $agent_balance=AgentDeposit::whereagent_id($agent_id)->orderBy('id','desc')->pluck('balance');
         $parameter['agent_id']=$agent_id;
         $parameter['operator_id']=$this->myGlob->operator_id;
         $parameter['cash']=$cash;
@@ -944,6 +981,7 @@ class AgentCreditController extends \BaseController {
         else
             $cash_status=1;
         $parameter['cash_status']=$cash_status;
+        // return Response::json($responsegrouping['2015-02-04'][0]);
     	return View::make('busreport.agentcredit.creditsalelist', array('response'=>$responsegrouping, 'agent_name'=>$agent_name,'agent_balance'=>$agent_balance,'parameter'=>$parameter));
 	}
 
@@ -1068,7 +1106,7 @@ class AgentCreditController extends \BaseController {
     	$payment_amount=Input::get('payment_amount') ? Input::get('payment_amount') : 0;
     	$order_ids=Input::get('order_id');
     	if(count($order_ids)==0){
-    		return Redirect::to('report/agentcreditsales/'.$agent_id);
+    		return Redirect::to('report/agentcreditsales/'.$agent_id.'?'.$this->myGlob->access_token);
     	}
     	$response=array();
     	$total_amount=0;
@@ -1126,7 +1164,7 @@ class AgentCreditController extends \BaseController {
 
     		$message['status']=1;
     		$message['message']="Success transaction.";
-    		return Redirect::to('report/agentcreditsales/'.$agent_id);
+    		return Redirect::to('report/agentcreditsales/'.$agent_id.'?'.$this->myGlob->access_token);
     	}else{
     		$response['status']=0;
     		$response['message']='There is no debit.';

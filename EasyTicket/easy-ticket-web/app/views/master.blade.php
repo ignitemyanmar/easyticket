@@ -47,19 +47,19 @@
       <?php $currentroute=Route::getCurrentRoute()->getPath();?>
       <div class="large-12 title_bar">
         <div class="content_title">
-          @if(Auth::user()->role==9 || Auth::user()->role==3)
-            <div class="left">
-              @if(strpos($myApp->operator_name,'Mandalar Min') !== false)
-                <a href="/alloperator"><img src="../img/Mandalar Min.png" style="max-height:35px;margin-left:20px;"> <span>Mandalar Min Express</span></a>
+          <div class="left">
+            @if(Auth::user()->role==9 || Auth::user()->role==3)
+              @if(strpos($myApp->operator_name,'elite') !== false)
+                <a href="/alloperator?access_token={{Auth::user()->access_token}}"><img src="../img/elite.png" style="max-height:35px;margin-left:20px;"> <span>Elite Express</span></a>
               @elseif(strpos($myApp->operator_name,'mandalar min') !== false)
-                <a href="/alloperator"><img src="../img/mandalarmin.png" style="max-height:35px;margin-left:20px;"> <span>Mandalar Min Express</span></a>
+                <a href="/alloperator?access_token={{Auth::user()->access_token}}"><img src="../img/mandalarmin.png" style="max-height:35px;margin-left:20px;"> <span>Mandalar Min Express</span></a>
               @elseif(strpos($myApp->operator_name,'shwe nan taw') !== false)
-                <a href="/alloperator"><img src="../img/snt.png" style="max-height:35px;margin-left:20px;"> <span>Shwe Nan Taw Express</span></a>
+                <a href="/alloperator?access_token={{Auth::user()->access_token}}"><img src="../img/snt.png" style="max-height:35px;margin-left:20px;"> <span>Shwe Nan Taw Express</span></a>
               @else
-                <a href="/alloperator"><span>{{$myApp->operator_name}} Express</span></a>
+                <a href="/alloperator?access_token={{Auth::user()->access_token}}"><span>{{$myApp->operator_name}} Express</span></a>
               @endif
-            </div>
-          @endif
+            @endif
+          </div>
           
           @if($currentroute=="departure-times")
           ကားထြက္မည့္အခ်ိန္ေရြးရန္

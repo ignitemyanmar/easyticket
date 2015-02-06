@@ -3,9 +3,11 @@ class BusClassController extends BaseController
 {
 	public function getAddBusClasses()
   	{   
-	  	// $agent =Agent::all();
-	  	// $agentgroup = AgentGroup::all();
-      $operator = operator::all();
+      if(Auth::user()->role==9){
+        $operator = Operator::all();
+      }else{
+        $operator = Operator::whereid($this->myGlob->operator_id)->get();
+      }
 	  	return View::make('busclass.add',array('operator'=>$operator));
   	}
 
@@ -17,7 +19,7 @@ class BusClassController extends BaseController
       if($check_exiting){
         $message['status']=0;
         $message['info']="This record is already exit.";
-        return Redirect::to('/busclasslist')->with('message',$message);
+        return Redirect::to('/busclasslist?'.$this->myGlob->access_token)->with('message',$message);
       }
       $message['status']=1;
       $message['info']="Successfully insert one record.";
@@ -26,12 +28,16 @@ class BusClassController extends BaseController
       $objbusclass->name=$name;
       $objbusclass->operator_id=$operator;
       $result = $objbusclass->save();
-      return Redirect::to('/busclasslist')->with('message',$message);
+      return Redirect::to('/busclasslist?'.$this->myGlob->access_token)->with('message',$message);
   	}
 
   	public function showBusClassList()
   	{
-      $objbusclass = Classes::paginate(12);
+      if(Auth::user()->role==9){
+        $objbusclass = Classes::all();
+      }else{
+        $objbusclass = Classes::whereoperator_id($this->myGlob->operator_id)->get();
+      }
       $response = $objbusclass;
       $totalcount = Classes::count();
       return View::make('busclass.list',array('response'=>$response,'totalcount'=>$totalcount));
@@ -49,7 +55,7 @@ class BusClassController extends BaseController
         $busclass = new Classes();
         $affectedRows = Classes::where('id','=',$id)->update(array('name'=>Input::get('name')?Input::get('name'):""));
         
-        return Redirect::to('busclasslist');
+        return Redirect::to('busclasslist?'.$this->myGlob->access_token);
     }
 
     public function getDeleteBusClass($id)
@@ -58,14 +64,14 @@ class BusClassController extends BaseController
             if($checke_trip){
               $message['status']=0;
               $message['info']="You can't delete this class.";
-              return Redirect::to('/busclasslist')->with('message',$message);
+              return Redirect::to('/busclasslist?'.$this->myGlob->access_token)->with('message',$message);
             }
 
             $message['status']=1;
             $message['info']="Successfully delete one class.";
             $affectedRows1 = Classes::where('id', '=', $id)->delete();
             
-            return Redirect::to('/busclasslist')->with('message',$message);
+            return Redirect::to('/busclasslist?'.$this->myGlob->access_token)->with('message',$message);
             
     }
 
@@ -73,13 +79,13 @@ class BusClassController extends BaseController
     {           
            $todeleterecorts=Input::get('recordstoDelete');
            if(count($todeleterecorts) == 0){
-            return Redirect::to("/busclasslist");
+            return Redirect::to('/busclasslist?'.$this->myGlob->access_token);
            }
            
             foreach ($todeleterecorts as $recid) {
                 $result = Classes::where('id', '=', $recid)->delete();
             }
-            return Redirect::to("/busclasslist");
+            return Redirect::to('/busclasslist?'.$this->myGlob->access_token);
     }
 
     public function postSearchBusClass()

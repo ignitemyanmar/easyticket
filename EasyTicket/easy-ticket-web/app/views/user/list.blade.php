@@ -28,7 +28,7 @@
                      <ul class="breadcrumb">
                         <li>
                            <i class="icon-home"></i>
-                           <a href="/report/dailycarandadvancesale?operator_id={{$myApp->operator_id}}">ပင္မစာမ်က္ႏွာ</a> 
+                           <a href="/report/dailycarandadvancesale?operator_id={{$myApp->operator_id}}&access_token={{Auth::user()->access_token}}">ပင္မစာမ်က္ႏွာ</a> 
                            <i class="icon-angle-right"></i>
                         </li>
                         <li><a href="#">User List</a></li>
@@ -50,7 +50,7 @@
                            <div class="portlet-body">
                               <div class="clearfix">
                                  <div class="btn-group">
-                                    <a href="/user-create">
+                                    <a href="/user-create?access_token={{Auth::user()->access_token}}">
                                     <button id="" class="btn green">
                                     အသစ္ထည့္မည္ <i class="icon-plus"></i>
                                     </button>
@@ -85,15 +85,15 @@
                                     @foreach($response as $key=>$rows)
                                       <tr>
                                          <td>{{$rows->header}}</td>
-                                         <td>@if($rows->role==2) Staff @elseif($rows->role==4) Supervisor @else Manager @endif</td>
+                                         <td>@if($rows->role==2) Staff @elseif($rows->role==4) Supervisor @elseif($rows->role==3) Agent @else Manager @endif</td>
                                          <td>{{$rows->name}}</td>
                                          <td>{{$rows->email}}</td>
                                          <td>@if($rows->operator_groupname !='-') {{$rows->operator_groupname}} @else {{$rows->name}} ( * )  @endif</td>
                                          <td>
                                           @if($rows->operator_id != $myApp->operator_id)
-                                            <a href="user-delete/{{$rows->id}}" class="btn red-stripe delete">ဖ်က္ရန္</a>
+                                            <a href="user-delete/{{$rows->id}}?{{$myApp->access_token}}" class="btn red-stripe delete">ဖ်က္ရန္</a>
                                           @endif
-                                            <a href="user-edit/{{$rows->id}}" class="btn blue-stripe">ျပင္ရန္</a>
+                                            <a href="user-edit/{{$rows->id}}?{{$myApp->access_token}}" class="btn blue-stripe">ျပင္ရန္</a>
 
                                          </td>
                                       </tr>

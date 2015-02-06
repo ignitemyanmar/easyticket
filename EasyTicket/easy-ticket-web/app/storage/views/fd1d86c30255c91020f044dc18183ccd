@@ -17,7 +17,7 @@
                      <ul class="breadcrumb">
                         <li>
                            <i class="icon-home"></i>
-                           <a href="/">Home</a> 
+                           <a href="/?access_token=<?php echo Auth::user()->access_token; ?>">Home</a> 
                            <i class="icon-angle-right"></i>
                         </li>
                         <li><a href="#">Trip List</a></li>
@@ -39,7 +39,7 @@
                            <div class="portlet-body">
                               <div class="clearfix">
                                  <div class="btn-group">
-                                    <a href="/trip/create">
+                                    <a href="/trip/create?access_token=<?php echo Auth::user()->access_token; ?>">
                                     <button id="" class="btn green">
                                     Add New <i class="icon-plus"></i>
                                     </button>
@@ -149,18 +149,18 @@
                                                    <i class="icon-angle-down"></i>
                                                    </a>
                                                    <ul class="dropdown-menu pull-right">
-                                                      <li><a href="deletetrip/<?php echo $trip['id']; ?>"><i class="icon-trash"></i> ဖ်က္မည္</a></li>
+                                                      <li><a href="deletetrip/<?php echo $trip['id']; ?>?access_token=<?php echo Auth::user()->access_token; ?>"><i class="icon-trash"></i> ဖ်က္မည္</a></li>
                                                       <li class="divider"></li>
-                                                      <li><a href="define-ownseat/<?php echo $trip['id']; ?>"><i class="icon-pencil"></i> ခုံပုိင္သတ္မွတ္ရန္</a></li>
+                                                      <li><a href="define-ownseat/<?php echo $trip['id']; ?>?access_token=<?php echo Auth::user()->access_token; ?>"><i class="icon-pencil"></i> ခုံပုိင္သတ္မွတ္ရန္</a></li>
                                                       <li class="divider"></li>
                                                       <?php if(!is_null($trip['extendcity'])): ?>
-                                                      <li><a href="/trip/editextend/<?php echo $trip['id']; ?>"><i class="icon-pencil"></i> ဆက္သြားမည့္ျမိဳ႕ ျပင္ရန္</a></li>
-                                                      <li><a href="/trip/deleteextend/<?php echo $trip['extendcity']['id']; ?>"><i class="icon-trash"></i> ဆက္သြားမည့္ျမိဳ႕ ဖ်က္ရန္</a></li>
+                                                      <li><a href="/trip/editextend/<?php echo $trip['id']; ?>?access_token=<?php echo Auth::user()->access_token; ?>"><i class="icon-pencil"></i> ဆက္သြားမည့္ျမိဳ႕ ျပင္ရန္</a></li>
+                                                      <li><a href="/trip/deleteextend/<?php echo $trip['extendcity']['id']; ?>?access_token=<?php echo Auth::user()->access_token; ?>"><i class="icon-trash"></i> ဆက္သြားမည့္ျမိဳ႕ ဖ်က္ရန္</a></li>
                                                       <?php else: ?>
-                                                      <li><a href="/trip/extend/<?php echo $trip['id']; ?>"><i class="icon-pencil"></i> ဆက္သြားမည့္ျမိဳ႕ ထည့္ရန္</a></li>
+                                                      <li><a href="/trip/extend/<?php echo $trip['id']; ?>?access_token=<?php echo Auth::user()->access_token; ?>"><i class="icon-pencil"></i> ဆက္သြားမည့္ျမိဳ႕ ထည့္ရန္</a></li>
                                                       <?php endif; ?>
                                                       <li class="divider"></li>
-                                                      <li><a href="/closetrip/<?php echo $trip['id']; ?>"><i class="icon-ban-circle"></i> ခဏ ရပ္ဆိုင္းရန္</a></li>
+                                                      <li><a href="/closetrip/<?php echo $trip['id']; ?>?access_token=<?php echo Auth::user()->access_token; ?>"><i class="icon-ban-circle"></i> ခဏ ရပ္ဆိုင္းရန္</a></li>
                                                       
                                                    </ul>
                                                 </div>

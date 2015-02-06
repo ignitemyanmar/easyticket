@@ -29,7 +29,11 @@
 		}
 
 		public function extendcity(){
-			return $this->hasOne('ExtraDestination', 'trip_id');
+			return $this->hasMany('ExtraDestination', 'trip_id');
+		}
+
+		public function closeseat(){
+			return $this->hasMany('CloseSeatInfo','trip_id');
 		}
 
 

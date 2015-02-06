@@ -81,7 +81,8 @@
             <!-- BEGIN PAGE CONTENT-->
                <div class="row-fluid">
                   <div class="responsive span12" data-tablet="span12" data-desktop="span12">
-                     <form id="tripcreate" class="form-horizontal" action = "/trip-create" method= "post">    
+                     <form id="tripcreate" class="form-horizontal" action = "/trip-create" method= "post"> 
+                        <input type="hidden" class="access_token" name="access_token" value="{{Auth::user()->access_token}}">   
                         <div class="portlet box light-grey">
                            <div class="portlet-title">
                               <h4><i class="icon-user"></i> Trip Information</h4>

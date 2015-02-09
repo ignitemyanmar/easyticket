@@ -1,22 +1,17 @@
 package com.ignite.mm.ticketing;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +20,6 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
@@ -36,9 +30,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 
 import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockActivity;
 import com.ignite.mm.ticketing.application.BaseSherlockActivity;
-import com.ignite.mm.ticketing.application.DeviceUtil;
 import com.ignite.mm.ticketing.clientapi.NetworkEngine;
 import com.ignite.mm.ticketing.connection.detector.ConnectionDetector;
 import com.ignite.mm.ticketing.custom.listview.adapter.OperatorListAdapter;
@@ -48,8 +40,6 @@ import com.ignite.mm.ticketing.sqlite.database.model.OAuth2Error;
 import com.ignite.mm.ticketing.sqlite.database.model.Operator;
 import com.ignite.mm.ticketing.sqlite.database.model.Operators;
 import com.ignite.mm.ticketing.sqlite.database.model.Time;
-import com.smk.calender.widget.SKCalender;
-import com.smk.calender.widget.SKCalender.Callbacks;
 
 public class BusTimeActivity extends BaseSherlockActivity {
 	
@@ -138,7 +128,7 @@ public class BusTimeActivity extends BaseSherlockActivity {
 			actionBarNoti.setText(NotifyBooking.toString());
 		}
 		
-		actionBarTitle.setText("Choose Time > "+selectedFrom+" - "+selectedTo);
+		actionBarTitle.setText(selectedFrom+" - "+selectedTo+"[ "+changeDate(selectedDate)+" ]");
 		
 		if(connectionDetector.isConnectingToInternet()){
 			mLoadingView.setVisibility(View.VISIBLE);
@@ -158,7 +148,6 @@ public class BusTimeActivity extends BaseSherlockActivity {
 		}else{
 			mNoConnection.setVisibility(View.VISIBLE);
 			mNoConnection.startAnimation(topInAnimaiton());
-			fadeData();
 		}
 		
 		//from.setOnItemSelectedListener(fromClickListener);
@@ -174,40 +163,6 @@ public class BusTimeActivity extends BaseSherlockActivity {
 		if(selectedTime.length() != 0){
 			finish();
 		}
-	}
-	
-	private void fadeData(){
-		SharedPreferences pref = getSharedPreferences("User", Activity.MODE_PRIVATE);
-		String user_id = pref.getString("user_id", null);
-		String user_type = pref.getString("user_type", null);
-		if(user_type.equals("operator")){
-			txt_operator.setVisibility(View.GONE);
-			layout_operator.setVisibility(View.GONE);
-			selectedOperatorId = user_id;
-		}
-		
-		time_morning_list = new ArrayList<Time>();
-		time_morning_list.add(new Time("1","Business",45,5, "06:00 AM"));
-		time_morning_list.add(new Time("1","Business",45,5, "06:00 AM"));
-		time_morning_list.add(new Time("1","Business",45,5, "06:00 AM"));
-		time_morning_list.add(new Time("1","Business",45,5, "06:00 AM"));
-		time_morning_list.add(new Time("1","Business",45,5, "06:00 AM"));
-		time_morning_list.add(new Time("1","Business",45,5, "06:00 AM"));
-		time_morning_list.add(new Time("1","Business",45,5, "06:00 AM"));
-		
-		time_evening_list = new ArrayList<Time>();
-		time_evening_list.add(new Time("1","Business",45,5, "06:00 PM"));
-		time_evening_list.add(new Time("1","Business",45,5, "06:00 PM"));
-		time_evening_list.add(new Time("1","Business",45,5, "06:00 PM"));
-		time_evening_list.add(new Time("1","Business",45,5, "06:00 PM"));
-		time_evening_list.add(new Time("1","Business",45,5, "06:00 PM"));
-		time_evening_list.add(new Time("1","Business",45,5, "06:00 PM"));
-		time_evening_list.add(new Time("1","Business",45,5, "06:00 PM"));
-		
-		lst_morning_time.setAdapter(new TimeAdapter(BusTimeActivity.this, time_morning_list));
-		setListViewHeightBasedOnChildren(lst_morning_time);
-		lst_evening_time.setAdapter(new TimeAdapter(BusTimeActivity.this, time_evening_list));
-		setListViewHeightBasedOnChildren(lst_evening_time);
 	}
 	
 	private Animation topInAnimaiton(){
@@ -378,7 +333,7 @@ public class BusTimeActivity extends BaseSherlockActivity {
 				editor.commit();
 				editor.putString("order_date", getToday());
 				editor.commit();
-	        	startActivity(new Intent(getApplicationContext(),	BusTicketingOrderListActivity.class));
+	        	startActivity(new Intent(getApplicationContext(),	BusBookingListActivity.class));
 			}
 		}
 		

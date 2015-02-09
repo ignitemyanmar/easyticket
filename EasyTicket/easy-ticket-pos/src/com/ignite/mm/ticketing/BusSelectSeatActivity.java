@@ -43,14 +43,13 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
-
 import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockActivity;
+import com.google.gson.JsonObject;
 import com.ignite.mm.ticketing.application.BaseSherlockActivity;
 import com.ignite.mm.ticketing.application.BookingDialog;
 import com.ignite.mm.ticketing.application.DeviceUtil;
+import com.ignite.mm.ticketing.application.EditSeatDialog;
 import com.ignite.mm.ticketing.clientapi.NetworkEngine;
 import com.ignite.mm.ticketing.connection.detector.ConnectionDetector;
 import com.ignite.mm.ticketing.custom.listview.adapter.BusClassAdapter;
@@ -65,7 +64,6 @@ import com.ignite.mm.ticketing.sqlite.database.model.OperatorGroupUser;
 import com.ignite.mm.ticketing.sqlite.database.model.ReturnComfrim;
 import com.ignite.mm.ticketing.sqlite.database.model.Seat;
 import com.ignite.mm.ticketing.sqlite.database.model.Seat_list;
-import com.ignite.mm.ticketing.sqlite.database.model.Seat_plan;
 import com.ignite.mm.ticketing.sqlite.database.model.SelectSeat;
 import com.smk.custom.view.CustomTextView;
 import com.smk.skalertmessage.SKToastMessage;
@@ -88,6 +86,8 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
 	private String AgentID = "0";
 	private String CustName = "";
 	private String CustPhone = "";
+	private int RemarkType;
+	private String Remark;
 	private String OperatorID;
 	private String FromCity;
 	private String ToCity;
@@ -113,6 +113,7 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
 	private ListView lst_remark;
 	private String BusClasses;
 	private LinearLayout layout_remark;
+	private BusSeatAdapter seatAdapter;
 	public static List<BusSeat> BusSeats;
 	public static List<OperatorGroupUser> groupUser = new ArrayList<OperatorGroupUser>();
 	public static String CheckOut;
@@ -157,9 +158,9 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
 			actionBarNoti.setText(NotifyBooking.toString());
 		}
 		
-		actionBarTitle.setText("Choose Seat > "+From+" - "+To);
+		actionBarTitle.setText(From+" - "+To+"["+Time+"] - "+changeDate(Date));
 		
-		SelectedSeat = "";
+		SelectedSeat 	= "";
 		btn_booking		= (Button) findViewById(R.id.btn_booking);
 		btn_booking.setOnClickListener(clickListener);
 		btn_now_booking = (Button) findViewById(R.id.btn_now_booking);
@@ -248,20 +249,23 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
 				bookingDialog = new BookingDialog(BusSelectSeatActivity.this, agentList);
 				bookingDialog.setCallbackListener(new BookingDialog.Callback() {
 
-					public void onSave(String agentId, String custName, String custPhone) {
+					public void onCancel() {
+						// TODO Auto-generated method stub
+						
+					}
+
+					public void onSave(String agentId, String custName,
+							String custPhone, int remarkType, String remark) {
 						// TODO Auto-generated method stub
 						isBooking = 1;
 						AgentID = agentId;
 						CustName = custName;
 						CustPhone = custPhone;
+						RemarkType = remarkType;
+						Remark = remark;
 						if(!AgentID.equals("0")){
 							getServermsg();
-						}						
-					}
-					
-					public void onCancel() {
-						// TODO Auto-generated method stub
-						
+						}	
 					}
 				});				
 			}
@@ -320,6 +324,8 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
         params.add(new BasicNameValuePair("agent_id", AgentID));
         params.add(new BasicNameValuePair("name", CustName));
         params.add(new BasicNameValuePair("phone", CustPhone));
+        params.add(new BasicNameValuePair("remark_type", String.valueOf(RemarkType)));
+        params.add(new BasicNameValuePair("remark", Remark));
         params.add(new BasicNameValuePair("from_city", FromCity));
         params.add(new BasicNameValuePair("to_city", ToCity));
         params.add(new BasicNameValuePair("group_operator_id", AppLoginUser.getUserGroupID()));
@@ -339,7 +345,7 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
 					if(jsonObject.getString("status").equals("1")){
 						if(jsonObject.getBoolean("can_buy") && jsonObject.getString("device_id").equals(DeviceUtil.getInstance(BusSelectSeatActivity.this).getID())){
 		        			if(isBooking == 0){
-		        				Intent nextScreen = new Intent(BusSelectSeatActivity.this,NRCActivity.class);
+		        				Intent nextScreen = new Intent(BusSelectSeatActivity.this,BusConfirmActivity.class);
 		        				JSONArray jsonArray = jsonObject.getJSONArray("tickets");
 		        				String SeatLists = "";
 		        				for(int i=0; i<jsonArray.length(); i++){
@@ -422,7 +428,9 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
 			}
 			
 			mSeat.setNumColumns(BusSeats.get(0).getSeat_plan().get(0).getColumn());
-			mSeat.setAdapter(new BusSeatAdapter(this, BusSeats.get(0).getSeat_plan().get(0).getSeat_list()));	
+			seatAdapter = new BusSeatAdapter(this, BusSeats.get(0).getSeat_plan().get(0).getSeat_list());
+			seatAdapter.setCallbacks(callbacks);
+			mSeat.setAdapter(seatAdapter);	
 			setGridViewHeightBasedOnChildren(mSeat , Integer.valueOf(BusSeats.get(0).getSeat_plan().get(0).getColumn()));
 			
 			lvClass = (ListView)findViewById(R.id.lvBusClass);
@@ -442,7 +450,102 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
 			alertDialog.show();
 		}
 	}
-	
+	protected EditSeatDialog editSeatDialog;
+	private BusSeatAdapter.Callbacks callbacks = new BusSeatAdapter.Callbacks() {
+		
+		public void onClickEdit(final Seat_list list) {
+			// TODO Auto-generated method stub
+			editSeatDialog = new EditSeatDialog(BusSelectSeatActivity.this);
+			editSeatDialog.setName(list.getCustomerInfo().getName());
+			editSeatDialog.setPhone(list.getCustomerInfo().getPhone());
+			editSeatDialog.setNRC(list.getCustomerInfo().getNrcNo());
+			editSeatDialog.setTicketNo(list.getCustomerInfo().getTicketNo());
+			editSeatDialog.setCallbackListener(new EditSeatDialog.Callback() {
+				
+				private ProgressDialog dialog1;
+
+				public void onEdit() {
+					dialog = ProgressDialog.show(BusSelectSeatActivity.this, "", " Please wait...", true);
+			        dialog.setCancelable(true);
+					// TODO Auto-generated method stub
+			        Log.i("","Hello Param: "+BusSeats.get(0).getSeat_plan().get(0).getId()+"/"+list.getSeat_no()+"/"+editSeatDialog.getName()+"/"+editSeatDialog.getPhone()+"/"+editSeatDialog.getNRC()+"/"+editSeatDialog.getTicketNo());
+					NetworkEngine.getInstance().editSeatInfo(
+							AppLoginUser.getAccessToken(), BusSeats.get(0).getSeat_plan().get(0).getId().toString(),
+							list.getSeat_no(), editSeatDialog.getName(),
+							editSeatDialog.getPhone(), editSeatDialog.getNRC(),
+							editSeatDialog.getTicketNo(),
+							new Callback<JsonObject>() {
+
+								public void failure(RetrofitError arg0) {
+									// TODO Auto-generated method stub
+									dialog.dismiss();
+								}
+
+								public void success(JsonObject arg0,
+										Response arg1) {
+									// TODO Auto-generated method stub
+									onResume();
+									dialog.dismiss();
+									editSeatDialog.dismiss();
+									SKToastMessage.showMessage(BusSelectSeatActivity.this, "Successfully Updated.", SKToastMessage.SUCCESS);
+								}
+							});
+				}
+				
+				public void onCancel() {
+					
+					// TODO Auto-generated method stub
+					alertDialog("Are you sure, you want to delete?", new DialogInterface.OnClickListener() {
+						
+								public void onClick(DialogInterface dialog,
+										int which) {
+									// TODO Auto-generated method stub
+									dialog.dismiss();
+									dialog1 = ProgressDialog.show(BusSelectSeatActivity.this, "", " Please wait...", true);
+							        dialog1.setCancelable(true);
+									NetworkEngine.getInstance().deleteTicket(
+											AppLoginUser.getAccessToken(),
+											BusSeats.get(0).getSeat_plan().get(0).getId().toString(),
+											list.getSeat_no(),
+											AppLoginUser.getLoginUserID(),
+											new Callback<JsonObject>() {
+
+												public void success(
+														JsonObject arg0,
+														Response arg1) {
+													// TODO Auto-generated
+													// method stub
+													onResume();
+													dialog1.dismiss();
+													SKToastMessage
+															.showMessage(
+																	BusSelectSeatActivity.this,
+																	"Successfully Deleted.",
+																	SKToastMessage.SUCCESS);
+													editSeatDialog.dismiss();
+												}
+
+												public void failure(
+														RetrofitError arg0) {
+													// TODO Auto-generated
+													// method stub
+													dialog1.dismiss();
+												}
+											});
+								}
+					}, new DialogInterface.OnClickListener() {
+						
+						public void onClick(DialogInterface dialog, int which) {
+							// TODO Auto-generated method stub
+							dialog.dismiss();
+						}
+					});
+					
+				}
+			});
+			editSeatDialog.show();
+		}
+	};
 	private String getRemarkType(int remarkType){
 		List<String> remarkTypes = new ArrayList<String>();
 		remarkTypes.add("မွတ္ခ်က္ အမ်ိဳးအစား  ေရြးရန္");
@@ -451,6 +554,8 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
 		remarkTypes.add("ခုံေရြ႕ရန္");
 		remarkTypes.add("Date Change ရန္");
 		remarkTypes.add("စီးျဖတ္");
+		remarkTypes.add("ေတာင္းေရာင္း");
+		remarkTypes.add("ဆက္သြား");
 		return remarkTypes.get(remarkType).toString();
 	}
 	
@@ -482,7 +587,7 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
 				editor.commit();
 				editor.putString("order_date", getToday());
 				editor.commit();
-	        	startActivity(new Intent(getApplicationContext(),	BusTicketingOrderListActivity.class));
+	        	startActivity(new Intent(getApplicationContext(),	BusBookingListActivity.class));
 			}
 			
 			if(v == btn_booking){
@@ -491,8 +596,11 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
 				editor.clear();
 				editor.commit();
 				editor.putString("order_date", Date);
+				editor.putString("from", FromCity);
+				editor.putString("to", ToCity);
+				editor.putString("time", Time);
 				editor.commit();
-	        	startActivity(new Intent(getApplicationContext(),	BusTicketingOrderListActivity.class));
+	        	startActivity(new Intent(getApplicationContext(),	BusBookingListActivity.class));
 			}
 			
 			if(v == btn_now_booking){

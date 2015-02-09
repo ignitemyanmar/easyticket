@@ -1,13 +1,20 @@
 package com.ignite.mm.ticketing.application;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
+import android.text.format.DateFormat;
 import android.util.Log;
 
 import com.actionbarsherlock.app.SherlockActivity;
@@ -92,5 +99,37 @@ public class BaseSherlockActivity extends SherlockActivity {
    	   	}
 		return false;  
 	 }
+	
+	public static String changeDate(String date){
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		Date StartDate = null;
+		try {
+			StartDate = df.parse(date);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return DateFormat.format("dd/MM/yyyy",StartDate).toString();
+	}
+	
+	protected void alertDialog(String MSG, OnClickListener YES, OnClickListener NO){
+		AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+		alertDialog.setMessage(MSG);
+		if(YES != null){
+			alertDialog.setButton(Dialog.BUTTON_POSITIVE, "YES", YES);
+		}else{
+			alertDialog.setButton(Dialog.BUTTON_POSITIVE, "OK", new OnClickListener() {
+				
+				public void onClick(DialogInterface dialog, int which) {
+					// TODO Auto-generated method stub
+					dialog.dismiss();
+				}
+			});
+		}
+		if(NO != null){
+			alertDialog.setButton(Dialog.BUTTON_NEGATIVE, "NO", NO);
+		}
+		alertDialog.show();
+	}
 	
 }

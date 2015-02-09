@@ -1,10 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ignite.mm.ticketing"
-    android:versionCode="1"
-    android:versionName="1.0" >
+    android:versionCode="6"
+    android:versionName="1.6" >
 
     <uses-sdk
-        android:minSdkVersion="8"
+        android:minSdkVersion="10"
         android:targetSdkVersion="15" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
@@ -33,7 +33,7 @@
         <activity android:name=".SelectingSeatActivity" android:screenOrientation="portrait"></activity>
          <activity android:name=".Movie_Info_Activity" android:screenOrientation="portrait"></activity>
         <activity android:name=".PDFMovieActivity" android:screenOrientation="portrait"></activity>
-       <activity android:name=".NRCActivity" android:screenOrientation="portrait"></activity>
+       <activity android:name=".BusConfirmActivity" android:screenOrientation="portrait"></activity>
         <activity android:name=".UserLogin" android:screenOrientation="portrait"></activity>
         <activity android:name=".UserRegister" android:screenOrientation="portrait"></activity>
         <activity android:name=".SelectDateActivity" android:screenOrientation="portrait"></activity>
@@ -49,10 +49,10 @@
         <activity android:name=".OtherListActivity" android:screenOrientation="portrait"></activity>
         <activity android:name=".BusTimeActivity" android:screenOrientation="portrait"></activity>
         <activity android:name=".BusTripsCityActivity" android:screenOrientation="portrait"></activity>
-        <activity android:name=".BusTicketingMenuActivity" android:screenOrientation="portrait"></activity>
-        <activity android:name=".BusTicketingOrderListActivity" android:screenOrientation="portrait"></activity>
-        <activity android:name=".PayDeleteActivity" android:screenOrientation="portrait"></activity>
-        <activity android:name=".BusTicketingCustomerTicketActivity" android:screenOrientation="portrait"></activity>
+        <activity android:name=".BusMenuActivity" android:screenOrientation="portrait"></activity>
+        <activity android:name=".BusBookingListActivity" android:screenOrientation="portrait"></activity>
+        <activity android:name=".BusBookingConfirmDeleteActivity" android:screenOrientation="portrait"></activity>
+        <activity android:name=".BusBookingDetailActivity" android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>

@@ -96,7 +96,7 @@ public class BusTripsCityActivity extends BaseSherlockActivity{
 				editor.commit();
 				editor.putString("order_date", getToday());
 				editor.commit();
-	        	startActivity(new Intent(getApplicationContext(),	BusTicketingOrderListActivity.class));
+	        	startActivity(new Intent(getApplicationContext(),	BusBookingListActivity.class));
 			}
 		}
 	};

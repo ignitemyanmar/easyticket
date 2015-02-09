@@ -8,10 +8,10 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:background="@android:color/transparent" >
-
+
         <ImageButton
             android:id="@+id/action_bar_back"
-            android:layout_width="wrap_content"
+            android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:adjustViewBounds="true"
@@ -20,15 +20,18 @@
             android:paddingRight="10dp"
             android:scaleType="fitStart"
             android:src="@drawable/back" />
-
+
         <TextView
             android:id="@+id/action_bar_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
+            android:layout_marginLeft="55dp"
+            android:layout_marginRight="55dp"
             android:layout_weight="25"
             android:gravity="center_vertical|center_horizontal"
+            android:singleLine="true"
             android:text="HOME"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@color/white"

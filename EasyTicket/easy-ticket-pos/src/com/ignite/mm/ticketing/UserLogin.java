@@ -4,28 +4,23 @@ package com.ignite.mm.ticketing;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
-import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
-
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
 import com.ignite.mm.ticketing.application.LoginUser;
+import com.ignite.mm.ticketing.application.SecureKey;
 import com.ignite.mm.ticketing.clientapi.NetworkEngine;
 import com.ignite.mm.ticketing.sqlite.database.model.AccessToken;
-import com.ignite.mm.ticketing.sqlite.database.model.OAuth2Error;
 import com.smk.skalertmessage.SKToastMessage;
 import com.smk.skconnectiondetector.SKConnectionDetector;
 
@@ -41,7 +36,6 @@ public class UserLogin extends SherlockActivity {
 	private TextView actionBarTitle;
 	private ImageButton actionBarBack;
 	private SKConnectionDetector connectionDetector;
-	private Builder alertDialog;
 	
 	public static boolean isSkip = false;
 	protected void onCreate(Bundle savedInstanceState) {
@@ -70,13 +64,11 @@ public class UserLogin extends SherlockActivity {
 			buttons[i].setOnClickListener(clickListener);
 
 		}
-		
 		connectionDetector = SKConnectionDetector.getInstance(this);
 		connectionDetector.setMessageStyle(SKConnectionDetector.VERTICAL_TOASH);
 		if(!connectionDetector.isConnectingToInternet())
 			connectionDetector.showErrorMessage();
 		
-		alertDialog = new AlertDialog.Builder(this);
 	}
 
 	private OnClickListener clickListener = new OnClickListener() {
@@ -98,7 +90,7 @@ public class UserLogin extends SherlockActivity {
 		    			}else{
 		    				userEmail = txtEmail.getText().toString()+"@gmail.com";
 		    			}
-						NetworkEngine.getInstance().getAccessToken("password", "721685", "IgniteAdmin721685", userEmail, txtPassword.getText().toString(), "admin", "123456789", new Callback<AccessToken>() {
+						NetworkEngine.getInstance().getAccessToken(SecureKey.getGrant(), SecureKey.getId(), SecureKey.getKey(), userEmail, txtPassword.getText().toString(), SecureKey.getScope(), SecureKey.getState(), new Callback<AccessToken>() {
 							
 							public void success(AccessToken arg0, Response arg1) {
 								// TODO Auto-generated method stub
@@ -123,7 +115,7 @@ public class UserLogin extends SherlockActivity {
 									finish();
 									startActivity(intent);
 								}else{
-									Intent intent = new Intent(getApplicationContext(),	BusTicketingMenuActivity.class);
+									Intent intent = new Intent(getApplicationContext(),	BusMenuActivity.class);
 			   						startActivity(intent);
 								}
 							}

@@ -4,8 +4,11 @@ import java.util.List;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
@@ -22,6 +25,7 @@ import com.ignite.mm.ticketing.sqlite.database.model.Seat_list;
 public class BusSeatAdapter extends BaseAdapter{
 	 private final Context _context;
 	    private final List<Seat_list> list;
+		private Callbacks mCallbacks;
 	  	    
 	    public BusSeatAdapter(Activity atx, List<Seat_list> seat_list)
 	    {
@@ -35,7 +39,7 @@ public class BusSeatAdapter extends BaseAdapter{
 			return  list.size();
 		}
 		
-		public Object getItem(int position) {
+		public Seat_list getItem(int position) {
 			// TODO Auto-generated method stub
 			return list.get(position);
 		}
@@ -98,6 +102,8 @@ public class BusSeatAdapter extends BaseAdapter{
 					
 			}
 			
+			
+			
 			//Already Purchase or Booking
 			if(list.get(position).getStatus() == 2){
 				holder.seat.setEnabled(false);
@@ -109,9 +115,25 @@ public class BusSeatAdapter extends BaseAdapter{
             		holder.txt_ticket_no.setText(list.get(position).getCustomerInfo().getTicketNo());
             		holder.txt_agent.setText(list.get(position).getCustomerInfo().getAgentName());
             		holder.txt_seating_no.setText(list.get(position).getSeat_no());
+            		//Check Remark
+        			if(list.get(position).getRemark_type() != 0){
+        				holder.txt_seating_no.setBackgroundColor(Color.YELLOW);
+        			}
             	}else{
             		holder.layout_customer_info.setVisibility(View.INVISIBLE);
             	}
+            	holder.layout_customer_info.setTag(list.get(position));
+            	holder.layout_customer_info.setOnLongClickListener(new OnLongClickListener() {
+					
+					public boolean onLongClick(View v) {
+						// TODO Auto-generated method stub
+						if(mCallbacks != null){
+							Seat_list list = (Seat_list) v.getTag();
+							mCallbacks.onClickEdit(list);
+						}
+						return false;
+					}
+				});
             }
             
             if(list.get(position).getStatus() == 3){
@@ -183,6 +205,13 @@ public class BusSeatAdapter extends BaseAdapter{
 				}
 			}
 			return color;
+		}
+		
+		public void setCallbacks(Callbacks callbacks){
+			this.mCallbacks = callbacks;
+		}
+		public interface Callbacks{
+			public void onClickEdit(Seat_list list);
 		}
 		
 		 static class ViewHolder {

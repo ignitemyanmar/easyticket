@@ -71,6 +71,7 @@
                <div class="row-fluid">
                   <div class="responsive span12" data-tablet="span12" data-desktop="span12">
                      <form id="tripcreate" class="form-horizontal" action = "/define-ownseat" method= "post">    
+                        <input type="hidden" name="access_token" value="{{$myApp->v_access_token}}">
                         <div class="portlet box light-grey">
                            <div class="portlet-title">
                               <h4><i class="icon-user"></i>ခုံပုိင္သတ္မွတ္ရန္</h4>
@@ -292,9 +293,10 @@
             $('#form-date-rangecustom #hddaterange').val(start.toString('yyyy-MM-dd') + ',' + end.toString('yyyy-MM-dd'));
             var trip_id=$('#trip_id').val();
             var var_date_range=$('#hddaterange').val();
+            var _token={{json_encode($myApp->access_token)}};
             $.ajax({
                type:'GET',
-               url:'/define-ownseat-drange/'+trip_id,
+               url:'/define-ownseat-drange/'+trip_id+'?'+_token,
                data:{   date_range:var_date_range,
                      }
               }).done(function(result){

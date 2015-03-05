@@ -34,6 +34,7 @@
                <div class="row-fluid">
                   <div class="responsive span12" data-tablet="span12" data-desktop="span12">
                      <form id="tripcreate" class="form-horizontal" action = "/closetrip" method= "post">  
+                        <input type="hidden" name="access_token" value="{{Auth::user()->access_token}}">
                         <input type="hidden" name="trip_id" value="{{$trip_id}}">
                         <div class="portlet box light-grey">
                            <div class="portlet-title">
@@ -60,14 +61,14 @@
                                          </div>
                                       </div>
                                     </div>
-                                    <!-- <div class="control-group from_date" style="display:none;">
+                                    <div class="control-group from_date" style="display:none;">
                                       <label class="control-label">From Date</label>
                                       <div class="controls">
                                          <div class="input-prepend">
                                             <span class="add-on"><i class="icon-calendar"></i></span><input name="date_range" id="date_range" class="m-wrap m-ctrl-medium date-picker" type="text">
                                          </div>
                                       </div>
-                                    </div> -->
+                                    </div>
                                     <div class="control-group">
                                        <label class="control-label" for="price">ခဏ ရပ်ဆိုင်ရြခင်း၏ အေြကာင်းအရင်း</label>
                                        <div class="controls">

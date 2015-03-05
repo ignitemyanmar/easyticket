@@ -5,6 +5,9 @@
    {{HTML::style('../../css/component.css')}}
    
 <style type="text/css" media="all">
+   @media print{ 
+      a{display: none !important;}
+   }
   .padding-5{padding: 5px;}
   body .ui-tooltip, .arrow:after {
       background: transparent;
@@ -16,12 +19,12 @@
       box-shadow: transparent;
    }
    .zawgyi-one, h4{font-family: "Zawgyi-One";}  
-.fit-a{padding-top: 9px;}
+   .fit-a{padding-top: 9px;}
  .check-a label{height: 175px;}
  .colorbox{width:24px; height:24px;float:left;margin-right:8px;}
  .booking{background:  #470203;}
  .rm_typeframe{border:1px solid #eee;min-height:200px !important;background: rgba(231, 241, 246, 1);}
- .rm_heading{background:#000; color:white;padding:11px 12px;margin-top:0;}
+ .rm_heading{background:#000; color:white;padding:11px 12px;margin-top:0;font-size: 14px;}
  hr{margin:4px 0; border-bottom:1px solid #444;}
  .padding_rmtype{padding: 0 12px;}
  .padding_rmtype span{background:#000;padding:0 1px;color:white;position:relative;}
@@ -36,7 +39,6 @@
                <div class="row-fluid">
                   <div class="span12">
                      <?php 
-                        // $orderdate=$response[0]['departure_date']; 
                         $orderdate=Session::get('search_daily_date'); 
                         $V_operator_id=Session::get('operator_id');
                      ?>
@@ -64,6 +66,7 @@
                <div id="myModal" class="reveal-modal small" data-reveal> 
                   <form id="update-form" name ="update-form" class="horizontal-form" action = "" method= "post">    
                         <div class="portlet box light-grey">
+                           <input type="hidden" name="access_token" id="a_tk" value="{{$myApp->v_access_token}}">
                            <div class="portlet-title">
                               <h4><i class="icon-user"></i>ဝယ္သူအခ်က္အလက္ျပင္ရန္</h4>
                               <div class="actions">
@@ -150,7 +153,7 @@
                               </div>
                            </div>
 
-                             <div id="contentprint" class="show-for-print">
+                           <div id="contentprint" class="show-for-print">
                                  @if($response['seat_plan']['seat_list'])
                                  <ul class="trip_info">
                                     <h3>ခရီးစဥ္ အခ်က္အလက္မ်ား</h3>
@@ -162,13 +165,15 @@
                                     <li>ေရာင္းျပီး/ စုစုေပါင္းလက္မွတ္ : <span style="margin-left:250px;">{{$response['seat_plan']['total_sold_seats'].'/'.$response['seat_plan']['total_seats']}}</span></li>
                                     <li>ေရာင္းရေငြစုစုေပါင္း : <span style="margin-left:250px;">{{$response['seat_plan']['total_amount']}} MMK</span></li>
                                     <br>
-                                    <div style="width:25px;height:25px; background-color:#FF1711 !important;float:left;margin-right:5px;"></div>ေရာင္းျပီးသားခုံမ်ား<br>
-                                    <div class="clear">&nbsp;</div>
-                                    <div style="width:25px;height:25px; background-color:#470203 !important;float:left;margin-right:5px;"></div>ၾကိဳတင္မွာယူထားေသာ ခုံမ်ား<br>
-                                    <div class="clear">&nbsp;</div>
-                                    <div style="width:25px;height:25px; background-color:#5586C8 !important;float:left;margin-right:5px;"></div>ခုံလြတ္မ်ား<br>
-                                    <div class="clear">&nbsp;</div>
-                                    <hr>
+                                    <div style="display:none;">
+                                       <div style="width:33%;float:left;"><b style="width:25px;height:25px; background-color:#FF1711 !important;float:left;margin-right:5px;"></b>ေရာင္းျပီးသားခုံမ်ား</div>
+                                       <!-- <div class="clear">&nbsp;</div> -->
+                                       <div style="width:33%;float:left;"><b style="width:25px;height:25px; background-color:#470203 !important;float:left;margin-right:5px;"></b>ၾကိဳတင္မွာယူထားေသာ ခုံမ်ား</div>
+                                       <!-- <div class="clear">&nbsp;</div> -->
+                                       <div style="width:33%;float:left;"><b style="width:25px;height:25px; background-color:#5586C8 !important;float:left;margin-right:5px;"></b>ခုံလြတ္မ်ား</div>
+                                       <div class="clear" style="clear:both;h">&nbsp;</div>
+                                    </div>
+                                    <!-- <hr> -->
                                  </ul>
 
                                  <div class="check-a">
@@ -176,7 +181,7 @@
                                        @foreach($response['seat_plan']['seat_list'] as $rows)
                                           @if($k%$columns==1)
                                           <div class="row-fluid">
-                                             <div class="span1 ">&nbsp;</div>
+                                             <div class="span1" style="width:14px;">&nbsp;</div>
                                           @endif
                                                 @if($rows['status']==0)
                                                    <div class="span2">&nbsp;</div>
@@ -197,42 +202,113 @@
                                                       }
                                                    ?>
                                                    @if($taken=="taken")
+                                                      <div class="span2">
+                                                         <label>
+                                                            <span></span>
+                                                            <div class="fit-a {{$taken}} zawgyi-one" title="{{$rows['agent_name']}}" id="{{$rows['seat_no']}}">Seat No : {{$rows['seat_no']}} <br>{{$rows['customer']['name']}}<br> <span class="small">Ph : {{$rows['customer']['phone']}}<br>TNo : {{$rows['ticket_no']}}<br> {{$rows['customer']['nrc_no']}}</span><br> &nbsp;</div>
+                                                         </label>
+                                                      </div>
+                                                      <!-- 
                                                       <div class="span2 grid cs-style-3">
                                                          <div class="list">
                                                             <figure>
                                                                <div class="checkboxframe">
                                                                   <label>
                                                                      <span></span>
-                                                                     <div class="fit-a {{$taken}} zawgyi-one" title="{{$rows['agent_name']}}" id="{{$rows['seat_no']}}">{{$rows['customer']['name']}}<br> {{$rows['customer']['phone']}}<br> {{$rows['ticket_no']}}<br> {{$rows['customer']['nrc_no']}}<br> &nbsp;{{$rows['agent_name']}}</div>
+                                                                     <div class="fit-a {{$taken}} zawgyi-one" title="{{$rows['agent_name']}}" id="{{$rows['seat_no']}}">{{$rows['customer']['name']}}<br> <span class="small">Ph : {{$rows['customer']['phone']}}<br>TNo : {{$rows['ticket_no']}}<br> {{$rows['customer']['nrc_no']}}</span><br> &nbsp;<span class="small">{{$rows['agent_name']}}</span></div>
                                                                   </label>
                                                                </div>
                                                             </figure>
                                                          </div>
                                                       </div>
-
+ -->
                                                    @else
-                                                      <div class="span2 grid cs-style-3">
-                                                         <div class="list">
-                                                            <figure>
-                                                               <div class="checkboxframe">
-                                                                  <label>
-                                                                     <span></span>
-                                                                     <div class="fit-a {{$taken}}" title="{{$rows['seat_no'].'('. $rows['price'].' K)'}}" id="{{$rows['seat_no']}}">Seat No : <b>{{$rows['seat_no']}}</b><span class="zawgyi-one"> <br> &nbsp;{{$rows['agent_name']}}</b><br>{{$rows['customer']['name']}}<br>{{$rows['customer']['nrc_no']}}</span></div>
-                                                                     <!-- <div style="background:{{$color}}" class="fit-a zawgyi-one" title="{{$rows['agent_name']}}" id="{{$rows['seat_no']}}">{{$rows['customer']['name']}}<br> {{$rows['customer']['phone']}}<br> {{$rows['ticket_no']}}<br> {{$rows['customer']['nrc_no']}}<br> &nbsp;{{$rows['agent_name']}}</div> -->
-                                                                  </label>
-                                                               </div>
-                                                            </figure>
-                                                         </div>
+                                                      <div class="span2">
+                                                         <label>
+                                                            <span></span>
+                                                            <div class="fit-a {{$taken}}" title="{{$rows['seat_no'].'('. $rows['price'].' K)'}}" id="{{$rows['seat_no']}}">Seat No : <b>{{$rows['seat_no']}}</b><span class="zawgyi-one"> <br> &nbsp;{{$rows['agent_name']}}</b><br>{{$rows['customer']['name']}}<br>{{$rows['customer']['nrc_no']}}</span></div>
+                                                            <!-- <div style="background:{{$color}}" class="fit-a zawgyi-one" title="{{$rows['agent_name']}}" id="{{$rows['seat_no']}}">{{$rows['customer']['name']}}<br> {{$rows['customer']['phone']}}<br> {{$rows['ticket_no']}}<br> {{$rows['customer']['nrc_no']}}<br> &nbsp;{{$rows['agent_name']}}</div> -->
+                                                         </label>
                                                       </div>
                                                       
                                                    @endif
                                                 @endif
                                           @if($k%$columns==0)
+                                             <div class="span1">&nbsp;</div>
+
                                           </div>
                                           @endif
                                           <?php $k++;?>
                                        @endforeach
                                  </div>
+
+                                    @if(count($remarkgroup)>0)
+                                       <?php $i=1;?>
+                                       @foreach($remarkgroup as $key=>$remark_typerow)
+                                          <?php 
+                                             switch ($key) {
+                                                case '1':
+                                                   $remark_type="လမ္းၾကိဳ";
+                                                   break;
+                                                case '2':
+                                                   $remark_type="ေတာင္းရန္";
+                                                   break;
+                                                case '3':
+                                                   $remark_type="ခုံေရြ႕ရန္";
+                                                   break;
+                                                case '4':
+                                                   $remark_type="Date Chanage ရန္";
+                                                   break;
+                                                
+                                                default:
+                                                    $remark_type="စည္းဖ်က္";
+                                                   break;
+                                             }
+                                          ?>
+                                          @if($i%3==1)
+                                          <div class="row-fluid" style="padding-left:19px;">
+                                          @endif
+                                             <div class="span4 rm_typeframe">
+                                                   <h4 class="rm_heading">{{$remark_type}}</h4>
+                                                   <div class="row-fluid padding_rmtype">
+                                                      <div class="span4"><b>Seat No</b></div>
+                                                      <div class="span8"><b>Remark</b></div> 
+                                                   </div>
+                                                   <!-- <div class="clearfix"></div>  -->
+
+                                                   @foreach($remark_typerow as $remarkrow)
+                                                      @if(count($remarkrow['saleitems'])>0)
+                                                         <div class="row-fluid padding_rmtype">
+                                                            <div class="span4">
+                                                               <?php $j=1;?>
+                                                               @foreach($remarkrow['saleitems'] as $seats)
+                                                                  <span>{{$seats['seat_no']}}, </span>
+                                                                  @if($j%4==0)
+                                                                     <div>&nbsp;</div>
+                                                                  @endif
+                                                                  <?php $j++;?>
+                                                               @endforeach
+                                                            </div>
+                                                            <div class="span8">
+                                                               @if($key==5)
+                                                                  {{$remarkrow['name']}}
+                                                                  <br>
+                                                               @endif
+                                                               @if($remarkrow['remark']) {{$remarkrow['remark']}} @else - @endif
+                                                            </div>
+                                                         </div>
+                                                         <div class="clearfix"></div> 
+                                                      @endif
+                                                   @endforeach
+
+                                             </div>
+                                          @if($i%3==0 || $i==count($remarkgroup)) 
+                                          </div>
+                                          <div class="clearfix"><br></div> 
+                                          @endif
+                                          <?php $i++;?>
+                                       @endforeach
+                                    @endif
                                  @endif
                            </div>
 
@@ -254,7 +330,7 @@
                                  <div class="clear">&nbsp;</div>
                                  <div class="colorbox available"></div>ခုံလြတ္မ်ား<br>
                                  <div class="clear">&nbsp;</div>
-                                 <hr>
+                                 <!-- <hr> -->
                               </ul>
 
                               <div class="check-a">
@@ -287,13 +363,13 @@
                                                                <label>
                                                                   <span></span>
 
-                                                                  <div class="fit-a {{$taken}} zawgyi-one" title="{{$rows['agent_name']}}" id="{{$rows['seat_no']}}">@if($rows['extra_city']) <b style="position:absolute; top:0; right:0;background:#000;">+ Extend City</b> <br>@endif {{$rows['customer']['name']}}<br> {{$rows['customer']['phone']}}<br> {{$rows['ticket_no']}}<br> {{$rows['customer']['nrc_no']}}<br> &nbsp;{{$rows['agent_name']}}</div>
+                                                                  <div class="fit-a {{$taken}} zawgyi-one" title="{{$rows['agent_name']}}" id="{{$rows['seat_no']}}">@if($rows['extra_city']) <b style="position:absolute; top:0; right:0;background:#000;">+ Extend City</b> <br>@endif {{$rows['customer']['name']}}<br> Ph : {{$rows['customer']['phone']}}<br> TNo : {{$rows['ticket_no']}}<br> <small>{{$rows['customer']['nrc_no']}}</small><br> &nbsp;<span>{{$rows['agent_name']}}</span></div>
                                                                   <input type="hidden" value="{{$rows['price']}}" class="price{{$rows['seat_no']}}">
                                                                   <input type="hidden" value="{{$rows['seat_no']}}" class="seatno{{$rows['seat_no']}}">
                                                                </label>
                                                             </div>
                                                             <figcaption><br>
-                                                               <a href="/report/customers/update?saleitem_id={{$rows['customer']['saleitem_id']}}" style="text-align:center;padding-left:9px;" data-reveal-id="myModal" class="updatecustomer AyarWagaung" rel="{{$rows['customer']['name']}}" id="{{$rows['customer']['nrc_no']}}" data-phone="{{$rows['customer']['phone']}}" data-ticketno="{{$rows['ticket_no']}}">ဝယ်သူ အချက်အလက် ြပင်ရန်</a>
+                                                               <a data-href="/report/customers/update?saleitem_id={{$rows['customer']['saleitem_id']}}" style="text-align:center;padding-left:9px;" data-reveal-id="myModal" class="updatecustomer AyarWagaung" rel="{{$rows['customer']['name']}}" id="{{$rows['customer']['nrc_no']}}" data-phone="{{$rows['customer']['phone']}}" data-ticketno="{{$rows['ticket_no']}}">ဝယ်သူ အချက်အလက် ြပင်ရန်</a>
                                                             </figcaption>
                                                          </figure>
                                                       </div>
@@ -412,18 +488,17 @@
    <script type="text/javascript">
       $(function() {
           $('.updatecustomer').click(function(e){
-            var link=this.href;
+            e.preventDefault();
+            var link=$(this).data('href');
             var name=this.rel;
             var nrc=this.id;
             var phone= $(this).data('phone');
             var ticket_no= $(this).data('ticketno');
-            // alert(ticket_no);
             $('#customer_name').val(name);
             $('#customer_nrc').val(nrc);
             $('#phone').val(phone);
             $('#ticket_no').val(ticket_no);
             document.getElementById('update-form').action=link;
-            e.preventDefault();
          });
           $(document).foundation();
          
@@ -448,7 +523,7 @@
 
             //Reset the page's HTML with div's HTML only
             document.body.innerHTML = 
-              '<html><head><title>Report</title></head><body>' + 
+              '<html><head><title>Seat Occupied by Bus</title></head><body>' + 
               divElements + "</body>";
             //Print Page
             window.print();

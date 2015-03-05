@@ -1,111 +1,152 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-	<title>404 - Page Not Found</title>
-	<meta name="viewport" content="width=device-width">
-	<style type="text/css">
-		article, aside, details, figcaption, figure, footer, header, hgroup, nav, section { display: block; }
-		audio, canvas, video { display: inline-block; *display: inline; *zoom: 1; }
-		audio:not([controls]) { display: none; }
-		[hidden] { display: none; }
-		html { font-size: 100%; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
-		html, button, input, select, textarea { font-family: sans-serif; color: #222; }
-		body { margin: 0; font-size: 1em; line-height: 1.4; }
-		::-moz-selection { background: #E37B52; color: #fff; text-shadow: none; }
-		::selection { background: #E37B52; color: #fff; text-shadow: none; }
-		a { color: #00e; }
-		a:visited { color: #551a8b; }
-		a:hover { color: #06e; }
-		a:focus { outline: thin dotted; }
-		a:hover, a:active { outline: 0; }
-		abbr[title] { border-bottom: 1px dotted; }
-		b, strong { font-weight: bold; }
-		blockquote { margin: 1em 40px; }
-		dfn { font-style: italic; }
-		hr { display: block; height: 1px; border: 0; border-top: 1px solid #ccc; margin: 1em 0; padding: 0; }
-		ins { background: #ff9; color: #000; text-decoration: none; }
-		mark { background: #ff0; color: #000; font-style: italic; font-weight: bold; }
-		pre, code, kbd, samp { font-family: monospace, serif; _font-family: 'courier new', monospace; font-size: 1em; }
-		pre { white-space: pre; white-space: pre-wrap; word-wrap: break-word; }
-		q { quotes: none; }
-		q:before, q:after { content: ""; content: none; }
-		small { font-size: 85%; }
-		sub, sup { font-size: 75%; line-height: 0; position: relative; vertical-align: baseline; }
-		sup { top: -0.5em; }
-		sub { bottom: -0.25em; }
-		ul, ol { margin: 1em 0; padding: 0 0 0 40px; }
-		dd { margin: 0 0 0 40px; }
-		nav ul, nav ol { list-style: none; list-style-image: none; margin: 0; padding: 0; }
-		img { border: 0; -ms-interpolation-mode: bicubic; vertical-align: middle; }
-		svg:not(:root) { overflow: hidden; }
-		figure { margin: 0; }
-		form { margin: 0; }
-		fieldset { border: 0; margin: 0; padding: 0; }
-		label { cursor: pointer; }
-		legend { border: 0; *margin-left: -7px; padding: 0; white-space: normal; }
-		button, input, select, textarea { font-size: 100%; margin: 0; vertical-align: baseline; *vertical-align: middle; }
-		button, input { line-height: normal; }
-		button, input[type="button"], input[type="reset"], input[type="submit"] { cursor: pointer; -webkit-appearance: button; *overflow: visible; }
-		button[disabled], input[disabled] { cursor: default; }
-		input[type="checkbox"], input[type="radio"] { box-sizing: border-box; padding: 0; *width: 13px; *height: 13px; }
-		input[type="search"] { -webkit-appearance: textfield; -moz-box-sizing: content-box; -webkit-box-sizing: content-box; box-sizing: content-box; }
-		input[type="search"]::-webkit-search-decoration, input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; }
-		button::-moz-focus-inner, input::-moz-focus-inner { border: 0; padding: 0; }
-		textarea { overflow: auto; vertical-align: top; resize: vertical; }
-		input:valid, textarea:valid {  }
-		input:invalid, textarea:invalid { background-color: #f0dddd; }
-		table { border-collapse: collapse; border-spacing: 0; }
-		td { vertical-align: top; }
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
 
-		body
-		{
-			font-family:'Droid Sans', sans-serif;
-			font-size:10pt;
-			color:#555;
-			line-height: 25px;
-		}
+    <title>403 Error</title>
 
-		.wrapper
-		{
-			width:760px;
-			margin:0 auto 5em auto;
-		}
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="../../assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../assets/font-awesome/css/font-awesome.css">
 
-		.main
-		{
-			overflow:hidden;
-		}
+    <!-- Custom styles for this template -->
 
-		.error-spacer
-		{
-			height:4em;
-		}
+    <style>
+    /* Page Layout CSS */
+            body {
+              padding-top: 20px;
+            }
+            /* Everything but the jumbotron gets side spacing for mobile-first views */
+            .masthead,
+            .body-content,
+            .footer {
+              padding-left: 15px;
+              padding-right: 15px;
+            }
+/*
+            .footer {
+              border-top: 1px solid #ddd;
+              margin-top: 30px;
+              padding-top: 29px;
+              padding-bottom: 30px;
+            }
+*/
+            /* Main marketing message and sign up button */
+            .jumbotron {
+              text-align: center;
+              background-color: transparent;
+            }
+            .jumbotron .btn {
+              font-size: 21px;
+              padding: 14px 24px;
+            }
+            /* Customize the nav-justified links to be fill the entire space of the .navbar */
+            .nav-justified {
+              max-height: 50px;
+              background-color: #eee;
+              border-radius: 5px;
+              border: 1px solid #ccc;
+            }
+            .nav-justified > li > a {
+              padding-top: 15px;
+              padding-bottom: 15px;
+              color: #777;
+              font-weight: bold;
+              text-align: center;
+              border-left: 1px solid rgba(255,255,255,.75);
+              border-right: 1px solid rgba(0,0,0,.1);
+              background-color: #e5e5e5; /* Old browsers */
+              background-repeat: repeat-x; /* Repeat the gradient */
+              background-image: -moz-linear-gradient(top, #f5f5f5 0%, #e5e5e5 100%); /* FF3.6+ */
+              background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f5f5f5), color-stop(100%,#e5e5e5)); /* Chrome,Safari4+ */
+              background-image: -webkit-linear-gradient(top, #f5f5f5 0%,#e5e5e5 100%); /* Chrome 10+,Safari 5.1+ */
+              background-image: -ms-linear-gradient(top, #f5f5f5 0%,#e5e5e5 100%); /* IE10+ */
+              background-image: -o-linear-gradient(top, #f5f5f5 0%,#e5e5e5 100%); /* Opera 11.10+ */
+              filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f5f5f5', endColorstr='#e5e5e5',GradientType=0 ); /* IE6-9 */
+              background-image: linear-gradient(top, #f5f5f5 0%,#e5e5e5 100%); /* W3C */
+            }
+            .nav-justified > .active > a {
+              background-color: #ddd;
+              background-image: none;
+              box-shadow: inset 0 3px 7px rgba(0,0,0,.15);
+            }
+            .nav-justified > li:first-child > a {
+              border-left: 0;
+              border-top-left-radius: 5px;
+              border-bottom-left-radius: 5px;
+            }
+            .nav-justified > li:last-child > a {
+              border-right: 0;
+              border-top-right-radius: 5px;
+              border-bottom-right-radius: 5px;
+            }
+            /* Responsive: Portrait tablets and up */
+            @media screen and (min-width: 768px) {
+              /* Remove the padding we set earlier */
+              .masthead,
+              .marketing,
+              .footer {
+                padding-left: 0;
+                padding-right: 0;
+              }
+            }
+    /* Colors */
+    .green {color:#5cb85c;}
+    .orange {color:#f0ad4e;}
+    .red {color:#d9534f;}
+    /* Icons */
+    .icon-pull-center {
+      margin-left: -50px;
+      margin-top: 10px;
+      vertical-align: text-top;}
+    .big-icons {color:#A9A9A9;
+    font-size: 110px;}
+    /* Layout */
+    .section {
+      background:#e6e6e6;
+      padding: 30px 0;}
+    .jumbotron {
+        font-size: 21px;
+        font-weight: 200;
+        line-height: 2.1428571435;
+        color: inherit;
+        padding: 10px 60px;
+        }
+    </style>
+      <script type="text/javascript">
+      function loadDomain()
+      {
+        var display = document.getElementById("display-domain");
+        display.innerHTML = document.domain;
+      }
+      </script>
+  </head>
 
-		a, a:visited
-		{
-			color:#2972A3;
-		}
+  <body onload="javascript:loadDomain();">
 
-		a:hover
-		{
-			color:#72ADD4;
-		}
-	</style>
-</head>
-<body>
-	<div class="wrapper">
-		<div class="error-spacer"></div>
-		<div role="main" class="main" style="border:1px solid #ccc;padding:20px;">
+    <div class="container">
+      <!-- Jumbotron -->
+      <div class="jumbotron">
+        <h1><i class="icon-ban-circle red"></i> 404 Page not found. </h1>
+        <p class="lead">Sorry! You visited link is does not exist in our site.</p>
+          <p><a href="{{URL::previous()}}" class="btn btn-default btn-lg green">Go to Back</a>
+    </div>
+    </div>
+    <div class="container">
+      <div class="body-content">
 
-			<h2>Page Not Found. </h2>
+      </div><!-- /.body-content -->
+    </div><!-- /.body-container -->
 
-			<hr>
-			<p>
-				Perhaps you would like to go to <?php echo HTML::link('/', 'www.google.com'); ?>?
-			</p>
-		</div>
-	</div>
-</body>
+      <!-- Site footer -->
+      <div class="footer">
+        <p></p>
+      </div>
+
+    <!-- /container -->
+
+  </body>
 </html>

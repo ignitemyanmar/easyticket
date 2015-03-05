@@ -6,7 +6,9 @@ $(function(){
 			});
 
 			$(".fit-a").each(function(){
+				
 				$(this).click(function(){
+
 					var total=$('#total').val();
 
 					var checktaken=$(this).prev().attr('disabled');
@@ -18,17 +20,21 @@ $(function(){
 						var rpl_seatid=seatid.replace('.','-');
 						var price=$(".price"+rpl_seatid).val();
 						var price=$(".price"+rpl_seatid).val();
-						if($(this).hasClass('operatorseat_1')){
-							$(this).toggleClass('available operator_1');
-						}
-						if($(this).hasClass('operatorseat_2')){
-							$(this).toggleClass('available operator_2');
-						}
-						if($(this).hasClass('operatorseat_3')){
-							$(this).toggleClass('available operator_3');
-						}
-						$(this).toggleClass('choose available');
+						
 						if(checkchecked==false){
+							if($(this).hasClass('operatorseat_1')){
+								$(this).removeClass('available operator_1');
+							}
+							if($(this).hasClass('operatorseat_2')){
+								$(this).removeClass('available operator_2');
+							}
+							if($(this).hasClass('operatorseat_3')){
+								$(this).removeClass('available operator_3');
+							}
+							$(this).removeClass('available');
+
+							$(this).addClass('choose');
+
 							total 	=Number(price) +Number(total);
 							var seatno=$(".seatno"+rpl_seatid).val();
 							var results='	<tr class="tbodyrow selectrow'+rpl_seatid+'">'+
@@ -50,6 +56,16 @@ $(function(){
 
 							$('.selectedseats').append(results);
 						}else{
+							if($(this).hasClass('operatorseat_1')){
+								$(this).addClass('available operator_1');
+							}
+							if($(this).hasClass('operatorseat_2')){
+								$(this).addClass('available operator_2');
+							}
+							if($(this).hasClass('operatorseat_3')){
+								$(this).addClass('available operator_3');
+							}
+							$(this).addClass('choose available');
 							$(".selectrow"+seatid).remove();
 							total =Number(total)-Number(price);
 						}

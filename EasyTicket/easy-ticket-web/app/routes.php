@@ -204,9 +204,9 @@
 					return Response::json($response);
 	          	}
 	          	if(Auth::user()->type == "agent"){
-	          		$agent = Agent::whereuser_id(Auth::user()->id)->first();
+	          		$agent = AgentGroup::whereuser_id(Auth::user()->id)->first();
 					if($agent){
-						$response->user['id'] 				= $agent->id;
+						$response->user['id'] 				= $agent->user_id;
 						$response->user['operatorgroup_id'] = 0;
 						$response->user['name'] 			= $agent->name;
 						$response->user['type'] 			= Auth::user()->type;	
@@ -220,7 +220,6 @@
 					
 	          	}
 	      	}	 
-		
 			return $response;
 		}else{
 			return $response;
@@ -233,6 +232,9 @@
 		Route::get('users-logout',          array('as'=>'logout','uses'=>'UserController@getLogout'))->before('auth');   
 	// Admin Routes ---
 		Route::group(array('before' => 'oauth:admin'), function(){
+
+			//Sync
+			Route::get('/client/sync', 						'SyncDatabaseController@index');
 
 			//operator report
 			Route::get('report/operator/trip/dateranges',	'ReportController@getTripslistreportOperator');
@@ -383,10 +385,16 @@
 			Route::get('trip/seatplan/{id}',		'TripController@showSeatPlan');
 			Route::get('deletetrip/{id}',			'TripController@destroy');
 
-			Route::get('define-ownseat/{id}',		'TripController@ownseat');
-			Route::post('define-ownseat',			'TripController@postownseat');
-
+			Route::get('define-ownseat/{id}',				'TripController@ownseat');
+			Route::get('define-ownseat-drange/{id}',		'TripController@ownseatdaterange');
 			Route::get('ownseatbytrip/{id}',				'TripController@ownseatbytrip');
+			Route::post('define-ownseat',					'TripController@postownseat');
+			Route::get('ownseat/delete/{id}', 				'TripController@destroyownseat');
+
+			Route::get('changeseatplan/{id}',				'SeatPlanController@getchangeseatplan');
+			Route::post('changetripseatplan/{id}',			'SeatPlanController@postchangeseatplan');
+
+
 
 			Route::get('closetrip/{id}',			'TripController@closeTrip');
 			Route::post('closetrip',				'TripController@saveCloseTrip');
@@ -394,7 +402,7 @@
 
 			Route::get('orderlist',					'OrderController@orderlist');
 			Route::get('order-delete/{id}',			'OrderController@destroy');
-			Route::get('notconfirm-order-delete/{id}','OrderController@deleteNotConfirmOrder');
+			
 			Route::get('order-tickets/{id}',		'OrderController@ticketlist');
 			Route::get('order-tickets/delete/{id}',	'OrderController@ticketdelete');
 
@@ -481,7 +489,11 @@
 			Route::resource('checkout', 					'HomeController@checkout');
 			
 			Route::get('bookinglist/{id}',					'BookingController@getBookingListByBus');
+			
 			Route::get('todaybookings',						'BookingController@getTodayBookingList');
+
+			Route::get('notconfirm-order-delete/{id}','OrderController@deleteNotConfirmOrder');
+
 		});
 	// API Routes ------
 		Route::group(array('before' => 'oauth:sale,booking'), function()
@@ -741,9 +753,11 @@
 
 		Route::get('writetodatabase/{fname}',						'SyncDatabaseController@writeJsonToDatabase');
 		Route::get('writepaymentjson/{fname}',						'SyncDatabaseController@writePaymentJsonToDatabase');
+		Route::get('writedelsaleorderjson/{fname}',					'SyncDatabaseController@writeDelSaleOrderJsonToDatabase');
 		
 		Route::get('uploadjson/{sync_id}', 								'SyncDatabaseController@pushJsonToServer');
 		Route::get('uploadpaymentjson/{sync_id}', 						'SyncDatabaseController@pushPaymentJsonToServer');
+		Route::get('uploaddelsaleorderjson/{sync_id}', 					'SyncDatabaseController@pushDeleteSaleOrderJsonToServer');
 		
 		Route::get('downloadjson', 								'SyncDatabaseController@downloadAllJsonfromServer');
 
@@ -773,4 +787,53 @@
 		{
 		    return View::make('error.500');
 		    //return Redirect::to('/');
+		});
+
+		Route::get('401', function()
+		{
+		    return View::make('error.401');
+		});
+
+		Route::get('403', function()
+		{
+		    return View::make('error.403');
+		});
+
+		Route::get('front_403', function()
+		{
+		    return View::make('error.front_403');
+		});
+
+		Route::get('rsa-generate', function(){
+			$rsa = new Crypt_RSA();
+			//$rsa->setPublicKeyFormat(CRYPT_RSA_PUBLIC_FORMAT_OPENSSH);
+			$k = $rsa->createKey();
+			echo $k['publickey'];
+			echo "\n";
+			echo $k['privatekey'];
+		});
+
+		Route::get('code', function(){
+			$date = date('Y-m-d H:i:s');
+			
+			$value = (strtotime($date) / 3600);
+
+			$long = (int) $value;
+			return $long;
+
+			dd(date('Y-m-d H:i:s', strtotime($date) ));
+
+		});
+
+		Route::get('encrypt', function(){
+			
+			//dd(strtoupper(Str::random(32)));
+			
+			$encrypted = MCrypt::encrypt("အလို");
+			//dd($encrypted);
+			#Decrypt
+			$decrypted = MCrypt::decrypt($encrypted);
+
+			if(is_string($decrypted))
+				echo $decrypted;
 		});

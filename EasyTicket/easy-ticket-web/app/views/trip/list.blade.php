@@ -163,13 +163,14 @@
                                                          <ul class="dropdown-menu pull-right">
                                                             <li><a href="deletetrip/{{ $trip['id'] }}?access_token={{Auth::user()->access_token}}"><i class="icon-trash"></i> ဖ်က္မည္</a></li>
                                                             <li class="divider"></li>
+                                                            <li><a href="changeseatplan/{{ $trip['id'] }}?access_token={{Auth::user()->access_token}}"><i class="icon-pencil"></i> Seat Plan ေျပာင္းရန္</a></li>
                                                             <li><a href="define-ownseat/{{ $trip['id'] }}?access_token={{Auth::user()->access_token}}"><i class="icon-pencil"></i> ခုံပုိင္သတ္မွတ္ရန္</a></li>
                                                             <li class="divider"></li>
                                                            @if($trip->closeseat)
                                                              <li><a href="ownseatbytrip/{{ $trip['id'] }}?access_token={{Auth::user()->access_token}}"><i class="icon-list"></i> ခုံပုိင္သတ္မွတ္ထားေသာ စာရင္း</a></li>
                                                              <li class="divider"></li>
                                                            @endif
-                                                            <li><a href="/trip/extend/{{$trip['id']}}"><i class="icon-pencil"></i> ဆက္သြားမည့္ျမိဳ႕ ထည့္ရန္</a></li>
+                                                            <li><a href="/trip/extend/{{$trip['id']}}?{{$myApp->access_token}}"><i class="icon-pencil"></i> ဆက္သြားမည့္ျမိဳ႕ ထည့္ရန္</a></li>
                                                             <li class="divider"></li>
                                                             <li><a href="/trip/editextend/{{$trip['id']}}-{{$rows['id']}}?access_token={{Auth::user()->access_token}}"><i class="icon-pencil"></i> ဆက္သြားမည့္ျမိဳ႕ ျပင္ရန္</a></li>
                                                             <li class="divider"></li>
@@ -222,6 +223,8 @@
                                                    <ul class="dropdown-menu pull-right">
                                                       <li><a href="deletetrip/{{ $trip['id'] }}?access_token={{Auth::user()->access_token}}"><i class="icon-trash"></i> ဖ်က္မည္</a></li>
                                                       <li class="divider"></li>
+                                                      <li><a href="changeseatplan/{{ $trip['id'] }}?access_token={{Auth::user()->access_token}}"><i class="icon-pencil"></i> Seat Plan ေျပာင္းရန္</a></li>
+                                                      <li class="divider"></li>
                                                       <li><a href="define-ownseat/{{ $trip['id'] }}?access_token={{Auth::user()->access_token}}"><i class="icon-pencil"></i> ခုံပုိင္သတ္မွတ္ရန္</a></li>
                                                       <li class="divider"></li>
                                                       @if($trip->closeseat)
@@ -231,6 +234,8 @@
                                                       <li><a href="/trip/extend/{{$trip['id']}}?access_token={{Auth::user()->access_token}}"><i class="icon-pencil"></i> ဆက္သြားမည့္ျမိဳ႕ ထည့္ရန္</a></li>
                                                       <li class="divider"></li>
                                                       <li><a href="/closetrip/{{ $trip['id'] }}?access_token={{Auth::user()->access_token}}"><i class="icon-ban-circle"></i> ခဏ ရပ္ဆိုင္းရန္</a></li>
+                                                      <li class="divider"></li>
+                                                      <li><a href="/closetrip/{{ $trip['id'] }}?access_token={{Auth::user()->access_token}}"><i class="icon-ban-circle"></i> ခဏရပ္ဆိုင္းျခင္းမွ ျပန္ဖြင့္</a></li>
                                                    </ul>
                                                 </div>
                                                 

@@ -184,7 +184,7 @@ class ReportController extends BaseController
 				$lists[] = $list;
 			}
 		}
-		// return Response::json($lists);
+		//return Response::json($lists);
 		//Grouping from Lists
 		$stack = array();
 		foreach ($lists as $rows) {
@@ -278,7 +278,7 @@ class ReportController extends BaseController
 									  ->where('name','!=','')
 									  ->get();	
     	}
-    	
+    	//return Response::json($sale_order);
     	$lists = array();
     	foreach ($sale_order as $rows) {
     		
@@ -307,9 +307,9 @@ class ReportController extends BaseController
 						$total_amount = $lists[$check]['total_amount'] + ($seat_row->free_ticket > 0 ? 0 : $seat_row->price - $commission);
 						$total_amount = $total_amount - $seat_row->discount;
 					}else{
-						$foreign_person += $lists[$check]['foreign_person'] + 1;
-						$total_amount +=  $lists[$check]['total_amount'] + ($seat_row->free_ticket > 0 ? 0 : $seat_row->foreign_price - $commission);
-						$total_amount = $total_amount - $seat_row->discount;
+						$foreign_person = $lists[$check]['foreign_person'] + 1;
+						$total_amount 	=  $lists[$check]['total_amount'] + ($seat_row->free_ticket > 0 ? 0 : $seat_row->foreign_price - $commission);
+						$total_amount 	= $total_amount - $seat_row->discount;
 					}
 					$lists[$check]['seat_no'] = $seats_no;
 					$lists[$check]['local_person'] = $local_person;
@@ -407,6 +407,7 @@ class ReportController extends BaseController
     	//return Response::json($tripandclassgroup);
     	return View::make('busreport.daily.detail', array('response'=>$tripandclassgroup,'bus_id'=>$bus_id,'search'=>$search));	
     }
+   
 	
 	// Agent report by order date
 	// @/report/operator/trip/dateranges
@@ -996,8 +997,8 @@ class ReportController extends BaseController
 							$total_amount = $lists[$check]['total_amount'] + ($seat_row->free_ticket > 0 ? 0 : $seat_row->price - $commission);
 							$total_amount = $total_amount - $seat_row->discount;
 						}else{
-							$foreign_person += $lists[$check]['foreign_person'] + 1;
-							$total_amount +=  $lists[$check]['total_amount'] + ($seat_row->free_ticket > 0 ? 0 : $seat_row->foreign_price - $commission);
+							$foreign_person = $lists[$check]['foreign_person'] + 1;
+							$total_amount =  $lists[$check]['total_amount'] + ($seat_row->free_ticket > 0 ? 0 : $seat_row->foreign_price - $commission);
 							$total_amount = $total_amount - $seat_row->discount;
 						}
 						$lists[$check]['seat_no'] = $seats_no;
@@ -1825,6 +1826,10 @@ class ReportController extends BaseController
 
 			return View::make('busreport.tripdate.index', array('response'=>$report_info, 'search'=>$search));
 		}
+		/**
+		 * Reports by Car
+		 * @/report/dailybydeparturedate/search
+		 */
 		public function getDailyReportByDepartureDatesearch(){
 	    	// $operator_id 		=Input::get('operator_id');
 	    	$operator_id 		=$this->myGlob->operator_id;
@@ -2631,7 +2636,7 @@ class ReportController extends BaseController
 		$obj_saleitem->phone=$phone;
 		$obj_saleitem->ticket_no=$ticket_no;
 		$obj_saleitem->update();
-		return Redirect::to('report/seatoccupiedbybus/detail?bus_id='.$bus_id);
+		return Redirect::to('report/seatoccupiedbybus/detail?bus_id='.$bus_id.'&'.$this->myGlob->access_token);
 	}
 
 	// Calculate Commission by Trip, Agent and Date

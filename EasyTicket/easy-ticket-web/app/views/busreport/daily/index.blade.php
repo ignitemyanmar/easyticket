@@ -105,7 +105,11 @@
                                              <td>{{$result['sold_seat']}}</td>
                                              <td>{{$result['free_ticket']}}</td>
                                              <td>{{$result['discount']}}</td>
+                                             @if($result['foreign_person'] > 0)
+                                             <td>{{$result['foreign_price']}}</td>
+                                             @else
                                              <td>{{$result['local_price']}}</td>
+                                             @endif
                                              <td>{{$result['total_amount']}}</td>
                                              <td>
                                                 <a class="btn mini green-stripe imagechange" id="" href="/report/dailycarandadvancesale/detail?access_token={{Auth::user()->access_token}}&bus_id={{$result['bus_id']}}&date={{date('Y-m-d', strtotime(Session::get('search_daily_date')))}}">အေသးစိတ္ၾကည့္ရန္</a>

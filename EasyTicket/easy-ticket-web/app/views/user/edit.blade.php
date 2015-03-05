@@ -80,12 +80,27 @@
                                     <label class="control-label">Position (Role)</label>
                                     <div class="control-group">
                                        <div class="controls">
-                                          <select name="role" class="chosen span4">
+                                          <select name="role" class="chosen span4" id="role">
                                              @foreach($response['role'] as $key=>$role)
                                                 <option value="{{$key}}" @if($user_info->role == $key) selected @endif>{{$role}}</option>
                                              @endforeach
                                           </select>
                                           <input type="hidden" value="operator" name="type">
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+
+                              <div class="row-fluid" id="agentgroup_frame">
+                                 <div class="span12">
+                                    <label class="control-label">Agent Groups</label>
+                                    <div class="control-group">
+                                       <div class="controls">
+                                          <select name="agentgroup_id" class="chosen span4" id="agentgroup">
+                                             @foreach($response['agentgroup'] as $agentgroup)
+                                                <option value="{{$agentgroup->id}}" @if($agentgroup->id == AgentGroup::whereuser_id($user_info->id)->pluck('id')) selected @endif>{{$agentgroup->name}}</option>
+                                             @endforeach
+                                          </select>
                                        </div>
                                     </div>
                                  </div>
@@ -152,6 +167,9 @@
       $(function(){
          var groupuser=$('.groupuser:checked').val();
          checkgroupornot(groupuser);
+
+         var role=$('#role').val();
+         showhideagentgroup(role);
       });
 
       //for handle click radio optional
@@ -167,6 +185,19 @@
          }else{
             $('#undergroup').css({'opacity':1});
             $('.chosen').chosen();
+         }
+      }
+
+      $('#role').change(function(){
+         var role=$(this).val();
+         showhideagentgroup(role);
+      });
+
+      function showhideagentgroup(role){
+         if(role==3){
+            $('#agentgroup_frame').css({'opacity':1});
+         }else{
+            $('#agentgroup_frame').css({'opacity':0});
          }
       }
    </script>

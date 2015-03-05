@@ -40,7 +40,7 @@
                            <div class="portlet-body">
                               <div class="clearfix">
                                  <div class="btn-group">
-                                    <a href="/define-ownseat/{{$trip->id}}">
+                                    <a href="/define-ownseat/{{$trip->id}}?{{$myApp->access_token}}">
                                     <button id="" class="btn green">
                                     Add New <i class="icon-plus"></i>
                                     </button>
@@ -118,10 +118,10 @@
                                              <td>{{$trip['commission']}}</td>
                                              <td> <span class="label label-info">{{date('d-m-Y',strtotime($rows->start_date)).' To '. date('d-m-Y',strtotime($rows->end_date))}} &nbsp;</span></td>
                                              <td>
-                                                <a href="/define-ownseat/{{$trip['id']}}?date_range={{$rows->start_date.','.$rows->end_date}}" style="float:left;">
+                                                <a href="/define-ownseat/{{$trip['id']}}?date_range={{$rows->start_date.','.$rows->end_date}}&{{$myApp->access_token}}" style="float:left;">
                                                   <span class="label label-info">&nbsp;View <i class="icon-external-link"></i></span>
                                                 </a>
-                                                  <a href="/ownseat/delete/{{$rows->id}}" style="float:right;">
+                                                  <a href="/ownseat/delete/{{$rows->id}}?{{$myApp->access_token}}" style="float:right;">
                                                     <span  class="label label-important"><i class="icon-remove"></i></span>
                                                   </a>
                                                 <br>

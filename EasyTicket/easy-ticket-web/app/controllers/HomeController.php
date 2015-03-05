@@ -1,8 +1,6 @@
 <?php
 
 class HomeController extends \BaseController {
-
-	
 	/**
 	 * Display a listing of the resource.
 	 *
@@ -21,7 +19,10 @@ class HomeController extends \BaseController {
 	{
 		$response=array();
     	$trip=array();
-    	$operator_id=Session::get('G_operator_id');
+    	$operator_id=$this->myGlob->operator_id;
+    	if($operator_id=='all' || !$operator_id){
+    		return Redirect::to('alloperator?'.$this->myGlob->access_token);
+    	}
     	// dd($operator_id);
     	if($operator_id !=''){
     		$objbusoccurance =BusOccurance::whereoperator_id($operator_id)->groupBy('from','to')->get(array('from','to'));
@@ -279,8 +280,7 @@ class HomeController extends \BaseController {
 
 
     	}else{
-    		$response['message']	='There is no record.';
-    		return Response::json($response);
+    		return Redirect::to('/404');
     	}
 		$buslist=array();
     	$operatorgroup=OperatorGroup::whereoperator_id($operator_id)->with(
@@ -331,6 +331,26 @@ class HomeController extends \BaseController {
     		$response['message']='Seat_list format is wrong.';
     		return Response::json($response);
     	}
+    	/***
+    	 * Checking for Encryption
+    	 */
+    	foreach ($seat_list as $seat) {
+    		$bus_id 		= MCrypt::decrypt($seat->busoccurance_id);
+    		$seat_no 		= MCrypt::decrypt($seat->seat_no);
+    		$seat_plan_id	= BusOccurance::whereid($bus_id)->pluck('seat_plan_id');
+    		//dd('plan id = '.$seat_plan_id.', seat no = '.$seat_no);
+    		if($seat_plan_id){
+    			$objseatinfo= SeatInfo::whereseat_plan_id($seat_plan_id)->whereseat_no($seat_no)->get();
+    			if(!$objseatinfo){
+    				$response['message']='Invalid Seat No.';
+    				return Response::json($response);
+    			}
+    		}else{
+    			$response['message']='Invalid Bus Id.';
+    			return Response::json($response);
+    		}
+
+    	}
 
     	$available_tickets=0;
     	$available_seats=array();
@@ -347,7 +367,7 @@ class HomeController extends \BaseController {
     	$departure_datetime ='';
     	$canbuy=0;
     	foreach ($seat_list as $rows) {
-    		$busoccuranceid=$rows->busoccurance_id;
+    		$busoccuranceid= MCrypt::decrypt($rows->busoccurance_id);
     		$seat_plan_id=BusOccurance::whereid($busoccuranceid)->pluck('seat_plan_id');
     		$departure_date = BusOccurance::whereid($busoccuranceid)->pluck('departure_date');
     		$departure_time = BusOccurance::whereid($busoccuranceid)->pluck('departure_time');
@@ -360,15 +380,15 @@ class HomeController extends \BaseController {
     			$departure_datetime = date("Y-m-d H:i:s", $strdate);
 
 
-    		$objseatinfo=SeatInfo::whereseat_plan_id($seat_plan_id)->whereseat_no($rows->seat_no)->first();
-    		$chkstatus=SaleItem::wherebusoccurance_id($busoccuranceid)->whereseat_no($rows->seat_no)->first();
+    		$objseatinfo=SeatInfo::whereseat_plan_id($seat_plan_id)->whereseat_no(MCrypt::decrypt($rows->seat_no))->first();
+    		$chkstatus=SaleItem::wherebusoccurance_id($busoccuranceid)->whereseat_no(MCrypt::decrypt($rows->seat_no))->first();
     		$canbuy=true;
     		if($chkstatus){
 	    		$canbuy=false;
     		}
     		else{
-    			$tmp['seat_no']			=$rows->seat_no;
-    			$tmp['busoccurance_id']	=$rows->busoccurance_id;
+    			$tmp['seat_no']			= MCrypt::decrypt($rows->seat_no);
+    			$tmp['busoccurance_id']	= MCrypt::decrypt($rows->busoccurance_id);
     			$available_seats[]=$tmp;
     		}
 	    	$temp['seat_id']=$objseatinfo->id;
@@ -446,7 +466,7 @@ class HomeController extends \BaseController {
     	$available_device_id=SaleOrder::whereid($available_orderid)->pluck('device_id');
     	$saleitem_count=SaleItem::whereorder_id($available_orderid)->wheredevice_id($available_device_id)->count();
     	if(count($available_seats) == $saleitem_count){
-    		$response['sale_order_no']=$available_orderid;
+    		$response['sale_order_no']= MCrypt::encrypt($available_orderid);
 	    	$response['device_id']=$available_device_id;
 	    	$response['can_buy']=$can_buy;
 	    	$response['booking']=$booking;
@@ -552,13 +572,14 @@ class HomeController extends \BaseController {
 	    	$response['message']="Sorry!. Some tickets have been taken by another customer.";
     		$can_buy=false;
     	}
-    	$response['sale_order_no']=$max_order_id;
+    	$response['sale_order_no']= $max_order_id;
     	$response['can_buy']=$can_buy;
     	$response['tickets']=$tickets;
 		return Response::json($tickets);
 	}
 
 	public function getcart($id){
+		$id = MCrypt::decrypt($id);
 		$agopt_ids =$this->myGlob->agopt_ids;
 		$objorder=SaleOrder::whereid($id)->first();
 		$objsaleitems=SaleItem::whereorder_id($id)->get();
@@ -637,6 +658,7 @@ class HomeController extends \BaseController {
 		$extra_dest_id  =Input::get('extra_dest_id') ? Input::get('extra_dest_id') : 0;
 		$remark_type 	=Input::get('remark_type');
 		$remark 		=Input::get('remark');
+		$sale_order_no  = MCrypt::decrypt($sale_order_no);
 
 		$orderdate      =$today;
 		if($oldsale){
@@ -667,10 +689,12 @@ class HomeController extends \BaseController {
     		$busoccuranceid=0;
     		$commission=0;
     		foreach ($seat_no as $seatno) {
-    			$objsaleitems=SaleItem::whereorder_id($sale_order_no)->whereseat_no($seatno)->wherebusoccurance_id($busoccurance_id[$i])->first();
+    			$seatno = MCrypt::decrypt($seatno);
+
+    			$objsaleitems=SaleItem::whereorder_id($sale_order_no)->whereseat_no($seatno)->wherebusoccurance_id(MCrypt::decrypt($busoccurance_id[$i]))->first();
     			if($objsaleorder && $objsaleitems){
     				if($i==0){
-	    				$busoccuranceid=$busoccurance_id[$i];
+	    				$busoccuranceid=MCrypt::decrypt($busoccurance_id[$i]);
 	    				$objagent_commission=AgentCommission::whereagent_id($agent_id)
 	    													->wheretrip_id($objsaleitems->trip_id)
 	    													->where('start_date','<=',$orderdate)
@@ -704,7 +728,7 @@ class HomeController extends \BaseController {
 					}
 					$objsaleitems->order_id 		=$sale_order_no;
 	    			$objsaleitems->agent_id 		=$agent_id;
-	    			$objsaleitems->busoccurance_id 	=$busoccurance_id[$i];
+	    			$objsaleitems->busoccurance_id 	=MCrypt::decrypt($busoccurance_id[$i]);
 	    			$objsaleitems->seat_no			=$seatno;
 	    			$objsaleitems->name				=$buyer_name;
 	    			$objsaleitems->nrc_no			=$nrc_no;
@@ -717,6 +741,8 @@ class HomeController extends \BaseController {
 	    			}else{
 	    				$totalamount +=$objsaleitems->foreign_price;	
 	    			}
+    			}else{
+    				return 'error';
     			}
     			$i++;
     		}
@@ -762,7 +788,7 @@ class HomeController extends \BaseController {
     		}
 
     	$message="Success.";
-    	$G_operator_id=Session::get('G_operator_id');
+    	// $G_operator_id=Session::get('G_operator_id');
     	return Redirect::to('/all-trips?access_token='.Auth::user()->access_token)->with('message',$message);
 	}
 

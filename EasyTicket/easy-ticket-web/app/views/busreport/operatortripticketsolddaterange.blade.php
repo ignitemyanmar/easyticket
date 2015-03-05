@@ -342,7 +342,11 @@
                                                    <td>{{$result['sold_seat']}}</td>
                                                    <td>{{$result['free_ticket']}}</td>
                                                    <td>{{$result['discount']}}</td>
+                                                   @if($result['foreign_person'] > 0)
+                                                   <td>{{$result['foreign_price']}}</td>
+                                                   @else
                                                    <td>{{$result['local_price']}}</td>
+                                                   @endif
                                                    <td>{{$result['total_amount']}}</td>
                                                    <td>{{$result['percent_total']}}</td>
                                                    <td>

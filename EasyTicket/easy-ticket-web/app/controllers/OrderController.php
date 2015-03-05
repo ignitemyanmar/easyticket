@@ -92,6 +92,7 @@ class OrderController extends \BaseController {
 	}
 	
 	public function deleteNotConfirmOrder($id){
+		$id = MCrypt::decrypt($id);
 		$saleOrder = SaleOrder::whereid($id)->where('name','=','')->where('total_amount','=','')->first();
 		if($saleOrder){
 			SaleOrder::whereid($id)->where('name','=','')->where('total_amount','=','')->delete();
@@ -195,7 +196,62 @@ class OrderController extends \BaseController {
 	public function destroy($id)
 	{
 
-		$this->del_order_history_trans($id);	
+		$objsaleorder=SaleOrder::whereid($id)->first();
+		$objsaleitem=SaleItem::whereorder_id($id)->get();
+
+		if($objsaleorder){
+			$chksaleorder=DeleteSaleOrder::whereid($id)->wherecreated_at($objsaleorder->created_at)->first();
+			$partiallydel_ticketamount=0;
+			if($chksaleorder){
+				$saletotal_ticket=SaleItem::whereorder_id($id)->count();
+				$delsaletotal_ticket=DeleteSaleItem::whereorder_id($id)->count();
+				$total_tickets=$saletotal_ticket + $delsaletotal_ticket;
+
+				$total_amt=SaleOrder::whereid($id)->pluck('total_amount');
+				$total_agentcommission=SaleOrder::whereid($id)->pluck('agent_commission');
+				$agent_commission=0;
+				// if($total_amt >0){
+				$ticket_price=$total_amt / $total_tickets;
+				$agent_commission=$total_agentcommission / $total_tickets;
+				// }
+				$finalticketprice=$ticket_price-$agent_commission;
+				$partiallydel_ticketamount=$finalticketprice * $delsaletotal_ticket;
+			}else{
+				$objsaleorder->user_id=Auth::user()->id;
+				$deletedSaleOrder = DeleteSaleOrder::create($objsaleorder->toarray());
+			}
+			$total_amount 				= $objsaleorder->total_amount - $objsaleorder->agent_commission;
+			$total_amount =$total_amount - $partiallydel_ticketamount;
+			$objdepositpayment_trans	= new AgentDeposit();
+			$objdepositpayment_trans->agent_id 	 		= $objsaleorder->agent_id;
+			$objdepositpayment_trans->operator_id		= $objsaleorder->operator_id;
+			$objdepositpayment_trans->total_ticket_amt	= $total_amount;
+			$objdepositpayment_trans->pay_date			= $this->getDate();
+			$objdepositpayment_trans->order_ids			= '["'.$id.'"]';
+
+			$objdepositpayment_trans->payment 			= $total_amount;
+			$agentdeposit 								= AgentDeposit::whereagent_id($objsaleorder->agent_id)->whereoperator_id($objsaleorder->operator_id)->orderBy('id','desc')->first();
+			if($agentdeposit){
+				$objdepositpayment_trans->deposit 		= $agentdeposit->balance;
+				$objdepositpayment_trans->balance 		= $agentdeposit->balance + $total_amount;
+			}else{
+				$objdepositpayment_trans->deposit 		= 0;
+				$objdepositpayment_trans->balance 		= 0 + $total_amount;
+			}  		
+			$objdepositpayment_trans->debit 			= 0;
+			$objdepositpayment_trans->deleted_flag 		= 1;
+			$objdepositpayment_trans->save();
+		}
+
+		if($objsaleitem){
+			foreach ($objsaleitem as $result) {
+				try {
+					DeleteSaleItem::create($result->toarray());
+				} catch (Exception $e) {
+					return Redirect::to('orderlist?'.$this->myGlob->access_token)->with('message','Database Exception occured!'.$e);
+				}
+			}
+		}	
 		
 		SaleOrder::whereid($id)->delete();
 		// AgentDeposit::whereorder_ids('["'.$id.'"]')->delete();

@@ -313,5 +313,104 @@ class SeatPlanController extends BaseController
 		// return Response::json($seat_no_list);
 		return View::make('seatplan.editseat',array('seatplan'=>$seatplan, 'seat_no_list'=>$seat_no_list));
     }
+
+    public function getchangeseatplan($id)
+    {
+		$operator_id=$this->myGlob->operator_id;
+		$busclasses=Classes::whereoperator_id($operator_id)->get();	
+		$seatplan=SeatingPlan::whereoperator_id($operator_id)->get();
+		$trip =Trip::whereid($id)->with('busclass','from_city','to_city','extendcity')->first();
+		$response['seatplan']=$seatplan;
+		$response['trip']=$trip;
+		// return Response::json($response['trip']);
+		return View::make('seatplan.changetripseatplan', array('response'=>$response,'operator_id'=>$operator_id));
+	}
+
+	public function postchangeseatplan($id){
+		$date=Input::get('onlyone_day');
+		$seat_plan_id=Input::get('seat_plan_id') ? Input::get('seat_plan_id') : 0;
+		$objbusoccurance=BusOccurance::wheretrip_id($id)->wheredeparture_date($date)->first();
+
+		$checksaleitems =array();
+		$message='';
+		if($objbusoccurance){
+			$currentseatname=SeatInfo::whereseat_plan_id($objbusoccurance->seat_plan_id)->orderBy('id','asc')->pluck('seat_no');
+			$checkseatnames=SeatInfo::whereseat_plan_id($seat_plan_id)->whereseat_no($currentseatname)->pluck('seat_no');
+			$new_seat_plan= SeatInfo::whereseat_plan_id($seat_plan_id)->get();
+			$solditem = SaleItem::wherebusoccurance_id($objbusoccurance->id)->lists('seat_no');
+			$check = true;
+			foreach ($solditem as $value) {
+				if(!$this->isExist($value, $new_seat_plan)){
+					$check = false;
+					break;
+				}
+			}
+			if($checkseatnames && $check == true){
+				$objbusoccurance->seat_plan_id=$seat_plan_id;
+				$objbusoccurance->update();
+				$message ="Successfully change seat plan.";
+
+				$checkcloseseat=CloseSeatInfo::wheretrip_id($id)->where('start_date','<=',$date)
+																->where('end_date','>=',$date)
+																->pluck('seat_lists');
+			    $checkcloseseat =json_decode($checkcloseseat);
+
+			    $objseatinfo =SeatInfo::whereseat_plan_id($seat_plan_id)->get();
+
+			    if($checkcloseseat && $objseatinfo){
+			    	foreach ($objseatinfo as $key => $rows) {
+			    		if($key < count($checkcloseseat)){
+			    			$objseatinfo[$key]['operatorgroup_id']=$checkcloseseat[$key]->operatorgroup_id;
+			    		}
+			    		else{
+			    			$objseatinfo[$key]['operatorgroup_id']=0;
+			    		}
+
+			    	}
+			    }
+
+			    // return Response::json($objseatinfo);
+				// return Response::json($checkcloseseat);
+			    $checkexistingupdated =CloseSeatInfo::wheretrip_id($id)->where('start_date','<=',$date)
+																->where('end_date','>=',$date)->first();
+				if($checkexistingupdated){
+					$checkexistingupdated->seat_plan_id=$seat_plan_id;
+					$checkexistingupdated->seat_lists=$objseatinfo;
+					$checkexistingupdated->update();
+				}else{
+					if($checkcloseseat){
+						$obj_closeseatinfo=new CloseSeatInfo();
+					    $obj_closeseatinfo->trip_id=$id;
+					    $operatorgroup_id=CloseSeatInfo::wheretrip_id($id)->where('start_date','<=',$date)
+																		->where('end_date','>=',$date)
+																		->pluck('operatorgroup_id');
+					    $obj_closeseatinfo->operatorgroup_id=$operatorgroup_id ? $operatorgroup_id : 0;
+					    $obj_closeseatinfo->seat_plan_id=$seat_plan_id;
+					    $obj_closeseatinfo->seat_lists=$objseatinfo;
+					    $obj_closeseatinfo->start_date=$date;
+					    $obj_closeseatinfo->end_date=$date;
+					    $obj_closeseatinfo->save();	
+					}
+				}
+			}else{
+				$message ="Can't change seat plan.";
+			}
+			
+		}else{
+			$message="This day bus stop";
+		}
+		// return Response::json($checksaleitems);
+		return Redirect::to('trip-list?'.$this->myGlob->access_token)->with('message', $message);
+	}
+
+	public function isExist($value, $lists){
+		foreach ($lists as $key => $seat) {
+			if($value == $seat->seat_no){
+				return true;
+				break;
+			}
+		}
+		return false;
+	}
 	
 }

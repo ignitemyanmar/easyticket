@@ -52,6 +52,7 @@
                <div class="row-fluid">
                   <div class="responsive span12" data-tablet="span12" data-desktop="span12">
                      <form id="tripcreate" class="form-horizontal" action = "/trip/editextend/{{$response->id}}" method= "post">    
+                        <input type="hidden" value="{{$myApp->v_access_token}}" name="access_token">
                         <div class="portlet box light-grey">
                            <div class="portlet-title">
                               <h4><i class="icon-user"></i> Trip Information</h4>

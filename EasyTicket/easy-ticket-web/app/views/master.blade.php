@@ -22,7 +22,7 @@
         .title_bar{background: #01315A;height: 45px;}
         .content_title{color:#fff; font-weight: bold;font-size: 24px; text-align: center;padding-top: 5px; font-family: "Zawgyi-One";}
         .user{font-size: 14px;float: right; font-weight: 200;padding-right: 10%; padding-top:9px; position: relative;}
-        .user a{color:white; padding-left: 12px;}
+        .user a, .content_title a{color:white; padding-left: 12px;}
         #drop > li > a {color: #333;}
         .f-dropdown {max-width: 110px;}
         a:hover{text-decoration: none;}
@@ -56,7 +56,7 @@
               @elseif(strpos($myApp->operator_name,'shwe nan taw') !== false)
                 <a href="/alloperator?access_token={{Auth::user()->access_token}}"><img src="../img/snt.png" style="max-height:35px;margin-left:20px;"> <span>Shwe Nan Taw Express</span></a>
               @else
-                <a href="/alloperator?access_token={{Auth::user()->access_token}}"><span>{{$myApp->operator_name}} Express</span></a>
+                <a href="/alloperator?access_token={{Auth::user()->access_token}}"><span>{{$myApp->operator_name}}</span></a>
               @endif
             @endif
           </div>

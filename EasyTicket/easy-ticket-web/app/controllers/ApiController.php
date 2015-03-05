@@ -2571,7 +2571,10 @@ class ApiController extends BaseController
 							$temp['remark_type']	= SaleOrder::whereid($checkoccupied_seat->order_id)->pluck('remark_type');
 							$temp['remark']			= SaleOrder::whereid($checkoccupied_seat->order_id)->pluck('remark');
 							$temp['customer_info']  = $checkoccupied_seat->toarray();
-							$temp['customer_info']['phone'] = SaleOrder::whereid($checkoccupied_seat->order_id)->pluck('phone');
+							if($checkoccupied_seat->phone == null)
+								$temp['customer_info']['phone'] = SaleOrder::whereid($checkoccupied_seat->order_id)->pluck('phone');
+							else
+								$temp['customer_info']['phone'] = $checkoccupied_seat->phone;
 							$temp['customer_info']['agent_name'] = Agent::whereid($checkoccupied_seat->agent_id)->pluck('name');
 						}else{
 							$temp['status']			=$rows->status;
@@ -2747,7 +2750,7 @@ class ApiController extends BaseController
 	    		$response['message']='Required fields are operator_id and seat_lsit';
 	    		return Response::json($response);
 	    	}
-
+	    	$seat_liststring = MCrypt::decrypt($seat_liststring);
 	    	$seat_list=json_decode($seat_liststring);
 	    	if(count($seat_list)<1){
 	    		$response['status'] = 0;
@@ -2813,7 +2816,7 @@ class ApiController extends BaseController
     			$time 		= $time == '12:00 AM' ? '12:00 PM' : $time;
     			$datetime 	= $departure_date." ".$time;
     			$strdate  	= strtotime($datetime);
-    			$strdate  	= $strdate - ((60*60) * 1);
+    			$strdate  	= $strdate - ((60*15) * 1);
     			$departure_datetime = date("Y-m-d H:i:s", $strdate);
 
     		/*
@@ -3076,6 +3079,7 @@ class ApiController extends BaseController
     		$response['message']="Required fields are sale_order_no, buyer_name, address, phone.";
 			return Response::json($response);
 	   	}
+	   	$tickets = MCrypt::decrypt($tickets);
     	$json_tickets=json_decode($tickets);
     	if(!$json_tickets){
     		$response['message']='Tickets format is wrong.';
@@ -7579,7 +7583,6 @@ class ApiController extends BaseController
     	$nrc_no			=Input::get('nrc_no');
     	$phone			=Input::get('phone');
     	$ticket_no		=Input::get('ticket_no');
-
     	if(!$bus_id || !$seat_no || !$customer_name){
     		$response['message']= "Request parameters are required.";
     		return Response::json($response, 400);

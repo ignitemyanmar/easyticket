@@ -101,7 +101,6 @@
                                                 <option value="{{$agentgroup->id}}">{{$agentgroup->name}}</option>
                                              @endforeach
                                           </select>
-                                          <input type="hidden" value="operator" name="type">
                                        </div>
                                     </div>
                                  </div>

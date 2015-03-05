@@ -107,14 +107,14 @@
                            </div>
                            <div id="contents">
                               <div id="printable">
-                                 <h3>Mandalar Min Express Public Company Limited</h3>
+                                 <h3>{{ucwords($myApp->operator_name)}} Express Company Limited</h3>
                                  <h3>Sale Details</h3>
                               </div>
                               <table class="table table-striped table-advance table-hover" id="tblExport">
                                  <thead>
                                     <tr>
                                        <td  colspan="13">
-                                          <h3 align="center">Mandalar Min Express Public Company Limited</h3>
+                                          <h3 align="center">{{ucwords($myApp->operator_name)}} Express Company Limited</h3>
                                           <h4 align="center">{{$pagetitle}} အေသးစိတ္</h4>
                                        </td>
                                     </tr>
@@ -183,7 +183,7 @@
                                              ?> 
                                              @foreach($rows as $result)
                                                 <?php 
-                                                    $org_total_amount += $tmptotalamount=($result['sold_seat']-$result['free_ticket']) * $result['price'];
+                                                    $org_total_amount += $tmptotalamount=($result['sold_seat']-$result['free_ticket']) * ($result['foreign_person'] > 0 ? $result['foreign_price'] : $result['price']);
                                                     $totalticket +=$result['sold_seat'];
                                                     $totalamount +=$result['total_amount'];
                                                 ?> 
@@ -205,8 +205,16 @@
                                                    <td>{{$result['sold_seat']}}</td>
                                                    <td>{{$result['free_ticket']}}</td>
                                                    <td>{{$result['discount']}}</td>
-                                                   <td>{{$result['price']}}</td>
+                                                   @if($result['foreign_person'] > 0)
+                                                   <td>{{$result['foreign_price']}}</td>
+                                                   @else
+                                                   <td>{{$result['local_price']}}</td>
+                                                   @endif
+                                                   @if($result['foreign_person'] > 0)
+                                                   <td>{{$result['foreign_person']-$result['commission']}} ({{$result['commission']}})</td>
+                                                   @else
                                                    <td>{{$result['price']-$result['commission']}} ({{$result['commission']}})</td>
+                                                   @endif
                                                    <td>{{$result['total_amount']}}</td>
                                                 </tr>
                                                 

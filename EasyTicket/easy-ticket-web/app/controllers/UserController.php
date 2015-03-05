@@ -49,19 +49,9 @@ class UserController extends BaseController
       $username = Input::get('username');
       $password = Input::get('password');
       
-      $curl = curl_init( "http://easyticketsub.dev/oauth/access_token" );
+      $curl = curl_init( "http://easyticket.dev/oauth/access_token" );
       curl_setopt( $curl, CURLOPT_POST, true );
       curl_setopt( $curl, CURLOPT_POSTFIELDS, array(
-          'client_id'     => '721685',
-          'client_secret' => 'IgniteAdmin721685',
-          'grant_type'    => 'password',
-          'scope'         => 'admin, sale, booking',
-          'state'         => '123456789',
-          'username'      => $username,
-          'password'      => $password
-      ) );
-      
-      /*curl_setopt( $curl, CURLOPT_POSTFIELDS, array(
           'client_id'     => '721689',
           'client_secret' => 'onlineSale@EasyTickeTadmiM',
           'grant_type'    => 'password',
@@ -69,7 +59,7 @@ class UserController extends BaseController
           'state'         => '123456789',
           'username'      => $username,
           'password'      => $password
-      ) );*/
+      ) );
       curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
       $auth = curl_exec( $curl );
       $auth = json_decode($auth);
@@ -81,7 +71,7 @@ class UserController extends BaseController
                 'password' => $password
               );
         if(Auth::attempt($user)){
-          if(Auth::check()){
+          /*if(Auth::check()){
             if(Auth::user()->role==9 || Auth::user()->role==3){
               $operator_ids=Operator::lists('id');
               if($operator_ids){
@@ -98,10 +88,34 @@ class UserController extends BaseController
               $this->tripautocreate($operator_id);
               return "/all-trips?access_token=".Auth::user()->access_token;
             }
+          }*/
+
+          if(Auth::check()){
+            if(Auth::user()->role >= 2){
+              if(Auth::user()->type == "operator"){
+                  $operator_id = Operator::whereuser_id(Auth::user()->id)->pluck('id');
+                  if($operator_id)
+                    $this->tripautocreate($operator_id);
+
+                  return "/all-trips?access_token=".Auth::user()->access_token;
+              }
+              if(Auth::user()->type == "admin" || Auth::user()->type == "agent"){
+                  $operator_ids=Operator::lists('id');
+                  if($operator_ids){
+                    foreach ($operator_ids as $operator_id) {
+                      $this->tripautocreate($operator_id);
+                    }
+                  }
+                  return '/alloperator?access_token='.Auth::user()->access_token;
+              }
+            }else{
+              Auth::logout();
+              return '/front_403';
+            }
           }
         }
       }else{
-        return 'Login Fail!';
+        return '/';
       }
   }
 
@@ -132,7 +146,7 @@ class UserController extends BaseController
       $username = Input::get('username');
       $password = Input::get('password');
 
-      $curl = curl_init( "http://easyticketsub.dev/oauth/access_token" );
+      $curl = curl_init( "http://easyticket.dev/oauth/access_token" );
       curl_setopt( $curl, CURLOPT_POST, true );
       curl_setopt( $curl, CURLOPT_POSTFIELDS, array(
           'client_id'     => '721685',
@@ -154,7 +168,7 @@ class UserController extends BaseController
                 'password' => $password
               );
         if(Auth::attempt($user)){
-          if(Auth::check()){
+          if(Auth::check() && Auth::user()->role >= 2){
               if(Auth::user()->type == "operator"){
                 $operator_id=Operator::whereuser_id(Auth::user()->id)->pluck('id');
                 return "report/dailycarandadvancesale?access_token=".Auth::user()->access_token."&operator_id=".$operator_id;
@@ -163,10 +177,13 @@ class UserController extends BaseController
               }else{
                 return "report/dailycarandadvancesale?access_token=".Auth::user()->access_token."&operator_id=all";
               }
+          }else{
+            Auth::logout();
+            return "/403";
           }
         }
       }else{
-        return "easyticket-admin?".$this->myGlob->access_token;
+        return "easyticket-admin";
       }
   }
 
@@ -474,7 +491,7 @@ class UserController extends BaseController
     }
     $response['operator_group']=$operator_group;
     $agentgroups=array();
-    if(Auth::user()->role==9){
+    if(Auth::user()->role==9 || Auth::user()->role==8){
       $agentgroups=AgentGroup::all();
     }
     $response['agentgroup']=$agentgroups;
@@ -516,7 +533,7 @@ class UserController extends BaseController
     $user_id            =$objuser->id;
     if($group_user=="group"){
       $objoperatorgroup     =new OperatorGroup();
-      $objoperatorgroup->operator_id  =$this->myGlob->operator_id;
+      $objoperatorgroup->operator_id  =$this->myGlob->operator_id ? $this->myGlob->operator_id : 0;
       $objoperatorgroup->user_id  =$user_id;
       $objoperatorgroup->save();
     }else{
@@ -542,13 +559,22 @@ class UserController extends BaseController
    */
   public function edit($id){
     $response=array();
-    $response['role']=array('2'=>"Staff", '4'=>"Supervisor", '8'=>"Manager");
-    $operator_group=OperatorGroup::whereoperator_id($this->myGlob->operator_id)
+    $response['role']=array('2'=>"Staff", '3'=>"Agent", '4'=>"Supervisor", '8'=>"Manager");
+
+    $agopt_ids =$this->myGlob->agopt_ids;
+    if($agopt_ids){
+      $operator_group=OperatorGroup::wherein('operator_id',$agopt_ids)
                                   ->with(array(
                                     'user'=>function($q){ $q->addSelect(array('id','name'));}
                                   ))->get(array('id','user_id'));
-    
+    }else{
+      $operator_group=OperatorGroup::whereoperator_id($this->myGlob->operator_id)
+                                  ->with(array(
+                                    'user'=>function($q){ $q->addSelect(array('id','name'));}
+                                  ))->get(array('id','user_id'));
+    }
     $response['operator_group']=$operator_group;
+    
     $user_info=User::find($id);
     $checkgroup=OperatorGroup::whereuser_id($id)->first();
     if($checkgroup){
@@ -562,6 +588,12 @@ class UserController extends BaseController
       if($checkgroupuser)
         $user_info['undergroup_id']=$checkgroupuser->operatorgroup_id;
     }
+
+    $agentgroups=array();
+    if(Auth::user()->role==9 || Auth::user()->role==8){
+      $agentgroups=AgentGroup::all();
+    }
+    $response['agentgroup']=$agentgroups;
 
 
 
@@ -579,6 +611,9 @@ class UserController extends BaseController
     $password     =Input::get('password');
     $role         =Input::get('role');
     $type         =Input::get('type');
+    if($role==3){
+      $type ="Agent";
+    }
     $group_user   =Input::get('group_user');
     $groupuser_id =Input::get('groupuser_id');
 

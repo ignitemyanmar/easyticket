@@ -116,7 +116,7 @@
                 @include('include.permission_menu')
 
                 <li @if($currentroute=='cli') class="" @endif>
-                    <a href="/client/sync">
+                    <a href="/client/sync?access_token={{Auth::user()->access_token}}">
                     <i class="icon-th-list"></i> 
                     <span class="title">Sync</span>
                     </a>
@@ -142,7 +142,7 @@
                         $concat="&";
                     }
             ?>
-            <div class="btn-group pull-right">
+            <div class="btn-group pull-right" style="margin-right: 21px;margin-top: 3px;">
                 <a class="btn blue" href="#" data-toggle="dropdown">
                 <i class="icon-user"></i> {{$myApp->operator_name.$url}}
                 <i class="icon-angle-down"></i>

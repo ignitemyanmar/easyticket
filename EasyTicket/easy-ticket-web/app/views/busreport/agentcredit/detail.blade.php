@@ -68,9 +68,11 @@
                               <table class="table table-striped table-hover table-bordered" id="tblExport">
                                  <thead>
                                     <tr>
-                                       <th>အမည္</th>
-                                       <th>Group Header</th>
+                                       <th>#</th>
+                                       <th>Operator Name</th>
                                        <th>Date</th>
+                                       <th>အမည္</th>
+                                       <!-- <th>Group Header</th> -->
                                        <th>Voucher No</th>
                                        <th>Trip</th>
                                        <th>Amount</th>
@@ -78,63 +80,38 @@
                                        <th>Receipt(Credit)</th>
                                        <th>Balance</th>
                                     </tr>
+                                    @if(count($response)>0)
+                                        <tr>
+                                          <td colspan="10">Balance Forward : <b @if( $response[0]->balanceforward < 0)class="noti" @endif>{{str_replace('-','',$response[0]->balanceforward)}}</b></td>
+                                        </tr>
+                                    @endif
                                  </thead>
                                  
                                  <tbody>
                                     @if(count($response)>0)
-                                      @foreach($response as $rows)
-                                          <?php $i=0; $balanceforward=0; $subbalance=0; $groupdate=null;?>
-                                          @foreach($rows->transactions as $rowvalues)
-                                            @if($i==0)
-                                             <?php $balanceforward +=$rowvalues['balanceforward']; ?>
+                                      @foreach($response as $key=>$rows)
+                                          
+                                          <tr>
+                                            <td>{{++$key}}</td>
+                                            <td>{{$rows->operator_name}}</td>
+                                            <td>{{date('d/m/Y',strtotime($rows['pay_date']))}}</td>
+                                            <td>{{$rows['agent_name']}}</td>
+                                            @if($rows->payment==0)
+                                            <td>{{$rows['order_ids']}}</td>
+                                            <td>{{$rows['trip']}} [ {{$rows['class']}} ({{$rows['time']}})]</td>
+                                            <td>{{number_format( $rows['total_ticket_amt'] - $rows['free_ticketamount'] , 0 , '.' , ',' )}}</td>
+                                            <td>{{number_format( $rows['total_ticket_amt'] - $rows['free_ticketamount'] , 0 , '.' , ',' )}}</td>
                                             @else
-                                              <?php $balanceforward=0; ?>
+                                              <td>-</td>
+                                              <td>-</td>
+                                              <td>-</td>
+                                              <td>-</td>
                                             @endif
-                                            @if ( $groupdate !== $rowvalues['pay_date'] && $rowvalues['receipt'] > 0 )
-                                                <tr>
-                                                   <th></th>
-                                                   <th>{{$rows['name']}} <b style="float:right;">Balance Forward : {{number_format( str_replace("-",'',$rows['balanceforward']) , 0 , '.' , ',' )}}</b></th>
-                                                   <th>Received from : {{$rows['name']}} </th>
-                                                   <th>{{$rowvalues['receipt']}}</th>
-                                                   <th>-</th>
-                                                   <th>-</th>
-                                                   <th>-</th>
-                                                   <th>-</th>
-                                                   <th>-</th>
-                                                </tr>
-                                                <?php $groupdate=$rowvalues['pay_date']; ?>
-                                            @endif
-
-                                            @if($rowvalues['receivable'] >0 && $rowvalues['receipt'] < 0 )
-                                            @else
-                                              <tr>
-                                                 <td>{{$rows['name']}}</td>
-                                                 <td>{{$rows['name']}} <b style="float:right;">Balance Forward : {{number_format( str_replace("-",'',$rows['balanceforward']) , 0 , '.' , ',' )}}</b></td>
-                                                 <td>{{date('d/m/Y',strtotime($rowvalues['pay_date']))}}</td>
-                                                 <td>{{$rowvalues['voucher_no']}}</td>
-                                                 <td>{{$rowvalues['trip']}} [ {{$rowvalues['class']}} ({{$rowvalues['time']}})]</td>
-                                                 <td>{{number_format( $rowvalues['receivable'] , 0 , '.' , ',' )}}</td>
-                                                 <td>{{number_format( $rowvalues['receivable'] , 0 , '.' , ',' )}}</td>
-                                                 <td>{{number_format( $rowvalues['receipt'] , 0 , '.' , ',' )}}</td>
-                                                 <td> <span @if( $rowvalues['closing_balance'] < 0)class="noti" @endif>{{number_format( str_replace("-",'',$rowvalues['closing_balance']) , 0 , '.' , ',' )}}</span></td>
-                                              </tr>
-                                            @endif
-                                            <?php $i++; ?>
-                                          @endforeach
+                                            <td>{{number_format( $rows['payment'] , 0 , '.' , ',' )}}</td>
+                                            <td> <span @if( $rows['closing_balance'] < 0)class="noti" @endif>{{number_format( str_replace("-",'',$rows['closing_balance']) , 0 , '.' , ',' )}}</span></td>
+                                          </tr>
                                       @endforeach
                                     @endif
-
-                                    <!-- <tr>
-                                       <td>ABC Sh(1)</td>
-                                       <td>ABC Sh(1)</td>
-                                       <td>14/12/2014</td>
-                                       <td>V00001238</td>
-                                       <td>Yangon-Mandalay</td>
-                                       <td>{{number_format( 500000 , 0 , '.' , ',' )}}</td>
-                                       <td>{{number_format( 500000 , 0 , '.' , ',' )}}</td>
-                                       <td>{{number_format( 400000 , 0 , '.' , ',' )}}</td>
-                                       <td>{{number_format( 300000 , 0 , '.' , ',' )}}</td>
-                                    </tr> -->
                                  </tbody>                                       
                                     
                               </table>
@@ -159,12 +136,12 @@
       $(document).ready(function() {
           var table = $('#tblExport').DataTable({
               "columnDefs": [
-                  {
+                  {/*
                         "targets": [ 1 ],
-                         "visible": false,
+                         "visible": false,*/
                   },
               ],
-              "order": [],
+              "order": [0,'asc'],
               "displayLength": 25,
               "pagingType": "full_numbers",
               "drawCallback": function ( settings ) {
@@ -172,14 +149,6 @@
                   var rows = api.rows( {page:'current'} ).nodes();
                   var last=null;
                   var prevgroup=null;
-                  api.column(1, {page:'current'} ).data().each( function ( group, i) {
-                     if ( last !== group ) {
-                        $(rows).eq( i ).before(
-                              '<tr class="group"><th colspan="8">'+group+'</th></tr>'
-                        );
-                        last = group;
-                     }
-                  } );
 
                }
 

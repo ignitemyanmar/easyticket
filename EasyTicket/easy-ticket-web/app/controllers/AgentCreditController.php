@@ -971,7 +971,7 @@ class AgentCreditController extends \BaseController {
         }
         ksort($responsegrouping);
 
-    	$agent_name=Agent::whereid($agent_id)->pluck('name');
+    	$agent_name=AgentGroup::whereid($agent_id)->pluck('name');
         $agent_balance=AgentDeposit::whereagent_id($agent_id)->orderBy('id','desc')->pluck('balance');
         $parameter['agent_id']=$agent_id;
         $parameter['operator_id']=$this->myGlob->operator_id;
@@ -1100,13 +1100,13 @@ class AgentCreditController extends \BaseController {
 
 	public function postCreditPayment()
 	{
-    	$agent_id=Input::get('agent_id');
+    	$agentgroup_id=Input::get('agent_id');
     	$operator_id=Input::get('operator_id');
     	$paywithdeposit=Input::get('paywithdeposit');
     	$payment_amount=Input::get('payment_amount') ? Input::get('payment_amount') : 0;
     	$order_ids=Input::get('order_id');
     	if(count($order_ids)==0){
-    		return Redirect::to('report/agentcreditsales/'.$agent_id.'?'.$this->myGlob->access_token);
+    		return Redirect::to('report/agentcreditsales/'.$agentgroup_id.'?'.$this->myGlob->access_token);
     	}
     	$response=array();
     	$total_amount=0;
@@ -1129,7 +1129,7 @@ class AgentCreditController extends \BaseController {
     		$current_balance=0;
     		$balance=0;
     		$debit=0;
-    		$objagentdeposit=AgentDeposit::whereagent_id($agent_id)->whereoperator_id($operator_id)->orderBy('id', 'desc')->first();
+    		$objagentdeposit=AgentDeposit::whereagentgroup_id($agentgroup_id)->whereoperator_id($operator_id)->orderBy('id', 'desc')->first();
     		if($objagentdeposit){
     			$current_balance= ($objagentdeposit->balance + $payment_amount) - $objagentdeposit->debit;
     		}else{
@@ -1137,16 +1137,16 @@ class AgentCreditController extends \BaseController {
     		}
 
     		$objdepositpayment_trans=new AgentDeposit();
-    		$objdepositpayment_trans->agent_id=$agent_id;
+    		$objdepositpayment_trans->agentgroup_id=$agentgroup_id;
     		$objdepositpayment_trans->operator_id=$operator_id;
     		$objdepositpayment_trans->total_ticket_amt=$total_amount;
-    		$today=date("Y-m-d");
+    		$today=$this->getDate();
     		$objdepositpayment_trans->pay_date=$today;
     		$objdepositpayment_trans->payment=$payment_amount;
     		
     		$objdepositpayment_trans->deposit=0;
     		$balance=$current_balance - $total_amount;
-    		$agentdeposit=AgentDeposit::whereagent_id($agent_id)->whereoperator_id($operator_id)->orderBy('id','desc')->first();
+    		$agentdeposit=AgentDeposit::whereagentgroup_id($agentgroup_id)->whereoperator_id($operator_id)->orderBy('id','desc')->first();
     		if($agentdeposit){
     			$objdepositpayment_trans->deposit=$agentdeposit->balance;
     		}
@@ -1164,7 +1164,7 @@ class AgentCreditController extends \BaseController {
 
     		$message['status']=1;
     		$message['message']="Success transaction.";
-    		return Redirect::to('report/agentcreditsales/'.$agent_id.'?'.$this->myGlob->access_token);
+    		return Redirect::to('report/agentcreditsales/'.$agentgroup_id.'?'.$this->myGlob->access_token);
     	}else{
     		$response['status']=0;
     		$response['message']='There is no debit.';

@@ -200,13 +200,13 @@
                                                                $groupheader=$row['groupheader']; 
                                                                $groupheader .='==> <span class="label label-info label-mini">Total Receipt <i class="icon-share-alt"></i></span>  <span ';
                                                                if($res_agentgroup['L_totalreceipt'] < 0) {
-                                                                  $groupheader .='class="noti"';
+                                                                  $groupheader .='class=""';
                                                                }
                                                                $groupheader .='>['.number_format( str_replace('-','',$res_agentgroup['L_totalreceipt']) , 0 , '.' , ',' ) ." ] </span>";   
                                                                $groupheader .='&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                                                               <span class="label label-info label-mini">Total Receivable <i class="icon-share-alt"></i></span> <span ';
                                                                if($res_agentgroup['L_colsingbalance'] < 0){
-                                                                  $groupheader .='class="noti"';
+                                                                  $groupheader .='class=""';
                                                                } 
                                                                                   
                                                                $groupheader .='>['.number_format( str_replace('-','',$res_agentgroup['L_colsingbalance']) , 0 , '.' , ',' ). '] </span>';
@@ -215,13 +215,13 @@
                                                                $noti="";
                                                                  if($res_agentgroup['remain_balances'] <= 0){
                                                                      $noti="noti";
-                                                                 }elseif($res_agentgroup['remain_balances'] > 0 && $res_agentgroup['remain_balances'] < 300000){
-                                                                     $noti="alerts";
+                                                                 }elseif( $res_agentgroup['remain_balances'] <= 300000){
+                                                                     $noti="noti";
                                                                  }elseif($res_agentgroup['remain_balances'] >= 300000){
                                                                      $noti="available";
                                                                  }else{
-
-                                                                 }
+                                                                     $noti="";
+                                                                    }
                                                                $groupheader .='<span class="label label-success label-mini">Remain Balance <i class="icon-share-alt"></i></span> [<span class="'.$noti.'">'.number_format( str_replace('-','',$res_agentgroup['remain_balances']) , 0 , '.' , ',' ).'</span>]';
                                                          ?>
                                                          @if($row['receipt'] || $row['receivable'])
@@ -247,8 +247,7 @@
                                                          <tr>
                                                             <td><b>Receipt at  </b><span class="label label-warning label-mini">{{$row['pay_date']}} <i class="icon-share-alt"></i></span></td>
                                                             <td>{{$groupheader}}</td>
-
-                                                            <td><b>{{number_format( $row['payment'] , 0 , '.' , ',' )}}</b></td>
+                                                            <td><b>{{number_format( $row['payment'] , 0 , '.' , ',' )}} ( {{$row['operator']['name']}} )</b></td>
                                                             <td>&nbsp;</td>
                                                             <td>&nbsp;</td>
                                                             <td></td>

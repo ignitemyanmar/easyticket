@@ -79,8 +79,9 @@
                                     </div>
                                     <div class="modal-body">
                                        <div id="upload_list" style="display:none;">
+                                          <p class="alert" id="up_pg_delsaleorder"><strong>3.Message:</strong> <span id="message-up_pg_delsaleorder">Wainting for connect to Server...</span></p>
                                           <p class="alert" id="up_pg_sale_order"><strong>1.Message:</strong> <span id="message-up_pg_sale_order">Wainting for connect to Server...</span></p>
-                                          <p class="alert" id="up_pg_bus_payment"><strong>2.Message:</strong> <span id="message-up_pg_payment">Wainting for connect to Server...</span></p>
+                                          <p class="alert" id="up_pg_payment"><strong>2.Message:</strong> <span id="message-up_pg_payment">Wainting for connect to Server...</span></p>
                                        </div>
                                        <div id="download_list" style="display:none;">
                                           <p class="alert" id="pg_bus"><strong>1.Message:</strong> <span id="message-pg_bus">Wainting for connect to Server...</span></p>
@@ -268,7 +269,7 @@
       $('.progress-striped').addClass('active');
       $('#upload_list').show();
       $('#download_list').hide(); 
-      syncSaleOrderToServer('up_pg_sale_order');
+      syncDelSaleOrderToServer('up_pg_delsaleorder');
    });
 
    /*
@@ -286,6 +287,28 @@
             clearInterval(progressUploadInterval);
          }
    }
+
+   var syncDelSaleOrderToServer = function(sync_id){
+      var that = sync_id;
+      $('#'+that).addClass('alert-info');
+      $('.progress-striped').addClass('active');
+      $('#message').html('Connecting to server...');
+      $('#file').html('');
+      $.ajax({
+        type: "GET",
+        url: "/uploaddelsaleorderjson/"+sync_id,
+        data: null
+      })
+      .done(function( response ) {
+
+         jqxhrUploadResponse(response, that, 'Deleted Sale Order');
+         syncSaleOrderToServer('up_pg_sale_order');
+         
+      });
+
+      progressUploadCallback(sync_id);
+   }
+
 
    var syncSaleOrderToServer = function(sync_id){
       var that = sync_id;
@@ -314,7 +337,9 @@
         data: null
       })
       .done(function( response ) {
+          
          $('.progress-striped').removeClass('active');
+         
          if(response.status_code === 1){
             // alert( "Data Saved: " + response.message );
             $('.alert').removeClass('alert-success alert-error');
@@ -331,18 +356,18 @@
             $('.alert span').html(response.message);
             $('#myModal1').modal('hide');
          }else{
-            alert(JSON.stringify(response));
+            
             $('#myModal1').modal('hide');
             
          }
-         jqxhrUploadResponse(response, that, 'Sale Order');
-
-         
+          
+                   
       });
 
       progressUploadCallback(sync_id);
    }
 
+   
    $('#sync_from_server').click(function(){
       $('.progress-striped').addClass('active');
       $('#download_list').show();
@@ -667,24 +692,8 @@
       })
       .done(function( response ) {
          jqxhrResponse(response, that, 'Seat Info');  
-         syncSaleOrder('pg_saleorder');       
-      });
-      progressDownloadCallback(sync_id);
-   }
-   $('#sync_saleorder_from_server').click(function(){
-      syncSaleOrder('pg_saleorder');      
-   });
-   var syncSaleOrder = function(sync_id){
-      var that = sync_id;
-      $('#'+that).addClass('alert-info');
-      $.ajax({
-        type: "GET",
-        url: "/downloadsaleorderjson/"+sync_id,
-        data: null
-      })
-      .done(function( response ) {
-         jqxhrResponse(response, that, 'Sale Order');
-         syncDeleteSaleOrder('pg_del_saleorder');         
+          
+         syncDeleteSaleOrder('pg_del_saleorder');      
       });
       progressDownloadCallback(sync_id);
    }
@@ -697,6 +706,24 @@
       $.ajax({
         type: "GET",
         url: "/downloaddeletesaleorderjson/"+sync_id,
+        data: null
+      })
+      .done(function( response ) {
+         
+         jqxhrResponse(response, that, 'Deleted Sale Order'); 
+         syncSaleOrder('pg_saleorder');        
+      });
+      progressDownloadCallback(sync_id);
+   }
+   $('#sync_saleorder_from_server').click(function(){
+      syncSaleOrder('pg_saleorder');      
+   });
+   var syncSaleOrder = function(sync_id){
+      var that = sync_id;
+      $('#'+that).addClass('alert-info');
+      $.ajax({
+        type: "GET",
+        url: "/downloadsaleorderjson/"+sync_id,
         data: null
       })
       .done(function( response ) {
@@ -720,7 +747,7 @@
             $('#myModal1').modal('hide');
 
          }
-         jqxhrResponse(response, that, 'Deleted Sale Order');         
+         jqxhrResponse(response, that, 'Sale Order');
       });
       progressDownloadCallback(sync_id);
    }

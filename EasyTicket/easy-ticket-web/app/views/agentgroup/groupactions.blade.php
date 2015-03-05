@@ -196,7 +196,7 @@
                                        <a href="/report/agentcommission/{{$response['id']}}?{{$myApp->access_token}}"><button class="btn purple btn-block">ခရီးစဥ္ အလုိက္ ေကာ္မစ္ရွင္မ်ား</button></a>
                                        <button class="btn green btn-block" data-reveal-id="deposit_form">စရံေငြထည့္ရန္</button>
                                        <a href="/report/agentcreditsales/{{$response['id']}}?{{$myApp->access_token}}"><button class="btn yellow btn-block">ေၾကြးစာရင္းမ်ားၾကည့္ရန္</button></a>
-                                       <a href="/report/paymenttransaction/{{$response['id']}}?{{$myApp->access_token}}"><button class="btn blue btn-block" >ေပးျပီးသားစာရင္းမ်ားၾကည့္ရန္</button></a>
+                                       <a href="/report/agentcreditsales/{{$response['id']}}?cash=1&{{$myApp->access_token}}"><button class="btn blue btn-block" >ေပးျပီးသားစာရင္းမ်ားၾကည့္ရန္</button></a>
                                     </div>
                                  </div>
                               </div>

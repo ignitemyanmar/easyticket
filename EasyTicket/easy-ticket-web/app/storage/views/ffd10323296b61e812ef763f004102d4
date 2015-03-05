@@ -116,7 +116,7 @@
                 <?php echo $__env->make('include.permission_menu', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
 
                 <li <?php if($currentroute=='cli'): ?> class="" <?php endif; ?>>
-                    <a href="/client/sync">
+                    <a href="/client/sync?access_token=<?php echo Auth::user()->access_token; ?>">
                     <i class="icon-th-list"></i> 
                     <span class="title">Sync</span>
                     </a>
@@ -128,7 +128,7 @@
         </div>
 
         <!-- END SIDEBAR -->
-        <?php if(Auth::user()->role==3): ?>
+        <?php if(Auth::user()->role==3 || Auth::user()->role==9): ?>
             <?php
                 $currenturl =URL::full();
                 $concat="?";
@@ -136,27 +136,13 @@
                 $agopparprefix=strpos($currenturl,'?agopt_id');
                 $agopparprefix2=strpos($currenturl,'&agopt_id');
                 $currenturl=str_replace('agopt_id=', '',$currenturl);
-                /*if($agopparprefix){
-                   $position= strpos($currenturl, '?agopt_id=');
-                    if($position){
-                        // $currenturl=substr($currenturl, 0, $position);
-                        $currenturl=str_replace('agopt_id=', '',$currenturl);
-                    } 
-                }elseif($agopparprefix2){
-                    $position= strpos($currenturl, '&agopt_id=');
-                    $url=$currenturl;
-                    if($position){
-                        // $currenturl=substr($currenturl, 0, $position);
-                        $currenturl=str_replace('agopt_id=', '',$currenturl);
-                    } 
-                }else{*/
                     $checkurl=strpos($currenturl,'?');
                     
                     if($checkurl){
                         $concat="&";
                     }
             ?>
-            <div class="btn-group pull-right">
+            <div class="btn-group pull-right" style="margin-right: 21px;margin-top: 3px;">
                 <a class="btn blue" href="#" data-toggle="dropdown">
                 <i class="icon-user"></i> <?php echo $myApp->operator_name.$url; ?>
                 <i class="icon-angle-down"></i>

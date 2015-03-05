@@ -50,27 +50,30 @@ App::error(function(Exception $exception, $code)
 {
 	Log::error($exception);
 	switch ($code)
-	{
+    {
         case 401:
-            return Redirect::to('404');
-	    case 403:
-	        return Response::view('errors.403', array(), 403);
+            return View::make('error.401');
 
-	    case 404:
-            return '<p style="border:1px solid #ccc; color:#888; padding:29px; width:70%; margin:0 auto;">  '.substr($exception, 0, 310).'</p>';
-	        return Redirect::to('404');
+        case 403:
+            return View::make('error.403');
 
-	    case 500:
-	    	return '<p style="border:1px solid #ccc; color:#888; padding:29px; width:70%; margin:0 auto;">  '.substr($exception, 0, 310).'</p>';
-	        return Redirect::to('500');
+        case 404:
+            return View::make('error.404');
 
-	    default:
-	        //return Response::view('errors.index', array(), $code);
-	}
+        case 500:
+            return View::make('error.500', array('error' => $exception));
+
+        default:
+            //return Response::view('error.index', array(), $code);
+    }
 });
+
+require '/custom_helpers.php';
 
 App::before(function($request)
 {
+    Input::merge(array_strip_tags(Input::all()));
+
     // Singleton (global) object
 
     //date time for global
@@ -108,16 +111,16 @@ App::before(function($request)
                             $agent_operator_id=Input::get('agopt_id');
                             if($agent_operator_id){
                                 Session::put('agopt_id',$agent_operator_id);
-                                Session::put('G_operator_id', $agent_operator_id);
+                                // Session::put('G_operator_id', $agent_operator_id);
                             }else{
                                 if(Session::has('agopt_id')){
                                     $agent_operator_id=Session::get('agopt_id');
-                                    Session::put('G_operator_id', $agent_operator_id);
+                                    // Session::put('G_operator_id', $agent_operator_id);
                                 }
                             }
                             if($agent_operator_id && $agent_operator_id !='all'){
                                 $objoperators=Operator::whereid($agent_operator_id)->get();
-                                Session::put('G_operator_id', $agent_operator_id);
+                                // Session::put('G_operator_id', $agent_operator_id);
                             }
 
 
@@ -224,24 +227,6 @@ App::down(function()
 |
 */
 
-
-Event::listen('cron.collectJobs', function() {
-    Cron::add('example2', '*/2 * * * *', function() {
-        // Do some crazy things successfully every two minute
-        $objholiday=new Holiday();
-	        $objholiday->operator_id=3222;
-	        $objholiday->month="07";
-	        $objholiday->holiday="2014-07-04";
-	        $objholiday->save();
-	        // Do some crazy things successfully every two minute
-        return null;
-    });
-	$report = Cron::run();
-});
-
-Event::listen('cron.jobError', function($name, $return, $runtime, $rundate){
-    Log::error('Job with the name ' . $name . ' returned an error.');
-});
 
 
 require app_path().'/filters.php';

@@ -15,12 +15,17 @@ class CreditController extends \BaseController {
         $datestatus=Input::get('cbodate') ? Input::get('cbodate') : "All" ;
         $groupid=Input::get('agentgroup') ? Input::get('agentgroup') : "All";
         $agent_id=Input::get('agent_id');
+        $agopt_ids =$this->myGlob->agopt_ids;
+        if(!$agopt_ids){
+            $agopt_ids[]=$this->myGlob->operator_id;
+        }
         
-        $start_date=Input::get('start_date');
+
+        $start_date=(Input::get('start_date') !="All") ? date('Y-m-d',strtotime(Input::get('start_date'). '-14 days')) : $this->getDate();
         $end_date=Input::get('end_date');
+        
         if($start_date !="All"){
-            $start_date=Input::get('start_date') ? date('Y-m-d',strtotime(Input::get('start_date'))) : "All";
-            $end_date=Input::get('end_date') ? date('Y-m-d',strtotime(Input:: get('end_date'))) :  "All";
+            $end_date=(Input::get('end_date') && Input::get('end_date') !="All") ? date('Y-m-d',strtotime(Input:: get('end_date'))) : $this->getDate();
         }
 
         $agent_ids=$objagentList=array();
@@ -43,21 +48,21 @@ class CreditController extends \BaseController {
 
         if($start_date && $end_date && $end_date !="All"){
             if($agent_ids){
-                $transaction_group_ids=AgentDeposit::wherein('agent_id',$agent_ids)->where('pay_date','>=',$start_date)->where('pay_date','<=',$end_date)->lists('agentgroup_id');
+                $transaction_group_ids=AgentDeposit::wherein('operator_id',$agopt_ids)->wherein('agent_id',$agent_ids)->where('pay_date','>=',$start_date)->where('pay_date','<=',$end_date)->lists('agentgroup_id');
             }else{
-                $transaction_group_ids=AgentDeposit::where('pay_date','>=',$start_date)->where('pay_date','<=',$end_date)->lists('agentgroup_id');
+                $transaction_group_ids=AgentDeposit::wherein('operator_id',$agopt_ids)->where('pay_date','>=',$start_date)->where('pay_date','<=',$end_date)->lists('agentgroup_id');
             }
         }elseif($start_date && $start_date !="All" && $end_date=="All"){
             if($agent_ids){
-                $transaction_group_ids=AgentDeposit::wherein('agent_id',$agent_ids)->where('pay_date','>=',$start_date)->lists('agentgroup_id');
+                $transaction_group_ids=AgentDeposit::wherein('operator_id',$agopt_ids)->wherein('agent_id',$agent_ids)->where('pay_date','>=',$start_date)->lists('agentgroup_id');
             }else{
-                $transaction_group_ids=AgentDeposit::where('pay_date','>=',$start_date)->lists('agentgroup_id');
+                $transaction_group_ids=AgentDeposit::wherein('operator_id',$agopt_ids)->where('pay_date','>=',$start_date)->lists('agentgroup_id');
             }
         }else{
             if($agent_ids){
-                $transaction_group_ids=AgentDeposit::wherein('agent_id',$agent_ids)->lists('agentgroup_id');
+                $transaction_group_ids=AgentDeposit::wherein('operator_id',$agopt_ids)->wherein('agent_id',$agent_ids)->lists('agentgroup_id');
             }else{
-                $transaction_group_ids=AgentDeposit::lists('agentgroup_id');
+                $transaction_group_ids=AgentDeposit::wherein('operator_id',$agopt_ids)->lists('agentgroup_id');
             }
         }
 
@@ -76,11 +81,12 @@ class CreditController extends \BaseController {
                 $objagentgrouplist=AgentGroup::wherein('id',$transaction_group_ids)->with(array('agents'))->get();
             }
         }
+
         if($objagentgrouplist){
             foreach ($objagentgrouplist as $grp_key=>$res_agentgroup) {
                 //For Calculate Agent Group Remain Balance
                     $grouptotalcredit=0;
-                    $grouptotalcredit=AgentDeposit::whereagentgroup_id($res_agentgroup->id)->sum('payment');
+                    $grouptotalcredit=AgentDeposit::wherein('operator_id',$agopt_ids)->whereagentgroup_id($res_agentgroup->id)->sum('payment');
                     
                     $child_totalcredits=0;
                     $ch_agent_ids=array();
@@ -89,7 +95,7 @@ class CreditController extends \BaseController {
                     }
                     if($ch_agent_ids){
                         foreach ($ch_agent_ids as $chagent_id) {
-                            $child_totalcredits +=AgentDeposit::whereagent_id($chagent_id)->orderBy('id','desc')->pluck('balance');
+                            $child_totalcredits +=AgentDeposit::wherein('operator_id',$agopt_ids)->whereagent_id($chagent_id)->orderBy('id','desc')->pluck('balance');
                         }
                     }
 
@@ -110,11 +116,13 @@ class CreditController extends \BaseController {
 
                 //for showing with Remain Balance 
                 $groupname =$res_agentgroup->name;
-
                 $L_openingbalance=0;  
                 $L_colsingbalance=0;  
                 $L_receivable=0;  
                 $L_totalreceipt=0;  
+                $grand_freeticketamt=0;
+                $branchagentorder_ids=array();
+
                 if(count($res_agentgroup->agents)>0){
                     foreach ($res_agentgroup->agents as $key=> $objagent) {
                         $transactions =$transactionsdates =array();
@@ -122,15 +130,18 @@ class CreditController extends \BaseController {
 
                         if($datestatus !="All" && $start_date){
                             $transactionsdates=AgentDeposit::whereagent_id($objagent->id)
+                                            ->wherein('operator_id', $agopt_ids)
                                             ->where('pay_date','>=', $start_date)
                                             ->where('pay_date','<=', $end_date)
                                             ->groupBy('pay_date')->orderBy('id','asc')->lists('pay_date');
 
                             $prev_payment=AgentDeposit::whereagent_id($objagent->id)
+                                                ->wherein('operator_id', $agopt_ids)
                                                 ->where('pay_date','<', $start_date)
                                                 ->where('pay_date','!=', "0000-00-00")
                                                 ->sum('payment');
                             $prev_receivable=AgentDeposit::whereagent_id($objagent->id)
+                                                ->wherein('operator_id', $agopt_ids)
                                                 ->where('pay_date','<', $start_date)
                                                 ->where('payment','=', 0)
                                                 ->where('pay_date','!=', "0000-00-00")
@@ -138,27 +149,71 @@ class CreditController extends \BaseController {
                             $opening_balance =$prev_payment - $prev_receivable;
                         }else{
                             $transactionsdates=AgentDeposit::whereagent_id($objagent->id)
+                                            ->wherein('operator_id', $agopt_ids)
                                             ->groupBy('pay_date')->orderBy('id','asc')->lists('pay_date');                    
                         }
+
 
 
                         if($transactionsdates){
                             $opening_balance=$prev_payment - $prev_receivable;
                             $receivable=0;                    
                             $res_paydate='';
-                            $payments=AgentDeposit::whereagent_id($objagent->id)->wherein("pay_date",$transactionsdates)->where('pay_date','!=', "0000-00-00")->sum('payment');
-                            $receivable=AgentDeposit::whereagent_id($objagent->id)->wherepayment(0)->wherein("pay_date",$transactionsdates)->sum('total_ticket_amt');
+                            $payments=AgentDeposit::whereagent_id($objagent->id)->wherein('operator_id',$agopt_ids)->wherein("pay_date",$transactionsdates)->where('pay_date','!=', "0000-00-00")->sum('payment');
+                            $receivable=AgentDeposit::whereagent_id($objagent->id)->wherein('operator_id',$agopt_ids)->wherepayment(0)->wherein("pay_date",$transactionsdates)->sum('total_ticket_amt');
+
+                            //previous freetickets amount
+                                $prevbranchagentorder_ids=array();
+                                $prevfreeticketamounts=0;
+                                if($start_date !="All"){
+                                    $prevobjagentdeposits=AgentDeposit::whereagent_id($objagent->id)
+                                                        ->wherein('operator_id',$agopt_ids)
+                                                        ->where("pay_date",'<',$start_date)
+                                                        ->where('pay_date','!=', "0000-00-00")
+                                                        ->lists('order_ids');
+                                    if($prevobjagentdeposits){
+                                        foreach ($prevobjagentdeposits as $rowsids) {
+                                            $ordid=json_decode($rowsids);
+                                            $prevbranchagentorder_ids[]=$ordid[0];                                       
+                                        }
+                                    }
+                                    if($prevbranchagentorder_ids){
+                                        $prevfreeticketamounts =SaleItem::wherein('order_id', $prevbranchagentorder_ids)->wherefree_ticket(1)->sum('price');
+                                    }    
+                                }
+                                
+
+                            //between date range freetickets amount
+                                $objagentdeposits=AgentDeposit::whereagent_id($objagent->id)
+                                                    ->wherein('operator_id',$agopt_ids)
+                                                    ->wherein("pay_date",$transactionsdates)
+                                                    ->where('pay_date','!=', "0000-00-00")
+                                                    ->lists('order_ids');
+                                if($objagentdeposits){
+                                    foreach ($objagentdeposits as $rowsids) {
+                                        $ordid=json_decode($rowsids);
+                                        $branchagentorder_ids[]=$ordid[0];                                       
+                                    }
+                                }
+                                $freeticketamounts=0;
+                                if($branchagentorder_ids){
+                                    $freeticketamounts =SaleItem::wherein('order_id', $branchagentorder_ids)->wherefree_ticket(1)->sum('price');
+                                }
+                                $receivable -=$freeticketamounts;
+
+                            $opening_balance +=$prevfreeticketamounts;
+
                             $temp['pay_date']=$res_paydate;
                             $temp['opening_balance']=$opening_balance;
                             $temp['receivable']=$receivable;
                             $temp['receipt']=$payments;
                             $temp['closing_balance']=($opening_balance + $payments) - $receivable;
-
                             $objagentgrouplist[$grp_key]['agents'][$key]['opening_balance']=$opening_balance;
                             $objagentgrouplist[$grp_key]['agents'][$key]['receivable']=$receivable;
                             $objagentgrouplist[$grp_key]['agents'][$key]['receipt']=$payments;
                             $objagentgrouplist[$grp_key]['agents'][$key]['closing_balance']=$closing_balance=($opening_balance + $payments) - $receivable;
                             $objagentgrouplist[$grp_key]['agents'][$key]['grand_reciept']=$grand_reciept=$payments;
+                            $objagentgrouplist[$grp_key]['agents'][$key]['freeticketamount']=$freeticketamounts;
                             $objagentgrouplist[$grp_key]['agents'][$key]['grand_receivable_total']=$grandtotalcredit=$receivable;
                             
                             $parameter='';
@@ -179,19 +234,15 @@ class CreditController extends \BaseController {
                             $objagentgrouplist[$grp_key]['agents'][$key]['grand_reciept']=0;
                             $objagentgrouplist[$grp_key]['agents'][$key]['grand_receivable_total']=0;
 
-                            /*$parameter='';
-                            if($groupname==""){
-                                $parameter='?agent_id='.$objagent['id'];
-                            }*/
                             $parameter='';
                             if(!$objagent['agentgroup_id']){
-                                $parameter='?agent_id='.$objagent['id']."&start_date=".$start_date."&end_date=".$end_date;
+                                $parameter='&agent_id='.$objagent['id']."&start_date=".$start_date."&end_date=".$end_date;
                             }else{
-                                $parameter="?start_date=".$start_date."&end_date=".$end_date;
+                                $parameter="&start_date=".$start_date."&end_date=".$end_date;
                             }
 
                             $closing_balance=$grand_reciept=$grandtotalcredit=$opening_balance=0;
-                            $groupheader='<a class="btn mini purple blue-stripe" href="/report/agentcreditlist/group/'.$objagent->agentgroup_id.$parameter.'" style="float:right; right:0;margin-left:25px;">အေသးစိတ္ All</a>';
+                            $groupheader='<a class="btn mini purple blue-stripe" href="/report/agentcreditlist/group/'.$objagent->agentgroup_id.'?'.$this->myGlob->access_token.$parameter.'" style="float:right; right:0;margin-left:25px;">အေသးစိတ္ All</a>';
                         }
                         $objagentgrouplist[$grp_key]['agents'][$key]['groupheader']=$groupname. $groupheader;
                     }
@@ -199,14 +250,38 @@ class CreditController extends \BaseController {
 
                 $payment_transactions=array();
                 if($start_date && $end_date && $end_date !="All"){
-                    $payment_transactions=AgentDeposit::whereagentgroup_id($res_agentgroup->id)->where('payment','>',0)/*->where('pay_date','>=',$start_date)*/->where('pay_date','<=',$end_date)->orderBy('id','pay_date')->get(array('pay_date','payment'));
-                    $L_totalreceipt=AgentDeposit::whereagentgroup_id($res_agentgroup->id)->where('payment','>',0)/*->where('pay_date','>=',$start_date)*/->where('pay_date','<=',$end_date)->orderBy('id','pay_date')->sum('payment');
+                    $payment_transactions=AgentDeposit::with(array(
+                                                                'operator'=>function($q){ $q->addSelect('id','name');}
+                                                                ))
+                                                                ->whereagentgroup_id($res_agentgroup->id)
+                                                                ->wherein('operator_id',$agopt_ids)
+                                                                ->where('payment','>',0)
+                                                                /*->where('pay_date','>=',$start_date)*/
+                                                                ->where('pay_date','<=',$end_date)
+                                                                ->orderBy('id','pay_date')
+                                                                ->get(array('pay_date','payment','operator_id'));
+                    $L_totalreceipt=AgentDeposit::whereagentgroup_id($res_agentgroup->id)->where('payment','>',0)
+                                                ->wherein('operator_id',$agopt_ids)->where('pay_date','<=',$end_date)->orderBy('id','pay_date')->sum('payment');
                 }elseif($start_date && $start_date !="All" && $end_date=="All"){
-                    $payment_transactions=AgentDeposit::whereagentgroup_id($res_agentgroup->id)->where('payment','>',0)/*->where('pay_date','>=',$start_date)*/->orderBy('id','pay_date')->get(array('pay_date','payment'));
-                    $L_totalreceipt=AgentDeposit::whereagentgroup_id($res_agentgroup->id)->where('payment','>',0)/*->where('pay_date','>=',$start_date)*/->orderBy('id','pay_date')->sum('payment');
+                    $payment_transactions=AgentDeposit::with(array(
+                                                                'operator'=>function($q){ $q->addSelect('id','name');}
+                                                                ))
+                                                                ->whereagentgroup_id($res_agentgroup->id)
+                                                                ->wherein('operator_id',$agopt_ids)
+                                                                ->where('payment','>',0)
+                                                                /*->where('pay_date','>=',$start_date)*/
+                                                                ->orderBy('id','pay_date')
+                                                                ->get(array('pay_date','payment','operator_id'));
+                    $L_totalreceipt=AgentDeposit::whereagentgroup_id($res_agentgroup->id)->wherein('operator_id',$agopt_ids)->where('payment','>',0)/*->where('pay_date','>=',$start_date)*/->orderBy('id','pay_date')->sum('payment');
                 }else{
-                    $payment_transactions=AgentDeposit::whereagentgroup_id($res_agentgroup->id)->where('payment','>',0)->orderBy('id','pay_date')->get(array('pay_date','payment'));
-                    $L_totalreceipt=AgentDeposit::whereagentgroup_id($res_agentgroup->id)->where('payment','>',0)/*->where('pay_date','>=',$start_date)*/->orderBy('id','pay_date')->sum('payment');
+                    $payment_transactions=AgentDeposit::with(array(
+                                                                'operator'=>function($q){ $q->addSelect('id','name');}
+                                                                ))
+                                                                ->whereagentgroup_id($res_agentgroup->id)
+                                                                ->wherein('operator_id',$agopt_ids)
+                                                                ->where('payment','>',0)
+                                                                ->orderBy('id','pay_date')->get(array('pay_date','payment','operator_id'));
+                    $L_totalreceipt=AgentDeposit::whereagentgroup_id($res_agentgroup->id)->wherein('operator_id',$agopt_ids)->where('payment','>',0)/*->where('pay_date','>=',$start_date)*/->orderBy('id','pay_date')->sum('payment');
                 }
 
                 $total_receiptamt=$L_totalreceipt ? $L_totalreceipt : 0;
@@ -218,7 +293,7 @@ class CreditController extends \BaseController {
                 $objagentgrouplist[$grp_key]['payment_transactions']=$payment_transactions->toarray();
             }
         }
-        // return Response::json($objagentgrouplist);
+        // return Response::json($objagentgrouplist[0]['payment_transactions']);
 
         $search['agentgroup']="";
         $agentgroup=array();
@@ -229,7 +304,7 @@ class CreditController extends \BaseController {
         }
         $search['agentgroup']=$agentgroup;
         $search['datestatus']=$datestatus;
-        $search['start_date']=Input::get('start_date');
+        $search['start_date']=$start_date ;
         $search['end_date']=$end_date;
 
         $search['agentgroup_id']=$groupid;
@@ -255,41 +330,48 @@ class CreditController extends \BaseController {
 
         $agent_id=Input::get('agent_id');
         $start_date=Input::get('start_date');
-        $end_date=Input::get('end_date');
+        $end_date=(Input::get('end_date') !="All") ? date('Y-m-d',strtotime(Input:: get('end_date'))) :  $this->getDate();
         if($start_date !="All"){
             $start_date=Input::get('start_date') ? date('Y-m-d',strtotime(Input::get('start_date'))) : "All";
-            $end_date=Input::get('end_date') ? date('Y-m-d',strtotime(Input:: get('end_date'))) :  "All";
         }
         $agent_ids=$objagentList=array();
-        if($glob_agent_ids && !$groupid){
-            $agent_ids=$glob_agent_ids;
+        if($agent_id){
+            $agent_ids[]=$agent_id;
         }else{
-            if($groupid){
-                if($groupid !="All"){
-                    $agent_ids=Agent::whereagentgroup_id($groupid)->lists('id');
+            if($glob_agent_ids && !$groupid){
+                $agent_ids=$glob_agent_ids;
+            }else{
+                if($groupid){
+                    if($groupid !="All"){
+                        $agent_ids=Agent::whereagentgroup_id($groupid)->lists('id');
+                    }
+                    else{
+                        $agent_ids=Agent::lists('id');
+                    }
                 }
-                else{
-                    $agent_ids=Agent::lists('id');
+                if($agent_id && $agent_id !="All"){
+                    $agent_ids=array();
+                    $agent_ids[]=$agent_id;
                 }
-            }
-            if($agent_id && $agent_id !="All"){
-                $agent_ids=array();
-                $agent_ids[]=$agent_id;
-            }
+            } 
         }
+        
+
+
 
         if($agent_ids){
             if($agopt_ids){
                 $objagentList=Agent::wherein('id',$agent_ids)
-                            ->wherein('operator_id',$agopt_ids)
+                            // ->wherein('operator_id',$agopt_ids)
                             ->orderBy('name')->get();
             }else{
                 $objagentList=Agent::wherein('id',$agent_ids)
-                            ->whereoperator_id($operator_id)
+                            // ->whereoperator_id($operator_id)
                             ->orderBy('name')->get();    
             }
             
         }
+        // return Response::json($objagentList);
 
         if($objagentList){
             $groupname=AgentGroup::whereid($groupid)->pluck('name');
@@ -299,7 +381,7 @@ class CreditController extends \BaseController {
                 $objagentList[$i]=$objagent;
                 $objagentList[$i]['agentgroup_name']=$groupname;
                 $L_agent_id=$agent_group_id ? "All" : $objagent->id;
-                $groupheader='<a class="btn mini blue green-stripe" href="/report/agentcreditlist/paymentdetail/'.$L_agent_id.'?access_token='.Auth::user()->access_token.'&agentgroup_id='.$agent_group_id.'start_date='.$start_date.'&end_date='.$end_date.'" style="float:right; right:0;margin-left:25px;">အေသးစိတ္ All</a>';
+                $groupheader='<a class="btn mini blue green-stripe" href="/report/agentcreditlist/paymentdetail/'.$L_agent_id.'?access_token='.Auth::user()->access_token.'&agentgroup_id='.$agent_group_id.'&start_date='.$start_date.'&end_date='.$end_date.'" style="float:right; right:0;margin-left:25px;">အေသးစိတ္ All</a>';
                 $groupname=AgentGroup::whereid($objagent->agentgroup_id)->pluck('name');
                 $groupname=$groupname ? $groupname : $objagent->name;
 
@@ -372,6 +454,23 @@ class CreditController extends \BaseController {
                         $payments=AgentDeposit::whereagent_id($objagent->id)->wherepay_date($res_paydate)->sum('payment');
                         $receivable=AgentDeposit::whereagent_id($objagent->id)->wherepayment(0)->wherepay_date($res_paydate)->sum('total_ticket_amt');
                         
+                        $payment_order_ids=AgentDeposit::whereagent_id($objagent->id)
+                                                            ->wherein("pay_date",$transactionsdates)
+                                                            ->where('pay_date','!=', "0000-00-00")->lists('order_ids');
+                            
+                            $p_orderids=array();
+                            if($payment_order_ids){
+                                foreach ($payment_order_ids as $p_orderid) {
+                                    $ordid=json_decode($p_orderid);
+                                    $p_orderids[]=$ordid[0];
+                                }
+                            }
+
+                            $freeticketamount=SaleItem::wherein('order_id',$p_orderids)
+                                                        ->wherefree_ticket(1)
+                                                        ->sum('price');
+                            $receivable -= $freeticketamount;
+
                         $temp['pay_date']=$res_paydate;
                         $temp['opening_balance']=$opening_balance;
                         $temp['receivable']=$receivable;
@@ -388,7 +487,6 @@ class CreditController extends \BaseController {
                 $i++;
             }
         }
-        // return Response::json($objagentList);
         $search['agentgroup']="";
         $agentgroup=array();
         $agentgroup=AgentGroup::whereoperator_id($operator_id)->get();
@@ -399,10 +497,11 @@ class CreditController extends \BaseController {
         $search['agentgroup_id']=$groupid;
         $search['agent_id']=$agent_id ? $agent_id : "All";
         $search['agent']='';
+        // return Response::json($objagentList);
         return View::make('busreport.agentcredit.agentgroupcreditbydate', array('response'=>$objagentList,'search'=>$search));
     }
 
-    public function detail($agent_id)
+    public function detail9_2_15($agent_id)
     {
         $glob_agentgroup_id  =$this->myGlob->agentgroup_id;
         $glob_agent_ids      =$this->myGlob->agent_ids;
@@ -410,11 +509,12 @@ class CreditController extends \BaseController {
         $groupid=Input::get('agentgroup_id');
         $start_date=Input::get('start_date');
         $end_date=Input::get('end_date');
+
         if($start_date !="All"){
             $start_date=Input::get('start_date') ? date('Y-m-d',strtotime(Input::get('start_date'))) : "All";
             $end_date=Input::get('end_date') ? date('Y-m-d',strtotime(Input:: get('end_date'))) :  "All";
         }
-        // dd($start_date); 
+
         $agent_ids=$objagentList=array();
         if($glob_agent_ids){
             $agent_ids =$glob_agent_ids;
@@ -497,9 +597,13 @@ class CreditController extends \BaseController {
                                         ->sum('total_ticket_amt');
                 }else{
                     $transactionsdates=AgentDeposit::whereagent_id($objagent->id)
-                                    ->groupBy('pay_date')->where('pay_date','!=','0000-00-00')->orderBy('pay_date','asc')->lists('pay_date');
+                                        ->groupBy('pay_date')
+                                        ->where('pay_date','!=','0000-00-00')
+                                        ->orderBy('pay_date','asc')
+                                        ->lists('pay_date');
                 }
                 
+                // return Response::json($transactionsdates);
                 $transactions = $temp =array();
                 if($transactionsdates){
                     $opening_balance=$prev_payment - $prev_receivable;
@@ -524,7 +628,7 @@ class CreditController extends \BaseController {
                             $objagentdeposit=AgentDeposit::wherepay_date($res_paydate)->whereagent_id($objagent->id)->wherein('operator_id',$agopt_ids)->get();
                         }else{
                             $objagentdeposit=AgentDeposit::wherepay_date($res_paydate)->whereagent_id($objagent->id)->whereoperator_id($operator_id)->get();
-                        }                     
+                        }              
                         if(count($objagentdeposit)>0){
                             foreach ($objagentdeposit as $rows) {
                                 if($rows->payment==0)
@@ -587,6 +691,175 @@ class CreditController extends \BaseController {
         $search['agent_id']=$agent_id;
         $search['agent']='';
         return View::make('busreport.agentcredit.detail', array('response'=>$objagentList,'search'=>$search));
+    }
+
+    public function detail($agent_id)
+    {
+        $glob_agentgroup_id  =$this->myGlob->agentgroup_id;
+        $glob_agent_ids      =$this->myGlob->agent_ids;
+
+        $groupid=Input::get('agentgroup_id');
+        $start_date=Input::get('start_date');
+        $end_date=(Input::get('end_date') !="All") ? Input::get('end_date') : $this->getDate();
+        $agopt_ids =$this->myGlob->agopt_ids;
+        if(!$agopt_ids){
+            $agopt_ids[]=$this->myGlob->operator_id;
+        }
+
+        $prev_transorder_ids=array();
+        $prev_freeticketamt=0;
+        if($start_date !="All"){
+            $agent_id = ($agent_id =="All") ? $groupid : $agent_id;            
+            $prev_transorder_ids = AgentDeposit::whereagentgroup_id($agent_id)
+                                                ->wherein('operator_id',$agopt_ids)
+                                                ->where('pay_date','<', $start_date)
+                                                ->where('pay_date','!=', "0000-00-00")
+                                                ->groupBy('order_ids')
+                                                ->lists('order_ids'); 
+            $order_idlist=array();
+            if($prev_transorder_ids){
+                foreach ($prev_transorder_ids as $orderids) {
+                    $jsonorderid=json_decode($orderids);
+                    $order_idlist[]=$jsonorderid[0];
+                }
+                if($order_idlist){
+                    $prev_freeticketamt = SaleItem::wherein('order_id', $order_idlist)->wherefree_ticket(1)->sum('price');
+                }
+            }           
+        }
+
+        $response=array();
+        $agent_ids=$objagentList=array();
+        if($agent_id !='All'){
+            if($start_date !='All'){
+                $response=AgentDeposit::whereagentgroup_id($agent_id)
+                                    ->wherein('operator_id',$agopt_ids)
+                                    ->orderBy('id','asc')
+                                    ->where('pay_date','>=',$start_date)
+                                    ->where('pay_date','<=',$end_date)
+                                    ->get();   
+            }else{
+                $response=AgentDeposit::whereagentgroup_id($agent_id)
+                                    ->wherein('operator_id',$agopt_ids)
+                                    ->orderBy('id','asc')
+                                    ->get();    
+            }
+            
+        }else{
+            $agent_id=0;
+            if($glob_agentgroup_id){
+                if($start_date !='All'){
+                    $response=AgentDeposit::whereagentgroup_id($glob_agentgroup_id)
+                                    ->wherein('operator_id',$agopt_ids)
+                                    ->orderBy('id','asc')
+                                    ->where('pay_date','>=',$start_date)
+                                    ->where('pay_date','<=',$end_date)
+                                    ->get();
+                }else{
+                    $response=AgentDeposit::whereagentgroup_id($glob_agentgroup_id)
+                                    ->wherein('operator_id',$agopt_ids)
+                                    ->orderBy('id','asc')
+                                    ->get();
+                }
+                $agent_id=$glob_agentgroup_id;
+            }else{
+                if($start_date !='All'){
+                    $response=AgentDeposit::whereagentgroup_id($groupid)
+                                    ->wherein('operator_id',$agopt_ids)
+                                    ->orderBy('id','asc')
+                                    ->where('pay_date','>=',$start_date)
+                                    ->where('pay_date','<=',$end_date)
+                                    ->get();
+                }else{
+                    $response=AgentDeposit::whereagentgroup_id($groupid)
+                                    ->wherein('operator_id',$agopt_ids)
+                                    ->orderBy('id','asc')
+                                    ->get();
+                }
+                $agent_id=$groupid;
+            }
+        }
+
+        $prev_payment = $prev_receivable = $balanceforward =0;
+        $closing_balance=0;
+
+        if($start_date && $start_date !="All"){
+            $prev_payment=AgentDeposit::whereagentgroup_id($agent_id)
+                                ->wherein('operator_id',$agopt_ids)
+                                ->where('pay_date','<', $start_date)
+                                ->where('pay_date','!=', "0000-00-00")
+                                ->sum('payment');
+            $prev_receivable=AgentDeposit::whereagentgroup_id($agent_id)
+                                ->wherein('operator_id',$agopt_ids)
+                                ->where('pay_date','<', $start_date)
+                                ->where('payment','=', 0)
+                                ->where('pay_date','!=', "0000-00-00")
+                                ->sum('total_ticket_amt');
+            $balanceforward =$prev_payment - $prev_receivable + $prev_freeticketamt;
+        }
+
+        if($response){
+            $inc_closing_balance=0;
+            foreach ($response as $key => $trans) {
+                if($trans->agent_id){
+                    $agent_name=Agent::whereid($trans->agent_id)->pluck('name');
+                }else{
+                    $agent_name=AgentGroup::whereid($trans->agentgroup_id)->pluck('name');
+                }
+                $order_id=json_decode($trans->order_ids);
+                $response[$key]->agent_name=$agent_name;
+                $freeticketamount=0;
+                $total=0;
+                if($trans->payment==0){
+                    $freeticketamount=SaleItem::whereorder_id($order_id[0])->wherefree_ticket(1)->sum('price');
+                    $total=$trans->total_ticket_amt - $freeticketamount;
+                }
+
+                $from_to=SaleItem::whereorder_id($order_id[0])->first(array('from','to','class_id', 'trip_id'));
+                if($from_to){
+                    $from=City::whereid($from_to->from)->pluck('name');
+                    $to=City::whereid($from_to->to)->pluck('name');
+                    $response[$key]->trip=$from. ' => '. $to;
+                    $response[$key]->class=Classes::whereid($from_to->class_id)->pluck('name');
+                    $response[$key]->time=Trip::whereid($from_to->trip_id)->pluck('time');
+                }else{
+                    $response[$key]->trip='-';
+                    $response[$key]->class='-';
+                    $response[$key]->time='-';
+                }
+                $response[$key]->operator_name=Operator::whereid($response[$key]->operator_id)->pluck('name');
+                if($key==0){
+                    $closing_balance =$balanceforward - $total + $trans->payment;
+                }
+                else{
+                    if($closing_balance < 0 && $trans->payment==0){
+                        $closing_balance =$inc_closing_balance - ($total + $trans->payment);
+                    }else{
+                        $closing_balance =($inc_closing_balance - $total) + $trans->payment;
+                    }
+                }
+
+
+                $response[$key]->free_ticketamount=intval($freeticketamount);
+                $response[$key]->balanceforward=$balanceforward;
+                $response[$key]->closing_balance= $closing_balance;
+                $inc_closing_balance =$response[$key]->closing_balance;
+                
+                $response[$key]->order_ids=$order_id[0];
+            }
+        }
+
+        // return Response::json($response);
+        $search['agentgroup']="";
+        $agentgroup=array();
+        $search['datestatus']="All";
+        $search['end_date']=date('d-m-Y');
+        $search['start_date']=date('d-m-Y');
+        $search['agentgroup_id']=$groupid;
+        $search['agent_id']=$agent_id;
+        $search['agent']='';
+        // return Response::json($response);
+        return View::make('busreport.agentcredit.detail', array('response'=>$response,'search'=>$search));
     }
 
 	/**

@@ -12,7 +12,7 @@ $(function(){
            $('#seatplanview').html(result);         
      });
 
-     $('#seatplan').change(function(){
+    $('#seatplan').change(function(){
         $('#seatplanview').html('');      
         seatplan_id=$(this).val();
         links="/trip/seatplan/"+seatplan_id+"?access_token="+_token;
@@ -23,44 +23,56 @@ $(function(){
         }).done(function(result) {
               $('#seatplanview').html(result);         
          });
-     });
+    });
 
 
-     var val_radio=$('.departuredays:checked').val();
-     if(val_radio=="custom"){
-        onlyone.style.display='none';
-       customdays.style.display='block';
-     }else if(val_radio=="onlyone"){
-       onlyone.style.display='block';
-       customdays.style.display='none';
-       $("#onlyone_day").datepicker({
+    $("#onlyone_day").datepicker({
             numberOfMonth: 2,
             dateFormat: 'yy-mm-dd'
-         });
-     }else{
-       onlyone.style.display='none';
-       customdays.style.display='none';
-     }
-      $(".departuredays").each(function(){
-        $(this).click(function(){
-           var val_radio=$(this).val();
-           if(val_radio=="custom"){
-             onlyone.style.display='none';
-             customdays.style.display='block';
-           }else if(val_radio=="onlyone"){
-             onlyone.style.display='block';
-             customdays.style.display='none';
-             $("#onlyone_day").datepicker({
+    });
+
+    $('.chosen').chosen();
+
+    if (!$('.departuredays')) {
+        
+        // return false;
+    }else{
+        var val_radio=$('.departuredays:checked').val();
+        if(val_radio=="custom"){
+            onlyone.style.display='none';
+           customdays.style.display='block';
+        }else if(val_radio=="onlyone"){
+           onlyone.style.display='block';
+           customdays.style.display='none';
+           $("#onlyone_day").datepicker({
                 numberOfMonth: 2,
                 dateFormat: 'yy-mm-dd'
              });
-           }else{
-             onlyone.style.display='none';
-             customdays.style.display='none';
-           }
+        }else{
+           onlyone.style.display='none';
+           customdays.style.display='none';
+        }
+          $(".departuredays").each(function(){
+            $(this).click(function(){
+               var val_radio=$(this).val();
+               if(val_radio=="custom"){
+                 onlyone.style.display='none';
+                 customdays.style.display='block';
+               }else if(val_radio=="onlyone"){
+                 onlyone.style.display='block';
+                 customdays.style.display='none';
+                 $("#onlyone_day").datepicker({
+                    numberOfMonth: 2,
+                    dateFormat: 'yy-mm-dd'
+                 });
+               }else{
+                 onlyone.style.display='none';
+                 customdays.style.display='none';
+               }
+            });
         });
-     });
-      $(".chkextend").each(function(){
+
+        $(".chkextend").each(function(){
         $(this).click(function(){
           var val_radio=$(this).val();
           if(val_radio=="1"){
@@ -70,8 +82,7 @@ $(function(){
           }
         });
       });
-
-
+    }
   });
 
  /* function checkextendcity(){

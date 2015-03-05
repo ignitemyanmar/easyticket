@@ -102,7 +102,7 @@
                                                          <td>{{$row['receipt']}}</td>
                                                          <td><span @if($row['closing_balance'] < 0) class="noti" @endif>{{str_replace("-","",$row['closing_balance'])}} </span></td>
                                                          <td>
-                                                            <a class="btn mini green-stripe" href="/report/agentcreditlist/paymentdetail/{{$rows['id']}}?start_date={{$pay_date}}&end_date=All&access_token={{Auth::user()->access_token}}">အေသးစိတ္ၾကည့္မည္</a>
+                                                            <a class="btn mini green-stripe" href="/report/agentcreditlist/paymentdetail/{{$rows['agentgroup_id']}}?agent_id={{$rows['id']}}&start_date={{$row['pay_date']}}&end_date={{$row['pay_date']}}&access_token={{Auth::user()->access_token}}">အေသးစိတ္ၾကည့္မည္</a>
                                                          </td>
                                                       </tr>
                                                 @endforeach

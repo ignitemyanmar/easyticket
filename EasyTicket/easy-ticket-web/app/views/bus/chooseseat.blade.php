@@ -60,7 +60,7 @@
 			        	<?php $current_url=Route::getCurrentRoute()->getPath(); $k=1;  $columns=$response['column'];?>
 			        	<input type="hidden" value="{{Auth::user()->access_token}}" id="access_token">
 						<input type="hidden" value="{{$current_url}}" id='current_url'>
-						<input type="hidden" value="{{$response['bus_id']}}" name='busoccurance_id' id='busoccurance_id'>
+						<input type="hidden" value="{{MCrypt::encrypt($response['bus_id'])}}" name='busoccurance_id' id='busoccurance_id'>
 						<input type="hidden" value="{{$response['class_id']}}" name='class_id' id='class_id'>
 						<input type="hidden" value="{{$response['from_city']}}" name='from' id="from">
 						<input type="hidden" value="{{$response['to_city']}}" name='to' id="to">
@@ -99,7 +99,7 @@
 							                 ?>
 							            	<?php $seatNO_id=str_replace('.', '-', $rows['seat_no']); ?>
 
-							                <input class="radios" type="checkbox" multiple="multiple" value="{{$rows['seat_no']}}" name="tickets" {{ $disabled }}>
+							                <input class="radios" type="checkbox" multiple="multiple" value="{{MCrypt::encrypt($rows['seat_no'])}}" name="tickets" {{ $disabled }}>
 							                <div class="fit-a {{$taken}}" title="{{$rows['seat_no'].'('. $rows['price'].' K)'.$booking}}" id="{{$seatNO_id}}">
 							                	@if($rows['customer'])
 							                		<div title="{{$rows['customer']['nrc'].'၊ '.$rows['agent']}}"><br>
@@ -361,6 +361,7 @@
 				if(booking==undefined){booking=0;}
 				var current_url=$('#current_url').val();
 				var selected = new Array();
+
 				$("input:checkbox[name=tickets]:checked").each(function() {
 				   var seat_no=$(this).val();
 				   var pararray={'busoccurance_id':busid, 'seat_no':seat_no};

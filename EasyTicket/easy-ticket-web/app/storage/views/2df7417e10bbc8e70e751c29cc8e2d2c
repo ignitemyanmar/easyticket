@@ -104,7 +104,11 @@
                                              <td><?php echo $result['sold_seat']; ?></td>
                                              <td><?php echo $result['free_ticket']; ?></td>
                                              <td><?php echo $result['discount']; ?></td>
+                                             <?php if($result['foreign_person'] > 0): ?>
+                                             <td><?php echo $result['foreign_price']; ?></td>
+                                             <?php else: ?>
                                              <td><?php echo $result['local_price']; ?></td>
+                                             <?php endif; ?>
                                              <td><?php echo $result['total_amount']; ?></td>
                                              <td>
                                                 <a class="btn mini green-stripe imagechange" id="" href="/report/dailycarandadvancesale/detail?access_token=<?php echo Auth::user()->access_token; ?>&bus_id=<?php echo $result['bus_id']; ?>&date=<?php echo date('Y-m-d', strtotime(Session::get('search_daily_date'))); ?>">အေသးစိတ္ၾကည့္ရန္</a>
@@ -147,7 +151,7 @@
       $(document).ready(function() {
           var table = $('#tblExport').DataTable({
               "columnDefs": [
-                  // { "visible": false, "targets": 2 }
+                  { "visible": false, "targets": 1 }
               ],
               "order": [[ 1, 'asc' ]],
               "lengthMenu": [[25, 50, -1], [25, 50, "All"]],

@@ -53,8 +53,8 @@
 									</div>
 									<br>
 									@endif
-									<input type="hidden" name="access_token" value="{{Auth::user()->access_token}}">
-									<input type="hidden" id="order_id" value="{{$objorder->id}}">
+									<input type="hidden" id="access_token" name="access_token" value="{{Auth::user()->access_token}}">
+									<input type="hidden" id="order_id" value="{{MCrypt::encrypt($objorder->id)}}">
 
 									<div class="row">
 										<div class="large-4 columns">အေရာင္းကုိ္ယ္စားလွယ္</div>
@@ -198,9 +198,9 @@
 						<tbody>
 								<?php $total=0; $foreign_total=0;?>
 								@foreach($response as $tickets)
-									<input type="hidden" name="busoccurance_id[]" value="{{$tickets['busoccurance_id']}}">
-									<input type="hidden" name="sale_order_no" value="{{$tickets['sale_order_no']}}">
-									<input type="hidden" name="seat_no[]" value="{{$tickets['seat_no']}}">
+									<input type="hidden" name="busoccurance_id[]" value="{{MCrypt::encrypt($tickets['busoccurance_id'])}}">
+									<input type="hidden" name="sale_order_no" value="{{MCrypt::encrypt($tickets['sale_order_no'])}}">
+									<input type="hidden" name="seat_no[]" value="{{MCrypt::encrypt($tickets['seat_no'])}}">
 									<input type="hidden" name="agent_id1" value="{{$tickets['agent_id']}}">
 									<tr>
 										<td>{{$tickets['seat_no']}}</td>
@@ -231,9 +231,11 @@
 		$(function(){
 			if (window.history && window.history.pushState) {
 			    var order_id=$('#order_id').val();
+			    var _token  =$('#access_token').val();
 			    window.history.pushState('forward', null, './'+order_id);
 			    $(window).on('popstate', function() {
-			      	$.get('/notconfirm-order-delete/'+order_id,function(data){
+			      	$.get('/notconfirm-order-delete/'+order_id+"?access_token="+_token,function(data){
+			      		console.log(data);
 				    });
 			    });
 			}

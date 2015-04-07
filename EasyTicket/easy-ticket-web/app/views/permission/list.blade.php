@@ -76,9 +76,9 @@
                               <table class="table table-striped table-hover table-bordered" id="tblExport">
                                  <thead>
                                        <th>Header</th>
-                                       <th>ရာထူး</th>
-                                       <th class="span8">လုပ္ပုိင္ခြင့္မ်ား</th>
-                                       <th class="span1">ဖ်က္ရန္</th>
+                                       <th class="span4">ရာထူး</th>
+                                       <th class="span5">လုပ္ပုိင္ခြင့္မ်ား</th>
+                                       <th class="span3">ဖ်က္ရန္</th>
                                  </thead>
                                  <tbody>
                                     @foreach($response as $key=>$rows)
@@ -97,7 +97,7 @@
                                               Administrator 
                                             @endif</td>
                                          <td>{{$rows->menu}}</td>
-                                         <td style="text-align:center;">
+                                         <td style="text-align:right;">
                                             <a href="permission-delete/{{$rows->id}}?{{$myApp->access_token}}" class="btn red-stripe delete">ဖ်က္ရန္</a>
                                          </td>
                                       </tr>

@@ -15,6 +15,7 @@ use OutOfBoundsException;
 use League\OAuth2\Server\Storage\SessionInterface;
 use League\OAuth2\Server\Util\RequestInterface;
 use League\OAuth2\Server\Util\Request;
+use MCrypt;
 
 /**
  * OAuth 2.0 Resource Server
@@ -269,7 +270,13 @@ class Resource
         } 
         if ($headersOnly === false) {
             $method = $this->getRequest()->server('REQUEST_METHOD');
-            $accessToken = $this->getRequest()->{$method}($this->tokenKey);
+            if($this->getRequest()->{$method}('param')){
+                $param = json_decode(MCrypt::decrypt($this->getRequest()->{$method}('param')));
+                $accessToken = $param->access_token;
+            }else{
+                $accessToken = $this->getRequest()->{$method}($this->tokenKey);
+            }
+            
         }
 
         if (empty($accessToken)) {

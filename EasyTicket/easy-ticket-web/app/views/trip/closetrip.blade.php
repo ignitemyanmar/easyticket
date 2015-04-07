@@ -65,7 +65,7 @@
                                       <label class="control-label">From Date</label>
                                       <div class="controls">
                                          <div class="input-prepend">
-                                            <span class="add-on"><i class="icon-calendar"></i></span><input name="date_range" id="date_range" class="m-wrap m-ctrl-medium date-picker" type="text">
+                                            <span class="add-on"><i class="icon-calendar"></i></span><input name="from_date" id="from_date" class="m-wrap m-ctrl-medium date-picker" type="text">
                                          </div>
                                       </div>
                                     </div>

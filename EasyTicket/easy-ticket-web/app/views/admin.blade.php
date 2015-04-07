@@ -49,7 +49,7 @@
         <div class="navbar-inner">
             <div class="container-fluid">
                 <!-- BEGIN LOGO -->
-                <a class="brand" href="index.html">
+                <a class="brand" href="/">Easyticket
                 <!-- <img src="assets/img/logo1.png" alt="logo" /> -->
                 <!-- <img src="assets/img/logo.png" alt="logo" /> -->
                 </a>
@@ -115,6 +115,13 @@
                 
                 @include('include.permission_menu')
 
+                <!-- <li @if($currentroute=='sta') class="" @endif>
+                    <a href="/staff/salereport?{{$myApp->access_token}}">
+                    <i class="icon-th-list"></i> 
+                    <span class="title">Staff Sale Report</span>
+                    </a>
+                </li> -->
+                
                 <li @if($currentroute=='cli') class="" @endif>
                     <a href="/client/sync?access_token={{Auth::user()->access_token}}">
                     <i class="icon-th-list"></i> 

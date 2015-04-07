@@ -93,21 +93,28 @@ class BaseController extends Controller {
 	// Time List
 	public static function getTime($operator_id, $from_city, $to_city){
 	    if($operator_id && $from_city && $to_city){
-	      $objtrip=BusOccurance::whereoperator_id($operator_id)->wherefrom($from_city)->whereto($to_city)->groupBy('departure_time')->get();
+	      $objtrip=Trip::whereoperator_id($operator_id)->wherefrom($from_city)->whereto($to_city)->get();
 	    }elseif($operator_id && !$from_city && !$to_city){
-	      $objtrip=BusOccurance::whereoperator_id($operator_id)->groupBy('departure_time')->get();
+	      $objtrip=Trip::whereoperator_id($operator_id)->get();
 	    }else{
-	      $objtrip=BusOccurance::groupBy('departure_time')->get();
+	      $objtrip=Trip::all();
 	    }
 	    $times=array();
 	    if($objtrip){
 	      foreach ($objtrip as $row) {
-	        $temp['tripid']=$row->id;
-	        $temp['time']=$row->departure_time;
+	        $subtime 				= substr($row->time, 0, 8);
+			$time 				 	= $row->time;
+			$time 					= $subtime == '12:00 AM' ? '12:00 PM'.substr($time, 8,strlen($time) - 8) : $time;
+	    	$temp['time_unit'] 		= strtotime(substr($time, 0, 8)) + strlen(substr($time, 9,strlen($time) - 9));
+	        $temp['time']=$row->time;
 	        $times[]=$temp;
 	      }
 	    }
 	    return $times; 
+	}
+
+	public static function number_format($number){
+		return number_format($number, 0, '.', ',');
 	}
 
 }

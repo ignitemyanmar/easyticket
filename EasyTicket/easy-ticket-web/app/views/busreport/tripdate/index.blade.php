@@ -62,7 +62,6 @@
                                  @if($response)
                                     @foreach($response as $tripbydaily)
                                        <tr>
-                                          <!-- <td>{{$tripbydaily['bus_no']}}</td> -->
                                           <!-- <td>{{$tripbydaily['trip']}}</td> -->
                                           <td>{{$tripbydaily['class']}}</td>
                                           <td>{{$tripbydaily['departure_time']}}</td>
@@ -70,7 +69,7 @@
                                           <td>{{$tripbydaily['sold_seats']}}</td>
                                           <td>{{$tripbydaily['total_amount']}}</td>
                                           <td>
-                                             <a class="btn mini green-stripe imagechange" id="" href="/report/dailybydeparturedate/busid?access_token={{Auth::user()->access_token}}&bus_id={{$tripbydaily['id']}}">အေသးစိတ္ၾကည့္ရန္</a>
+                                             <a class="btn mini green-stripe imagechange" id="" href="/report/dailybydeparturedate/busid?access_token={{Auth::user()->access_token}}&trip_id={{$tripbydaily['id']}}&departure_date={{$tripbydaily['departure_date']}}">အေသးစိတ္ၾကည့္ရန္</a>
                                           </td>
                                        </tr>
                                     @endforeach

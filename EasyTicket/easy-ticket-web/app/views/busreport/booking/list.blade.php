@@ -123,7 +123,7 @@
                                                    @if(Auth::user()->role != 2)
                                                       <td>
                                                          <a class="btn large red-stripe delete" href="/report/booking/delete/{{$booking->id}}?access_token={{Auth::user()->access_token}}">ဖ်က္မည္</a>
-                                                         <a class="btn mini green-stripe" href="/cartview/{{$booking->id}}?access_token={{Auth::user()->access_token}}">အတည္ျပဳမည္</a>
+                                                         <a class="btn mini green-stripe" href="/cartview/{{MCrypt::encrypt($booking->id)}}?access_token={{Auth::user()->access_token}}">အတည္ျပဳမည္</a>
                                                       </td>
                                                    @endif
                                                 </tr>
@@ -139,7 +139,7 @@
                                                       @if(Auth::user()->role != 2)
                                                          <td>
                                                             <a class="btn large red-stripe delete" href="/report/booking/delete/{{$booking->id}}?access_token={{Auth::user()->access_token}}">ဖ်က္မည္</a>
-                                                            <a class="btn mini green-stripe" href="/cartview/{{$booking->id}}?access_token={{Auth::user()->access_token}}">အတည္ျပဳမည္</a>
+                                                            <a class="btn mini green-stripe" href="/cartview/{{MCrypt::encrypt($booking->id)}}?access_token={{Auth::user()->access_token}}">အတည္ျပဳမည္</a>
                                                          </td>
                                                       @endif
                                                    </tr>

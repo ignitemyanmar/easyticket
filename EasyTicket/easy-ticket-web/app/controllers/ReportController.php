@@ -16,17 +16,23 @@ class ReportController extends BaseController
 {
 	public static function getTimes($operator_id, $from_city, $to_city){
 		if($operator_id && $from_city && $to_city){
-			$objtrip=BusOccurance::wherein('operator_id',$operator_id)->wherefrom($from_city)->whereto($to_city)->groupBy('departure_time')->get();
+			if(is_array($operator_id))
+				$objtrip=Trip::wherein('operator_id',$operator_id)->wherefrom($from_city)->whereto($to_city)->groupBy('time')->get();
+			else
+				$objtrip=Trip::whereoperator_id($operator_id)->wherefrom($from_city)->whereto($to_city)->groupBy('time')->get();
 		}elseif($operator_id && !$from_city && !$to_city){
-			$objtrip=BusOccurance::wherein('operator_id',$operator_id)->groupBy('departure_time')->get();
+			if(is_array($operator_id))
+				$objtrip=Trip::wherein('operator_id',$operator_id)->groupBy('time')->get();
+			else
+				$objtrip=Trip::whereoperator_id($operator_id)->groupBy('time')->get();
 		}else{
-			$objtrip=BusOccurance::groupBy('departure_time')->get();
+			$objtrip=Trip::groupBy('time')->get();
 		}
 		$times=array();
 		if($objtrip){
 			foreach ($objtrip as $row) {
 				$temp['tripid']=$row->id;
-				$temp['time']=$row->departure_time;
+				$temp['time']=$row->time;
 				$times[]=$temp;
 			}
 		}
@@ -99,6 +105,9 @@ class ReportController extends BaseController
     	$date  	=str_replace('/', '-', $date);
     	$date   =date('Y-m-d', strtotime($date));
     	Session::put('search_daily_date', $date);
+    	
+    	// return Response::json($agentgroup_id.'--'.$operator_id);
+
     	$sale_item=array();
     	
     	if($agent_ids){
@@ -123,7 +132,7 @@ class ReportController extends BaseController
 
     	if($order_ids)
 			$sale_item = SaleItem::wherein('order_id', $order_ids)
-								->selectRaw('order_id, count(*) as sold_seat, trip_id, agent_id, price, foreign_price, departure_date, busoccurance_id, SUM(free_ticket) as free_ticket , SUM(discount) as discount')
+								->selectRaw('order_id, count(*) as sold_seat, trip_id, agent_id, price, foreign_price, departure_date, SUM(free_ticket) as free_ticket , SUM(discount) as discount')
 								->groupBy('order_id')->orderBy('departure_date','asc')->get();
 		$lists = array();
 		foreach ($sale_item as $rows) {
@@ -133,7 +142,6 @@ class ReportController extends BaseController
 			$trip = Trip::whereid($rows->trip_id)->first();
 			if($trip){
 				$list['id'] = $rows->trip_id;
-				$list['bus_id'] = $rows->busoccurance_id;
 				$list['departure_date'] = $rows->departure_date;
 				$list['from_id'] = $trip->from;
 				$list['to_id'] = $trip->to;
@@ -203,7 +211,7 @@ class ReportController extends BaseController
     	$search['operator_id']=$operator_id !=null ? $operator_id : 0;
 		$search['date']=$date;
 		$sorted_stack=$this->msort($stack, array("time_unit"), $sort_flags=SORT_REGULAR, $order=SORT_ASC);
-		// return Response::json($sorted_stack);
+		//return Response::json($sorted_stack);
 		return View::make('busreport.daily.index', array('dailyforbus'=>$sorted_stack, 'search'=>$search));	
     }
 
@@ -217,8 +225,11 @@ class ReportController extends BaseController
     	$agopt_ids 		=$this->myGlob->agopt_ids;
 
     	$date 			=Input::get('date') ? Input::get('date') : date('Y-m-d');
+    	$departure_date =Input::get('departure_date');
     	Session::put('search_daily_date',$date);
-    	$bus_id  		=Input::get('bus_id');
+
+    	$trip_id  		=Input::get('trip_id');
+
 		$search=array();
 		$search['trip']="";
     	$search['date']=$date;
@@ -226,26 +237,22 @@ class ReportController extends BaseController
     		if($agopt_ids){
     			if(Auth::user()->role==9){
     				$sale_order = SaleOrder::wherein('operator_id',$agopt_ids)
-									->with('saleitems')->whereHas('saleitems',function($query){
-											$bus_id = Input::get('bus_id');
-											if($bus_id){
-												$query->wherebusoccurance_id($bus_id);
+									->with('saleitems')->whereHas('saleitems',function($query) use($trip_id,$departure_date){
+											if($trip_id){
+												$query->wheretrip_id($trip_id)->where('departure_date','=',$departure_date);
 											}
 									})->where('orderdate','=',$date)
-									  // ->where('operator_id','=',$operator_id)
 									  ->where('booking','=',0)
 									  ->where('name','!=','')
 									  ->get();
     			}else{
     				$sale_order = SaleOrder::wherein('operator_id',$agopt_ids)
     								->wherein('agent_id',$agent_ids)
-									->with('saleitems')->whereHas('saleitems',function($query){
-											$bus_id = Input::get('bus_id');
-											if($bus_id){
-												$query->wherebusoccurance_id($bus_id);
+									->with('saleitems')->whereHas('saleitems',function($query) use($trip_id,$departure_date){
+											if($trip_id){
+												$query->wheretrip_id($trip_id)->where('departure_date','=',$departure_date);
 											}
 									})->where('orderdate','=',$date)
-									  // ->where('operator_id','=',$operator_id)
 									  ->where('booking','=',0)
 									  ->where('name','!=','')
 									  ->get();
@@ -253,10 +260,9 @@ class ReportController extends BaseController
     			
     		}else{
     			$sale_order = SaleOrder::wherein('agent_id',$agent_ids)
-									->with('saleitems')->whereHas('saleitems',function($query){
-											$bus_id = Input::get('bus_id');
-											if($bus_id){
-												$query->wherebusoccurance_id($bus_id);
+									->with('saleitems')->whereHas('saleitems',function($query) use($trip_id,$departure_date) {
+											if($trip_id){
+												$query->wheretrip_id($trip_id)->where('departure_date','=',$departure_date);
 											}
 									})->where('orderdate','=',$date)
 									  ->where('operator_id','=',$operator_id)
@@ -267,10 +273,9 @@ class ReportController extends BaseController
     		
     	}else{
     		$sale_order = SaleOrder::with('saleitems')
-									->whereHas('saleitems',function($query){
-											$bus_id = Input::get('bus_id');
-											if($bus_id){
-												$query->wherebusoccurance_id($bus_id);
+									->whereHas('saleitems',function($query) use($trip_id,$departure_date){
+											if($trip_id){
+												$query->wheretrip_id($trip_id)->where('departure_date','=',$departure_date);
 											}
 									})->where('orderdate','=',$date)
 									  ->where('operator_id','=',$operator_id)
@@ -404,8 +409,8 @@ class ReportController extends BaseController
 				$search['end_trip']=$key;
 			$i++;
 		}
-    	//return Response::json($tripandclassgroup);
-    	return View::make('busreport.daily.detail', array('response'=>$tripandclassgroup,'bus_id'=>$bus_id,'search'=>$search));	
+    	// return Response::json($tripandclassgroup);
+    	return View::make('busreport.daily.detail', array('response'=>$tripandclassgroup,'trip_id'=>$trip_id,'search'=>$search));	
     }
    
 	
@@ -511,14 +516,14 @@ class ReportController extends BaseController
 				if($agentgroup_id && $agent_id)
 				{
 					$sale_item = SaleItem::wherein('order_id', $order_ids)
-									->selectRaw('order_id, count(*) as sold_seat, trip_id, price, foreign_price, departure_date, busoccurance_id, SUM(free_ticket) as free_ticket,SUM(discount) as discount, agent_id, operator')
+									->selectRaw('order_id, count(*) as sold_seat, trip_id, price, foreign_price, departure_date, SUM(free_ticket) as free_ticket,SUM(discount) as discount, agent_id, operator')
 									->whereagent_id($agent_id)
 									->groupBy('order_id')->orderBy('departure_date','asc')->get();	
 				}
 				elseif(!$agentgroup_id && $agent_id)
 				{
 					$sale_item = SaleItem::wherein('order_id', $order_ids)
-									->selectRaw('order_id, count(*) as sold_seat, trip_id, price, foreign_price, departure_date, busoccurance_id, SUM(free_ticket) as free_ticket,SUM(discount) as discount, agent_id, operator')
+									->selectRaw('order_id, count(*) as sold_seat, trip_id, price, foreign_price, departure_date, SUM(free_ticket) as free_ticket,SUM(discount) as discount, agent_id, operator')
 									->whereagent_id($agent_id)
 									->groupBy('order_id')->orderBy('departure_date','asc')->get();	
 				}
@@ -549,7 +554,7 @@ class ReportController extends BaseController
 				{
 					
 					$sale_item = SaleItem::wherein('order_id', $order_ids)
-									->selectRaw('order_id, count(*) as sold_seat, trip_id, price, foreign_price, departure_date, busoccurance_id, SUM(free_ticket) as free_ticket,SUM(discount) as discount, agent_id, operator')
+									->selectRaw('order_id, count(*) as sold_seat, trip_id, price, foreign_price, departure_date, SUM(free_ticket) as free_ticket,SUM(discount) as discount, agent_id, operator')
 									->groupBy('order_id')->orderBy('departure_date','asc')->get();
 				}
 
@@ -571,7 +576,6 @@ class ReportController extends BaseController
 			
 			if($trip){
 				$list['id'] = $rows->trip_id;
-				$list['bus_id'] = $rows->busoccurance_id;
 				$list['departure_date'] = $rows->departure_date;
 				$list['from_id'] = $trip->from;
 				$list['to_id'] = $trip->to;
@@ -721,7 +725,7 @@ class ReportController extends BaseController
 	// '@/triplist/{date}/daily'
 	public function getTripsSellingReportbyDaily($date)
 	{
-		$bus_id=Input::get('bus_id');
+		$trip_id=Input::get('trip_id');
 		$order_date=explode(',', $date);
 		$from=Input::get('f');
 		$to=Input::get('t');
@@ -730,7 +734,7 @@ class ReportController extends BaseController
 		$agentrp=Input::get('agentrp');
 		$start_date="";
 		$end_date="";
-		if($bus_id){
+		if($trip_id){
 			$date=$order_date[0];
 			$start_date=$order_date[0];
 			$end_date=$order_date[0];
@@ -750,10 +754,9 @@ class ReportController extends BaseController
     		$operator_ids[]=$operator_id;
     	}
 	    	Session::put('search_daily_date',$date);
-	    	$bus_id  		=Input::get('bus_id');
 		
 			//for only one transaction
-	    	if($bus_id){
+	    	if($trip_id){
 	    		//for choose agent
 	    		if($agent_id){
 	    			if($agentrp){ //for agent report
@@ -761,22 +764,23 @@ class ReportController extends BaseController
 	    					if($agopt_ids){
 	    						if(Auth::user()->role==9){
 	    							$sale_order = SaleOrder::wherein('operator_id',$agopt_ids)
-	    								->with('saleitems')->whereHas('saleitems',function($query) use ($bus_id , $agent_id){
-    										$query->wherebusoccurance_id($bus_id)->whereagent_id($agent_id);
-    									})->where('departure_date','=',$date)
+	    								->with('saleitems')->whereHas('saleitems',function($query) use ($trip_id, $date , $agent_id){
+    										$query->wheretrip_id($trip_id)->wheredeparture_date($date)->whereagent_id($agent_id);
+    									})
+    									->where('departure_date','=',$date)
     									->wherebooking(0)
     									->get();
 	    						}else{
-	    							$sale_order = SaleOrder::wherein('operator_id',$agopt_ids)->wherein('agent_id',$agent_ids)->with('saleitems')->whereHas('saleitems',function($query) use ($bus_id , $agent_id){
-    										$query->wherebusoccurance_id($bus_id)->whereagent_id($agent_id);
+	    							$sale_order = SaleOrder::wherein('operator_id',$agopt_ids)->wherein('agent_id',$agent_ids)->with('saleitems')->whereHas('saleitems',function($query) use ($trip_id, $date , $agent_id){
+    										$query->wheretrip_id($trip_id)->wheredeparture_date($date)->whereagent_id($agent_id);
     									})->where('departure_date','=',$date)
     									->wherebooking(0)
     									->get();	
 	    						}
 	    						
 	    					}else{
-	    						$sale_order = SaleOrder::wherein('agent_id',$agent_ids)->with('saleitems')->whereHas('saleitems',function($query) use ($bus_id , $agent_id){
-    										$query->wherebusoccurance_id($bus_id)->whereagent_id($agent_id);
+	    						$sale_order = SaleOrder::wherein('agent_id',$agent_ids)->with('saleitems')->whereHas('saleitems',function($query) use ($trip_id, $date , $agent_id){
+    										$query->wheretrip_id($trip_id)->wheredeparture_date($date)->whereagent_id($agent_id);
     									})->where('departure_date','=',$date)
     									->where('operator_id','=',$operator_id)
     									->wherebooking(0)
@@ -784,8 +788,8 @@ class ReportController extends BaseController
 	    					}
 	    						
 	    				}else{
-	    					$sale_order = SaleOrder::with('saleitems')->whereHas('saleitems',function($query) use ($bus_id , $agent_id){
-    										$query->wherebusoccurance_id($bus_id)->whereagent_id($agent_id);
+	    					$sale_order = SaleOrder::with('saleitems')->whereHas('saleitems',function($query) use ($trip_id, $date , $agent_id){
+    										$query->wheretrip_id($trip_id)->wheredeparture_date($date)->whereagent_id($agent_id);
     									})->where('departure_date','=',$date)
     									->where('operator_id','=',$operator_id)
     									->wherebooking(0)
@@ -796,15 +800,15 @@ class ReportController extends BaseController
 	    					if($agopt_ids){
 	    						if(Auth::user()->role==9){
 	    							$sale_order =SaleOrder::wherein('operator_id',$agopt_ids)
-	    								->with('saleitems')->whereHas('saleitems',function($query) use ($bus_id , $agent_id){
-    										$query->wherebusoccurance_id($bus_id);
+	    								->with('saleitems')->whereHas('saleitems',function($query) use ($trip_id, $date , $agent_id){
+    										$query->wheretrip_id($trip_id)->wheredeparture_date($date);
     									})->where('departure_date','=',$date)
     									->wherebooking(0)
     									->get();
 	    						}else{
 	    							$sale_order =SaleOrder::wherein('operator_id',$agopt_ids)->wherein('agent_id',$agent_ids)
-	    								->with('saleitems')->whereHas('saleitems',function($query) use ($bus_id , $agent_id){
-    										$query->wherebusoccurance_id($bus_id);
+	    								->with('saleitems')->whereHas('saleitems',function($query) use ($trip_id, $date , $agent_id){
+    										$query->wheretrip_id($trip_id)->wheredeparture_date($date);
     									})->where('departure_date','=',$date)
     									->wherebooking(0)
     									->get();	
@@ -812,8 +816,8 @@ class ReportController extends BaseController
 	    						
 	    					}else{
 	    						$sale_order =SaleOrder::wherein('agent_id',$agent_ids)
-	    								->with('saleitems')->whereHas('saleitems',function($query) use ($bus_id , $agent_id){
-    										$query->wherebusoccurance_id($bus_id);
+	    								->with('saleitems')->whereHas('saleitems',function($query) use ($trip_id, $date , $agent_id){
+    										$query->wheretrip_id($trip_id);
     									})->where('departure_date','=',$date)
     									->where('operator_id','=',$operator_id)
     									->wherebooking(0)
@@ -821,8 +825,8 @@ class ReportController extends BaseController
 	    					}
 
 	    				}else{
-	    					$sale_order = SaleOrder::with('saleitems')->whereHas('saleitems',function($query) use ($bus_id , $agent_id){
-    										$query->wherebusoccurance_id($bus_id);
+	    					$sale_order = SaleOrder::with('saleitems')->whereHas('saleitems',function($query) use ($trip_id, $date , $agent_id){
+    										$query->wheretrip_id($trip_id)->wheredeparture_date($date);
     									})->where('departure_date','=',$date)
     									->where('operator_id','=',$operator_id)
     									->wherebooking(0)
@@ -835,15 +839,15 @@ class ReportController extends BaseController
 	    				if($agopt_ids){
 	    					$sale_order = SaleOrder::wherein('operator_id',$agopt_ids)
 	    								->wherein('agent_id',$agent_ids)
-	    								->with('saleitems')->whereHas('saleitems',function($query) use ($bus_id){
-    											$query->wherebusoccurance_id($bus_id);
+	    								->with('saleitems')->whereHas('saleitems',function($query) use ($trip_id,$date){
+    											$query->wheretrip_id($trip_id)->wheredeparture_date($date);
     									})->where('departure_date','=',$date)
     									->wherebooking(0)
     									->get();
 	    				}else{
 	    					$sale_order = SaleOrder::wherein('agent_id',$agent_ids)
-	    								->with('saleitems')->whereHas('saleitems',function($query) use ($bus_id){
-    											$query->wherebusoccurance_id($bus_id);
+	    								->with('saleitems')->whereHas('saleitems',function($query) use ($trip_id,$date){
+    											$query->wheretrip_id($trip_id)->wheredeparture_date($date);
     									})->where('departure_date','=',$date)
     									->where('operator_id','=',$operator_id)
     									->wherebooking(0)
@@ -851,8 +855,8 @@ class ReportController extends BaseController
 	    				}
 	    				
 	    			}else{
-	    				$sale_order = SaleOrder::with('saleitems')->whereHas('saleitems',function($query) use ($bus_id){
-    											$query->wherebusoccurance_id($bus_id);
+	    				$sale_order = SaleOrder::with('saleitems')->whereHas('saleitems',function($query) use ($trip_id,$date){
+    											$query->wheretrip_id($trip_id)->wheredeparture_date($date);
     									})->where('departure_date','=',$date)
     									->where('operator_id','=',$operator_id)
     									->wherebooking(0)
@@ -1116,12 +1120,228 @@ class ReportController extends BaseController
 			$search['agentgroup_name']=AgentGroup::whereid(Input::get('agentgroup'))->pluck('name');
 			//return Response::json($search);
 			if(Input::get('agentrp'))
-	    		return View::make('busreport.agentreportdetail', array('response'=>$tripandclassgroup,'bus_id'=>$bus_id,'search'=>$search));	
+	    		return View::make('busreport.agentreportdetail', array('response'=>$tripandclassgroup,'trip_id'=>$trip_id,'search'=>$search));	
 	    	else
-	    		return View::make('busreport.operatortripticketsolddaily', array('response'=>$tripandclassgroup,'bus_id'=>$bus_id,'search'=>$search));	
+	    		return View::make('busreport.operatortripticketsolddaily', array('response'=>$tripandclassgroup,'trip_id'=>$trip_id,'search'=>$search));	
 
 	}
+	//Trip report by order date detail
+	// Agent report by order date detail
+	// '@/report/bytrip'
+	public function getReportbyTrip(){
+		$operator_id 			=Input::get('operator_id');
+		$from  					=Input::get('from');
+		$to  					=Input::get('to');
+		$start_date  			=Input::get('start_date') ? Input::get('start_date') : $this->getDate();
+		$end_date  				=Input::get('end_date') ? Input::get('end_date') : $this->getDate();
+		$start_date				=date('Y-m-d', strtotime($start_date));
+		$end_date				=date('Y-m-d', strtotime($end_date));
+		$departure_time  		=Input::get('departure_time');
+		$departure_time			=str_replace('-', ' ', $departure_time);
+		$sale_order = array();
+		if($from && $to){
+			$sale_order = TripsReport:: whereoperator_id($operator_id)->wherefrom($from)->whereto($to)
+										->where('departure_date','>=',$start_date)
+										->where('departure_date','<=',$end_date)
+										->where('time','LIKE',$departure_time.'%')
+										->orderBy('booking_expired','asc')
+										->get();
+		}else{
+			$sale_order = TripsReport:: whereoperator_id($operator_id)
+										->where('departure_date','>=',$start_date)
+										->where('departure_date','<=',$end_date)
+										->where('time','LIKE',$departure_time.'%')
+										->orderBy('booking_expired','asc')
+										->get();
+		}
 
+		$lists = array();
+		foreach ($sale_order as $rows) {
+			$local_person = 0;
+			$foreign_price = 0;
+			$total_amount = 0;
+			$commission=0;
+			$percent_total=0;
+			$list['id'] = $rows->trip_id;
+			$list['order_date'] = $rows->order_date;
+			$list['departure_date'] = $rows->departure_date;
+			$list['from_id'] = $rows->from;
+			$list['to_id'] = $rows->to;
+			$list['from_to'] = $rows->from_city.' => '.$rows->to_city;
+			if($rows->extra_city_id){
+				$list['from_to'] .=' => '.City::whereid($extra_city_id)->pluck('name');
+			}
+						
+			$list['time'] = $rows->time;
+    		//To Change AM to PM;
+    		$time 			= $rows->time;
+			$subtime 		= substr($time, 0, 8);
+			$time 			= $subtime == '12:00 AM' ? '12:00 PM'.substr($time, 8,strlen($time) - 8) : $time;
+    		$list['time_unit'] = strtotime($rows->departure_date.' '.substr($time, 0, 8)) + strlen(substr($time, 9,strlen($time) - 9));
+			$list['class_id'] = $rows->class_id;
+			$list['class_name'] = $rows->class_name;
+			$list['from_to_class']=$list['from_to']. "(".$list['class_name'].")";
+			$list['local_price'] = $rows->price;
+			$list['foreign_price'] = $rows->foreign_price;
+			$list['sold_seat'] = $rows->ticket_qty;
+			$list['free_ticket'] = $rows->free_ticket_total;
+			$list['discount'] = $rows->discount_amount;
+			$list['total_amount'] = $rows->price_subtotal + (($rows->foreign_price_subtotal - $rows->price_subtotal) > 0 ? ($rows->foreign_price_subtotal - $rows->price_subtotal) : 0 ) ;
+			$list['commission_amount'] = $rows->commission_subtotal;
+			$lists[] = $list;
+		}
+
+
+    	$cities=array();
+    	$cities=$this->getCitiesByoperatorId($operator_id);
+		$search['cities']=$cities;
+		$times=array();
+		$times=$this->getTime($operator_id, $from, $to);
+		$search['times']=$times;
+		$search['operator_id']=$operator_id;
+		$search['from']=$from;
+		$search['to']=$to;
+		$search['time']=$departure_time;
+		$search['start_date']=$start_date;
+		$search['end_date']=$end_date;
+
+		// sorting result
+		$response=$this->msort($lists,array("time_unit"), $sort_flags=SORT_REGULAR,$order=SORT_ASC);
+		$tripandorderdategroup = array();
+		foreach ($response AS $arr) {
+		  $tripandorderdategroup[$arr['from_to_class']][] = $arr;
+		}
+		ksort($tripandorderdategroup);
+		//return Response::json($tripandorderdategroup);
+		return View::make('busreport.trip_report.trip_report', array('response'=>$tripandorderdategroup, 'search'=>$search));
+	}
+
+	//Trip report by order date detail
+	// Agent report by order date detail
+	// '@/report/{date}/tripdetail'
+	public function getReportbyTripDetail($date){
+		// $date = explode(',', $date);
+		$start_date = Input::get('start_date');
+		$end_date 	= Input::get('end_date');
+		$operator_id= Input::get('operator_id');
+		$from 		= Input::get('from');
+		$to 		= Input::get('to');
+		$time 		= Input::get('time');
+
+		if($from && $to){
+			$sale_order = SaleOrderReport::whereoperator_id($operator_id)->wherefrom($from)->whereto($to)->where('time','Like',$time.'%')
+											->where('departure_date','>=',$start_date)
+											->where('departure_date','<=',$end_date)
+											->orderBy('booking_expired', 'asc')
+											->get();
+		}else{
+			$sale_order = SaleOrderReport::whereoperator_id($operator_id)
+											->where('departure_date','>=',$start_date)
+											->where('departure_date','<=',$end_date)
+											->where('time','Like',$time.'%')
+											->orderBy('booking_expired', 'asc')
+											->get();
+		}
+
+	    $lists = array();
+	    $frist_trip="";
+	    $last_trip="";
+	    if($sale_order){
+    		foreach ($sale_order as $rows) {
+	    		$seats_no = "";
+	    		$from_to  = null;
+	    		$time = null;
+	    		$price = 0;
+	    		$foreign_price = 0;
+	    		$class_id = null;
+	    		$agent_commission = null;
+	    		$commission = 0;
+	    		$local_person = 0;
+	    		$foreign_person = 0;
+	    		$free_ticket = 0;
+	    		$total_amount = 0;
+
+	    		
+				$list['vr_no'] = $rows->id;
+				$list['ticket_no'] = $rows->ticket_no;
+	    		$list['order_date'] = $rows->orderdate;
+	    		$list['departure_date'] = $rows->departure_date;
+    			$seats_no = $rows->seat_no.", ";
+    			$from_to   = $rows->from_city.' => '.$rows->to_city;
+    			$time = $rows->time;
+    			$price = $rows->price;
+    			$free_ticket = $rows->free_ticket;
+    			$foreign_price = $rows->foreign_price;
+    			$class_id = $rows->class_id;
+    			$owner = Agent::whereid($rows->agent_id)->pluck('owner');
+    			if($owner == 0){
+    				$commission =$this->calculatecommission($rows->trip_id, $rows->agent_id, $rows->orderdate);
+    			}else{
+    				$commission = 0;
+    			}
+
+	    		if($rows->nationality == 'local'){
+					$local_person = 1;
+					$total_amount = $rows->free_ticket > 0 ? 0 : $rows->price - $commission;
+					$total_amount = $total_amount - $rows->discount;
+				}else{
+					$foreign_person = 1;
+					$total_amount = $rows->free_ticket > 0 ? 0 : $rows->foreign_price - $commission;
+					$total_amount = $total_amount - $rows->discount;
+				}
+
+
+				$list['from_to'] = $from_to;
+				if($rows->extra_city_id){
+					$list['from_to'] .=' => '.City::whereid($rows->extra_city_id)->pluck('name');
+				}
+				
+	    		$list['time'] = $time;
+	    		$subtime 		= substr($time, 0, 8);
+	    		//To Change AM to PM;
+				$time 			= $subtime == '12:00 AM' ? '12:00 PM'.substr($time, 8,strlen($time) - 8) : $time;
+	    		$list['time_unit'] = strtotime($rows->departure_date.' '.substr($time, 0, 8)) + strlen(substr($time, 9,strlen($time) - 9));
+	    		$list['classes'] = Classes::whereid($class_id)->pluck('name');
+	    		//for group trip and class
+	    		$list['from_to_class']=$from_to.'('.$list['classes'].')';
+	    		$list['agent_name'] = Agent::whereid($rows->agent_id)->pluck('name');
+	    		$list['buyer_name'] = $rows->name;
+	    		$list['commission'] = $commission;
+	    		$list['seat_no'] = substr($seats_no, 0, -2);
+	    		$list['sold_seat'] = 1;
+	    		$list['local_person'] = $local_person;
+				$list['foreign_person'] = $foreign_price;
+	    		$list['price'] = $price;
+	    		$list['foreign_price'] = $foreign_price;
+	    		$list['free_ticket'] = $free_ticket;
+	    		$list['discount'] = $rows->discount;
+	    		$list['total_amount'] = $total_amount;
+	    		$lists[] = $list;
+	    			
+	    	}	
+	    }
+    	// SORTING AND GROUP BY TRIP AND BUSCLASS 
+	    	// group
+	    	$tripandclassgroup = array();
+	    	$sorted = $this->msort($lists,array("time_unit"), $sort_flags=SORT_REGULAR,$order=SORT_ASC);
+	    	
+	    	foreach ($sorted AS $arr) {
+				$tripandclassgroup[$arr['from_to']][] = $arr;
+			}
+	    	// sorting
+			ksort($tripandclassgroup);
+
+	    	//return Response::json($tripandclassgroup);
+			$search=array();
+			$backurl=URL::previous();
+			$search['from'] = $from;
+			$search['back_url']=$backurl;
+			$search['start_date']=$start_date;
+			$search['end_date']=$end_date;
+
+			return View::make('busreport.trip_report.trip_detail_report', array('response'=>$tripandclassgroup,'search'=>$search));	
+
+	}
 
 	public function AgentBranches($id)
 	{
@@ -1495,61 +1715,61 @@ class ReportController extends BaseController
 			// =========================================
     }
 
-    public function getCitiesByoperatorIds($operator_id){
+    public static function getCitiesByoperatorIds($operator_id){
     	if(!$operator_id){
     		$response['message']='The request is missing a required parameter.'; 
     		return $response;
     	}
     	$orderids 			=SaleOrder::wherein('operator_id',$operator_id)->lists('id');
     	$cities=array();
-    	if($orderids){
-	    	$busoccurance_ids 	=SaleItem::wherein('order_id', $orderids)->groupBy('busoccurance_id')->lists('busoccurance_id');
-    		// return Response::json($busoccurance_ids);
-    		if($busoccurance_ids){
-    			foreach ($busoccurance_ids as $busoccuranceid) {
-    				$objbusoccurance 		=BusOccurance::whereid($busoccuranceid)->first();
-    				if($objbusoccurance){
-    					$objfromcities				=City::whereid($objbusoccurance->from)->first();
-    					$tempfrom['from']			=$objfromcities->id;
-    					$tempfrom['from_city']		=$objfromcities->name;
-    					$objtocities				=City::whereid($objbusoccurance->to)->first();
-    					$tempto['to']				=$objtocities->id;
-    					$tempto['to_city']			=$objtocities->name;
-    					$from[]						=$tempfrom;
-    					$to[]						=$tempto;
-    				}
-    			}
-    			$unique_from=array_unique($from, SORT_REGULAR);
-    			$unique_to=array_unique($to, SORT_REGULAR);
+    	if(is_array($operator_id))
+	    	$trip_ids 	=SaleItem::wherein('operator', $operator_id)->groupBy('trip_id')->lists('trip_id');
+	    else
+	    	$trip_ids 	=SaleItem::whereoperator($operator_id)->groupBy('trip_id')->lists('trip_id');
+	    
+    	if($trip_ids){
+			foreach ($trip_ids as $id) {
+				$trip 		=Trip::whereid($id)->first();
+				if($trip){
+					$objfromcities				=City::whereid($trip->from)->first();
+					$tempfrom['from']			=$objfromcities->id;
+					$tempfrom['from_city']		=$objfromcities->name;
+					$objtocities				=City::whereid($trip->to)->first();
+					$tempto['to']				=$objtocities->id;
+					$tempto['to_city']			=$objtocities->name;
+					$from[]						=$tempfrom;
+					$to[]						=$tempto;
+				}
+			}
+			$unique_from=array_unique($from, SORT_REGULAR);
+			$unique_to=array_unique($to, SORT_REGULAR);
 
-    			if($unique_from){
-		    		foreach ($unique_from as $from) {
-		    			$tmpfrom['id']=$from['from'];
-		    			$tmpfrom['name']=$from['from_city'];
-		    			$last_from[]=$tmpfrom;
-		    		}
-		    	}
+			if($unique_from){
+	    		foreach ($unique_from as $from) {
+	    			$tmpfrom['id']=$from['from'];
+	    			$tmpfrom['name']=$from['from_city'];
+	    			$last_from[]=$tmpfrom;
+	    		}
+	    	}
 
-		    	if($unique_to){
-		    		foreach ($unique_to as $to) {
-		    			$tmpto['id']=$to['to'];
-		    			$tmpto['name']=$to['to_city'];
-		    			$last_to[]=$tmpto;
-		    		}
-		    	}
-    			$cities['from']=$last_from;
-    			$cities['to']=$last_to;
-    		}
-    	}else{
+	    	if($unique_to){
+	    		foreach ($unique_to as $to) {
+	    			$tmpto['id']=$to['to'];
+	    			$tmpto['name']=$to['to_city'];
+	    			$last_to[]=$tmpto;
+	    		}
+	    	}
+			$cities['from']=$last_from;
+			$cities['to']=$last_to;
+		}else{
     		$response['message']='There is no records.';
     		return $response;
     	}
 
     	return $cities;
     }
-
     
-	public function getSeatOccupiedReportByBus($operator_id, $agent_id, $from, $to, $date, $time, $bus_id, $offset, $limit){
+	/*public function getSeatOccupiedReportByBus($operator_id, $agent_id, $from, $to, $date, $time, $bus_id, $offset, $limit){
     	$offset=$offset !=null ? $offset : 1;
     	$limit=$limit !=null ? $limit : 12;
     	$offset=($offset -1) * $limit;
@@ -1630,9 +1850,9 @@ class ReportController extends BaseController
 			$response=$temp;
     	}
     	return $response;
-    }
+    }*/
 
-    public function getdailyreportbyagentoroperator($operator_id, $agent_id, $from, $to, $date, $departure_time){
+   /* public function getdailyreportbyagentoroperator($operator_id, $agent_id, $from, $to, $date, $departure_time){
     	$report_info 			=array();
 		
 		if(!$from || !$to || !$date){
@@ -1696,14 +1916,13 @@ class ReportController extends BaseController
 		}
     return $response;
 		
-    }
+    }*/
 
     /** 
 	 *Daily and daily advance sale reports
 	 *@/report/dailybydeparturedate
 	 */
-	  public function getDailyReportByDepartureDate(){
-			$report_info 			=array();
+	 public function getDailyReportByDepartureDate(){
 			$operator_id  			=Input::get('operator_id');
 			$agent_id  				=Input::get('agent_id');
 			$from  					=Input::get('from');
@@ -1712,92 +1931,7 @@ class ReportController extends BaseController
 			$end_date  				=Input::get('end_date');
 			$departure_time  		=Input::get('departure_time');
 			$departure_time			=str_replace('-', ' ', $departure_time);
-
-			if($departure_time && $operator_id){
-				$busoccurance_ids=BusOccurance::whereoperator_id($operator_id)
-									->wherefrom($from)
-									->whereto($to)
-									->wheredeparture_time($departure_time)->lists('id');
-			}elseif(!$departure_time && $operator_id){
-				$busoccurance_ids=BusOccurance::whereoperator_id($operator_id)
-									->wherefrom($from)
-									->whereto($to)
-									->lists('id');
-			}elseif($departure_time && !$operator_id){
-				$busoccurance_ids=BusOccurance::wherefrom($from)
-									->wheredeparture_time($departure_time)
-									->whereto($to)
-									->lists('id');
-			}else{
-				$busoccurance_ids=BusOccurance::wherefrom($from)
-									->whereto($to)
-									->lists('id');
-			}
-			
-
-			if($busoccurance_ids){
-				$orderids=SaleItem::wherein('busoccurance_id',$busoccurance_ids)->groupBy('order_id')->lists('order_id');
-				$orderdates=array();
-				if($orderids){
-					if(!$agent_id){
-						$orderdates=SaleOrder::wherein('id',$orderids)
-									->where('orderdate','>=', $start_date)
-									->groupBy('orderdate')
-									->lists('orderdate');
-					}else{
-						$agent_branches=Agent::whereagentgroup_id($agent_id)->lists('id');
-						$orderdates=SaleOrder::wherein('id',$orderids)
-									->where('orderdate','>=', $start_date)
-									->wherein('agent_id', $agent_branches)
-									->groupBy('orderdate')
-									->lists('orderdate');
-					}
-					
-				}
-
-				if(count($orderdates) >0){
-					$from_city 				=City::whereid($from)->pluck('name');
-					$to_city 				=City::whereid($to)->pluck('name');
-					foreach ($orderdates as $order_date) {
-						if($agent_id){
-							$orderids_bydaily		=SaleOrder::whereorderdate($order_date)->wherein('agent_id',$agent_branches)->lists('id');
-						}else{
-							$orderids_bydaily		=SaleOrder::whereorderdate($order_date)->lists('id');
-						}
-						$occuranceids_bydaily		=SaleItem::wherein('order_id', $orderids_bydaily)->wherein('busoccurance_id',$busoccurance_ids)->groupBy('busoccurance_id')->lists('busoccurance_id');
-						$amount=0;
-						$seat_total=0;
-						$tickets=0;
-						if($occuranceids_bydaily){
-							foreach ($occuranceids_bydaily as $occuranceid) {
-								$tickets			+=SaleItem::wherebusoccurance_id($occuranceid)->wherein('order_id',$orderids_bydaily)->count('id');
-								$obj_busoccurance	=BusOccurance::whereid($occuranceid)->first();
-								if($obj_busoccurance){
-									$seatplanid			=$obj_busoccurance->seat_plan_id;
-									$price				=$obj_busoccurance->price;
-								}
-
-								if($seatplanid){
-									$seat_total	+=SeatInfo::whereseat_plan_id($seatplanid)->where('status','!=',0)->count('id');
-								}
-								$amount    		+=$tickets * $price;
-							}
-							$soldtickets 					=SaleItem::wherein('order_id', $orderids_bydaily)->count('id');
-							$temp['from']					=$from_city;
-							$temp['to']						=$to_city;
-							$temp['order_date']				=$order_date;
-							$temp['order_date']				=$order_date;
-							$temp['total_seat']				=$seat_total;
-							$temp['purchased_total_seat']	=$tickets;
-							$temp['total_amout']			=$amount;
-							$report_info[]					=$temp;
-						}
-						
-					}
-				}
-			}
-
-			// return Response::json($report_info);
+			$report_info = array();
 			$operator_ids=Operator::lists('id');
 			$user_id =Auth::user()->id;
 			$operator_id=$this->myGlob->operator_id;
@@ -1850,54 +1984,56 @@ class ReportController extends BaseController
 	    	$to 				=Input::get('to');	
 	    	$time 				=Input::get('departure_time');
 	    	$agent_id 			=Input::get('agent_id');
-	    	$objbusoccuranceids=null;	
-	    	$busids=null;
-	    	if(!$time && $from && $to && $departure_date){
-	    		$objbusoccuranceids 	=BusOccurance::wherein('operator_id',$operator_ids)->wheredeparture_date($departure_date)->wherefrom($from)->whereto($to)->lists('id');
-	    	}elseif(!$from && !$to && !$time && $departure_date){
-				$objbusoccuranceids 	=BusOccurance::wherein('operator_id',$operator_ids)->wheredeparture_date($departure_date)->lists('id');
-	    	}elseif($time && $from && $to && $departure_date){
-	    		$objbusoccuranceids 	=BusOccurance::wherein('operator_id',$operator_ids)->wherefrom($from)->wheredeparture_date($departure_date)->whereto($to)->wheredeparture_time($time)->lists('id');
+	    	$trip_ids=null;	
+	    	
+	    	if(!$time && $from && $to){
+	    		$trip_ids 	=Trip::wherein('operator_id',$operator_ids)->wherefrom($from)->whereto($to)->lists('id');
+	    	}elseif($time && $from && $to){
+	    		$trip_ids 	=Trip::wherein('operator_id',$operator_ids)->wherefrom($from)->whereto($to)->wheretime($time)->lists('id');
 	    	}else{
-	    		$objbusoccuranceids 	=BusOccurance::wherein('operator_id',$operator_ids)->wherefrom($from)->whereto($to)->lists('id');
+	    		$trip_ids 	=Trip::wherein('operator_id',$operator_ids)->lists('id');
 	    	}
 
-
-	    	if($objbusoccuranceids !=null){
+	    	/**
+	    	 * Filter by Departure Date;
+	    	 */
+	    	if($trip_ids !=null){
 	    		if($agent_ids){
-		    		$busids=SaleItem::wherein('agent_id',$agent_ids)->wherein('busoccurance_id', $objbusoccuranceids)->groupBy('busoccurance_id')->lists('busoccurance_id');
+		    		$trip_ids=SaleItem::wherein('agent_id',$agent_ids)->wherein('trip_id', $trip_ids)->where('departure_date','LIKE',$departure_date.'%')->groupBy('trip_id')->lists('trip_id');
 	    		}else{
-		    		$busids=SaleItem::wherein('busoccurance_id', $objbusoccuranceids)->groupBy('busoccurance_id')->lists('busoccurance_id');
+		    		$trip_ids=SaleItem::wherein('trip_id', $trip_ids)->groupBy('trip_id')->where('departure_date','LIKE',$departure_date.'%')->lists('trip_id');
 	    		}
 	    	}
 
 	    	// dd($busids);
 
 	    	$response=array();
-			if($busids){
-				foreach ($busids as $busid) {
-					$objbus=BusOccurance::whereid($busid)->first();
-					$temp['id']			=$objbus->id;
-					$from_city 				=City::whereid($objbus->from)->pluck('name');
-					$to_city 				=City::whereid($objbus->to)->pluck('name');
+			if($trip_ids){
+				foreach ($trip_ids as $id) {
+					$trip=Trip::whereid($id)->first();
+					$temp['id']			=$id;
+					$from_city 			=City::whereid($trip->from)->pluck('name');
+					$to_city 			=City::whereid($trip->to)->pluck('name');
 					$temp['trip']		=$from_city.'-'.$to_city;
-					$temp['bus_no']		=$objbus->bus_no;
-					$temp['class']		=Classes::whereid($objbus->classes)->pluck('name');
+					$temp['class']		=Classes::whereid($trip->class_id)->pluck('name');
 					if($agent_ids){
-						$temp['class'] .=' ( '.Operator::whereid($objbus->operator_id)->pluck('name')." )";
+						$temp['class'] .=' ( '.Operator::whereid($trip->operator_id)->pluck('name')." )";
 					}
 
-					$temp['departure_date']		=$objbus->departure_date;
-					$temp['departure_time']		=$objbus->departure_time;
-					$price 				=$objbus->price;
+					$temp['departure_date']		=$departure_date;
+					$temp['departure_time']		=$trip->time;
+					$price 						=$trip->price;
+					$temp['price']				=$price;
+					$temp['foreign_price'] 		=$trip->foreign_price;
 					if($agent_ids){
-						$temp['sold_seats']	=SaleItem::wherein('agent_id',$agent_ids)->wherebusoccurance_id($busid)->count();
-						$temp['total_amount']=SaleItem::wherein('agent_id',$agent_ids)->wherebusoccurance_id($busid)->sum('price');
+						$temp['sold_seats']	=SaleItem::wherein('agent_id',$agent_ids)->wheretrip_id($id)->where('departure_date','LIKE',$departure_date.'%')->count();
+						$temp['total_amount']=SaleItem::wherein('agent_id',$agent_ids)->wheretrip_id($id)->where('departure_date','LIKE',$departure_date.'%')->sum('price');
 					}else{
-						$temp['sold_seats']	=SaleItem::wherebusoccurance_id($busid)->count();
-						$temp['total_amount']=SaleItem::wherebusoccurance_id($busid)->sum('price');
+						$temp['sold_seats']	=SaleItem::wheretrip_id($id)->where('departure_date','LIKE',$departure_date.'%')->count();
+						$temp['total_amount']=SaleItem::wheretrip_id($id)->where('departure_date','LIKE',$departure_date.'%')->sum('price');
 					}
-					$temp['total_seats']=SeatInfo::whereseat_plan_id($objbus->seat_plan_id)->where('status','!=',0)->count();
+
+					$temp['total_seats']=SeatInfo::whereseat_plan_id($trip->seat_plan_id)->where('status','!=',0)->count();
 					// $temp['total_amount']=$price * $temp['sold_seats'];
 
 					$response[]			=$temp;
@@ -1941,18 +2077,21 @@ class ReportController extends BaseController
 	    public function getDailyReportbydepartdateandbusid(){
 	    	$agentgroup_id =$this->myGlob->agentgroup_id;
 	    	$agent_ids     =$this->myGlob->agent_ids;
-	    	$busid 			=Input::get('bus_id');
+	    	$trip_id 			=Input::get('trip_id');
+	    	$departure_date 	=Input::get('departure_date');
 	    	if($agent_ids){
-	    		$orderids 		=SaleItem::wherein('agent_id',$agent_ids)->wherebusoccurance_id($busid)->groupBy('order_id')->lists('order_id');
+	    		$orderids 		=SaleItem::wherein('agent_id',$agent_ids)->where('name','!=','')->wheretrip_id($trip_id)->wheredeparture_date($departure_date)->groupBy('order_id')->lists('order_id');
 	    	}else{
-		    	$orderids 		=SaleItem::wherebusoccurance_id($busid)->groupBy('order_id')->lists('order_id');
+		    	$orderids 		=SaleItem::where('name','!=','')->wheretrip_id($trip_id)->wheredeparture_date($departure_date)->groupBy('order_id')->lists('order_id');
 	    	}
-	    	$objbus 	 	=BusOccurance::whereid($busid)->first();
+	    	$objtrip 	 		=Trip::whereid($trip_id)->first();
 	    	$objorderagent=null;
+	    	
 	    	$objagentids= $response=array();
 	    	if($orderids){
-	    		$objagentids =SaleOrder::wherein('id', $orderids)->lists('agent_id','id');
+	    		$objagentids =SaleOrder::wherein('id', $orderids)->where('name','!=','')->get(array('departure_date','agent_id','id'));
 	    	}
+
 	    	$i=0;
 	    	$main_gate_total=0;
 	    	$f_main_gate_total=0;
@@ -1960,131 +2099,125 @@ class ReportController extends BaseController
 	    	$f_agent_gate_total=0;
 	    	$grand_total=0;
 	    	if($objagentids){
-				$objbusoccurance    	=BusOccurance::whereid($busid)->first();
-	    		foreach ($objagentids as $key=>$agentid) {
-	    			$objsaleitem			=SaleItem::whereorder_id($key)->wherebusoccurance_id($busid)->first();
-	    			$price =0; $extra_city_id=null;	
+	    		$response = array();
+	    		foreach ($objagentids as $row) {
+	    			$objsaleitem			=SaleItem::whereorder_id($row->id)->first();
+	    			$price =0; $extra_city_id =null;	
 	    			if($objsaleitem){
 	    				$price=$objsaleitem->price;
 	    				$extra_city_id=$objsaleitem->extra_city_id;
 	    			}
-
-	    			$agent_name				=Agent::whereid($agentid)->pluck('name');	
-	    			if($i==0){
-	    				$temp['bus_id']			=$busid;
-	    				$temp['bus_no']			=$objbusoccurance->bus_no;
-	    				$temp['class']			=Classes::whereid($objbusoccurance->classes)->pluck('name');
-	    				$temp['departure_date']	=$objbusoccurance->departure_date;
-	    				$temp['departure_time']	=$objbusoccurance->departure_time;
-	    				$from 					=City::whereid($objbus->from)->pluck('name');
-	    				$to 					=City::whereid($objbus->to)->pluck('name');
-	    				$temp['trip']			=$from.' => '.$to;
+	    			$checkowner=Agent::whereid($row->agent_id)->pluck('owner');
+	    			$agent_name				=Agent::whereid($row->agent_id)->pluck('name');
+	    			$check_existed = $this->isExistedAgentId($response, $row->agent_id);
+	    			if($check_existed == -1){
+	    				$temp['id']				=$trip_id;
+	    				$temp['class']			=Classes::whereid($objtrip->class_id)->pluck('name');
+	    				$temp['departure_time']	=$objtrip->time;
+	    				$temp['departure_date']	=$departure_date;
+	    				$from 					=City::whereid($objtrip->from)->pluck('name');
+	    				$to 					=City::whereid($objtrip->to)->pluck('name');
+	    				$temp['trip']			=$from.'-'.$to;
 	    				if($extra_city_id){
 	    					$temp['trip']       .=' => '.City::whereid($extra_city_id)->pluck('name');
 	    				}
-	    				$temp['agent_id']		=$agentid;
-
-	    				$temp['agent'] 			=$agent_name != null ? $agent_name : '-';
-	    				$temp['sold_tickets']	=SaleItem::whereorder_id($key)->wherebusoccurance_id($busid)->count();
-		    			// $price 					=$objbus->price;
-		    			$temp['total_amount'] 	=$price * $temp['sold_tickets'];
-	    				$temp['total_seats']	=SeatInfo::whereseat_plan_id($objbus->seat_plan_id)->where('status','!=',0)->count();
-	    				$checkowner=Agent::whereid($agentid)->pluck('owner');
+	    				$temp['agent_id']		=$row->agent_id;
+	    				$temp['agent']			=$agent_name != null ? $agent_name : '-';
+	    				$temp['price'] 			=$objtrip->price;
+	    				$temp['sold_tickets']	=SaleItem::whereorder_id($row->id)->count();
+	    				$temp['free_ticket']	=SaleItem::whereorder_id($row->id)->sum('free_ticket');
+		    			$temp['discount'] 		=SaleItem::whereorder_id($row->id)->sum('discount');
+	    				$temp['total_seats']	=SeatInfo::whereseat_plan_id($objtrip->seat_plan_id)->where('status','!=',0)->count();	
+	    				
 	    				$temp['owner']			=$checkowner;
-	    				$response[]=$temp;
-
-	    				if($checkowner==1){
-	    					$f_main_gate_total +=$temp['total_amount'];
+	    				if($checkowner == 1){
+	    					$temp['commission']   = 0;  
+	    					$temp['total_amount'] = ((($price * $temp['sold_tickets']) - ($price * $temp['free_ticket'])) - $temp['discount']);
+		    				$f_main_gate_total += $temp['total_amount'];
 	    				}else{
-	    					$f_agent_gate_total +=$temp['total_amount'];
+	    					$agent_commission = AgentCommission::whereagent_id($row->agent_id)->wheretrip_id($trip_id)->first();
+	    					if($agent_commission){
+	    						$temp['commission']   = $agent_commission->commission;  
+	    						$temp['total_amount'] = ((($price * $temp['sold_tickets']) - ($agent_commission->commission * ($temp['sold_tickets'] - $temp['free_ticket']))) - $temp['discount']);
+	    					}
+		    				else{
+		    					$temp['commission']   = $objtrip->commission;
+		    					$temp['total_amount'] = ((($price * $temp['sold_tickets']) - ($objtrip->commission * ($temp['sold_tickets'] - $temp['free_ticket']))) - $temp['discount']);
+		    				}
+		    				$f_agent_gate_total +=$temp['total_amount'];
 	    				}
+	    				array_push($response, $temp);
 	    			}else{
-	    				$sameagent=0;
-	    				$samekey=0;
-	    				foreach ($response as $s_key=>$value) {
-		    				if($value['agent_id']==$agentid ){
-		    					$sameagent +=1;
-		    					$samekey=$s_key;
+	    				$discount = SaleItem::whereorder_id($row->id)->sum('discount');
+	    				$free_ticket = SaleItem::whereorder_id($row->id)->sum('free_ticket');
+	    				$sold_tickets	=SaleItem::whereorder_id($row->id)->count();
+	    				$agent_commission = AgentCommission::whereagent_id($row->agent_id)->wheretrip_id($trip_id)->first();
+    						    				
+	    				if($checkowner == 1){
+	    					$total_amount = ((($price * $sold_tickets) - ($price * $free_ticket)) - $discount);
+		    				$f_main_gate_total += $total_amount;
+	    				}else{
+	    					$agent_commission = AgentCommission::whereagent_id($row->agent_id)->wheretrip_id($trip_id)->first();
+	    					if($agent_commission){
+	    						$total_amount = ((($price * $sold_tickets) - ($agent_commission->commission * ($sold_tickets - $free_ticket))) - $discount);
+	    					}
+		    				else{
+		    					$total_amount = ((($price * $sold_tickets) - ($objtrip->commission * ($sold_tickets - $free_ticket))) - $discount);
 		    				}
-		    			}
-		    			if($sameagent==0){
-		    				$temp['bus_id']			=$busid;
-		    				$temp['bus_no']			=$objbusoccurance->bus_no;
-		    				$temp['class']			=Classes::whereid($objbusoccurance->classes)->pluck('name');
-		    				$temp['departure_time']	=$objbusoccurance->departure_time;
-		    				$from 					=City::whereid($objbus->from)->pluck('name');
-		    				$to 					=City::whereid($objbus->to)->pluck('name');
-		    				$temp['trip']			=$from.'-'.$to;
-		    				if($extra_city_id){
-		    					$temp['trip']       .=' => '.City::whereid($extra_city_id)->pluck('name');
-		    				}
-		    				$temp['agent_id']		=$agentid;
-		    				$temp['agent']			=$agent_name != null ? $agent_name : '-';
-		    				$temp['sold_tickets']	=SaleItem::whereorder_id($key)->wherebusoccurance_id($busid)->count();
-			    			// $price 					=$objbus->price;
-			    			$temp['total_amount'] 	=$price * $temp['sold_tickets'];
-		    				$temp['total_seats']	=SeatInfo::whereseat_plan_id($objbus->seat_plan_id)->where('status','!=',0)->count();	
-		    				$checkowner=Agent::whereid($agentid)->pluck('owner');
-		    				$temp['owner']			=$checkowner;
-		    				$response[]=$temp;
-		    				
-
-		    				if($checkowner==1){
-		    					$f_main_gate_total +=$temp['total_amount'];
-		    				}else{
-		    					$f_agent_gate_total +=$temp['total_amount'];
-		    				}
-		    			}else{
-		    				$sold_tickets	=SaleItem::whereorder_id($key)->wherebusoccurance_id($busid)->count();
-			    			// $price 			=$objbus->price;
-			    			$total_amount	=$price * $sold_tickets;
-		    				
-		    				$response[$samekey]['sold_tickets'] +=$sold_tickets;
-		    				$response[$samekey]['total_amount'] +=$total_amount;
-		    				$checkowner=Agent::whereid($agentid)->pluck('owner');
-		    				$response[$samekey]['owner']			=$checkowner;
-
-		    				if($checkowner==1){
-		    					$main_gate_total +=$total_amount;
-		    				}else{
-		    					$agent_gate_total +=$total_amount;
-		    				}
-		    			}
+		    				$f_agent_gate_total += $total_amount;
+	    				}
+	    				$response[$check_existed]['free_ticket'] +=$free_ticket;
+	    				$response[$check_existed]['sold_tickets'] +=$sold_tickets;
+	    				$response[$check_existed]['total_amount'] +=$total_amount;
+	    				$response[$check_existed]['discount'] +=$discount;
+	    				
 	    			}
-	    			$i++;
+	
 	    		}	
 	    	}
-	    	$total_sold['main_gate_total']=$main_gate_total + $f_main_gate_total;
-	    	$total_sold['agent_gate_total']=$agent_gate_total + $f_agent_gate_total;
-	    	$total_sold['grand_total']=$total_sold['main_gate_total'] + $total_sold['agent_gate_total'];
+	    	$total_sold['main_gate_total']	=$f_main_gate_total;
+	    	$total_sold['agent_gate_total']	=$f_agent_gate_total;
+	    	$total_sold['grand_total']		=$f_main_gate_total + $f_agent_gate_total;
 	    	// return Response::json($response);
 	    	return View::make('busreport.tripdate.filterbybusid', array('response'=>$response,'total_sold'=>$total_sold));
 	    }
 
+	    public function isExistedAgentId($arr, $agent_id){
+	    	if(is_array($arr)){
+	    		foreach ($arr as $key => $value) {
+	    			if($value['agent_id'] == $agent_id){
+	    				return $key;
+	    			}
+	    		}
+	    	}
+	    	return -1;
+	    }
+
 	    // @/report/dailybydeparturedate/detail
 	    public function getDailyReportbydepartdatedetail(){
-	    	$agent_id 	=Input::get('agent_id');
-	    	$bus_id 	=Input::get('bus_id');
-	    	$objbus=BusOccurance::whereid($bus_id)->first();
-	    	$objorderids=SaleItem::wherebusoccurance_id($bus_id)->groupBy('order_id')->lists('order_id');
+	    	$agent_id 		=Input::get('agent_id');
+	    	$trip_id 		=Input::get('trip_id');
+	    	$departure_date =Input::get('departure_date');
+	    	$trip=Trip::whereid($trip_id)->first();
+	    	$objorderids=SaleItem::wheretrip_id($trip_id)->wheredeparture_date($departure_date)->groupBy('order_id')->lists('order_id');
 	    	$response=array();
 	    	if($objorderids){
 	    		foreach ($objorderids as $key => $id) {
 	    			$objorderinfo=SaleOrder::whereid($id)->whereagent_id($agent_id)->first();
 	    			if($objorderinfo){
-	    				$objsaleitems=SaleItem::wherebusoccurance_id($bus_id)->whereorder_id($id)->get();
+	    				$objsaleitems=SaleItem::wheretrip_id($trip_id)->wheredeparture_date($departure_date)->whereorder_id($id)->get();
 	    				if($objsaleitems){
 	    					foreach ($objsaleitems as $rows) {
-	    						$temp['bus_no'] 	=$objbus->bus_no;
-	    						$from 				=City::whereid($objbus->from)->pluck('name');
-	    						$to 				=City::whereid($objbus->to)->pluck('name');
+	    						$temp['trip_id']	=$trip->id;
+	    						$from 				=City::whereid($trip->from)->pluck('name');
+	    						$to 				=City::whereid($trip->to)->pluck('name');
 	    						$temp['trip']=$from.' => '.$to;
 	    						if($rows->extra_city_id){
 	    							$temp['trip'].=' => '.City::whereid($rows->extra_city_id)->pluck('name');
 	    						}
-	    						$temp['class']=Classes::whereid($objbus->classes)->pluck('name');
-	    						$temp['departure_date'] 	=$objbus->departure_date;
-	    						$temp['departure_time'] 	=$objbus->departure_time;
+	    						$temp['class'] 				=Classes::whereid($trip->class_id)->pluck('name');
+	    						$temp['departure_date'] 	=$departure_date;
+	    						$temp['departure_time'] 	=$trip->time;
 	    						$temp['seat_no'] 	=$rows['seat_no'];
 	    						$temp['ticket_no'] 	=$rows['ticket_no'];
 	    						$temp['orderdate']=$objorderinfo->orderdate;
@@ -2109,7 +2242,7 @@ class ReportController extends BaseController
 	    	if(is_array($arr)){
 	    		$i = 0;
 	    		foreach ($arr as $key_row) {
-	    			if($key_row['id'].'-'.$key_row['departure_date'] == $key['id'].'-'.$key['departure_date'] && $key_row['bus_id'] == $key['bus_id']){
+	    			if($key_row['id'].'-'.$key_row['departure_date'] == $key['id'].'-'.$key['departure_date']){
 	    				return $i;
 	    			}
 	    			$i++;
@@ -2511,19 +2644,21 @@ class ReportController extends BaseController
 	    // Seatoccupied by bus detail 
 	    // @/report/seatoccupiedbybus/detail
 	    public function getSeatOccupancydetail(){
-	    	$bus_id =Input::get('bus_id');
-	    	$objbusoccuranceids[]=(int) $bus_id;
+	    	$trip_id =Input::get('trip_id');
+	    	$departure_date = Input::get('departure_date');
+	    	$trip_ids[]= $trip_id;
 	    	$response =array();
-	    	if($objbusoccuranceids){
-	    		$objbusoccurance =BusOccurance::whereid($bus_id)->first();
-	    		$temp['operator_id']	=$objbusoccurance->operator_id;
-	    		$temp['operator_name']	=Operator::whereid($objbusoccurance->operator_id)->pluck('name');
+	    	if($trip_id){
+	    		$trip =Trip::whereid($trip_id)->first();
+	    		$temp['operator_id']	=$trip->operator_id;
+	    		$temp['operator_name']	=Operator::whereid($trip->operator_id)->pluck('name');
 	    		
-	    		$order_ids=SaleItem::wherebusoccurance_id($bus_id)->groupBy('order_id')->lists('order_id');
+	    		$order_ids=SaleItem::wheretrip_id($trip_id)->wheredeparture_date($departure_date)->groupBy('order_id')->lists('order_id');
 	    		$remark_order_id=SaleOrder::wherein('id',$order_ids)
 	    								->with(array('saleitems'=>function($q){
 	    									$q->addSelect(array('seat_no', 'order_id'));
 	    								}))
+	    								->wheredeparture_date($departure_date)
 	    								->where('remark_type','!=',0)
 	    								->get(array('id','remark_type','remark','name'));
 	    		
@@ -2536,43 +2671,43 @@ class ReportController extends BaseController
 	    		// return Response::json($remarkgroup);
 	    		
 	    		$seattingplan=array();
-    			$from_city 	=City::whereid($objbusoccurance->from)->pluck('name');
-    			$to_city 	=City::whereid($objbusoccurance->to)->pluck('name');
-    			foreach ($objbusoccuranceids as $busid) {
-    				$objbus=BusOccurance::whereid($busid)->first();
-    				$tmp_seatplan['bus_id']	=$busid;
+    			$from_city 	=City::whereid($trip->from)->pluck('name');
+    			$to_city 	=City::whereid($trip->to)->pluck('name');
+    			foreach ($trip_ids as $id) {
+    				$objtrip=Trip::whereid($id)->first();
+    				$tmp_seatplan['id']		=$id;
     				$tmp_seatplan['from']	=$from_city;
     				$tmp_seatplan['to']		=$to_city;
-    				$extra_city_id =ExtraDestination::wheretrip_id($objbus->trip_id)->pluck('city_id');
+    				$extra_city_id =ExtraDestination::wheretrip_id($objtrip->id)->pluck('city_id');
     				if($extra_city_id){
     					$tmp_seatplan['to'] .=' => '.City::whereid($extra_city_id)->pluck('name');
     				}
-		    		$tmp_seatplan['bus_no']=$objbus->bus_no;
-		    		$objseatplan=SeatingPlan::whereid($objbus->seat_plan_id)->first();
+		    		$tmp_seatplan['bus_no']=$objtrip->bus_no;
+		    		$objseatplan=SeatingPlan::whereid($objtrip->seat_plan_id)->first();
 		    		$tmp_seatplan['row']=$objseatplan->row;
 		    		$tmp_seatplan['column']=$objseatplan->column;
-		    		$tmp_seatplan['classes']=$objbus->classes;
-		    		$tmp_seatplan['class']=Classes::whereid($objbus->classes)->pluck('name');
-		    		$tmp_seatplan['date']=$objbus->departure_date;
-		    		$tmp_seatplan['time']=$objbus->departure_time;
-		    		$tmp_seatplan['total_seats']=SeatInfo::whereseat_plan_id($objbus->seat_plan_id)->where('status','!=',0)->count('id');
-		    		$tmp_seatplan['total_sold_seats']=SaleItem::wherebusoccurance_id($objbus->id)->count('id');
-		    		$tmp_seatplan['total_amount']=$objbus->price * $tmp_seatplan['total_sold_seats'];
+		    		$tmp_seatplan['classes']=$objtrip->class_id;
+		    		$tmp_seatplan['class']=Classes::whereid($objtrip->class_id)->pluck('name');
+		    		$tmp_seatplan['date']=$departure_date;
+		    		$tmp_seatplan['time']=$objtrip->time;
+		    		$tmp_seatplan['total_seats']=SeatInfo::whereseat_plan_id($objtrip->seat_plan_id)->where('status','!=',0)->count('id');
+		    		$tmp_seatplan['total_sold_seats']=SaleItem::wheretrip_id($objtrip->id)->wheredeparture_date($departure_date)->count('id');
+		    		$tmp_seatplan['total_amount']=$objtrip->price * $tmp_seatplan['total_sold_seats'];
 
 		    		$seatlist=array();
-		    			$objseatinfo=SeatInfo::whereseat_plan_id($objbus->seat_plan_id)->get();
+		    			$objseatinfo=SeatInfo::whereseat_plan_id($objtrip->seat_plan_id)->get();
 		    			if($objseatinfo){
 		    				foreach ($objseatinfo as $seats) {
 		    					$tmp_seatlist['id']=$seats['id'];
 		    					$tmp_seatlist['seat_no']=$seats['seat_no'];
-					    		$tmp_seatlist['price']=$objbus->price;
+					    		$tmp_seatlist['price']=$objtrip->price;
 		    					if($seats['status']==0){
 		    						$tmp_seatlist['seat_no']='xxx';
 					    			$tmp_seatlist['price']='xxx';
 		    					}
 					    		
 					    		$tmp_seatlist['status']=$seats['status'];
-					    		$checkbuy	=SaleItem::wherebusoccurance_id($objbus->id)->whereseat_no($seats['seat_no'])->first();
+					    		$checkbuy	=SaleItem::wheretrip_id($objtrip->id)->wheredeparture_date($departure_date)->whereseat_no($seats['seat_no'])->first();
 
 					    		$tmp_seatlist['agent_name']='-';
 					    		$tmp_seatlist['ticket_no']='-';

@@ -196,11 +196,12 @@
                                                                         <label>
                                                                             <span class=""></span>
                                                                             <?php 
+                                                                              $operatorgroup_id = isset($rows['operatorgroup_id']) ? $rows['operatorgroup_id'] : 0;
                                                                               if($rows['status'] != 1){
                                                                                  $disabled="disabled";
                                                                                  $taken="taken";
-                                                                              }elseif($rows['operatorgroup_id']!=0){
-                                                                                 $color=OperatorGroup::whereid($rows['operatorgroup_id'])->pluck('color');
+                                                                              }elseif($operatorgroup_id !=0){
+                                                                                 $color=OperatorGroup::whereid($operatorgroup_id)->pluck('color');
                                                                                  $disabled=''; 
                                                                                  $taken="operator_".$color.' operatorseat_'.$color;
                                                                               }else{
@@ -209,7 +210,7 @@
                                                                               }
                                                                              ?>
                                                                            <div style="opacity:.1;">
-                                                                              <input class="radios" type="checkbox" multiple="multiple" value="{{$rows['seat_no']}}" name="seats[]" {{ $disabled }} @if($rows['operatorgroup_id']!=0) checked @endif>
+                                                                              <input class="radios" type="checkbox" multiple="multiple" value="{{$rows['seat_no']}}" name="seats[]" {{ $disabled }} @if($operatorgroup_id!=0) checked @endif>
                                                                            </div>
                                                                             <div class="fit-a {{$taken}}" title="{{$rows['seat_no']}}" id="">{{$rows['seat_no']}}</div>
                                                                         </label>

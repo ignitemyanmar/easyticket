@@ -31,6 +31,15 @@ $(function(){
 							if($(this).hasClass('operatorseat_3')){
 								$(this).removeClass('available operator_3');
 							}
+
+							if($(this).hasClass('operatorseat_4')){
+								$(this).removeClass('available operator_4');
+							}
+
+							if($(this).hasClass('operatorseat_5')){
+								$(this).removeClass('available operator_5');
+							}
+
 							$(this).removeClass('available');
 
 							$(this).addClass('choose');
@@ -65,6 +74,15 @@ $(function(){
 							if($(this).hasClass('operatorseat_3')){
 								$(this).addClass('available operator_3');
 							}
+
+							if($(this).hasClass('operatorseat_4')){
+								$(this).addClass('available operator_4');
+							}
+
+							if($(this).hasClass('operatorseat_5')){
+								$(this).addClass('available operator_5');
+							}
+
 							$(this).addClass('choose available');
 							$(".selectrow"+seatid).remove();
 							total =Number(total)-Number(price);

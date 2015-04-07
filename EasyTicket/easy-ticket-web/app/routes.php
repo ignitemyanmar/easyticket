@@ -1,4 +1,11 @@
 <?php
+	Route::get('oldaggroup', function(){
+		$date=date('Y-m-d');
+		$response=Agent::where('updated_at','>=',$date)->lists('agentgroup_id');
+		// return Response::json($response);
+		AgentGroup::whereNotIn('id',$response)->delete();
+		return Response::json($response);
+	});
 	//agent create for multi first time
 	Route::get('agentins', function(){
 		$agents=array(
@@ -114,6 +121,7 @@
 		dd(count($objagentsids). ' records has been created.');
 
 	});
+
 	//for non group agents
 	Route::get('agntgrp', function(){
 		$objagent_ids=Agent::whereagentgroup_id(0)->lists('id');
@@ -161,13 +169,14 @@
 	    $response = AuthorizationServer::performAccessTokenFlow();
 		if($response->getStatusCode() === 200) {
 			$response = json_decode($response->getContent());
-			$user = User::whereemail(Input::get('username'))->first();
+			$input = json_decode(MCrypt::decrypt(Input::get('param')));
+			$user = User::whereemail(MCrypt::decrypt($input->username))->first();
             $user->access_token = $response->access_token;
             $user->ip_address   = $_SERVER['REMOTE_ADDR'];
             $user->update();
 			$user = array(
-	              'email' => Input::get('username'),
-	              'password' => Input::get('password')
+	              'email' => MCrypt::decrypt($input->username),
+	              'password' => MCrypt::decrypt($input->password)
 	          	);
 	      	if(Auth::attempt($user)) {
 	          	if(Auth::user()->type == "operator"){
@@ -180,17 +189,15 @@
 						$response->user['name'] 			= Auth::user()->name;
 						$response->user['type'] 			= Auth::user()->type;
 						$response->user['role'] 			= Auth::user()->role;
-						ApiController::tripautocreate($operator_id);	
 						return Response::json($response);
 					}else{
 						$groupUser = OperatorGroupUser::whereuser_id(Auth::user()->id)->first();
-						$response->user['id'] 				= $groupUser->operator_id;
-						$response->user['operatorgroup_id'] = $groupUser->operatorgroup_id;
+						$response->user['id'] 				= isset($groupUser->operator_id) ? $groupUser->operator_id : Operator::whereuser_id(Auth::user()->id)->pluck('id');
+						$response->user['operatorgroup_id'] = isset($groupUser->operatorgroup_id) ? $groupUser->operatorgroup_id : 0;
 						$response->user['user_id'] 			= Auth::user()->id;
 						$response->user['name'] 			= Auth::user()->name;
 						$response->user['type'] 			= Auth::user()->type;
 						$response->user['role'] 			= Auth::user()->role;
-						ApiController::tripautocreate($groupUser->operator_id);	
 						return Response::json($response);
 					}
 	          	}
@@ -232,13 +239,21 @@
 		Route::get('users-logout',          array('as'=>'logout','uses'=>'UserController@getLogout'))->before('auth');   
 	// Admin Routes ---
 		Route::group(array('before' => 'oauth:admin'), function(){
-
+			Route::get('/staff/salereport', 				'StaffReportController@index');
+			Route::get('staff/salebytrip/{date}',			'StaffReportController@detail');
+			
 			//Sync
 			Route::get('/client/sync', 						'SyncDatabaseController@index');
 
 			//operator report
 			Route::get('report/operator/trip/dateranges',	'ReportController@getTripslistreportOperator');
 			Route::get('triplist/{date}/daily',				'ReportController@getTripsSellingReportbyDaily');
+
+		/**
+		 * New / Update Existing by SMK
+		 */
+			Route::get('report/bytrip',						'ReportController@getReportbyTrip');
+			Route::get('report/{date}/tripdetail',			'ReportController@getReportbyTripDetail');
 
 			//agent report
 			Route::get('report/agent/trip/dateranges',		'ReportController@getTripslistdaterangeAgent');
@@ -384,6 +399,8 @@
 			Route::post('trip-create',				'TripController@store');
 			Route::get('trip/seatplan/{id}',		'TripController@showSeatPlan');
 			Route::get('deletetrip/{id}',			'TripController@destroy');
+			Route::post('changeprice',				'TripController@chageprice');
+			
 
 			Route::get('define-ownseat/{id}',				'TripController@ownseat');
 			Route::get('define-ownseat-drange/{id}',		'TripController@ownseatdaterange');
@@ -398,6 +415,9 @@
 
 			Route::get('closetrip/{id}',			'TripController@closeTrip');
 			Route::post('closetrip',				'TripController@saveCloseTrip');
+			Route::get('closedtrip/{id}',			'TripController@getCloseTrip');
+			Route::get('closedtrip/{id}/delete',	'TripController@deleteCloseTrip');
+			Route::get('everclose/{id}/remove',		'TripController@removeEverClose');
 			
 
 			Route::get('orderlist',					'OrderController@orderlist');
@@ -471,8 +491,8 @@
 		});
 	// Frond end unsecure routes;
 		Route::get('/',      		   'UserController@getFLogin');
-		Route::post('userlogin',       'UserController@postFrontLogin');
-		Route::get('userlogout',       'UserController@getFrontLogout');
+		Route::post('/userlogin',       'UserController@postFrontLogin');
+		Route::get('/userlogout',       'UserController@getFrontLogout');
 	// Frond end secure routes;
 		Route::group(array('before' => 'oauth:sale,booking'), function()
 		{
@@ -707,6 +727,18 @@
 
 			Route::post('ticket_delete', 						'ApiController@ticketdelete');
 
+
+
+			/* Client Report Api Routes
+			*
+			*/
+				Route::get('dailysales', 						'ReportApiController@getDailyReport');
+				Route::get('dailysaledetail', 					'ReportApiController@getDailyReportDetail');
+				Route::get('reportbyagent', 					'ReportApiController@getReportByAgent');
+				Route::get('agentgroups', 						'ReportApiController@getAgentGroupList');
+				Route::get('report/operator/agents', 		  	'ReportApiController@getAgentsByOperatorRp');
+
+
 		});
 	// Sync Route ------
 		Route::get('downloadbusjson/{sync_id}', 							'SyncDatabaseController@downloadBusJsonfromServer');
@@ -829,11 +861,169 @@
 			
 			//dd(strtoupper(Str::random(32)));
 			
-			$encrypted = MCrypt::encrypt("အလို");
+			$encrypted = MCrypt::encrypt('ေစာ');
 			//dd($encrypted);
 			#Decrypt
-			$decrypted = MCrypt::decrypt($encrypted);
+			$decrypted = MCrypt::decrypt("b96426f84c667093004f16bbec09f73a1c566ddd5226df8042b4a8203acfa58dde8dea7be51899cd10aadc85cddf62d1f25f645a4c29393ef5e67f3c977ce4a4372d548ff5f63efaa12c57ba885738c8");
 
 			if(is_string($decrypted))
-				echo $decrypted;
+				dd($decrypted);
 		});
+
+		Route::get('/report_xls', function() {
+				$flag = false;
+				$data = SaleOrderReport::all();
+				$list = array();
+				foreach ($data as $key => $value) {
+					if(!$flag) {
+				    	// display field/column names as first row
+						$list[] = array_keys($value->toarray());
+				    	$flag = true;
+				    }
+					
+					$list[]  = $value->toarray();
+				}
+				// generate file (constructor parameters are optional)
+				$xls = new Excel('UTF-8', false, 'Workflow Management');
+				$xls->addArray($list);
+				$xls->generateXML('Output_Report_WFM');
+			  exit;
+		});
+
+		Route::get('/update_commission', function(){
+			$saleitem = SaleItem::all();
+			foreach ($saleitem as $key => $value) {
+				$agent_commission = AgentCommission::whereagent_id($value->agent_id)->wheretrip_id($value->trip_id)->first();
+				if($agent_commission){
+					$saleitem[$key]->commission = $agent_commission->commission;
+					$saleitem[$key]->update();
+				}else{
+					$saleitem[$key]->commission = Trip::whereid($value->trip_id)->pluck('commission');
+					$saleitem[$key]->update();
+				}
+			}
+			return 'success';
+		});
+
+		Route::get('/update_tripid', function(){
+			$trip = Trip::all();
+			foreach ($trip as $key => $value) {
+				$ail_day = $value->available_day;
+				$day = '';
+				if($ail_day == 'Daily'){
+					$day = 'DLY';
+				}else if($ail_day == 'Sat' || $ail_day == 'Sun' || $ail_day == 'Mon' || $ail_day == 'Tue' || $ail_day == 'Web' || $ail_day == 'Thu' || $ail_day == 'Fri'){
+					$day = 'WEK';
+				}else{
+					$day = 'DAT';
+				}
+
+				$newId = $value->operator_id.$value->from.$value->to.$value->class_id.$day.(str_replace(' ','',str_replace(':', '', $value->time)));
+				$trip[$key]->id = $newId;
+				$trip[$key]->update();
+				echo $newId.'<br>';
+			}
+		});
+
+		Route::get('/update_departuretime', function() {
+			$trip = Trip::all();
+			foreach ($trip as $key => $value) {
+				$subtime 		= substr($value->time, 0, 8);
+				$date_time = date('Y-m-d').' '.str_replace(' ', ':00 ', $subtime);
+				echo $date_time .'<br>';
+				$trip[$key]->departure_time = date('Y-m-d H:i:s', strtotime($date_time));
+				echo $trip[$key]->departure_time .'<br>';
+				$trip[$key]->update();
+			}
+		});
+
+		Route::get('/update', function(){
+			$saleorder = DeleteSaleOrder::with('saleitems')->where('departure_date','=','2015-04-02')->wherebooking(1)->whereremark('Booking Expired')->get();
+			$exist_saleorder = array();
+			$exist_saleitem = array();
+			foreach ($saleorder as $key => $value) {
+				$ext_saleorder = SaleOrder::where('departure_date','=',$value->departure_date)->whereagent_id($value->agent_id)->wherename($value->name)->first();
+				if($ext_saleorder){
+					$exist_saleorder[] = $value->toarray();
+				}else{
+					$newOrderId = generateAutoID(10,10);
+					unset($value['id']);
+					$value->id = $newOrderId;
+					SaleOrder::create($value->toarray());
+					foreach ($value->saleitems as $rows) {
+						$ext_saleitem = DeleteSaleItem::where('departure_date','=',$rows->departure_date)->whereagent_id($rows->agent_id)->whereseat_no($rows->seat_no)->wherename($rows->name)->first();
+						if($ext_saleitem){
+							$exist_saleitem[] = $rows->toarray();
+ 						}else{
+ 							unset($rows['id']);
+ 							unset($rows['order_id']);
+							$rows->order_id = $newOrderId;
+ 							SaleItem::create($rows->toarray());
+						}
+						
+					}
+				}
+			}
+			$response['saleorder'] = $exist_saleorder;
+			$response['saleitem']  = $exist_saleitem;
+			return Response::json($response);
+		});
+
+	function generateAutoID($operator_id, $operator_gp_id){
+    	$prefix_opr = 0;
+    	$prefix_gp_opr = 0;
+    	// Generate Operator ID;
+    	if($operator_id >= 0 && $operator_id <=9){
+    		$prefix_opr = "000".$operator_id;
+    	}elseif($operator_id > 9 && $operator_id <=99){
+    		$prefix_opr = "00".$operator_id;
+    	}elseif($operator_id > 99 && $operator_id <=999){
+    		$prefix_opr = "0".$operator_id;
+    	}elseif($operator_id > 999 && $operator_id <=9999){
+    		$prefix_opr = $operator_id;
+    	}
+    	// Generate Operator Group ID;
+    	if($operator_gp_id >= 0 && $operator_gp_id <=9){
+    		$prefix_gp_opr = "0".$operator_gp_id;
+    	}elseif($operator_gp_id > 9 && $operator_gp_id <=99){
+    		$prefix_gp_opr = $operator_gp_id;
+    	}
+    	$prefix = $prefix_opr.$prefix_gp_opr;
+    	$autoid 			= 0;
+    	// Get Last ID Value;
+    	$last_order_id 		= SaleOrder::where('id','like',$prefix.'%')->orderBy('id','desc')->limit('1')->pluck('id');
+    	if($last_order_id){
+    		$last_order_value 	= (int) substr($last_order_id, strlen($prefix));
+    	}else{
+    		return $prefix."00000001";
+    	}
+
+		//Auto Digit 8    	
+    	if($last_order_value >= 0 && $last_order_value <9){
+    		$inc_value = ++$last_order_value;
+    		$autoid = "0000000".$inc_value;
+    	}elseif($last_order_value >= 9 && $last_order_value <99){
+    		$inc_value = ++$last_order_value;
+    		$autoid = "000000".$inc_value;
+    	}elseif($last_order_value >= 99 && $last_order_value <999){
+    		$inc_value = ++$last_order_value;
+    		$autoid = "00000".$inc_value;
+    	}elseif($last_order_value >= 999 && $last_order_value <9999){
+    		$inc_value = ++$last_order_value;
+    		$autoid = "0000".$inc_value;
+    	}elseif($last_order_value >= 9999 && $last_order_value <99999){
+    		$inc_value = ++$last_order_value;
+    		$autoid = "000".$inc_value;
+    	}elseif($last_order_value >= 99999 && $last_order_value <999999){
+    		$inc_value = ++$last_order_value;
+    		$autoid = "00".$inc_value;
+    	}elseif($last_order_value >= 999999 && $last_order_value <9999999){
+    		$inc_value = ++$last_order_value;
+    		$autoid = "0".$inc_value;
+    	}elseif($last_order_value >= 9999999 && $last_order_value <99999999){
+    		$inc_value = ++$last_order_value;
+    		$autoid = $inc_value;
+    	}
+    	return $prefix.$autoid;
+    }
+	

@@ -70,7 +70,6 @@
                                     @if($response)
                                        @foreach($response as $result)
                                           <tr>
-                                             <!-- <td>{{$result['bus_no']}}</td> -->
                                              <td>{{$result['trip']}} [ {{$result['class']}} ]</td>
                                              <td>{{$result['departure_date']}} [ {{$result['departure_time']}} ]</td>
                                              <!-- <td></td> -->

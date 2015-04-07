@@ -85,23 +85,28 @@ class TripController extends \BaseController {
 		$commission			=Input::get('commission');
 
 		// dd($onlyone_day);
-
+		$Id_Day = null;
 		if($day=='daily'){
 			$available_day='Daily';
+			$Id_Day = 'DLY';
 		}if($day=='onlyone'){
 			$available_day=$onlyone_day;
+			$Id_Day = 'DAT';
 		}else{
-			if(count($available_days)==0)
+			if(count($available_days)==0){
 				$available_day='Daily';
-			else
+				$Id_Day = 'DLY';
+			}
+			else{
 				$available_day=implode('-', $available_days);
+				$Id_Day = 'WEK';
+			}
 		}
 		
 		if($from == $to){
 			$response['message']="From and To should not be same.";
 			return Response::json($response);
 		}
-
 		$objtrip			=new Trip();
 		$checkobjtrip		=Trip::whereoperator_id($operator_id)
 									->wherefrom($from)
@@ -119,7 +124,12 @@ class TripController extends \BaseController {
 		}else{
 			$time=$time.' I';
 		}
-
+		$newId = $operator_id.$from.$to.$class_id.$Id_Day.(str_replace(' ','',str_replace(':', '', $time)));
+		$existedId = Trip::whereid($newId)->first();
+		if($existedId){
+			return Response::json('This trip is already exist.');
+		}
+		$objtrip->id 			=$newId;
 		$objtrip->operator_id 	=$operator_id;
 		$objtrip->from 			=$from;
 		$objtrip->to 			=$to;
@@ -141,7 +151,8 @@ class TripController extends \BaseController {
 			$objextendcity->foreign_price=$extend_foreign_price;
 			$objextendcity->save();
 		}
-		if($day=='onlyone'){
+		return Redirect::to('trip-list?'.$this->myGlob->access_token)->with('message','Successfully Inserted.');
+		/*if($day=='onlyone'){
 			return $this->postBusOccuranceOnlyOne($operator_id, $trip_id, $onlyone_day, $time);
 		}
 		if($objtrip->available_day=='daily' || $objtrip->available_day=='Daily'){
@@ -150,10 +161,7 @@ class TripController extends \BaseController {
 		}else{
 			$availableDays=$objtrip->available_day;
 			return $this->postBusOccuranceAutoCreateCustom($operator_id, $trip_id, $availableDays);
-		}
-
-
-		
+		}*/		
 	}
 
 	/**
@@ -260,7 +268,7 @@ class TripController extends \BaseController {
 
 		if($trip){
 			Trip::whereid($id)->delete();
-			BusOccurance::wheretrip_id($id)->delete();
+			// BusOccurance::wheretrip_id($id)->delete();
 			DeleteTrip::create($trip->toarray());
 		}
 		return Redirect::to('trip-list?access_token='.Auth::user()->access_token)->with('message','Successfully delete trip.');
@@ -302,16 +310,15 @@ class TripController extends \BaseController {
 		$ever_close = isset($input['ever_close']) ? $input['ever_close'] : 0;
 		$remark 	= $input['remark'];
 		$trip_id 	= $input['trip_id'];
-		// dd($input['date_range']);
 		if($ever_close == 0){
 			$date_range = explode("-",$input['date_range']);
 			$start_date = date('Y-m-d', strtotime($date_range[0]));
 			$end_date 	= date('Y-m-d', strtotime($date_range[1]));
 		}else{
-			$start_date =  date('Y-m-d', strtotime($input['date_range']));
-			$end_date 	= null;
+			$start_date =  date('Y-m-d', strtotime($input['from_date']));
+			$end_date 	= date('Y-m-d', strtotime($input['from_date']));
+			$end_date   = date('Y-m-d',strtotime($end_date . ' + 20 year'));
 		}
-
 
 		$trip = Trip::whereid($trip_id)->first();
 		if($trip){
@@ -322,37 +329,47 @@ class TripController extends \BaseController {
 			$trip->update();
 		}
 
-		if($ever_close == 0)
-			$busoccurance = BusOccurance::wheretrip_id($trip_id)->where('departure_date','>=',$start_date)->where('departure_date','<=',$end_date)->lists('id');
-		else
-			$busoccurance = BusOccurance::wheretrip_id($trip_id)->where('departure_date','>=',$start_date)->lists('id');
-
-
-		if($busoccurance){
-			foreach ($busoccurance as $id) {
-				$bus = BusOccurance::whereid($id)->first();
-				$bus->status = 1;
-				$bus->remark = $remark;
-				$bus->update();
-			}
+		if($ever_close == 0){
+			$close_trip = new CloseTrip();
+			$close_trip->trip_id 	= $trip_id;
+			$close_trip->start_date = $start_date;
+			$close_trip->end_date   = $end_date;
+			$close_trip->remark 	= $remark;
+			$close_trip->save();
 		}
+		
 		$response="Successfully has been closed for this trip.";
-		return Redirect::to('trip-list?access_token='.Auth::user()->access_token)->with('message',$response);;
+		return Redirect::to('/closedtrip/'.$trip->id.'?access_token='.Auth::user()->access_token)->with('message',$response);
 
 	}
 
-	/*public function removeCloseTrip($trip_id){
-		$trip = Trip::find($trip_id);
-		if($trip->ever_close > 0 || strtotime($trip->from_close_date) > strtotime(date('Y-m-d')){
-			$trip->ever_close = 0;
-			$trip->from_close_date = "";
-			$trip->to_close_date = "";
-			$trip->remark = "open";
-			$trip->update();
+	public function getCloseTrip($trip_id){
+		$trip = Trip::whereid($trip_id)->first();
+		$trip["from_city"] 	= City::whereid($trip->from)->pluck('name');
+		$trip["to_city"] 	= City::whereid($trip->to)->pluck('name');
+		$close_trip = CloseTrip::wheretrip_id($trip_id)->get();
+		return View::make('trip.closetrips',array('trip' => $trip, 'close_trip' => $close_trip));
+	}
 
-			$busoccurance = BusOccurance::wheretrip_id($trip->id)->where
+	public function deleteCloseTrip($id){
+		$close_trip = CloseTrip::whereid($id)->first();
+		if($close_trip){
+			$close_trip->delete();
+			$response="Successfully has been deleted.";
+			return Redirect::to(URL::previous())->with('message',$response);
 		}
-	}*/
+	}
+
+	public function removeEverClose($trip_id){
+		$trip = Trip::whereid($trip_id)->first();
+		if($trip)
+		{
+			$trip->ever_close = 0;
+			$trip->update();
+			$response="Successfully has been remeved ever close.";
+			return Redirect::to(URL::previous())->with('message',$response);
+		}
+	}
 
 	public function postBusOccuranceOnlyOne($operator_id, $trip_id,$departure_date, $time){
 		$bus_no 	=Input::get('bus_no') ? Input::get('bus_no') : "-"; 
@@ -727,6 +744,12 @@ class TripController extends \BaseController {
 										$query->whereBetween('start_date',array($start_date,$end_date))
 												->orwhereBetween('end_date',array($start_date,$end_date));
 									})
+									->orwhere(function($q) use ($start_date, $end_date){
+										$q->where('start_date','<=',$start_date)
+											->where('start_date','<=',$end_date)
+											->where('end_date','>=',$start_date)
+											->where('end_date','>=',$end_date);
+									})
 									->pluck('seat_lists');
 
 		$jsoncloseseat=json_decode($closeseat,true);
@@ -767,6 +790,8 @@ class TripController extends \BaseController {
 							{
 							    $query->addSelect(array('id','name'));
 							}))
+							->groupBy('operator_id')
+							->groupBy('user_id')
 							->get();
 
 		// $a=json_decode($seatplan->seat_list,true);
@@ -812,6 +837,10 @@ class TripController extends \BaseController {
 										$query->whereBetween('start_date',array($start_date,$end_date))
 												->orwhereBetween('end_date',array($start_date,$end_date));
 									})
+									/*->orwhere(function($query) use($start_date, $end_date) {
+										$query->where('start_date','=',$start_date)
+												->orwhere('end_date','=',$end_date);
+									})*/
 									->pluck('seat_lists');
 		$jsoncloseseat=json_decode($closeseat,true);
 		$from=City::whereid($objtrip->from)->pluck('name');
@@ -987,6 +1016,18 @@ class TripController extends \BaseController {
 		// return Response::json($response);
 		return View::make('trip.ownseatbydates', array('trip'=>$response));
 
+	}
+
+	public function chageprice(){
+		$trip_id=Input::get('trip_id');
+		$local_price=Input::get('local_price');
+		$foreign_price=Input::get('foreign_price');
+		$objtrip=Trip::find($trip_id);
+		$objtrip->price=$local_price;
+		$objtrip->foreign_price=$foreign_price;
+		$objtrip->update();
+		$message="Successfully update Price";
+		return Redirect::to('trip-list?access_token='.Auth::user()->access_token)->with('message',$message);
 	}
 
 }

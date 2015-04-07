@@ -350,7 +350,7 @@
                                                    <td>{{$result['total_amount']}}</td>
                                                    <td>{{$result['percent_total']}}</td>
                                                    <td>
-                                                      <a class="btn mini green-stripe imagechange" id="" href="/triplist/{{$result['departure_date']}}/daily?access_token={{Auth::user()->access_token}}&bus_id={{$result['bus_id']}}&a={{$result['agent_id']}}&agentrp={{$search['agent_rp']}}">အေသးစိတ္ၾကည့္ရန္</a>
+                                                      <a class="btn mini green-stripe imagechange" id="" href="/triplist/{{$result['departure_date']}}/daily?access_token={{Auth::user()->access_token}}&trip_id={{$result['id']}}&a={{$result['agent_id']}}&agentrp={{$search['agent_rp']}}">အေသးစိတ္ၾကည့္ရန္</a>
                                                    </td>
                                                 </tr>
                                                 <?php 

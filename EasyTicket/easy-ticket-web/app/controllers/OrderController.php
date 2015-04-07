@@ -74,17 +74,17 @@ class OrderController extends \BaseController {
 	// Time List
 	public static function getTime($operator_id, $from_city, $to_city){
 	    if($operator_id && $from_city && $to_city){
-	      $objtrip=BusOccurance::whereoperator_id($operator_id)->wherefrom($from_city)->whereto($to_city)->groupBy('departure_time')->get();
+	      $objtrip=Trip::whereoperator_id($operator_id)->wherefrom($from_city)->whereto($to_city)->groupBy('time')->get();
 	    }elseif($operator_id && !$from_city && !$to_city){
-	      $objtrip=BusOccurance::whereoperator_id($operator_id)->groupBy('departure_time')->get();
+	      $objtrip=Trip::whereoperator_id($operator_id)->groupBy('time')->get();
 	    }else{
-	      $objtrip=BusOccurance::groupBy('departure_time')->get();
+	      $objtrip=Trip::groupBy('time')->get();
 	    }
 	    $times=array();
 	    if($objtrip){
 	      foreach ($objtrip as $row) {
 	        $temp['tripid']=$row->id;
-	        $temp['time']=$row->departure_time;
+	        $temp['time']=$row->time;
 	        $times[]=$temp;
 	      }
 	    }
@@ -153,7 +153,7 @@ class OrderController extends \BaseController {
 					}
 					$busclass=Classes::whereid($orders->saleitems[0]->class_id)->pluck('name');
 					$response[$i]['busclass']=$busclass;
-					$departure_time=BusOccurance::whereid($orders->saleitems[0]->busoccurance_id)->pluck('departure_time');
+					$departure_time=Trip::whereid($orders->saleitems[0]->trip_id)->pluck('time');
 					$response[$i]['departure_time']=$departure_time;
 					$response[$i]['price']=$orders->saleitems[0]->price;
 					$response[$i]['total_ticket']=count($orders->saleitems);
@@ -382,7 +382,7 @@ class OrderController extends \BaseController {
 					$objdeletesaleorder->id=$id;
 					$objdeletesaleorder->orderdate=$objsaleorder->orderdate;
 					$objdeletesaleorder->departure_date=$objsaleorder->departure_date;
-					$objdeletesaleorder->departure_datetime=$objsaleorder->departure_datetime;
+					$objdeletesaleorder->booking_expired=$objsaleorder->booking_expired;
 					$objdeletesaleorder->device_id=$objsaleorder->device_id;
 					$objdeletesaleorder->reference_no=$objsaleorder->reference_no;
 					$objdeletesaleorder->agent_id=$objsaleorder->agent_id;

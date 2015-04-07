@@ -3,6 +3,40 @@
    <link rel="stylesheet" href="../../../../css/jquery.dataTables.v1.10.4.css" />
    <link rel="shortcut icon" href="favicon.ico" />
    <!-- BEGIN PAGE -->
+   <form class="horizontal-form" action="/changeprice" method="post">
+      <div id="portlet-changeprice" class="modal hide">
+         <div class="modal-header">
+            <button data-dismiss="modal" class="close" type="button"></button>
+            <h3>Change Price</h3>
+         </div>
+         <div class="modal-body">
+            <input type="hidden" name="access_token" value="{{Auth::user()->access_token}}">
+            <input type="hidden" value="" name="trip_id" id="hdtrip_id">
+            <div class="control-group" id="percentage-frame">
+               <label class="control-label">Local Price</label>
+               <div class="controls">
+                  <input type="text" class="span6" name="local_price">
+               </div>
+            </div>
+
+            <div class="control-group" id="percentage-frame">
+               <label class="control-label">Foreign Price</label>
+               <div class="controls">
+                  <input type="text" class="span6" name="foreign_price">
+               </div>
+            </div>
+
+            <div class="control-group">
+               <!-- <div class="btn-group"> -->
+                  <input type="submit" class="btn green" value="Save">
+                     <!-- <i class="icon-bullhorn"></i>  -->
+                  <!-- </button> -->
+               <!-- </div> -->
+            </div>
+         </div>
+      </div>
+   </form>
+
       <div class="page-content">
          <!-- BEGIN PAGE CONTAINER-->
          <div class="container-fluid">
@@ -150,9 +184,9 @@
                                                       <p>ကားထြက္သည့္ ေန႕မ်ား : {{$trip['available_day']}}</p>
                                                    အခ်ိန္ :   {{$trip['time']}}</td>
                                                    <td>
-                                                      {{$rows['local_price']}}
+                                                      {{$trip['price']}}
                                                    </td>
-                                                   <td>{{$rows['foreign_price']}}</td>
+                                                   <td>{{$trip['foreign_price']}}</td>
                                                    <td>{{$trip['commission']}}</td>
                                                    <td>
                                                       <div class="btn-group">
@@ -162,21 +196,16 @@
                                                          </a>
                                                          <ul class="dropdown-menu pull-right">
                                                             <li><a href="deletetrip/{{ $trip['id'] }}?access_token={{Auth::user()->access_token}}"><i class="icon-trash"></i> ဖ်က္မည္</a></li>
-                                                            <li class="divider"></li>
+                                                            <li><a href="#portlet-changeprice" data-toggle="modal" class="btnchangepriceconfig" data-tripid="{{$trip['id']}}"><i class="icon-edit"></i>Change Price</a></li>
                                                             <li><a href="changeseatplan/{{ $trip['id'] }}?access_token={{Auth::user()->access_token}}"><i class="icon-pencil"></i> Seat Plan ေျပာင္းရန္</a></li>
                                                             <li><a href="define-ownseat/{{ $trip['id'] }}?access_token={{Auth::user()->access_token}}"><i class="icon-pencil"></i> ခုံပုိင္သတ္မွတ္ရန္</a></li>
-                                                            <li class="divider"></li>
                                                            @if($trip->closeseat)
                                                              <li><a href="ownseatbytrip/{{ $trip['id'] }}?access_token={{Auth::user()->access_token}}"><i class="icon-list"></i> ခုံပုိင္သတ္မွတ္ထားေသာ စာရင္း</a></li>
-                                                             <li class="divider"></li>
                                                            @endif
                                                             <li><a href="/trip/extend/{{$trip['id']}}?{{$myApp->access_token}}"><i class="icon-pencil"></i> ဆက္သြားမည့္ျမိဳ႕ ထည့္ရန္</a></li>
-                                                            <li class="divider"></li>
                                                             <li><a href="/trip/editextend/{{$trip['id']}}-{{$rows['id']}}?access_token={{Auth::user()->access_token}}"><i class="icon-pencil"></i> ဆက္သြားမည့္ျမိဳ႕ ျပင္ရန္</a></li>
-                                                            <li class="divider"></li>
                                                             <li><a href="/trip/deleteextend/{{$rows['id']}}?access_token={{Auth::user()->access_token}}"><i class="icon-trash"></i> ဆက္သြားမည့္ျမိဳ႕ ဖ်က္ရန္</a></li>
-                                                            <li class="divider"></li>
-                                                            <li><a href="/closetrip/{{ $trip['id'] }}?access_token={{Auth::user()->access_token}}"><i class="icon-ban-circle"></i> ခဏ ရပ္ဆိုင္းရန္</a></li>
+                                                            <li><a href="/closedtrip/{{ $trip['id'] }}?access_token={{Auth::user()->access_token}}"><i class="icon-ban-circle"></i> ရပ္ဆိုင္းထားေသာ စာရင္းမ်ား </a></li>
                                                          </ul>
                                                       </div>
                                                       
@@ -222,20 +251,14 @@
                                                    </a>
                                                    <ul class="dropdown-menu pull-right">
                                                       <li><a href="deletetrip/{{ $trip['id'] }}?access_token={{Auth::user()->access_token}}"><i class="icon-trash"></i> ဖ်က္မည္</a></li>
-                                                      <li class="divider"></li>
+                                                      <li><a href="#portlet-changeprice" data-toggle="modal" class="btnchangepriceconfig" data-tripid="{{$trip['id']}}"><i class="icon-edit"></i>Change Price</a></li>
                                                       <li><a href="changeseatplan/{{ $trip['id'] }}?access_token={{Auth::user()->access_token}}"><i class="icon-pencil"></i> Seat Plan ေျပာင္းရန္</a></li>
-                                                      <li class="divider"></li>
                                                       <li><a href="define-ownseat/{{ $trip['id'] }}?access_token={{Auth::user()->access_token}}"><i class="icon-pencil"></i> ခုံပုိင္သတ္မွတ္ရန္</a></li>
-                                                      <li class="divider"></li>
                                                       @if($trip->closeseat)
                                                         <li><a href="ownseatbytrip/{{ $trip['id'] }}?access_token={{Auth::user()->access_token}}"><i class="icon-list"></i> ခုံပုိင္သတ္မွတ္ထားေသာ စာရင္း</a></li>
-                                                        <li class="divider"></li>
                                                       @endif
                                                       <li><a href="/trip/extend/{{$trip['id']}}?access_token={{Auth::user()->access_token}}"><i class="icon-pencil"></i> ဆက္သြားမည့္ျမိဳ႕ ထည့္ရန္</a></li>
-                                                      <li class="divider"></li>
-                                                      <li><a href="/closetrip/{{ $trip['id'] }}?access_token={{Auth::user()->access_token}}"><i class="icon-ban-circle"></i> ခဏ ရပ္ဆိုင္းရန္</a></li>
-                                                      <li class="divider"></li>
-                                                      <li><a href="/closetrip/{{ $trip['id'] }}?access_token={{Auth::user()->access_token}}"><i class="icon-ban-circle"></i> ခဏရပ္ဆိုင္းျခင္းမွ ျပန္ဖြင့္</a></li>
+                                                      <li><a href="/closedtrip/{{ $trip['id'] }}?access_token={{Auth::user()->access_token}}"><i class="icon-ban-circle"></i> ရပ္ဆိုင္းထားေသာ စာရင္းမ်ား</a></li>
                                                    </ul>
                                                 </div>
                                                 
@@ -297,6 +320,10 @@
               }
           } );
       } );
+      $('.btnchangepriceconfig').click(function(){
+         var trip_id=$(this).data('tripid');
+         $('#hdtrip_id').val(trip_id);
+      });
    </script>
    <script>
       $("#btnExportExcel").click(function () {

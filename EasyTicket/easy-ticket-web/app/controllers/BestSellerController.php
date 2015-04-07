@@ -186,6 +186,7 @@ class BestSellerController extends \BaseController {
 		$datetime2 = new DateTime($e_date);
 		$interval = $datetime1->diff($datetime2);
 		$days = $interval->format('%a');
+        dd($days);
 
     	if(!$operator_id || !$s_date || !$e_date){
     		$message['status'] 	= 0;

@@ -60,7 +60,7 @@
 			        	<?php $current_url=Route::getCurrentRoute()->getPath(); $k=1;  $columns=$response['column'];?>
 			        	<input type="hidden" value="{{Auth::user()->access_token}}" id="access_token">
 						<input type="hidden" value="{{$current_url}}" id='current_url'>
-						<input type="hidden" value="{{MCrypt::encrypt($response['bus_id'])}}" name='busoccurance_id' id='busoccurance_id'>
+						<input type="hidden" value="{{$response['trip_id']}}" name='class_id' id='trip_id'>
 						<input type="hidden" value="{{$response['class_id']}}" name='class_id' id='class_id'>
 						<input type="hidden" value="{{$response['from_city']}}" name='from' id="from">
 						<input type="hidden" value="{{$response['to_city']}}" name='to' id="to">
@@ -178,6 +178,7 @@
 						<div class="clear">&nbsp;</div>
 						<div class="large-12 columns">
 							<select name="agent_id" id="agent_id">
+									<option value="">Choose Agent</option>
 								@foreach($agents as $row)
 									<option value="{{$row->id}}">{{$row->name}}</option>
 								@endforeach
@@ -204,7 +205,7 @@
 					<div style="border-bottom:4px dotted #333;">&nbsp;</div>
 					<!-- <p>Yangon Mandaly trip long time is 6hours. This bus is one stop at something township.</p> -->
 					<br>
-					<a href="/bookinglist/{{$response['bus_id']}}?access_token={{Auth::user()->access_token}}" target="_blank" class="button btn1 small">ၾကိဳတင္မွာယူထားေသာ စာရင္းသုိ႕ =></a>
+					<a href="/bookinglist/{{$response['trip_id']}}?access_token={{Auth::user()->access_token}}&d_date={{$response['departure_date']}}" target="_blank" class="button btn1 small">ၾကိဳတင္မွာယူထားေသာ စာရင္းသုိ႕ =></a>
 					
 				</div>
 				<div class="clear">&nbsp;</div>
@@ -252,7 +253,7 @@
                          break;
                       
                       default:
-                          $remark_type="စည္းဖ်က္";
+                          $remark_type="စီးျဖတ္";
                          break;
                    }
                 ?>
@@ -346,7 +347,7 @@
 		$('#order').click(function(){
 				$('.indicator').addClass('loading');
 				var _token = $('#access_token').val();
-				var busid=$('#busoccurance_id').val();
+				var trip_id=$('#trip_id').val();
 				var operator_id=$('#operator_id').val();
 				var agent_id=$('#agent_id').val();
 				var class_id=$('#class_id').val();
@@ -364,7 +365,7 @@
 
 				$("input:checkbox[name=tickets]:checked").each(function() {
 				   var seat_no=$(this).val();
-				   var pararray={'busoccurance_id':busid, 'seat_no':seat_no};
+				   var pararray={'seat_no':seat_no};
 				   selected.push(pararray);
 				});
 				if(selected.length ==0){
@@ -372,6 +373,7 @@
 					return false;
 				}
 				
+
 		        var stringparameter=JSON.stringify(selected);
 		        $.ajax({
 		        	type:'POST',
@@ -382,6 +384,7 @@
 		        			seat_list:stringparameter,
 		        			from_city:from,
 		        			to_city:to,
+		        			trip_id:trip_id,
 		        			date:departure_date,
 		        			time:departure_time,
 		        			class_id:class_id,

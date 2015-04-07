@@ -17,6 +17,7 @@ use League\OAuth2\Server\Storage\SessionInterface;
 use League\OAuth2\Server\Storage\ClientInterface;
 use League\OAuth2\Server\Storage\ScopeInterface;
 use League\OAuth2\Server\Grant\GrantTypeInterface;
+use MCrypt;
 
 /**
  * OAuth 2.0 authorization server class
@@ -406,6 +407,8 @@ class Authorization
      */
     public function issueAccessToken($inputParams = array())
     {
+        $inputParams = json_decode(MCrypt::decrypt($inputParams['param']));
+       // dd($inputParams);
         $grantType = $this->getParam('grant_type', 'post', $inputParams);
 
         if (is_null($grantType)) {
@@ -442,11 +445,11 @@ class Authorization
      * @param  array  $inputParams Passed input parameters
      * @return mixed               'Null' if parameter is missing
      */
-    public function getParam($param = '', $method = 'get', $inputParams = array(), $default = null)
+    public function getParam($param = '', $method = 'get', $inputParams, $default = null)
     {
         if (is_string($param)) {
-            if (isset($inputParams[$param])) {
-                return $inputParams[$param];
+            if (isset($inputParams->$param)) {
+                return $inputParams->$param;
             } elseif ($param === 'client_id' && ! is_null($clientId = $this->getRequest()->server('PHP_AUTH_USER'))) {
                 return $clientId;
             } elseif ($param === 'client_secret' && ! is_null($clientSecret = $this->getRequest()->server('PHP_AUTH_PW'))) {

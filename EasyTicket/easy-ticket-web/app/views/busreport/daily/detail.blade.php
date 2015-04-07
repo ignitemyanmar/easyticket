@@ -37,7 +37,7 @@
                         &nbsp;ေန႔စဥ္ အေရာင္းစာရင္း
                      </h3>
 
-                     @if($bus_id)
+                     @if($trip_id)
                         <div id="filename" style="display:none;">{{date('d/m/Y',strtotime($search['date']))}} [{{$search['trip']}}]-Sale Report</div>
                         
                      @else
@@ -108,7 +108,7 @@
                                     </tr>
                                     <tr>
                                        <td colspan="14"><b>Trips : 
-                                          @if($bus_id)
+                                          @if($trip_id)
                                              [ {{$search['start_trip']}} ] 
                                           @else
                                              All Trips
@@ -177,7 +177,7 @@
                                                    @if($result['foreign_person'] > 0)
                                                    <td>{{$result['foreign_price']}}</td>
                                                    @else
-                                                   <td>{{$result['local_price']}}</td>
+                                                   <td>{{$result['price']}}</td>
                                                    @endif
                                                    @if($result['foreign_person'] > 0)
                                                    <td>{{$result['foreign_person']-$result['commission']}} ({{$result['commission']}})</td>

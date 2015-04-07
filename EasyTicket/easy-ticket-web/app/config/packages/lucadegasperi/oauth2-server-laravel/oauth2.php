@@ -75,14 +75,12 @@ return array(
             'class'            => 'League\OAuth2\Server\Grant\Password',
             'access_token_ttl' => 604800,
             'callback'         => function ($username, $password) {
-                
                 $credentials = array(
-                    'email' => $username,
-                    'password' => $password,
+                    'email' => MCrypt::decrypt($username),
+                    'password' => MCrypt::decrypt($password),
                 );
 
                 $valid = Auth::validate($credentials);
-
                 if (!$valid) {
                     return false;
                 }

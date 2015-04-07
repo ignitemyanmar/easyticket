@@ -32,7 +32,7 @@ class BookingController extends \BaseController {
 			$end_date=$this->getDate();
 		}
 
-		// $response=SaleOrder::where('departure_date','>=', $start_date)->where('departure_date','<=', $end_date)->where('departure_datetime','like','%'.$format_departure_time.'%')->wherebooking(1)->with(array('agent','saleitems'))->get();
+		
 		if($agent_ids){
 			if($agopt_ids){
 				if(Auth::user()->role==9){
@@ -47,6 +47,7 @@ class BookingController extends \BaseController {
 			$response=SaleOrder::where('departure_date','>=', $start_date)->where('departure_date','<=', $end_date)->wherebooking(1)->with(array('agent','saleitems'))->get();
 		}
 		$i=0;
+		// return Response::json($response);
 		foreach ($response as $row) {
 			if(count($row->saleitems)>0){
 				$from=City::whereid($row->saleitems[0]->from)->pluck('name');
@@ -69,9 +70,11 @@ class BookingController extends \BaseController {
 				$seat_nos=substr($seat_nos,0, -2);
 				$response[$i]['seat_numbers']=$seat_nos;
 				$response[$i]['departure_date']=$row->departure_date;
-				$objbus=BusOccurance::whereid($row->saleitems[0]->busoccurance_id)->first();
-				$response[$i]['departure_time']=$objbus->departure_time;
-				$response[$i]['class']=Classes::whereid($objbus->classes)->pluck('name');
+
+				$objtrip=Trip::whereid($row->saleitems[0]->trip_id)->first();
+				// $objbus=BusOccurance::whereid($row->saleitems[0]->busoccurance_id)->first();
+				$response[$i]['departure_time']=$objtrip->time;
+				$response[$i]['class']=Classes::whereid($objtrip->class_id)->pluck('name');
 				$i++;
 			}
 		}
@@ -91,11 +94,12 @@ class BookingController extends \BaseController {
 
 	public function getBookingListByBus($id)
 	{
+		$departure_date =Input::get('d_date');
 		$agopt_ids =$this->myGlob->agopt_ids;
 		if($agopt_ids){
-			$order_ids=SaleItem::wherein('operator',$agopt_ids)->wherebusoccurance_id($id)->lists('order_id');
+			$order_ids=SaleItem::wherein('operator',$agopt_ids)->wheretrip_id($id)->wheredeparture_date($departure_date)->lists('order_id');
 		}else{
-			$order_ids=SaleItem::wherebusoccurance_id($id)->lists('order_id');
+			$order_ids=SaleItem::wheretrip_id($id)->wheredeparture_date($departure_date)->lists('order_id');
 		}
 		$response=array();
 		if($order_ids){
@@ -118,9 +122,10 @@ class BookingController extends \BaseController {
 					$seat_nos=substr($seat_nos,0, -2);
 					$response[$i]['seat_numbers']=$seat_nos;
 					$response[$i]['departure_date']=date('d/m/Y',strtotime($row->departure_date));
-					$objbus=BusOccurance::whereid($row->saleitems[0]->busoccurance_id)->first();
-					$response[$i]['departure_time']=$objbus->departure_time;
-					$response[$i]['class']=Classes::whereid($objbus->classes)->pluck('name');
+					// $objbus=BusOccurance::whereid($row->saleitems[0]->busoccurance_id)->first();
+					$objtrip=Trip::whereid($id)->first();
+					$response[$i]['departure_time']=$objtrip->time;
+					$response[$i]['class']=Classes::whereid($objtrip->class_id)->pluck('name');
 					$i++;
 				}
 			}
@@ -152,6 +157,7 @@ class BookingController extends \BaseController {
 		}else{
 			$order_ids=SaleOrder::where('departure_date','=',$this->getDate())->wherebooking(1)->lists('id');
 		}
+		// return Response::json($order_ids);
 		$response=array();
 		if($order_ids){
 			$response=SaleOrder::wherein('id',$order_ids)->wherebooking(1)->with(array('agent','saleitems'))->get();
@@ -173,9 +179,10 @@ class BookingController extends \BaseController {
 					$seat_nos=substr($seat_nos,0, -2);
 					$response[$i]['seat_numbers']=$seat_nos;
 					$response[$i]['departure_date']=date('d/m/Y',strtotime($row->departure_date));
-					$objbus=BusOccurance::whereid($row->saleitems[0]->busoccurance_id)->first();
-					$response[$i]['departure_time']=$objbus->departure_time;
-					$response[$i]['class']=Classes::whereid($objbus->classes)->pluck('name');
+					// $objbus=BusOccurance::whereid($row->saleitems[0]->busoccurance_id)->first();
+					$objtrip=Trip::whereid($row->saleitems[0]->trip_id)->first();
+					$response[$i]['departure_time']=$objtrip->time;
+					$response[$i]['class']=Classes::whereid($objtrip->class_id)->pluck('name');
 					$i++;	
 				}
 				

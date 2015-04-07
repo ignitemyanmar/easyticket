@@ -1,0 +1,55 @@
+{
+    "name": "knplabs/etl",
+    "type": "library",
+    "description": "Extract - Transform - Load",
+    "keywords": [
+        "etl",
+        "extract",
+        "transform",
+        "load",
+        "import"
+    ],
+    "homepage": "http://knplabs.com",
+    "license": "MIT",
+    "authors": [
+        {
+            "name":     "Knplabs",
+            "homepage": "http://knplabs.com"
+        },
+        {
+            "name":     "Florain Klein",
+            "email":    "florian.klein@free.fr"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "symfony/finder": "~2.3",
+        "symfony/property-access": "~2.3",
+        "psr/log": "~1.0"
+    },
+    "require-dev": {
+        "phpspec/phpspec": "~2.0",
+        "doctrine/orm":  "~2.4",
+        "symfony/finder": "~2.3",
+        "symfony/console": "~2.3",
+        "pimple/pimple": "~1.0",
+        "phpoffice/phpexcel": "~1.8"
+    },
+    "suggest": {
+        "doctrine/orm": "To use ORM loader",
+        "doctrine/dbal": "To use DBAL loader",
+        "symfony/finder": "To use Regex-filename CSV extractor",
+        "symfony/console": "To use cli import command",
+        "pimple/pimple": "To configure your ETL process",
+        "phpoffice/phpexcel": "To use Excel files extractor"
+    },
+    "autoload": {
+        "psr-0": { "Knp\\ETL": "src/", "Entity": "" }
+    },
+    "minimum-stability": "dev",
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.1.x-dev"
+        }
+    }
+}

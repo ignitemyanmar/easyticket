@@ -112,7 +112,7 @@
                                              @endif
                                              <td>{{$result['total_amount']}}</td>
                                              <td>
-                                                <a class="btn mini green-stripe imagechange" id="" href="/report/dailycarandadvancesale/detail?access_token={{Auth::user()->access_token}}&bus_id={{$result['bus_id']}}&date={{date('Y-m-d', strtotime(Session::get('search_daily_date')))}}">အေသးစိတ္ၾကည့္ရန္</a>
+                                                <a class="btn mini green-stripe imagechange" id="" href="/report/dailycarandadvancesale/detail?access_token={{Auth::user()->access_token}}&trip_id={{$result['id']}}&departure_date={{$result['departure_date']}}&date={{date('Y-m-d', strtotime(Session::get('search_daily_date')))}}">အေသးစိတ္ၾကည့္ရန္</a>
                                              </td>
                                           </tr>
                                           <?php $dailyforbustotal +=$result['total_amount']; ?>

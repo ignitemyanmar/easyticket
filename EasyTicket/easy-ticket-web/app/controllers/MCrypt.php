@@ -40,7 +40,11 @@ class MCrypt
           mcrypt_generic_deinit($td);
           mcrypt_module_close($td);
 
-          return trim($decrypted);
+          //$string = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', trim($decrypted));
+          $string = preg_replace('/[\x00-\x1F]/', '', trim($decrypted));
+
+          return $string;
+
       } catch (Exception $e) {
         return null;
       }

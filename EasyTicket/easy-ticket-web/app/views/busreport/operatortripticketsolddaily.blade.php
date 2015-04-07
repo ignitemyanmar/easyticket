@@ -53,7 +53,7 @@
 
                      @endif
 
-                     @if($bus_id)
+                     @if($trip_id)
                         @if($response)
                            @foreach($response as $key=>$value)
                               <div id="filename" style="display:none;">{{$key}} {{date('d/m/Y',strtotime($value[0]['departure_date']))}} ({{$value[0]['time']}}) </div>
@@ -120,7 +120,7 @@
                                     </tr>
                                     <tr>
                                        <td colspan="13"><b>Trips : 
-                                          @if(!$bus_id)
+                                          @if(!$trip_id)
                                             @if($search['from']) 
                                              [ {{$search['first_trip']}} ] 
                                             @else 
@@ -134,7 +134,7 @@
                                     </tr>
                                     <tr>
                                        <td colspan="13"><b>Sale Date : 
-                                          @if(!$bus_id) 
+                                          @if(!$trip_id) 
                                              [ {{date('d/m/Y',strtotime($search['start_date']))}} ] - [ {{date('d/m/Y',strtotime($search['end_date'])) }}]
                                           @else 
                                              [ {{date('d/m/Y',strtotime($search['start_date']))}} ]
@@ -199,7 +199,7 @@
                                                    @if($result['foreign_person'] > 0)
                                                    <td>{{$result['foreign_price']}}</td>
                                                    @else
-                                                   <td>{{$result['local_price']}}</td>
+                                                   <td>{{$result['price']}}</td>
                                                    @endif
                                                    @if($result['foreign_person'] > 0)
                                                    <td>{{$result['foreign_person']-$result['commission']}} ({{$result['commission']}})</td>

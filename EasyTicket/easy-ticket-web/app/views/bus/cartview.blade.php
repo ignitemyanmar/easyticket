@@ -54,7 +54,8 @@
 									<br>
 									@endif
 									<input type="hidden" id="access_token" name="access_token" value="{{Auth::user()->access_token}}">
-									<input type="hidden" id="order_id" value="{{MCrypt::encrypt($objorder->id)}}">
+									<input type="hidden" name="trip_id" value="{{$response[0]['trip_id']}}">
+									<input type="hidden" name="departure_date" value="{{$response[0]['departure_date']}}">
 
 									<div class="row">
 										<div class="large-4 columns">အေရာင္းကုိ္ယ္စားလွယ္</div>
@@ -198,7 +199,6 @@
 						<tbody>
 								<?php $total=0; $foreign_total=0;?>
 								@foreach($response as $tickets)
-									<input type="hidden" name="busoccurance_id[]" value="{{MCrypt::encrypt($tickets['busoccurance_id'])}}">
 									<input type="hidden" name="sale_order_no" value="{{MCrypt::encrypt($tickets['sale_order_no'])}}">
 									<input type="hidden" name="seat_no[]" value="{{MCrypt::encrypt($tickets['seat_no'])}}">
 									<input type="hidden" name="agent_id1" value="{{$tickets['agent_id']}}">

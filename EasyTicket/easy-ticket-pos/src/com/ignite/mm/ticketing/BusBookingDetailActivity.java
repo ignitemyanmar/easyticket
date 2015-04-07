@@ -16,6 +16,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.provider.Settings.Secure;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -36,6 +37,8 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
 import com.google.gson.Gson;
 import com.ignite.mm.ticketing.application.BaseSherlockActivity;
+import com.ignite.mm.ticketing.application.MCrypt;
+import com.ignite.mm.ticketing.application.SecureParam;
 import com.ignite.mm.ticketing.clientapi.NetworkEngine;
 import com.ignite.mm.ticketing.custom.listview.adapter.OrderListViewAdapter;
 import com.ignite.mm.ticketing.custom.listview.adapter.CustomerTicketListViewAdapter;
@@ -163,10 +166,9 @@ public class BusBookingDetailActivity extends BaseSherlockActivity {
 	private void deleteOrder(){
 		dialog = ProgressDialog.show(this, "", " Please wait...", true);
         dialog.setCancelable(true);
-		SharedPreferences pref = getSharedPreferences("User", Activity.MODE_PRIVATE);
-		String accessToken = pref.getString("access_token", null);
 		if(chk_remove_all.isChecked()){
-			NetworkEngine.getInstance().deleteAllOrder(accessToken, creditOrder.getId().toString(), new Callback<JSONObject>() {
+			String param = MCrypt.getInstance().encrypt(SecureParam.deleteAllOrderParam(AppLoginUser.getAccessToken()));
+			NetworkEngine.getInstance().deleteAllOrder(param, MCrypt.getInstance().encrypt(creditOrder.getId()).toString(), new Callback<Response>() {
 
 				public void failure(RetrofitError arg0) {
 					// TODO Auto-generated method stub
@@ -174,7 +176,7 @@ public class BusBookingDetailActivity extends BaseSherlockActivity {
 					SKToastMessage.showMessage(BusBookingDetailActivity.this, "Can't Delete Record.", SKToastMessage.ERROR);
 				}
 
-				public void success(JSONObject arg0, Response arg1) {
+				public void success(Response arg0, Response arg1) {
 					// TODO Auto-generated method stub
 					dialog.dismiss();
 					SKToastMessage.showMessage(BusBookingDetailActivity.this, "Successfully deleted.", SKToastMessage.SUCCESS);
@@ -191,7 +193,9 @@ public class BusBookingDetailActivity extends BaseSherlockActivity {
 				}
 			}
 			Log.i("","Hello Delete Str = "+ saleItem);
-			NetworkEngine.getInstance().deleteOrderItem(accessToken, saleItem, new Callback<JSONObject>() {
+			String param = MCrypt.getInstance().encrypt(SecureParam.deleteOrderItemParam(AppLoginUser.getAccessToken(), saleItem));
+			Log.i("","Hello Param Remove: "+ param);
+			NetworkEngine.getInstance().deleteOrderItem(param, new Callback<Response>() {
 
 				public void failure(RetrofitError arg0) {
 					// TODO Auto-generated method stub
@@ -200,7 +204,7 @@ public class BusBookingDetailActivity extends BaseSherlockActivity {
 					SKToastMessage.showMessage(BusBookingDetailActivity.this, "Can't Delete Record.", SKToastMessage.ERROR);
 				}
 
-				public void success(JSONObject arg0, Response arg1) {
+				public void success(Response arg0, Response arg1) {
 					// TODO Auto-generated method stub
 					dialog.dismiss();
 					SKToastMessage.showMessage(BusBookingDetailActivity.this, "Successfully deleted.", SKToastMessage.SUCCESS);

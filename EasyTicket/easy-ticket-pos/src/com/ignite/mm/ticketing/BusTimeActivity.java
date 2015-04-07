@@ -30,7 +30,11 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 
 import com.actionbarsherlock.app.ActionBar;
+import com.google.gson.reflect.TypeToken;
 import com.ignite.mm.ticketing.application.BaseSherlockActivity;
+import com.ignite.mm.ticketing.application.DecompressGZIP;
+import com.ignite.mm.ticketing.application.MCrypt;
+import com.ignite.mm.ticketing.application.SecureParam;
 import com.ignite.mm.ticketing.clientapi.NetworkEngine;
 import com.ignite.mm.ticketing.connection.detector.ConnectionDetector;
 import com.ignite.mm.ticketing.custom.listview.adapter.OperatorListAdapter;
@@ -40,6 +44,7 @@ import com.ignite.mm.ticketing.sqlite.database.model.OAuth2Error;
 import com.ignite.mm.ticketing.sqlite.database.model.Operator;
 import com.ignite.mm.ticketing.sqlite.database.model.Operators;
 import com.ignite.mm.ticketing.sqlite.database.model.Time;
+import com.ignite.mm.ticketing.sqlite.database.model.TripsCollection;
 
 public class BusTimeActivity extends BaseSherlockActivity {
 	
@@ -181,17 +186,15 @@ public class BusTimeActivity extends BaseSherlockActivity {
 	
 	
 	private void getTime() {
-
-		SharedPreferences pref = getSharedPreferences("User", Activity.MODE_PRIVATE);
-		String accessToken = pref.getString("access_token", null);
-		
-		NetworkEngine.getInstance().getAllTime(accessToken,selectedOperatorId,selectedFromId,selectedToId,selectedDate, new Callback<List<Time>>() {
+		String param = MCrypt.getInstance().encrypt(SecureParam.getTimesParam(AppLoginUser.getAccessToken(), AppLoginUser.getUserID(), selectedFromId, selectedToId, selectedDate));
+		NetworkEngine.getInstance().getAllTime(param, new Callback<Response>() {
 	
-			public void success(List<Time> arg0, Response arg1) {
+			public void success(Response arg0, Response arg1) {
 				// TODO Auto-generated method stub
 				time_morning_list = new ArrayList<Time>();
 				time_evening_list = new ArrayList<Time>();
-				for(Time time: arg0){
+				List<Time> times = DecompressGZIP.fromBody(arg0.getBody(), new TypeToken<List<Time>>() {}.getType());
+				for(Time time: times){
 					//String timeStr = time.getTime().replaceAll(" ", "").toLowerCase();
 					//String timeTypeStr = timeStr.substring(timeStr.length() - 2, timeStr.length());
 					if(time.getTime().toLowerCase().contains("am")){
@@ -299,11 +302,11 @@ public class BusTimeActivity extends BaseSherlockActivity {
 	private void getOperator() {
 		SharedPreferences pref = getSharedPreferences("User", Activity.MODE_PRIVATE);
 		String accessToken = pref.getString("access_token", null);
-		NetworkEngine.getInstance().getAllOperators(accessToken, new Callback<Operators>() {
+		NetworkEngine.getInstance().getAllOperator(accessToken, new Callback<Response>() {
 	
-			public void success(Operators arg0, Response arg1) {
+			public void success(Response arg0, Response arg1) {
 				// TODO Auto-generated method stub
-				operatorList = arg0;
+				operatorList = DecompressGZIP.fromBody(arg0.getBody(), new TypeToken<Operator>() {}.getType());
 				operators = new ArrayList<Operator>();
 				operators.addAll(operatorList.getOperators());
 				operator.setAdapter(new OperatorListAdapter(BusTimeActivity.this, operators));

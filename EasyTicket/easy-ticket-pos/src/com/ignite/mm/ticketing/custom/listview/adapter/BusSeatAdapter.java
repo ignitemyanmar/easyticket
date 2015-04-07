@@ -116,7 +116,7 @@ public class BusSeatAdapter extends BaseAdapter{
             		holder.txt_agent.setText(list.get(position).getCustomerInfo().getAgentName());
             		holder.txt_seating_no.setText(list.get(position).getSeat_no());
             		//Check Remark
-        			if(list.get(position).getRemark_type() != 0){
+        			if(list.get(position).getRemark_type() != 0 || list.get(position).getDiscount() > 0 || list.get(position).getFree_ticket() > 0 ){
         				holder.txt_seating_no.setBackgroundColor(Color.YELLOW);
         			}
             	}else{

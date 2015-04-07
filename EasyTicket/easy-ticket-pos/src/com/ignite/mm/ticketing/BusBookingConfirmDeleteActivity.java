@@ -97,7 +97,7 @@ public class BusBookingConfirmDeleteActivity extends BaseSherlockActivity {
 				bundle.putString("phone", creditOrder.getPhone());
 				bundle.putString("selected_seat",  SeatLists);
 				bundle.putString("sale_order_no", creditOrder.getId().toString());
-				bundle.putString("bus_occurence", creditOrder.getSaleitems().get(0).getBusoccuranceId().toString());
+				bundle.putString("bus_occurence", creditOrder.getSaleitems().get(0).getTripId().toString());
 				nextScreen.putExtras(bundle);
 				startActivity(nextScreen);
 			}
@@ -113,27 +113,4 @@ public class BusBookingConfirmDeleteActivity extends BaseSherlockActivity {
 			}
 		}
 	};
-	private ProgressDialog dialog;
-	
-	private void payCredit(){
-		dialog = ProgressDialog.show(this, "", " Please wait...", true);
-        dialog.setCancelable(true);
-		SharedPreferences pref = getSharedPreferences("User", Activity.MODE_PRIVATE);
-		String accessToken = pref.getString("access_token", null);
-		NetworkEngine.getInstance().confirmBooking(accessToken, creditOrder.getId().toString(), new Callback<JSONObject>() {
-			
-			public void failure(RetrofitError arg0) {
-				// TODO Auto-generated method stub
-				dialog.dismiss();
-				SKToastMessage.showMessage(BusBookingConfirmDeleteActivity.this, "Can't confirmed.", SKToastMessage.ERROR);
-			}
-
-			public void success(JSONObject arg0, Response arg1) {
-				// TODO Auto-generated method stub
-				dialog.dismiss();
-				SKToastMessage.showMessage(BusBookingConfirmDeleteActivity.this, "Successfully confirm.", SKToastMessage.SUCCESS);
-				finish();
-			}
-		});
-	}
 }

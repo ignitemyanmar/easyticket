@@ -11,6 +11,12 @@ public class Seat_list {
 	@Expose
 	private Integer status;
 	@Expose
+	private Integer free_ticket;
+	@Expose
+	private String free_ticket_remark;
+	@Expose
+	private Integer discount;
+	@Expose
 	private Integer booking;
 	@Expose
 	private Integer remark_type;
@@ -52,6 +58,30 @@ public class Seat_list {
 	this.status = status;
 	}
 	
+	public Integer getFree_ticket() {
+		return free_ticket;
+	}
+
+	public void setFree_ticket(Integer free_ticket) {
+		this.free_ticket = free_ticket;
+	}
+
+	public String getFree_ticket_remark() {
+		return free_ticket_remark;
+	}
+
+	public void setFree_ticket_remark(String free_ticket_remark) {
+		this.free_ticket_remark = free_ticket_remark;
+	}
+
+	public Integer getDiscount() {
+		return discount;
+	}
+
+	public void setDiscount(Integer discount) {
+		this.discount = discount;
+	}
+
 	public Integer getBooking() {
 		return booking;
 	}

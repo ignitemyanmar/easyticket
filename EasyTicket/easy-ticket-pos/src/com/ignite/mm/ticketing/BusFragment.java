@@ -32,6 +32,8 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 
 import com.actionbarsherlock.app.SherlockFragment;
+import com.google.gson.reflect.TypeToken;
+import com.ignite.mm.ticketing.application.DecompressGZIP;
 import com.ignite.mm.ticketing.clientapi.NetworkEngine;
 import com.ignite.mm.ticketing.connection.detector.ConnectionDetector;
 import com.ignite.mm.ticketing.custom.listview.adapter.OperatorListAdapter;
@@ -114,7 +116,6 @@ public class BusFragment extends SherlockFragment{
 			mLoadingView.startAnimation(topInAnimaiton());
 			
 			getCity();
-			getDataOperator();
 			getDataTime();
 		}else{
 			mNoConnection.setVisibility(View.VISIBLE);
@@ -149,11 +150,11 @@ public class BusFragment extends SherlockFragment{
 	private void getCity() {
 		SharedPreferences pref = this.getActivity().getSharedPreferences("User", Activity.MODE_PRIVATE);
 		String accessToken = pref.getString("access_token", null);
-		NetworkEngine.getInstance().getAllCity(accessToken, new Callback<CityList>() {
+		NetworkEngine.getInstance().getAllCity(accessToken, new Callback<Response>() {
 		
-			public void success(CityList arg0, Response arg1) {
+			public void success(Response arg0, Response arg1) {
 				// TODO Auto-generated method stub
-				cityList = arg0;
+				cityList = DecompressGZIP.fromBody(arg0.getBody(), new TypeToken<CityList>() {}.getType());
 				getFrom();
 				getTo();
 				mLoadingView.setVisibility(View.GONE);
@@ -273,29 +274,6 @@ public class BusFragment extends SherlockFragment{
 			
 		}
 	};
-	
-	private void getDataOperator() {
-		SharedPreferences pref = this.getActivity().getSharedPreferences("User", Activity.MODE_PRIVATE);
-		String accessToken = pref.getString("access_token", null);
-		NetworkEngine.getInstance().getAllOperators(accessToken, new Callback<Operators>() {
-
-			public void success(Operators arg0, Response arg1) {
-				// TODO Auto-generated method stub
-				operators = arg0;
-				getOperators();
-				mLoadingView.setVisibility(View.GONE);
-				mLoadingView.startAnimation(topOutAnimaiton());
-			}
-			
-			public void failure(RetrofitError arg0) {
-				// TODO Auto-generated method stub
-				OAuth2Error error = (OAuth2Error) arg0.getBodyAs(OAuth2Error.class);
-				Log.i("","Hello Error Response Code : "+arg0.getResponse().getStatus());
-				Log.i("","Hello Error : "+error.getError());
-				Log.i("","Hello Error Desc : "+error.getError_description());
-			}
-		});
-	}
 	
 	private OnClickListener clickListener	= new OnClickListener() {
 		

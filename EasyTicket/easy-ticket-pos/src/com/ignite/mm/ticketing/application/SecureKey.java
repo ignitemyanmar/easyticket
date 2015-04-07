@@ -22,4 +22,10 @@ public class SecureKey {
 	
 	// Declare native method
 	public static native String getPEMKey();
+	
+	// Declare native method
+	public static native String getIV();
+	
+	// Declare native method
+	public static native String getAESKey();
 }

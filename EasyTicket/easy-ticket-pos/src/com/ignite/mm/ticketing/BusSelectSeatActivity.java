@@ -1,9 +1,14 @@
 package com.ignite.mm.ticketing;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.GZIPInputStream;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -46,10 +51,14 @@ import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 import com.actionbarsherlock.app.ActionBar;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import com.ignite.mm.ticketing.application.BaseSherlockActivity;
 import com.ignite.mm.ticketing.application.BookingDialog;
+import com.ignite.mm.ticketing.application.DecompressGZIP;
 import com.ignite.mm.ticketing.application.DeviceUtil;
 import com.ignite.mm.ticketing.application.EditSeatDialog;
+import com.ignite.mm.ticketing.application.MCrypt;
+import com.ignite.mm.ticketing.application.SecureParam;
 import com.ignite.mm.ticketing.clientapi.NetworkEngine;
 import com.ignite.mm.ticketing.connection.detector.ConnectionDetector;
 import com.ignite.mm.ticketing.custom.listview.adapter.BusClassAdapter;
@@ -63,6 +72,7 @@ import com.ignite.mm.ticketing.sqlite.database.model.BusSeat;
 import com.ignite.mm.ticketing.sqlite.database.model.OperatorGroupUser;
 import com.ignite.mm.ticketing.sqlite.database.model.ReturnComfrim;
 import com.ignite.mm.ticketing.sqlite.database.model.Seat;
+import com.ignite.mm.ticketing.sqlite.database.model.SeatPlan;
 import com.ignite.mm.ticketing.sqlite.database.model.Seat_list;
 import com.ignite.mm.ticketing.sqlite.database.model.SelectSeat;
 import com.smk.custom.view.CustomTextView;
@@ -84,10 +94,10 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
 	private LinearLayout mNoConnection;
 	protected ReturnComfrim returnComfirm;
 	private String AgentID = "0";
-	private String CustName = "";
-	private String CustPhone = "";
-	private int RemarkType;
-	private String Remark;
+	private String CustName = "-";
+	private String CustPhone = "-";
+	private int RemarkType = 0;
+	private String Remark = "-";
 	private String OperatorID;
 	private String FromCity;
 	private String ToCity;
@@ -114,6 +124,7 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
 	private String BusClasses;
 	private LinearLayout layout_remark;
 	private BusSeatAdapter seatAdapter;
+	protected List<Agent> agentList;
 	public static List<BusSeat> BusSeats;
 	public static List<OperatorGroupUser> groupUser = new ArrayList<OperatorGroupUser>();
 	public static String CheckOut;
@@ -198,16 +209,17 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
 	}
 	
 	private void getOperatorGroupUser(){
-		NetworkEngine.getInstance().getOperatorGroupUser(AppLoginUser.getAccessToken(), AppLoginUser.getUserID(), new Callback<List<OperatorGroupUser>>() {
+		String param = MCrypt.getInstance().encrypt(SecureParam.getOperatorGroupUserParam(AppLoginUser.getAccessToken(), AppLoginUser.getUserID()));
+		NetworkEngine.getInstance().getOperatorGroupUser(param, new Callback<Response>() {
 
 			public void failure(RetrofitError arg0) {
 				// TODO Auto-generated method stub
 				
 			}
 
-			public void success(List<OperatorGroupUser> arg0, Response arg1) {
+			public void success(Response arg0, Response arg1) {
 				// TODO Auto-generated method stub
-				groupUser = arg0;
+				groupUser = DecompressGZIP.fromBody(arg0.getBody(), new TypeToken<List<OperatorGroupUser>>() {}.getType());;
 				Log.i("","Hello Group User: "+ groupUser.size());
 				lst_group_user.setAdapter(new GroupUserListAdapter(BusSelectSeatActivity.this, groupUser));
 				setListViewHeightBasedOnChildren(lst_group_user);
@@ -232,20 +244,18 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
 	}
 	
 	private void getAgent(){
-		SharedPreferences pref = this.getApplicationContext().getSharedPreferences("User", Activity.MODE_PRIVATE);
-		String accessToken = pref.getString("access_token", null);
-		String user_id = pref.getString("user_id", null);
-		NetworkEngine.getInstance().getAllAgent(accessToken,user_id, new Callback<AgentList>() {
+		String param = MCrypt.getInstance().encrypt(SecureParam.getAllAgentParam(AppLoginUser.getAccessToken(), AppLoginUser.getUserID()));
+		NetworkEngine.getInstance().getAllAgent(param, new Callback<Response>() {
 
-			private List<Agent> agentList;
 			public void failure(RetrofitError arg0) {
 				// TODO Auto-generated method stub
 				
 			}
 
-			public void success(AgentList arg0, Response arg1) {
+			public void success(Response arg0, Response arg1) {
 				// TODO Auto-generated method stub
-				agentList = arg0.getAgents();
+				AgentList agents = DecompressGZIP.fromBody(arg0.getBody(), new TypeToken<AgentList>() {}.getType());
+				agentList = agents.getAgents();
 				bookingDialog = new BookingDialog(BusSelectSeatActivity.this, agentList);
 				bookingDialog.setCallbackListener(new BookingDialog.Callback() {
 
@@ -264,7 +274,7 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
 						RemarkType = remarkType;
 						Remark = remark;
 						if(!AgentID.equals("0")){
-							getServermsg();
+							postSale();
 						}	
 					}
 				});				
@@ -273,15 +283,14 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
 	}
 	
 	private void getSeatPlan() {
-		SharedPreferences pref = this.getApplicationContext().getSharedPreferences("User", Activity.MODE_PRIVATE);
-		String accessToken = pref.getString("access_token", null);
-		Log.i("","Hello : "+ OperatorID+"/"+ FromCity+"/"+ ToCity+"/"+ Classes+"/"+Date+"/"+Time);
-		NetworkEngine.getInstance().getItems(accessToken,OperatorID, FromCity, ToCity, Classes,Date, Time, new Callback<List<BusSeat>>() {
+		String param = MCrypt.getInstance().encrypt(SecureParam.getSeatPlanParam(AppLoginUser.getAccessToken(), OperatorID, FromCity, ToCity, Classes, Date, Time));
+		NetworkEngine.getInstance().getItems(param, new Callback<Response>() {
 			
-			public void success(List<BusSeat> arg0, Response arg1) {
+			public void success(Response arg0, Response arg1) {
 				// TODO Auto-generated method stub
+				// Try to get response body
 				SelectedSeat = "";
-				BusSeats = arg0;
+				BusSeats = DecompressGZIP.fromBody(arg0.getBody(), new TypeToken<List<BusSeat>>() {}.getType());
 				getData();
 				mLoadingView.setVisibility(View.GONE);
 				mLoadingView.startAnimation(topOutAnimaiton());
@@ -289,96 +298,109 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
 			
 			public void failure(RetrofitError arg0) {
 				// TODO Auto-generated method stub
-				
+				Log.i("","Hello Header Error: "+ arg0.getCause());
+				Log.i("","Hello Header Error: "+ arg0.getResponse().getBody());
+				Log.i("","Hello Header Error: "+ arg0.getResponse().getHeaders().toString());
 			}
 		});
 	}
 	
-	public void getServermsg()
-	{
+	public void postSale() {
 		dialog = ProgressDialog.show(this, "", " Please wait...", true);
-        dialog.setCancelable(true);
-        List<SelectSeat> seats = new ArrayList<SelectSeat>();
-        String[] selectedSeat = SelectedSeat.split(",");
+		dialog.setCancelable(true);
+		List<SelectSeat> seats = new ArrayList<SelectSeat>();
+		String[] selectedSeat = SelectedSeat.split(",");
 		for (int i = 0; i < selectedSeat.length; i++) {
-			seats.add(new SelectSeat(BusSeats.get(0).getSeat_plan().get(0).getId(), BusSeats.get(0).getSeat_plan().get(0).getSeat_list().get(Integer.valueOf(selectedSeat[i])).getSeat_no().toString()));
+			seats.add(new SelectSeat(BusSeats.get(0).getSeat_plan().get(0)
+					.getId(), BusSeats.get(0).getSeat_plan().get(0)
+					.getSeat_list().get(Integer.valueOf(selectedSeat[i]))
+					.getSeat_no().toString()));
 		}
-		
-		String FromCity = BusSeats.get(0).getSeat_plan().get(0).getFrom().toString();
+
+		String FromCity = BusSeats.get(0).getSeat_plan().get(0).getFrom()
+				.toString();
 		String ToCity = BusSeats.get(0).getSeat_plan().get(0).getTo().toString();
-		
-        Log.i("","Hello From City: "+FromCity+" , To City : "+ToCity+" and Select Seat -> "+seats.toString());
-        SharedPreferences pref = this.getApplicationContext().getSharedPreferences("User", Activity.MODE_PRIVATE);
-		String accessToken = pref.getString("access_token", null);
-		String user_id = pref.getString("user_id", null);
-		String user_type = pref.getString("user_type", null);
-		if(user_type.equals("agent")){
-			AgentID = user_id;
-		}else if(AgentID.length() == 0){
+
+		if (AppLoginUser.getUserType().equals("agent")) {
+			AgentID = AppLoginUser.getUserID();
+		} else if (AgentID.length() == 0) {
 			AgentID = "0";
 		}
-                
-        List<NameValuePair> params = new ArrayList<NameValuePair>();
-        params.add(new BasicNameValuePair("device_id", DeviceUtil.getInstance(this).getID()));
-        params.add(new BasicNameValuePair("operator_id", OperatorID));
-        params.add(new BasicNameValuePair("agent_id", AgentID));
-        params.add(new BasicNameValuePair("name", CustName));
-        params.add(new BasicNameValuePair("phone", CustPhone));
-        params.add(new BasicNameValuePair("remark_type", String.valueOf(RemarkType)));
-        params.add(new BasicNameValuePair("remark", Remark));
-        params.add(new BasicNameValuePair("from_city", FromCity));
-        params.add(new BasicNameValuePair("to_city", ToCity));
-        params.add(new BasicNameValuePair("group_operator_id", AppLoginUser.getUserGroupID()));
-        params.add(new BasicNameValuePair("seat_list", seats.toString()));
-        params.add(new BasicNameValuePair("booking", isBooking.toString()));
-        params.add(new BasicNameValuePair("user_id", AppLoginUser.getLoginUserID()));
-        params.add(new BasicNameValuePair("access_token", accessToken));
-        Log.i("","Hello Param: " + params.toString());
+		String param = MCrypt.getInstance().encrypt(
+				SecureParam.postSaleParam(AppLoginUser.getAccessToken(),
+						OperatorID, AgentID, CustName, CustPhone, String
+								.valueOf(RemarkType), Remark, AppLoginUser
+								.getUserGroupID(), MCrypt.getInstance()
+								.encrypt(seats.toString()),BusSeats.get(0).getSeat_plan().get(0).getId().toString(),Date, FromCity, ToCity,
+						AppLoginUser.getLoginUserID(),
+						DeviceUtil.getInstance(this).getID(), isBooking
+								.toString()));
+		List<NameValuePair> params = new ArrayList<NameValuePair>();
+		params.add(new BasicNameValuePair("param", param));
 		final Handler handler = new Handler() {
 
 			public void handleMessage(Message msg) {
-				
+
 				String jsonData = msg.getData().getString("data");
-				Log.i("ans:","Server Response: "+jsonData);
+				Log.i("ans:", "Server Response: " + jsonData);
 				try {
 					JSONObject jsonObject = new JSONObject(jsonData);
-					if(jsonObject.getString("status").equals("1")){
-						if(jsonObject.getBoolean("can_buy") && jsonObject.getString("device_id").equals(DeviceUtil.getInstance(BusSelectSeatActivity.this).getID())){
-		        			if(isBooking == 0){
-		        				Intent nextScreen = new Intent(BusSelectSeatActivity.this,BusConfirmActivity.class);
-		        				JSONArray jsonArray = jsonObject.getJSONArray("tickets");
-		        				String SeatLists = "";
-		        				for(int i=0; i<jsonArray.length(); i++){
-		        					JSONObject obj = jsonArray.getJSONObject(i);
-		        					SeatLists += obj.getString("seat_no")+",";
-		        				}
-			    				Bundle bundle = new Bundle();
-			    				bundle.putString("from_intent", "checkout");
-			    				bundle.putString("from_to", From+"-"+To);
-			    				bundle.putString("time", Time);
-			    				bundle.putString("classes",BusClasses);
-			    				bundle.putString("date", Date);
-			    				bundle.putString("selected_seat",  SeatLists);
-			    				bundle.putString("sale_order_no", jsonObject.getString("sale_order_no"));
-			    				bundle.putString("bus_occurence", BusSeats.get(0).getSeat_plan().get(0).getId().toString());
-			    				nextScreen.putExtras(bundle);
-			    				startActivity(nextScreen);
-		        			}else{
-		        				SKToastMessage.showMessage(BusSelectSeatActivity.this, "Booking မွာျပီးျပီး ျဖစ္ပါသည္။", SKToastMessage.SUCCESS);
-		        				isBooking = 0;
-		        				getSeatPlan();
-		        			}
-							
-		    				dialog.dismiss();
-		        		}else{
-		        			dialog.dismiss();
-		        			SKToastMessage.showMessage(BusSelectSeatActivity.this, "သင္ မွာယူေသာ လက္ မွတ္ မ်ားမွာ စကၠန့္ပိုင္ အတြင္း တစ္ ျခားသူ ယူ သြားေသာေၾကာင့္ သင္မွာေသာလက္မွတ္မ်ား မရႏိုင္ေတာ့ပါ။ ေက်းဇူးျပဳၿပီး တစ္ျခားလက္ မွတ္ မ်ား ျပန္ေရႊးေပးပါ။။", SKToastMessage.ERROR);
-		        			getSeatPlan();
-		        		}
-					}else{
+					if (jsonObject.getString("status").equals("1")) {
+						if (jsonObject.getBoolean("can_buy")
+								&& jsonObject.getString("device_id").equals(
+										DeviceUtil.getInstance(
+												BusSelectSeatActivity.this)
+												.getID())) {
+							if (isBooking == 0) {
+								Intent nextScreen = new Intent(
+										BusSelectSeatActivity.this,
+										BusConfirmActivity.class);
+								JSONArray jsonArray = jsonObject
+										.getJSONArray("tickets");
+								String SeatLists = "";
+								for (int i = 0; i < jsonArray.length(); i++) {
+									JSONObject obj = jsonArray.getJSONObject(i);
+									SeatLists += obj.getString("seat_no") + ",";
+								}
+								Bundle bundle = new Bundle();
+								bundle.putString("from_intent", "checkout");
+								bundle.putString("from_to", From + "-" + To);
+								bundle.putString("time", Time);
+								bundle.putString("classes", BusClasses);
+								bundle.putString("date", Date);
+								bundle.putString("selected_seat", SeatLists);
+								bundle.putString("sale_order_no",
+										jsonObject.getString("sale_order_no"));
+								bundle.putString("bus_occurence",
+										BusSeats.get(0).getSeat_plan().get(0)
+												.getId().toString());
+								nextScreen.putExtras(bundle);
+								startActivity(nextScreen);
+							} else {
+								SKToastMessage.showMessage(
+										BusSelectSeatActivity.this,
+										"Booking မွာျပီးျပီး ျဖစ္ပါသည္။",
+										SKToastMessage.SUCCESS);
+								isBooking = 0;
+								getSeatPlan();
+							}
+
+							dialog.dismiss();
+						} else {
+							dialog.dismiss();
+							SKToastMessage
+									.showMessage(
+											BusSelectSeatActivity.this,
+											"သင္ မွာယူေသာ လက္ မွတ္ မ်ားမွာ စကၠန့္ပိုင္ အတြင္း တစ္ ျခားသူ ယူ သြားေသာေၾကာင့္ သင္မွာေသာလက္မွတ္မ်ား မရႏိုင္ေတာ့ပါ။ ေက်းဇူးျပဳၿပီး တစ္ျခားလက္ မွတ္ မ်ား ျပန္ေရႊးေပးပါ။။",
+											SKToastMessage.ERROR);
+							getSeatPlan();
+						}
+					} else {
 						isBooking = 0;
 						dialog.dismiss();
-						SKToastMessage.showMessage(BusSelectSeatActivity.this, jsonObject.getString("message"), SKToastMessage.ERROR);
+						SKToastMessage.showMessage(BusSelectSeatActivity.this,
+								jsonObject.getString("message"),
+								SKToastMessage.ERROR);
 					}
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
@@ -386,9 +408,10 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
 				}
 			}
 		};
-		HttpConnection lt = new HttpConnection(handler,"POST", "http://192.168.1.101/sale",params);
+		HttpConnection lt = new HttpConnection(handler, "POST",
+				"http://192.168.1.101/sale", params);
 		lt.execute();
-		
+
 	}
 	
 		
@@ -412,6 +435,28 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
 				        map.put(key, list);
 				    }
 				}
+				//Check for discount;
+				if(remarkSeat.getDiscount() > 0){
+					Integer key  = 8;
+				    if(map.containsKey(key)){
+				        map.get(key).add(remarkSeat);
+				    }else{
+				        List<Seat_list> list = new ArrayList<Seat_list>();
+				        list.add(remarkSeat);
+				        map.put(key, list);
+				    }
+				}
+				//Check for free ticket;
+				if(remarkSeat.getFree_ticket() > 0){
+					Integer key  = 9;
+				    if(map.containsKey(key)){
+				        map.get(key).add(remarkSeat);
+				    }else{
+				        List<Seat_list> list = new ArrayList<Seat_list>();
+				        list.add(remarkSeat);
+				        map.put(key, list);
+				    }
+				}
 			}
 			layout_remark.removeAllViewsInLayout();
 			for (Map.Entry<Integer, List<Seat_list>> entry : map.entrySet())
@@ -421,7 +466,7 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
 			    TextView txtRemartType = (TextView) viewRemarkType.findViewById(R.id.txt_remark_type);
 			    txtRemartType.setText(getRemarkType(entry.getKey()));
 			    lst_remark.addHeaderView(viewRemarkType);
-				lst_remark.setAdapter(new RemarkListAdapter(this, entry.getValue()));
+				lst_remark.setAdapter(new RemarkListAdapter(this, entry.getValue(), entry.getKey()));
 				Log.i("","Hello = "+ entry.getValue());
 				layout_remark.addView(lst_remark);
 				setListViewHeightBasedOnChildren(lst_remark);
@@ -468,20 +513,16 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
 					dialog = ProgressDialog.show(BusSelectSeatActivity.this, "", " Please wait...", true);
 			        dialog.setCancelable(true);
 					// TODO Auto-generated method stub
-			        Log.i("","Hello Param: "+BusSeats.get(0).getSeat_plan().get(0).getId()+"/"+list.getSeat_no()+"/"+editSeatDialog.getName()+"/"+editSeatDialog.getPhone()+"/"+editSeatDialog.getNRC()+"/"+editSeatDialog.getTicketNo());
-					NetworkEngine.getInstance().editSeatInfo(
-							AppLoginUser.getAccessToken(), BusSeats.get(0).getSeat_plan().get(0).getId().toString(),
-							list.getSeat_no(), editSeatDialog.getName(),
-							editSeatDialog.getPhone(), editSeatDialog.getNRC(),
-							editSeatDialog.getTicketNo(),
-							new Callback<JsonObject>() {
+			        String param = MCrypt.getInstance().encrypt(SecureParam.editSeatInfoParam(AppLoginUser.getAccessToken(), BusSeats.get(0).getSeat_plan().get(0).getId().toString(), Date, list.getSeat_no(), editSeatDialog.getName(), editSeatDialog.getPhone(), editSeatDialog.getNRC(), editSeatDialog.getTicketNo()));
+					NetworkEngine.getInstance().editSeatInfo(param,
+							new Callback<Response>() {
 
 								public void failure(RetrofitError arg0) {
 									// TODO Auto-generated method stub
 									dialog.dismiss();
 								}
 
-								public void success(JsonObject arg0,
+								public void success(Response arg0,
 										Response arg1) {
 									// TODO Auto-generated method stub
 									onResume();
@@ -503,15 +544,12 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
 									dialog.dismiss();
 									dialog1 = ProgressDialog.show(BusSelectSeatActivity.this, "", " Please wait...", true);
 							        dialog1.setCancelable(true);
-									NetworkEngine.getInstance().deleteTicket(
-											AppLoginUser.getAccessToken(),
-											BusSeats.get(0).getSeat_plan().get(0).getId().toString(),
-											list.getSeat_no(),
-											AppLoginUser.getLoginUserID(),
-											new Callback<JsonObject>() {
+							        String param = MCrypt.getInstance().encrypt(SecureParam.deleteTicketParam(AppLoginUser.getAccessToken(), BusSeats.get(0).getSeat_plan().get(0).getId().toString(), Date, list.getSeat_no(), AppLoginUser.getLoginUserID()));
+									NetworkEngine.getInstance().deleteTicket(param,
+											new Callback<Response>() {
 
 												public void success(
-														JsonObject arg0,
+														Response arg0,
 														Response arg1) {
 													// TODO Auto-generated
 													// method stub
@@ -556,6 +594,8 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
 		remarkTypes.add("စီးျဖတ္");
 		remarkTypes.add("ေတာင္းေရာင္း");
 		remarkTypes.add("ဆက္သြား");
+		remarkTypes.add("Discounted");
+		remarkTypes.add("Free Ticket");
 		return remarkTypes.get(remarkType).toString();
 	}
 	
@@ -619,7 +659,7 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
 			if(v == btn_check_out){
 				if(SelectedSeat.length() != 0){
 					if(connectionDetector.isConnectingToInternet()){
-						getServermsg();
+						postSale();
 					}else{
 						connectionDetector.showErrorDialog();
 					}

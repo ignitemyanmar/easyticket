@@ -27,10 +27,15 @@ import android.widget.TextView;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
+import com.google.gson.reflect.TypeToken;
 import com.ignite.mm.ticketing.application.BaseSherlockActivity;
+import com.ignite.mm.ticketing.application.DecompressGZIP;
 import com.ignite.mm.ticketing.application.DeviceUtil;
+import com.ignite.mm.ticketing.application.MCrypt;
+import com.ignite.mm.ticketing.application.SecureParam;
 import com.ignite.mm.ticketing.clientapi.NetworkEngine;
 import com.ignite.mm.ticketing.custom.listview.adapter.TripsCityAdapter;
+import com.ignite.mm.ticketing.sqlite.database.model.AccessToken;
 import com.ignite.mm.ticketing.sqlite.database.model.TripsCollection;
 import com.smk.calender.widget.SKCalender;
 import com.smk.calender.widget.SKCalender.Callbacks;
@@ -117,12 +122,12 @@ public class BusTripsCityActivity extends BaseSherlockActivity{
 	private void getTripsCity(){
 		dialog = ProgressDialog.show(this, "", " Please wait...", true);
         dialog.setCancelable(true);
-		
-		NetworkEngine.getInstance().getTrips(AppLoginUser.getAccessToken(), AppLoginUser.getUserID(), new Callback<List<TripsCollection>>() {
+		String param = MCrypt.getInstance().encrypt(SecureParam.getTripsParam(AppLoginUser.getAccessToken(), AppLoginUser.getUserID()));
+		NetworkEngine.getInstance().getTrips(param, new Callback<Response>() {
 			
-			public void success(List<TripsCollection> arg0, Response arg1) {
+			public void success(Response arg0, Response arg1) {
 				// TODO Auto-generated method stub
-				tripsCollections = arg0;
+				tripsCollections = DecompressGZIP.fromBody(arg0.getBody(), new TypeToken<List<TripsCollection>>() {}.getType());
 				grd_trips_city.setAdapter(new TripsCityAdapter(BusTripsCityActivity.this, tripsCollections));
 				dialog.dismiss();
 			}
@@ -135,23 +140,23 @@ public class BusTripsCityActivity extends BaseSherlockActivity{
 	}
 	
 	private void getNotiBooking(){
-		
-		NetworkEngine.getInstance().getNotiBooking(AppLoginUser.getAccessToken(), getToday() , new Callback<Integer>() {
+		String param = MCrypt.getInstance().encrypt(SecureParam.getNotiBookingParam(AppLoginUser.getAccessToken(), getToday()));
+		NetworkEngine.getInstance().getNotiBooking(param , new Callback<Response>() {
 			
-			public void success(Integer arg0, Response arg1) {
+			public void success(Response arg0, Response arg1) {
 				// TODO Auto-generated method stub
 				SharedPreferences sharedPreferences = getSharedPreferences("NotifyBooking",Activity.MODE_PRIVATE);
 				SharedPreferences.Editor editor = sharedPreferences.edit();
 				
 				editor.clear();
 				editor.commit();
-				
-				editor.putInt("count", arg0);
+				Integer bookingCount = DecompressGZIP.fromBody(arg0.getBody(), new TypeToken<Integer>() {}.getType());
+				editor.putInt("count", bookingCount);
 				editor.commit();
 				
-				if(arg0 > 0){
+				if(bookingCount > 0){
 					actionBarNoti.setVisibility(View.VISIBLE);
-					actionBarNoti.setText(arg0.toString());
+					actionBarNoti.setText(bookingCount.toString());
 				}
 			}
 			

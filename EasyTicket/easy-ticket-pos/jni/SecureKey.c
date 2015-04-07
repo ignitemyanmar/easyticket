@@ -61,3 +61,23 @@ JNIEXPORT jstring JNICALL Java_com_ignite_mm_ticketing_application_SecureKey_get
   (JNIEnv *env, jclass thisClass){
 	  return (*env)->NewStringUTF(env, "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCHPKW5c+4I0xfCURdOgAjdoXvh MhXPR8dMs3mOHsDolG8nmdnnETV2yw1x8ol8KsGl6p4D6+tQEYmaqdvhpc6xWCAU HxQRSXnKWvoJNIgtF4J98WaFy1Xdys6tx1GbsM1/ng5FJT2sRypETWDNwePn3UId NvoKCu68i0G9/n61twIDAQAB");
 }
+
+/*
+ * Class:     com_ignite_mm_ticketing_application_SecureKey
+ * Method:    getAESKey
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_ignite_mm_ticketing_application_SecureKey_getAESKey
+  (JNIEnv *env, jclass thisClass){
+	  return (*env)->NewStringUTF(env, "dYzxXzu8MYyWyhEDawCumvhegFQquPwj");
+}
+
+/*
+ * Class:     com_ignite_mm_ticketing_application_SecureKey
+ * Method:    getIV
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_ignite_mm_ticketing_application_SecureKey_getIV
+  (JNIEnv *env, jclass thisClass){
+	  return (*env)->NewStringUTF(env, "ERCFECX6L3YOBQXU");
+}

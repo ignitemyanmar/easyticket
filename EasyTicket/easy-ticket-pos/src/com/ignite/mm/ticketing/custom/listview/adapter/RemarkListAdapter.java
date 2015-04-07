@@ -17,12 +17,14 @@ public class RemarkListAdapter extends BaseAdapter{
 	
 	private List<Seat_list> Seat_list;
 	private LayoutInflater mInflater;
+	private int hasKey;
 	
-	public RemarkListAdapter(Activity aty, List<Seat_list> Seat_list) {
+	public RemarkListAdapter(Activity aty, List<Seat_list> Seat_list, int hasKey) {
 		super();
 		// TODO Auto-generated constructor stub
 		mInflater = LayoutInflater.from(aty);
 		this.Seat_list=Seat_list;
+		this.hasKey = hasKey;
 	}
 
 	public int getCount() {
@@ -52,7 +54,13 @@ public class RemarkListAdapter extends BaseAdapter{
 		} else {
 			holder = (ViewHolder) view.getTag();
 		}
-		holder.txt_remark.setText(getItem(position).getRemark());
+		if(hasKey == 8)
+			holder.txt_remark.setText("Discounted: "+ getItem(position).getDiscount()+" Kyats ["+getItem(position).getCustomerInfo().getAgentName()+"]");
+		else if(hasKey == 9)
+			holder.txt_remark.setText("For "+ getItem(position).getFree_ticket_remark());
+		else
+			holder.txt_remark.setText(getItem(position).getRemark());
+		
 		holder.txt_seat_no.setText("Seat No. = "+ getItem(position).getSeat_no().toString());
 		
 		return view;

@@ -25,8 +25,12 @@ import android.widget.TextView;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
+import com.google.gson.reflect.TypeToken;
 import com.ignite.mm.ticketing.application.BaseSherlockActivity;
 import com.ignite.mm.ticketing.application.BookingCodeDialog;
+import com.ignite.mm.ticketing.application.DecompressGZIP;
+import com.ignite.mm.ticketing.application.MCrypt;
+import com.ignite.mm.ticketing.application.SecureParam;
 import com.ignite.mm.ticketing.clientapi.NetworkEngine;
 import com.smk.calender.widget.SKCalender;
 import com.smk.calender.widget.SKCalender.Callbacks;
@@ -224,23 +228,23 @@ public class BusMenuActivity extends BaseSherlockActivity {
 	};
 	
 	private void getNotiBooking(){
-		
-		NetworkEngine.getInstance().getNotiBooking(AppLoginUser.getAccessToken(), getToday() , new Callback<Integer>() {
+		String param = MCrypt.getInstance().encrypt(SecureParam.getNotiBookingParam(AppLoginUser.getAccessToken(), getToday()));
+		NetworkEngine.getInstance().getNotiBooking(param , new Callback<Response>() {
 			
-			public void success(Integer arg0, Response arg1) {
+			public void success(Response arg0, Response arg1) {
 				// TODO Auto-generated method stub
 				SharedPreferences sharedPreferences = getSharedPreferences("NotifyBooking",Activity.MODE_PRIVATE);
 				SharedPreferences.Editor editor = sharedPreferences.edit();
 				
 				editor.clear();
 				editor.commit();
-				
-				editor.putInt("count", arg0);
+				Integer bookingCount = DecompressGZIP.fromBody(arg0.getBody(), new TypeToken<Integer>() {}.getType());
+				editor.putInt("count", bookingCount);
 				editor.commit();
 				
-				if(arg0 > 0){
+				if(bookingCount > 0){
 					actionBarNoti.setVisibility(View.VISIBLE);
-					actionBarNoti.setText(arg0.toString());
+					actionBarNoti.setText(bookingCount.toString());
 				}
 			}
 			

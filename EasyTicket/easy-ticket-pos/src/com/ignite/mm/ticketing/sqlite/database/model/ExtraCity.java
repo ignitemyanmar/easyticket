@@ -2,13 +2,13 @@ package com.ignite.mm.ticketing.sqlite.database.model;
 
 public class ExtraCity {
 	private Integer id;
-	private Integer trip_id;
+	private String trip_id;
 	private Integer city_id;
 	private Integer local_price;
 	private Integer foreign_price;
 	private String  city_name;
 	
-	public ExtraCity(Integer id, Integer trip_id, Integer city_id,
+	public ExtraCity(Integer id, String trip_id, Integer city_id,
 			Integer local_price, Integer foreign_price, String city_name) {
 		super();
 		this.id = id;
@@ -24,10 +24,10 @@ public class ExtraCity {
 	public void setId(Integer id) {
 		this.id = id;
 	}
-	public Integer getTrip_id() {
+	public String getTrip_id() {
 		return trip_id;
 	}
-	public void setTrip_id(Integer trip_id) {
+	public void setTrip_id(String trip_id) {
 		this.trip_id = trip_id;
 	}
 	public Integer getCity_id() {

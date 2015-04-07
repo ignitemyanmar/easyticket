@@ -10,12 +10,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="none" >
-
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical" >
-
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -23,8 +23,8 @@
 
                 <LinearLayout
                     android:id="@+id/btn_sale_ticket"
-                    android:layout_width="140dp"
-                    android:layout_height="match_parent"
+                    android:layout_width="200dp"
+                    android:layout_height="220dp"
                     android:layout_margin="10dp"
                     android:background="@drawable/bg_menu_item"
                     android:gravity="center"
@@ -49,8 +49,8 @@
 
                 <LinearLayout
                     android:id="@+id/btn_cancel_order"
-                    android:layout_width="140dp"
-                    android:layout_height="match_parent"
+                    android:layout_width="200dp"
+                    android:layout_height="220dp"
                     android:layout_margin="10dp"
                     android:background="@drawable/bg_menu_item"
                     android:gravity="center"
@@ -69,11 +69,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:text="ေရာင္းၿပီး လက္မွတ္ မ်ား သြင္းရန္"
+                        android:text="ေရာင္းၿပီး လက္မွတ္မ်ားသြင္းရန္"
                         android:textAppearance="?android:attr/textAppearanceMedium" />
                 </LinearLayout>
             </LinearLayout>
-
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -82,8 +82,8 @@
 
                 <LinearLayout
                     android:id="@+id/btn_credit_list"
-                    android:layout_width="140dp"
-                    android:layout_height="match_parent"
+                    android:layout_width="200dp"
+                    android:layout_height="220dp"
                     android:layout_margin="10dp"
                     android:background="@drawable/bg_menu_item"
                     android:gravity="center"
@@ -109,8 +109,8 @@
 
                 <LinearLayout
                     android:id="@+id/all_booking"
-                    android:layout_width="140dp"
-                    android:layout_height="match_parent"
+                    android:layout_width="200dp"
+                    android:layout_height="220dp"
                     android:layout_margin="10dp"
                     android:background="@drawable/bg_menu_item"
                     android:gravity="center"
@@ -134,17 +134,17 @@
                         android:textAppearance="?android:attr/textAppearanceMedium" />
                 </LinearLayout>
             </LinearLayout>
-
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:visibility="visible" >
-
+
                 <LinearLayout
                     android:id="@+id/btn_search_code"
-                    android:layout_width="140dp"
-                    android:layout_height="match_parent"
+                    android:layout_width="200dp"
+                    android:layout_height="220dp"
                     android:layout_margin="10dp"
                     android:background="@drawable/bg_menu_item"
                     android:gravity="center"
@@ -158,7 +158,7 @@
                         android:layout_height="80dp"
                         android:layout_margin="10dp"
                         android:src="@drawable/credit_list" />
-
+
                     <com.smk.custom.view.CustomTextView
                         android:id="@+id/CustomTextView02"
                         android:layout_width="match_parent"
@@ -166,13 +166,12 @@
                         android:gravity="center"
                         android:text="Booking Code ႏွင့္ ရွာရန္"
                         android:textAppearance="?android:attr/textAppearanceMedium" />
-
                 </LinearLayout>
-
+
                 <LinearLayout
                     android:id="@+id/LinearLayout02"
-                    android:layout_width="140dp"
-                    android:layout_height="match_parent"
+                    android:layout_width="200dp"
+                    android:layout_height="220dp"
                     android:layout_margin="10dp"
                     android:background="@drawable/bg_menu_item"
                     android:gravity="center"
@@ -186,7 +185,7 @@
                         android:layout_height="80dp"
                         android:layout_margin="10dp"
                         android:src="@drawable/credit_list" />
-
+
                     <com.smk.custom.view.CustomTextView
                         android:id="@+id/CustomTextView03"
                         android:layout_width="match_parent"
@@ -194,9 +193,9 @@
                         android:gravity="center"
                         android:text="Booking Code ႏွင့္ ရွာရန္"
                         android:textAppearance="?android:attr/textAppearanceMedium" />
-
                 </LinearLayout>
             </LinearLayout>
+
         </LinearLayout>
 
     </ScrollView>

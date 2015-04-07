@@ -57,6 +57,22 @@ JNIEXPORT jstring JNICALL Java_com_ignite_mm_ticketing_application_SecureKey_get
 JNIEXPORT jstring JNICALL Java_com_ignite_mm_ticketing_application_SecureKey_getPEMKey
   (JNIEnv *env, jclass thisClass);
 
+/*
+ * Class:     com_ignite_mm_ticketing_application_SecureKey
+ * Method:    getAESKey
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_ignite_mm_ticketing_application_SecureKey_getAESKey
+  (JNIEnv *env, jclass thisClass);
+
+/*
+ * Class:     com_ignite_mm_ticketing_application_SecureKey
+ * Method:    getIV
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_ignite_mm_ticketing_application_SecureKey_getIV
+  (JNIEnv *env, jclass thisClass);
+
 #ifdef __cplusplus
 }
 #endif

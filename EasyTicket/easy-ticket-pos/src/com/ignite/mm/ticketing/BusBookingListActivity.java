@@ -21,10 +21,15 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import com.actionbarsherlock.app.ActionBar;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.ignite.mm.ticketing.application.BaseSherlockActivity;
 import com.ignite.mm.ticketing.application.BookingFilterDialog;
+import com.ignite.mm.ticketing.application.DecompressGZIP;
+import com.ignite.mm.ticketing.application.MCrypt;
+import com.ignite.mm.ticketing.application.SecureParam;
 import com.ignite.mm.ticketing.clientapi.NetworkEngine;
 import com.ignite.mm.ticketing.custom.listview.adapter.OrderListViewAdapter;
+import com.ignite.mm.ticketing.sqlite.database.model.BusSeat;
 import com.ignite.mm.ticketing.sqlite.database.model.Cities;
 import com.ignite.mm.ticketing.sqlite.database.model.CreditOrder;
 import com.ignite.mm.ticketing.sqlite.database.model.From;
@@ -147,12 +152,14 @@ public class BusBookingListActivity extends BaseSherlockActivity {
 	protected List<To> toCities;
 	protected List<TimesbyOperator> Times;
 	private void getCity() {
-		NetworkEngine.getInstance().getCitybyOperator(AppLoginUser.getAccessToken(), AppLoginUser.getUserID(), new Callback<Cities>() {
+		String param = MCrypt.getInstance().encrypt(SecureParam.getCitybyOperatorParam(AppLoginUser.getAccessToken(), AppLoginUser.getUserID()));
+		NetworkEngine.getInstance().getCitybyOperator(param, new Callback<Response>() {
 		
-			public void success(Cities arg0, Response arg1) {
+			public void success(Response arg0, Response arg1) {
 				// TODO Auto-generated method stub
-				fromCities = arg0.getFrom();
-				toCities = arg0.getTo();
+				Cities cities = DecompressGZIP.fromBody(arg0.getBody(), new TypeToken<Cities>() {}.getType() );
+				fromCities = cities.getFrom();
+				toCities = cities.getTo();
 			}
 
 			public void failure(RetrofitError arg0) {
@@ -163,11 +170,12 @@ public class BusBookingListActivity extends BaseSherlockActivity {
 	}
 	
 	private void getTimeData() {
-		NetworkEngine.getInstance().getTimebyOperator(AppLoginUser.getAccessToken(), AppLoginUser.getUserID() , new Callback<List<TimesbyOperator>>() {
+		String param = MCrypt.getInstance().encrypt(SecureParam.getTimebyOperatorParam(AppLoginUser.getAccessToken(), AppLoginUser.getUserID()));
+		NetworkEngine.getInstance().getTimebyOperator(param , new Callback<Response>() {
 
-			public void success(List<TimesbyOperator> arg0, Response arg1) {
+			public void success(Response arg0, Response arg1) {
 				// TODO Auto-generated method stub
-				Times = arg0;
+				Times = DecompressGZIP.fromBody(arg0.getBody(), new TypeToken<List<TimesbyOperator>>() {}.getType() );;
 			}
 			public void failure(RetrofitError arg0) {
 				// TODO Auto-generated method stub
@@ -180,18 +188,17 @@ public class BusBookingListActivity extends BaseSherlockActivity {
 		dialog = ProgressDialog.show(this, "", " Please wait...", true);
         dialog.setCancelable(true);
 		SharedPreferences pref = getSharedPreferences("order", Activity.MODE_PRIVATE);
-		String orderDate = pref.getString("order_date", null);
-		String from = pref.getString("from", null);
-		String to = pref.getString("to", null);
-		String time = pref.getString("time", null);
-		Log.i("","Hello : "+ AppLoginUser.getUserID()+" , Order Date = "+orderDate );
-		NetworkEngine.getInstance().getBookingOrder(AppLoginUser.getAccessToken(), AppLoginUser.getUserID(), orderDate,
-				from, to, time, BookCode, new Callback<List<CreditOrder>>() {
+		String orderDate = pref.getString("order_date", "");
+		String from = pref.getString("from", "");
+		String to = pref.getString("to", "");
+		String time = pref.getString("time", "");
+		
+		String param = MCrypt.getInstance().encrypt(SecureParam.getBookingOrderParam(AppLoginUser.getAccessToken(), AppLoginUser.getUserID(), orderDate, from, to, time, BookCode));
+		NetworkEngine.getInstance().getBookingOrder(param, new Callback<Response>() {
 			
-			public void success(List<CreditOrder> arg0, Response arg1) {
+			public void success(Response arg0, Response arg1) {
 				// TODO Auto-generated method stub
-				credit_list = arg0;
-				Log.i("","Hello size: "+ credit_list.size());
+				credit_list = DecompressGZIP.fromBody(arg0.getBody(), new TypeToken<List<CreditOrder>>() {}.getType() );;;
 				lst_credit.setAdapter(new OrderListViewAdapter(BusBookingListActivity.this, credit_list));
 				dialog.dismiss();
 			}

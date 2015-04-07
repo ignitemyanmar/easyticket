@@ -8,13 +8,13 @@ import android.widget.TextView;
 public class DosisMediumTextView extends TextView{
 	public DosisMediumTextView(Context context){
 		super(context);
-		if(!isInEditMode())
-			setTypeface(Typeface.createFromAsset(context.getAssets(),"fonts/DosisMedium.ttf"));
+		/*if(!isInEditMode())
+			setTypeface(Typeface.createFromAsset(context.getAssets(),"fonts/DosisMedium.ttf"));*/
 	}
 	public DosisMediumTextView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		if(!isInEditMode())
-			setTypeface(Typeface.createFromAsset(context.getAssets(),"fonts/DosisMedium.ttf"));
+		/*if(!isInEditMode())
+			setTypeface(Typeface.createFromAsset(context.getAssets(),"fonts/DosisMedium.ttf"));*/
 	}
 	
 	

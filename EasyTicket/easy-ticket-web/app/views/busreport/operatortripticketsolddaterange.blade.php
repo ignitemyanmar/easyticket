@@ -502,10 +502,6 @@
       }
       $('#agentgroup').change(function(){
          var agentgroup_id=$(this).val();
-         if(agentgroup_id=="All")
-         {
-            agentgroup_id=0;
-         }
          loadagentbranches(agentgroup_id);
       });
    </script>

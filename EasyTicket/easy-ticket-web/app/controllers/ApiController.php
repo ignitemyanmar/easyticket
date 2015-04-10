@@ -675,7 +675,7 @@ class ApiController extends BaseController
     	}
 
     	if(count($available_seats) == count($seat_list) && $all_canby){
-    		try {
+    		//try {
     			$response['message']="Successfully your purchase or booking tickets.";
     			$can_buy=true;
     			$order_auto_id = $this->generateAutoID($operator_id,$group_operator_id);
@@ -685,6 +685,7 @@ class ApiController extends BaseController
 	    		$objsaleorder->departure_date 		= $departure_date;
 	    		$objsaleorder->booking_expired 		= $booking_expired;
 	    		$objsaleorder->agent_id 			= $agent_id ? $agent_id : 0;
+	    		$objsaleorder->agent_code 			= 0;
 	    		$objsaleorder->name 	 			= $name;
 	    		$objsaleorder->phone 	 			= $phone;
 	    		$objsaleorder->remark_type 	 		= $remark_type;
@@ -713,6 +714,7 @@ class ApiController extends BaseController
 			    			$objsaleitems->device_id		=$device_id;
 			    			$objsaleitems->operator			=$operator_id;
 			    			$objsaleitems->agent_id 		= $agent_id ? $agent_id : 0;
+			    			$objsaleitems->agent_code 		= 0;
 			    			$objsaleitems->price			=$trip->price;
 			    			$objsaleitems->foreign_price	=$trip->foreign_price;
 			    			$objsaleitems->departure_date	=$departure_date;
@@ -720,10 +722,11 @@ class ApiController extends BaseController
 	    				}
 	    			}
 	    		}
-    		} catch (Exception $e) {
+    		/*} catch (Exception $e) {
+    			dd($e);
     			$response['message']="Something was wrong!.";
     			$all_canby=false;
-    		}
+    		}*/
 	    		
     	}else{
 	    	$response['message']="Unfortunately your purchase or booking some tickets have been taken by another customer.";
@@ -870,6 +873,7 @@ class ApiController extends BaseController
 	    		$check_exiting=Agent::wherename($agent_name)->first();
 	    		if(!$check_exiting){
 	    			$objagent->name=$agent_name;
+	    			$objagent->code_no = 'TEMP'.strtotime($this->getSysDateTime());
 	    			$objagent->operator_id=$operator_id;
 	    			$objagent->save();
 	    			$agent_id=$objagent->id;
@@ -877,7 +881,7 @@ class ApiController extends BaseController
 	    	}
     		
     		$total_discount = 0;
-
+    		$agent_code  	= Agent::whereid($agent_id)->pluck('code_no');
     		foreach ($json_tickets as $rows) {
     			$objsaleitems=SaleItem::whereorder_id($sale_order_no)->whereseat_no($rows->seat_no)->first();
     			$objsaleitems->order_id 		=$sale_order_no;
@@ -891,7 +895,8 @@ class ApiController extends BaseController
     				$objsaleitems->free_ticket_remark = $rows->free_ticket_remark;
     			}
     			$objsaleitems->discount 			=$rows->discount ? $rows->discount : 0;
-				$objsaleitems->agent_id 		=$agent_id; 
+				$objsaleitems->agent_id 			=$agent_id; 
+				$objsaleitems->agent_code 			=$agent_code;
 				/**
 				 * Check For Extra Destination Trip;
 				 */
@@ -934,16 +939,17 @@ class ApiController extends BaseController
     			$total_amount=SaleItem::whereorder_id($sale_order_no)->sum('price');
     		}
 
-    		$objsaleorder->reference_no=$reference_no;
-    		$objsaleorder->agent_id=$agent_id;
-    		$objsaleorder->name=$buyer_name;
-    		$objsaleorder->nrc_no=$nrc_no;
-    		$objsaleorder->phone=$phone;
+    		$objsaleorder->reference_no	=$reference_no;
+    		$objsaleorder->agent_id 	=$agent_id;
+    		$objsaleorder->agent_code 	=$agent_code;
+    		$objsaleorder->name 		=$buyer_name;
+    		$objsaleorder->nrc_no 		=$nrc_no;
+    		$objsaleorder->phone 		=$phone;
     		if($total_amount > 0){
 	    		$objsaleorder->cash_credit=$cash_credit;
     		}
-    		$objsaleorder->total_amount=$total_amount;
-    		$objsaleorder->nationality=$nationality == null ? 'local' : $nationality;
+    		$objsaleorder->total_amount	=$total_amount;
+    		$objsaleorder->nationality 	=$nationality == null ? 'local' : $nationality;
 
     		$total_commission=0;
     		$trip_id= SaleItem::whereorder_id($sale_order_no)->groupBy('trip_id')->pluck('trip_id');

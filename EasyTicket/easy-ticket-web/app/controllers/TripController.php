@@ -268,7 +268,6 @@ class TripController extends \BaseController {
 
 		if($trip){
 			Trip::whereid($id)->delete();
-			// BusOccurance::wheretrip_id($id)->delete();
 			DeleteTrip::create($trip->toarray());
 		}
 		return Redirect::to('trip-list?access_token='.Auth::user()->access_token)->with('message','Successfully delete trip.');

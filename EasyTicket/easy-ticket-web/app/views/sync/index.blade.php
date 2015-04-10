@@ -79,30 +79,30 @@
                                     </div>
                                     <div class="modal-body">
                                        <div id="upload_list" style="display:none;">
+                                          <p class="alert" id="up_pg_trip"><strong>3.Message:</strong> <span id="message-up_pg_trip">Wainting for connect to Server...</span></p>
                                           <p class="alert" id="up_pg_delsaleorder"><strong>3.Message:</strong> <span id="message-up_pg_delsaleorder">Wainting for connect to Server...</span></p>
                                           <p class="alert" id="up_pg_sale_order"><strong>1.Message:</strong> <span id="message-up_pg_sale_order">Wainting for connect to Server...</span></p>
                                           <p class="alert" id="up_pg_payment"><strong>2.Message:</strong> <span id="message-up_pg_payment">Wainting for connect to Server...</span></p>
                                        </div>
                                        <div id="download_list" style="display:none;">
-                                          <p class="alert" id="pg_bus"><strong>1.Message:</strong> <span id="message-pg_bus">Wainting for connect to Server...</span></p>
-                                          <p class="alert" id="pg_trip"><strong>2.Message:</strong> <span id="message-pg_trip">Wainting for connect to Server...</span></p>
-                                          <p class="alert" id="pg_del_trip"><strong>3.Message:</strong> <span id="message-pg_del_trip">Wainting for connect to Server...</span></p>
-                                          <p class="alert" id="pg_seating_plan"><strong>4.Message:</strong> <span id="message-pg_seating_plan">Wainting for connect to Server...</span></p>
-                                          <p class="alert" id="pg_agent"><strong>5.Message:</strong> <span id="message-pg_agent">Wainting for connect to Server...</span></p>
-                                          <p class="alert" id="pg_agent_group"><strong>6.Message:</strong> <span id="message-pg_agent_group">Wainting for connect to Server...</span></p>
-                                          <p class="alert" id="pg_city"><strong>7.Message:</strong> <span id="message-pg_city">Wainting for connect to Server...</span></p>
-                                          <p class="alert" id="pg_extra_destination"><strong>8.Message:</strong> <span id="message-pg_extra_destination">Wainting for connect to Server...</span></p>
-                                          <p class="alert" id="pg_classes"><strong>9.Message:</strong> <span id="message-pg_classes">Wainting for connect to Server...</span></p>
-                                          <p class="alert" id="pg_agent_commission"><strong>10.Message:</strong> <span id="message-pg_agent_commission">Wainting for connect to Server...</span></p>
-                                          <p class="alert" id="pg_cls_seatinfo"><strong>11.Message:</strong> <span id="message-pg_cls_seatinfo">Wainting for connect to Server...</span></p>
-                                          <p class="alert" id="pg_commission_type"><strong>12.Message:</strong> <span id="message-pg_commission_type">Wainting for connect to Server...</span></p>
-                                          <p class="alert" id="pg_op_group"><strong>13.Message:</strong> <span id="message-pg_op_group">Wainting for connect to Server...</span></p>
-                                          <p class="alert" id="pg_opg_user"><strong>14.Message:</strong> <span id="message-pg_opg_user">Wainting for connect to Server...</span></p>
-                                          <p class="alert" id="pg_user"><strong>15.Message:</strong> <span id="message-pg_user">Wainting for connect to Server...</span></p>
-                                          <p class="alert" id="pg_operator"><strong>16.Message:</strong> <span id="message-pg_operator">Wainting for connect to Server...</span></p>
-                                          <p class="alert" id="pg_seat_info"><strong>17.Message:</strong> <span id="message-pg_seat_info">Wainting for connect to Server...</span></p>
-                                          <p class="alert" id="pg_saleorder"><strong>18.Message:</strong> <span id="message-pg_saleorder">Wainting for connect to Server...</span></p>
-                                          <p class="alert" id="pg_del_saleorder"><strong>19.Message:</strong> <span id="message-pg_del_saleorder">Wainting for connect to Server...</span></p>
+                                          <p class="alert" id="pg_trip"><strong>1.Message:</strong> <span id="message-pg_trip">Wainting for connect to Server...</span></p>
+                                          <p class="alert" id="pg_del_trip"><strong>2.Message:</strong> <span id="message-pg_del_trip">Wainting for connect to Server...</span></p>
+                                          <p class="alert" id="pg_seating_plan"><strong>3.Message:</strong> <span id="message-pg_seating_plan">Wainting for connect to Server...</span></p>
+                                          <p class="alert" id="pg_agent"><strong>4.Message:</strong> <span id="message-pg_agent">Wainting for connect to Server...</span></p>
+                                          <p class="alert" id="pg_agent_group"><strong>5.Message:</strong> <span id="message-pg_agent_group">Wainting for connect to Server...</span></p>
+                                          <p class="alert" id="pg_city"><strong>6.Message:</strong> <span id="message-pg_city">Wainting for connect to Server...</span></p>
+                                          <p class="alert" id="pg_extra_destination"><strong>7.Message:</strong> <span id="message-pg_extra_destination">Wainting for connect to Server...</span></p>
+                                          <p class="alert" id="pg_classes"><strong>8.Message:</strong> <span id="message-pg_classes">Wainting for connect to Server...</span></p>
+                                          <p class="alert" id="pg_agent_commission"><strong>9.Message:</strong> <span id="message-pg_agent_commission">Wainting for connect to Server...</span></p>
+                                          <p class="alert" id="pg_cls_seatinfo"><strong>10.Message:</strong> <span id="message-pg_cls_seatinfo">Wainting for connect to Server...</span></p>
+                                          <p class="alert" id="pg_commission_type"><strong>11.Message:</strong> <span id="message-pg_commission_type">Wainting for connect to Server...</span></p>
+                                          <p class="alert" id="pg_op_group"><strong>12.Message:</strong> <span id="message-pg_op_group">Wainting for connect to Server...</span></p>
+                                          <p class="alert" id="pg_opg_user"><strong>13.Message:</strong> <span id="message-pg_opg_user">Wainting for connect to Server...</span></p>
+                                          <p class="alert" id="pg_user"><strong>14.Message:</strong> <span id="message-pg_user">Wainting for connect to Server...</span></p>
+                                          <p class="alert" id="pg_operator"><strong>15.Message:</strong> <span id="message-pg_operator">Wainting for connect to Server...</span></p>
+                                          <p class="alert" id="pg_seat_info"><strong>16.Message:</strong> <span id="message-pg_seat_info">Wainting for connect to Server...</span></p>
+                                          <p class="alert" id="pg_saleorder"><strong>17.Message:</strong> <span id="message-pg_saleorder">Wainting for connect to Server...</span></p>
+                                          <p class="alert" id="pg_del_saleorder"><strong>18.Message:</strong> <span id="message-pg_del_saleorder">Wainting for connect to Server...</span></p>
                                        </div>
                                        
                                     </div>
@@ -127,12 +127,6 @@
                                        <span class="help-inline">Please click to Sync "Sync from Server" button.</span>
                                        <p>
                                           <a  href="#myModal1" role="button" data-toggle="modal" class="btn yellow big" id="sync_from_server">Sync from Server <i class="m-icon-big-swapdown m-icon-white"></i></a></div>
-                                       </p>
-                                    </div>
-                                    <div class="controls" style="display:none;" >
-                                       <span class="help-inline">Please click to Sync "Sync Bus Occourance" button.</span>
-                                       <p>
-                                          <a href="#myModal1" role="button" data-toggle="modal" class="btn blue big" id="sync_bus_from_server">Sync Bus Occourance <i class="m-icon-big-swapdown m-icon-white"></i></a>
                                        </p>
                                     </div>
                                     <div class="controls" style="display:none;">
@@ -269,7 +263,7 @@
       $('.progress-striped').addClass('active');
       $('#upload_list').show();
       $('#download_list').hide(); 
-      syncDelSaleOrderToServer('up_pg_delsaleorder');
+      syncTripToServer('up_pg_trip');
    });
 
    /*
@@ -286,6 +280,29 @@
             $('#'+_obj).append('<span>Successfully sync to ['+_obj_name+'].</span><button class="close" data-dismiss="alert"></button>')
             clearInterval(progressUploadInterval);
          }
+
+
+   }
+
+   var syncTripToServer = function(sync_id){
+      var that = sync_id;
+      $('#'+that).addClass('alert-info');
+      $('.progress-striped').addClass('active');
+      $('#message').html('Connecting to server...');
+      $('#file').html('');
+      $.ajax({
+        type: "GET",
+        url: "/uploadtripjson/"+sync_id,
+        data: null
+      })
+      .done(function( response ) {
+
+         jqxhrUploadResponse(response, that, 'Trip');
+         syncDelSaleOrderToServer('up_pg_delsaleorder');
+         
+      });
+
+      progressUploadCallback(sync_id);
    }
 
    var syncDelSaleOrderToServer = function(sync_id){
@@ -320,6 +337,10 @@
       })
       .done(function( response ) {
          jqxhrUploadResponse(response, that, 'Sale Order');
+         if(response.status_code == 0){
+            alert(response.message);
+            return false;
+         }
          syncPaymantToServer('up_pg_payment');
       });
       progressUploadCallback(sync_id);
@@ -358,7 +379,7 @@
          }else{
             
             $('#myModal1').modal('hide');
-            
+            location.reload();
          }
           
                    
@@ -372,7 +393,7 @@
       $('.progress-striped').addClass('active');
       $('#download_list').show();
       $('#upload_list').hide();     
-      syncBusOccourence('pg_bus');
+      syncTrip('pg_trip'); 
    });
 
    /*
@@ -390,29 +411,10 @@
             clearInterval(progressDownloadInterval);
          }
    }
-   /**
-    * Sync from Server
-    */
-   $('#sync_bus_from_server').click(function(){
-      syncBusOccourence('pg_bus');
-      
-   });
-   var syncBusOccourence = function(sync_id){
-      var that = sync_id;
-      $('#'+that).addClass('alert-info');
-      $.ajax({
-        type: "GET",
-        url: "/downloadbusjson/"+sync_id,
-        data: null
-      })
-      .done(function( response ) {
-         jqxhrResponse(response, that, 'Bus Occourance');
-         syncTrip('pg_trip');      
-      });
-      progressDownloadCallback(sync_id);
-   }
+   
    $('#sync_trip_from_server').click(function(){
-      syncTrip('pg_trip');      
+      //syncTrip('pg_trip');  
+      syncSaleOrder('pg_saleorder');    
    });
    var syncTrip = function(sync_id){
       var that = sync_id;
@@ -513,6 +515,7 @@
       });
       progressDownloadCallback(sync_id);
    }
+
    $('#sync_extradestination_from_server').click(function(){
       syncExtraDestination('pg_extra_destination');      
    });

@@ -6,7 +6,7 @@ class SyncDatabaseController extends BaseController
 	public $ftp_user_pass		= 'elite@ft';
 	public $local_file_dir		= 'remote_file/';
 	public $remote_file_dir		= 'remote_file/';
-	public $domain				= 'http://elite.easyticket.com.mm';
+	public $domain				= 'http://mdm.easyticket.com.mm';
 
 	public function index(){
 		if($this->operator_id == 0){
@@ -17,11 +17,12 @@ class SyncDatabaseController extends BaseController
 	}
 
 	/**
-	* Upload Sale Order from Clent.
+	* Upload Trip from Clent.
 	*/
- 	public function pushJsonToServer($sync_id){
- 		$zipFile  = 'client-'.$this->operatorgroup_id.'-today-sale-order.zip';
-		$fileName = 'client-'.$this->operatorgroup_id.'-today-sale-order.json';
+ 	public function pushTripJsonToServer($sync_id){
+ 		$syncDatetime = $this->getSysDateTime();
+ 		$zipFile  = 'client-'.$this->operatorgroup_id.'-trip.zip';
+		$fileName = 'client-'.$this->operatorgroup_id.'-trip.json';
 		$fromFile = $this->getFile($zipFile);
 		$toFile	  = $this->remote_file_dir.$zipFile;
 		$startDate	  = $this->getSysDateTime();
@@ -29,32 +30,31 @@ class SyncDatabaseController extends BaseController
 		if($sync){
 			$startDate 	  = $sync->last_sync_date; // To Get Data that Not Sync.
 		}else{
-			$startDate = $this->getSysDate();
+			$startDate 	  = $this->getSysDate();
 		}
-		if($this->exportSaleOrderJson($this->operatorgroup_id,$fileName,$startDate) == "true"){
+		if($this->exportTrip($this->operatorgroup_id,$fileName,$startDate) == "true"){
 			chmod($this->getFile($zipFile), 0777);
 			if($this->upload($fromFile, $toFile, $sync_id)){
 				$response = array();
 				$response['message'] = 'Importing your uploaded data.';
 				$this->saveFile($sync_id,$response);
-				$curl = curl_init( $this->domain."/writetodatabase/".$fileName );
+				$curl = curl_init( $this->domain."/writetripjson/".$fileName );
 				curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
 				$response = curl_exec( $curl );
 				$this->saveFile($sync_id,$response);
 				if($response){
 					$sync = Sync::wherename($fileName)->first();
 					if($sync){
-						$sync->last_updated_date = $this->getSysDateTime();
-						$sync->last_sync_date = $this->getSysDateTime();
+						$sync->last_updated_date = $syncDatetime;
+						$sync->last_sync_date 	 = $syncDatetime;
 						$sync->update();
 					}else{
 						$sync 						= new Sync();
 						$sync->name 				= $fileName;
-						$sync->last_updated_date 	= $this->getSysDateTime();
-						$sync->last_sync_date 		= $this->getSysDateTime();
+						$sync->last_updated_date 	= $syncDatetime;
+						$sync->last_sync_date 		= $syncDatetime;
 						$sync->save();
 					}
-					//$this->pushPaymentJsonToServer();
 					$this->deleteFile($sync_id);
 					return Response::json($response);
 				}else{
@@ -78,7 +78,74 @@ class SyncDatabaseController extends BaseController
 	/**
 	* Upload Sale Order from Clent.
 	*/
+ 	public function pushJsonToServer($sync_id){
+ 		$syncDatetime = $this->getSysDateTime();
+ 		$zipFile  = 'client-'.$this->operatorgroup_id.'-today-sale-order.zip';
+		$fileName = 'client-'.$this->operatorgroup_id.'-today-sale-order.json';
+		$fromFile = $this->getFile($zipFile);
+		$toFile	  = $this->remote_file_dir.$zipFile;
+		$startDate	  = $this->getSysDateTime();
+		$sync 		  = Sync::wherename($fileName)->first(); // To Check/Update Latest Sync Date.
+		if($sync){
+			$startDate 	  = $sync->last_sync_date; // To Get Data that Not Sync.
+		}else{
+			$startDate = $this->getSysDate();
+		}
+		$check = SaleOrder::whereagent_code('0')->orwhere('agent_code','=',null)->orwhere('agent_code','LIKE','%TEMP%')->count();
+		if($check > 0){
+			$response['status_code']  = 0; // 0 is error.
+			$response['message'] = "Please define some agent code.";
+			return Response::json($response);
+		}
+		if($this->exportSaleOrderJson($this->operatorgroup_id,$fileName,$startDate) == "true"){
+			chmod($this->getFile($zipFile), 0777);
+			if($this->upload($fromFile, $toFile, $sync_id)){
+				$response = array();
+				$response['message'] = 'Importing your uploaded data.';
+				$this->saveFile($sync_id,$response);
+				$curl = curl_init( $this->domain."/writetodatabase/".$fileName );
+				curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
+				$response = curl_exec( $curl );
+				$this->saveFile($sync_id,$response);
+				if($response){
+					$sync = Sync::wherename($fileName)->first();
+					if($sync){
+						$sync->last_updated_date 	= $syncDatetime;
+						$sync->last_sync_date 		= $syncDatetime;
+						$sync->update();
+					}else{
+						$sync 						= new Sync();
+						$sync->name 				= $fileName;
+						$sync->last_updated_date 	= $syncDatetime;
+						$sync->last_sync_date 		= $syncDatetime;
+						$sync->save();
+					}
+					//$this->pushPaymentJsonToServer();
+					$this->deleteFile($sync_id);
+					return Response::json($response);
+				}else{
+					$response['status_code']  = 0; // 0 is error.
+					$response['message'] = "Can't import data!.";
+					return Response::json($response);
+				}
+			}else{
+				$response['status_code']  = 0; // 0 is error.
+				$response['message'] = "Can't upload data, please check connection.";
+				return Response::json($response);
+			}
+		}else{
+			$response['status_code']  = 0; // 0 is error.
+			$response['message'] = "Please Define Agent Code [OR] There is no updated data yet!.";
+			return Response::json($response);
+		}
+		
+	}
+
+	/**
+	* Upload Sale Order from Clent.
+	*/
  	public function pushPaymentJsonToServer($sync_id){
+ 		$syncDatetime = $this->getSysDateTime();
  		$zipFile = 'client-'.$this->operatorgroup_id.'-today-payment.zip';
 		$fileName = 'client-'.$this->operatorgroup_id.'-today-payment.json';
 		$fromFile = $this->getFile($zipFile);
@@ -103,14 +170,14 @@ class SyncDatabaseController extends BaseController
 				if($response){
 					$sync = Sync::wherename($fileName)->first();
 					if($sync){
-						$sync->last_updated_date = $this->getSysDateTime();
-						$sync->last_sync_date = $this->getSysDateTime();
+						$sync->last_updated_date 	= $syncDatetime;
+						$sync->last_sync_date 		= $syncDatetime;
 						$sync->update();
 					}else{
 						$sync 						= new Sync();
 						$sync->name 				= $fileName;
-						$sync->last_updated_date 	= $this->getSysDateTime();
-						$sync->last_sync_date 		= $this->getSysDateTime();
+						$sync->last_updated_date 	= $syncDatetime;
+						$sync->last_sync_date 		= $syncDatetime;
 						$sync->save();
 					}
 					$this->deleteFile($sync_id);
@@ -137,6 +204,7 @@ class SyncDatabaseController extends BaseController
 	* Upload Deleted Sale Order from Clent.
 	*/
  	public function pushDeleteSaleOrderJsonToServer($sync_id){
+ 		$syncDatetime = $this->getSysDateTime();
  		$zipFile = 'client-'.$this->operatorgroup_id.'-today-delsale-order.zip';
 		$fileName = 'client-'.$this->operatorgroup_id.'-today-delsale-order.json';
 		$fromFile = $this->getFile($zipFile);
@@ -161,14 +229,14 @@ class SyncDatabaseController extends BaseController
 				if($response){
 					$sync = Sync::wherename($fileName)->first();
 					if($sync){
-						$sync->last_updated_date = $this->getSysDateTime();
-						$sync->last_sync_date = $this->getSysDateTime();
+						$sync->last_updated_date 	= $syncDatetime;
+						$sync->last_sync_date 		= $syncDatetime;
 						$sync->update();
 					}else{
 						$sync 						= new Sync();
 						$sync->name 				= $fileName;
-						$sync->last_updated_date 	= $this->getSysDateTime();
-						$sync->last_sync_date 		= $this->getSysDateTime();
+						$sync->last_updated_date 	= $syncDatetime;
+						$sync->last_sync_date 		= $syncDatetime;
 						$sync->save();
 					}
 					//$this->pushPaymentJsonToServer();
@@ -190,6 +258,15 @@ class SyncDatabaseController extends BaseController
 			return Response::json($response);
 		}
 		
+	}
+
+	/**
+	 * To Import Data
+	 * @/writetripjson/{fname}
+	 */
+	public function writeTripJsonToDatabase($fileName){
+		$importTrip = $this->importTrip($fileName,'');
+		return $importTrip;
 	}
 
 	/**
@@ -237,7 +314,6 @@ class SyncDatabaseController extends BaseController
 		$this->downloadDeleteTripJsonfromServer();
 		$this->downloadExtraDestinationJsonfromServer();
 		$this->downloadCloseSeatInfoJsonfromServer();
-		$this->downloadBusJsonfromServer();
 		$this->downloadAgentJsonfromServer();
 		$this->downloadAgentGroupJsonfromServer();
 		$this->downloadAgentCommissionJsonfromServer();
@@ -252,66 +328,6 @@ class SyncDatabaseController extends BaseController
 
 	}
 	
-	/**
-	 * To Sync Bus from Server
-	 */
-	public function downloadBusJsonfromServer($sync_id){
-
-		$fileName = 'client-'.$this->operatorgroup_id.'-bus-occurance.json';
-		$toFile = $this->getFile($fileName);
-		$fromFile = $this->remote_file_dir.$fileName;
-
-		$syncDatetime = 0;
-		$sync 		  = Sync::wherename($fileName)->first(); // To Check/Update Latest Sync Date.
-		if($sync){
-			$syncDatetime 	  = $sync->last_sync_date; // To Get Data that Not Sync.
-		}else{
-			$datetime = BusOccurance::orderBy('created_at','desc')->limit(1)->pluck('created_at');
-			$syncDatetime = str_replace(' ', '%20', $datetime);
-		}
-		$response['message'] = "Exporting from Server...";
-		$this->saveFile($sync_id, $response);
-		$curl = curl_init( $this->domain."/exportbusjson/".$this->operator_id."/".$fileName."/".$syncDatetime );
-		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
-		$response = curl_exec( $curl );
-		if($response == "true"){
-			if($this->download(str_replace('.json', '.zip', $fromFile), str_replace('.json', '.zip', $toFile), $sync_id)){
-				$response = array();
-				$response['message'] = "Importing your downloaded data...";
-				$this->saveFile($sync_id, $response);
-				$response = array();
-				$response['message'] = "Importing your downloaded data...";
-				$this->saveFile($sync_id, $response);
-				$importData = $this->importBusOccurance($fileName, $sync_id);
-				$this->deleteFile($sync_id);
-				if($importData){
-					$sync = Sync::wherename($fileName)->first();
-					if($sync){
-						$sync->last_updated_date = $this->getSysDateTime();
-						$sync->last_sync_date = $this->getSysDateTime();
-						$sync->update();
-					}else{
-						$sync 						= new Sync();
-						$sync->name 				= $fileName;
-						$sync->last_updated_date 	= $this->getSysDateTime();
-						$sync->last_sync_date 		= $this->getSysDateTime();
-						$sync->save();
-					}
-					return Response::json($importData);
-				}
-			}else{
-				$response = array();
-				$response['status_code']  = 0; // 0 is error.
-				$response['message'] = "Can't download from server!.";
-				return Response::json($response);
-			}
-		}else{
-			$response = array();
-			$response['status_code']  = 0; // 0 is error.
-			$response['message'] = "Can't export data from server!.";
-			return Response::json($response);
-		}
-	}
 	/**
 	 * To Sync Trip from Server
 	 */
@@ -1403,73 +1419,7 @@ class SyncDatabaseController extends BaseController
 			return Response::json($resp);
 		}
 	}
-	/**
-	 * To Export BusOccourence Data
-	 * @/exportbusjson/{id}/{fname}/{date}
-	 */
-	public function exportBusOccurance($operator_id,$fileName,$startDate){
-		$busOccurance = null;
-		if($startDate == 0){
-			$busOccurance = BusOccurance::whereoperator_id($operator_id)
-										->get()->toarray();
-		}else{
-			$busOccurance = BusOccurance::whereoperator_id($operator_id)->where('created_at','>',$startDate)->orwhere('updated_at','>',$startDate)
-											->get()->toarray();
-		}
-		
-		if($busOccurance){
-			$this->saveFile($fileName, $busOccurance);
-			$this->createZip($this->getFile(str_replace('.json', '.zip', $fileName)), $fileName, $this->getFile($fileName));
-			return "true";
-		}else{
-			return "false";
-		}
-	}
-	/**
-	 * To Import BusOccourence Data
-	 */
-	public function importBusOccurance($fileName, $sync_id){
-		$zip = new ZipArchive;
-		$res = $zip->open($this->getFile(str_replace('.json', '.zip', $fileName)));
-		if ($res) {
-			$zip->extractTo($this->local_file_dir);
-			$zip->close();
-			$busOccurance = $this->readJson($fileName);
-			if($busOccurance){
-				$duplicateBus 	= array();
-				$successBus 	= array();
-				$errorBus 		= array();
-				$i = 0;
-				foreach ($busOccurance as $rows) {
-					$busOccuran = BusOccurance::whereid($rows['id'])->first();
-					if(!$busOccuran){
-						$busOccuran = BusOccurance::create($rows);
-						if($busOccuran){
-							array_push($successBus, $busOccuran->toarray());
-						}else{
-							array_push($errorBus, $rows->toarray());
-						}
-					}else{
-						BusOccurance::whereid($rows['id'])->update($rows);
-						array_push($duplicateBus, $busOccuran->toarray());
-					}
-					$progress['message'] = "Importing [$fileName] to Database.";
-					$progress['file_url'] = "";
-					$progress['total_size'] = count($busOccurance) * 1024;
-					$progress['file_lenght'] = $i++ * 1024;
-					$this->saveFile($sync_id, $progress);
-				}
-				$response['status_code'] = 1; //1 is success;
-				$response['message']	 = 'Successfully your import data.';
-				$response['duplicateBus']= $duplicateBus;
-				$response['errorBus']	 = $errorBus;
-				$response['successBus']  = $successBus;
-				return $response;
-			}
-		}else{
-			dd('Cann\'t unzip your file.');
-		}
-	}
+	
 	/**
 	 * To Export Trip Data.
 	 * @'/exporttripjson/{id}/{fname}/{date}'
@@ -1572,9 +1522,6 @@ class SyncDatabaseController extends BaseController
 				foreach ($DeleteTrips as $rows) {
 					if(Trip::whereid($rows['id'])->first())
 						Trip::whereid($rows['id'])->delete();
-
-					if(BusOccurance::wheretrip_id($rows['id'])->first())
-						BusOccurance::wheretrip_id($rows['id'])->delete();
 
 					$DeleteTrip = DeleteTrip::whereid($rows['id'])->first();
 					if(!$DeleteTrip){
@@ -2510,6 +2457,7 @@ class SyncDatabaseController extends BaseController
 			dd('Cann\'t unzip your file.');
 		}
 	}
+	
 	/**
 	 * To Export Sale Transaction Data
 	 * @/exportsaleorderjson/{id}/{fname}/{date}
@@ -2517,6 +2465,7 @@ class SyncDatabaseController extends BaseController
 	public function exportSaleOrderJson($operator_id,$fileName,$startDate){
 
 		$saleOrders = null;
+
 
 		if($startDate == 0){
 			$saleOrders 	= SaleOrder::with('saleitems')->get();
@@ -2534,6 +2483,70 @@ class SyncDatabaseController extends BaseController
 			return "false";
 		}
 		
+	}
+	/**
+	 * To Import Trip Transaction Data.
+	 */
+	public function importTripJson($fileName, $sync_id){
+		$zip = new ZipArchive;
+		$res = $zip->open($this->getFile(str_replace('.json', '.zip', $fileName)));
+		if ($res) {
+			$zip->extractTo($this->local_file_dir);
+			$zip->close();
+		
+			$trips = $this->readJson($fileName);
+			$duplicateTrips 	= array();
+			$errorTrips 		= array();
+			$successTrips 		= array();
+			$i = 0;
+			if($trips){
+				foreach ($trips as $rows) {
+					$trip = Trip::whereid($rows['id'])->first();
+					if(!$trip){
+						$trip = Trip::create($rows->toarray());
+						if($trip){
+							array_push($successTrips, $saleOrder->toarray());
+						}else{
+							array_push($errorTrips, $rows->toarray());
+						}
+						
+					}else{
+						
+						$trip = Trip::whereid($rows['id'])->where('updated_at','<',$rows['updated_at'])->first();
+						if($trip){
+							$trip = Trip::update($rows->toarray());
+							if($trip){
+								array_push($successTrips, $saleOrder);
+								
+							}else{
+								array_push($errorTrips, $rows);
+							}
+							
+						}
+						array_push($duplicateTrips, $saleOrder);
+					}
+
+					$progress['message'] = "Importing [$fileName] to Database.";
+					$progress['file_url'] = "";
+					$progress['total_size'] = count($saleOrders) * 1024;
+					$progress['file_lenght'] = $i++ * 1024;
+					$this->saveFile($sync_id, $progress);					
+				}
+				$response['status_code']  = 1; // 1 is success.
+				$response['message'] = "Successfully your data was saved.";
+				$response["duplicateTrips"] = $duplicateTrips;
+				$response["errorTrips"] = $errorTrips;
+				$response["successTrips"] = $successTrips;
+				return $response;
+			}else{
+				$response['status_code']  = 0;
+				$response['message'] = "Empty value from your uploaded file.";
+				return $response;
+			}
+
+		}else{
+			dd('Cann\'t open zip file.');
+		}
 	}
 	/**
 	 * To Import Sale Transaction Data.
@@ -2566,7 +2579,7 @@ class SyncDatabaseController extends BaseController
 								if(!$saleItem){
 									unset($row['id']);
 									//Check for duplicate seat
-									$checkExistingSeat = SaleItem::wherebusoccurance_id($row['busoccurance_id'])->where($row['seat_no'])->first();
+									$checkExistingSeat = SaleItem::wheretrip_id($row['trip_id'])->wheredeparture_date($row['departure_date'])->whereseat_no($row['seat_no'])->first();
 									if(!$checkExistingSeat){
 										$saleItem = SaleItem::create($row);
 										if($saleItem){
@@ -2576,9 +2589,11 @@ class SyncDatabaseController extends BaseController
 										}
 									}else{
 										// If seat is duplicate
-										$duplicateSeat = DuplicateSeatSaleItem::create($$checkExistingSeat->toarray());
+										$orderIds = $checkExistingSeat->order_id.','.$row['order_id'];
+										$checkExistingSeat->order_id = $orderIds;
+										$duplicateSeat = DeleteSaleItem::create($checkExistingSeat->toarray());
 										if($duplicateSeat){
-											SaleItem::wherebusoccurance_id($row['busoccurance_id'])->where($row['seat_no'])->delete();
+											SaleItem::wheretrip_id($row['trip_id'])->wheredeparture_date($row['departure_date'])->whereseat_no($row['seat_no'])->delete();
 											$saleItem = SaleItem::create($row);
 											if($saleItem){
 												array_push($successSaleItems, $saleItem->toarray());
@@ -2597,16 +2612,21 @@ class SyncDatabaseController extends BaseController
 						}
 						
 					}else{
-						
 						$delSaleOrder = SaleOrder::whereid($rows['id'])->where('updated_at','<',$rows['updated_at'])->first();
 						if($delSaleOrder){
+							// Check for already exist in deleted table.
+							$checkDelSaleOrder = DeleteSaleOrder::whereid($delSaleOrder->id)->first();
+							if(!$checkDelSaleOrder){
+								$delSaleOrder->remark = 'Duplicate Sale Order';
+								$deletedSaleOrder = DeleteSaleOrder::create($delSaleOrder->toarray());
+							}
 							SaleOrder::whereid($rows['id'])->delete();
 							$saleOrder = SaleOrder::create($rows);
 							if($saleOrder){
 								array_push($successSaleOrders, $saleOrder);
 								foreach ($rows['saleitems'] as $row) {
 									unset($row['id']);
-									$saleItem = SaleItem::whereorder_id($row['order_id'])->wherebusoccurance_id($row['busoccurance_id'])->whereseat_no($row['seat_no'])->first();
+									$saleItem = SaleItem::whereorder_id($row['order_id'])->wheretrip_id($row['trip_id'])->wheredeparture_date($row['departure_date'])->whereseat_no($row['seat_no'])->first();
 									if(!$saleItem){
 										$saleItem = SaleItem::create($row);
 										if($saleItem){
@@ -2615,6 +2635,9 @@ class SyncDatabaseController extends BaseController
 											array_push($errorSaleItems, $row);
 										}
 									}else{
+										$duplicateSeat = $saleItem->toarray();
+										unset($duplicateSeat['id']);
+										DeleteSaleItem::create($duplicateSeat);
 										array_push($duplicateSaleItems, $saleItem);
 									}
 								}

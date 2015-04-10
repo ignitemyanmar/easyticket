@@ -2,7 +2,7 @@
 	Class Trip extends Eloquent 
 	{ 
 		protected $table = 'tbl_trip';
-		protected $fillable = array('id','operator_id','from','to','class_id','available_day','price','foreign_price','commission','time','seat_plan_id','created_at','updated_at');
+		protected $fillable = array('id','operator_id','from','to','class_id','available_day','price','foreign_price','commission','time','departure_time','ever_close','from_close_date','to_close_date','remark','seat_plan_id','status','created_at','updated_at');
 
 		public function operator(){
 			return $this->belongsTo('Operator', 'operator_id');

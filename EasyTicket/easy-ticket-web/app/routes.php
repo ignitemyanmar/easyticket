@@ -252,7 +252,10 @@
 		/**
 		 * New / Update Existing by SMK
 		 */
-			Route::get('report/bytrip',						'ReportController@getReportbyTrip');
+			Route::get('report/operator/trip/daterangesbycode',   'ReportController@getTripslistreportOperatorCode');
+			Route::get('triplist/{date}/agentdetailreportbycode', 'ReportController@getTripsSellingReportbyDailyCode');
+
+			Route::get('report/bytrip',							'ReportController@getReportbyTrip');
 			Route::get('report/{date}/tripdetail',			'ReportController@getReportbyTripDetail');
 
 			//agent report
@@ -741,7 +744,6 @@
 
 		});
 	// Sync Route ------
-		Route::get('downloadbusjson/{sync_id}', 							'SyncDatabaseController@downloadBusJsonfromServer');
 		Route::get('downloadtripjson/{sync_id}', 							'SyncDatabaseController@downloadTripJsonfromServer');
 		Route::get('downloaddeletetripjson/{sync_id}', 						'SyncDatabaseController@downloadDeleteTripJsonfromServer');
 		Route::get('downloadseatingplanjson/{sync_id}', 					'SyncDatabaseController@downloadSeatingPlanJsonfromServer');
@@ -761,7 +763,6 @@
 		Route::get('downloadsaleorderjson/{sync_id}',						'SyncDatabaseController@downloadSaleOrderJsonfromServer');
 		Route::get('downloaddeletesaleorderjson/{sync_id}',					'SyncDatabaseController@downloadDeleteSaleOrderJsonfromServer');
 
-		Route::get('exportbusjson/{id}/{fname}/{date}',						'SyncDatabaseController@exportBusOccurance');
 		Route::get('exporttripjson/{id}/{fname}/{date}', 					'SyncDatabaseController@exportTrip');
 		Route::get('exportdeletetripjson/{id}/{fname}/{date}',				'SyncDatabaseController@exportDeleteTrip');
 		Route::get('exportseatingplanjson/{id}/{fname}/{date}', 			'SyncDatabaseController@exportSeatingPlan');
@@ -784,10 +785,12 @@
 	
 
 		Route::get('writetodatabase/{fname}',						'SyncDatabaseController@writeJsonToDatabase');
+		Route::get('writetripjson/{fname}',							'SyncDatabaseController@writeTripJsonToDatabase');
 		Route::get('writepaymentjson/{fname}',						'SyncDatabaseController@writePaymentJsonToDatabase');
 		Route::get('writedelsaleorderjson/{fname}',					'SyncDatabaseController@writeDelSaleOrderJsonToDatabase');
 		
 		Route::get('uploadjson/{sync_id}', 								'SyncDatabaseController@pushJsonToServer');
+		Route::get('uploadtripjson/{sync_id}', 							'SyncDatabaseController@pushTripJsonToServer');
 		Route::get('uploadpaymentjson/{sync_id}', 						'SyncDatabaseController@pushPaymentJsonToServer');
 		Route::get('uploaddelsaleorderjson/{sync_id}', 					'SyncDatabaseController@pushDeleteSaleOrderJsonToServer');
 		
@@ -857,14 +860,14 @@
 
 		});
 
-		Route::get('encrypt', function(){
+		Route::get('decrypt/{en}', function($en){
 			
 			//dd(strtoupper(Str::random(32)));
 			
 			$encrypted = MCrypt::encrypt('ေစာ');
 			//dd($encrypted);
 			#Decrypt
-			$decrypted = MCrypt::decrypt("b96426f84c667093004f16bbec09f73a1c566ddd5226df8042b4a8203acfa58dde8dea7be51899cd10aadc85cddf62d1f25f645a4c29393ef5e67f3c977ce4a4372d548ff5f63efaa12c57ba885738c8");
+			$decrypted = MCrypt::decrypt($en);
 
 			if(is_string($decrypted))
 				dd($decrypted);
@@ -872,7 +875,7 @@
 
 		Route::get('/report_xls', function() {
 				$flag = false;
-				$data = SaleOrderReport::all();
+				$data = Agent::orderBy('name','asc')->get();
 				$list = array();
 				foreach ($data as $key => $value) {
 					if(!$flag) {
@@ -937,93 +940,12 @@
 			}
 		});
 
-		Route::get('/update', function(){
-			$saleorder = DeleteSaleOrder::with('saleitems')->where('departure_date','=','2015-04-02')->wherebooking(1)->whereremark('Booking Expired')->get();
-			$exist_saleorder = array();
-			$exist_saleitem = array();
-			foreach ($saleorder as $key => $value) {
-				$ext_saleorder = SaleOrder::where('departure_date','=',$value->departure_date)->whereagent_id($value->agent_id)->wherename($value->name)->first();
-				if($ext_saleorder){
-					$exist_saleorder[] = $value->toarray();
-				}else{
-					$newOrderId = generateAutoID(10,10);
-					unset($value['id']);
-					$value->id = $newOrderId;
-					SaleOrder::create($value->toarray());
-					foreach ($value->saleitems as $rows) {
-						$ext_saleitem = DeleteSaleItem::where('departure_date','=',$rows->departure_date)->whereagent_id($rows->agent_id)->whereseat_no($rows->seat_no)->wherename($rows->name)->first();
-						if($ext_saleitem){
-							$exist_saleitem[] = $rows->toarray();
- 						}else{
- 							unset($rows['id']);
- 							unset($rows['order_id']);
-							$rows->order_id = $newOrderId;
- 							SaleItem::create($rows->toarray());
-						}
-						
-					}
-				}
+		Route::get('/update_agent_code', function(){
+			$agent = Agent::all();
+			foreach ($agent as $key => $value) {
+				$agent[$key]->code_no = $value->id;
+				$agent[$key]->update();
+				echo $agent[$key]->code_no .'<br>';
 			}
-			$response['saleorder'] = $exist_saleorder;
-			$response['saleitem']  = $exist_saleitem;
-			return Response::json($response);
 		});
-
-	function generateAutoID($operator_id, $operator_gp_id){
-    	$prefix_opr = 0;
-    	$prefix_gp_opr = 0;
-    	// Generate Operator ID;
-    	if($operator_id >= 0 && $operator_id <=9){
-    		$prefix_opr = "000".$operator_id;
-    	}elseif($operator_id > 9 && $operator_id <=99){
-    		$prefix_opr = "00".$operator_id;
-    	}elseif($operator_id > 99 && $operator_id <=999){
-    		$prefix_opr = "0".$operator_id;
-    	}elseif($operator_id > 999 && $operator_id <=9999){
-    		$prefix_opr = $operator_id;
-    	}
-    	// Generate Operator Group ID;
-    	if($operator_gp_id >= 0 && $operator_gp_id <=9){
-    		$prefix_gp_opr = "0".$operator_gp_id;
-    	}elseif($operator_gp_id > 9 && $operator_gp_id <=99){
-    		$prefix_gp_opr = $operator_gp_id;
-    	}
-    	$prefix = $prefix_opr.$prefix_gp_opr;
-    	$autoid 			= 0;
-    	// Get Last ID Value;
-    	$last_order_id 		= SaleOrder::where('id','like',$prefix.'%')->orderBy('id','desc')->limit('1')->pluck('id');
-    	if($last_order_id){
-    		$last_order_value 	= (int) substr($last_order_id, strlen($prefix));
-    	}else{
-    		return $prefix."00000001";
-    	}
-
-		//Auto Digit 8    	
-    	if($last_order_value >= 0 && $last_order_value <9){
-    		$inc_value = ++$last_order_value;
-    		$autoid = "0000000".$inc_value;
-    	}elseif($last_order_value >= 9 && $last_order_value <99){
-    		$inc_value = ++$last_order_value;
-    		$autoid = "000000".$inc_value;
-    	}elseif($last_order_value >= 99 && $last_order_value <999){
-    		$inc_value = ++$last_order_value;
-    		$autoid = "00000".$inc_value;
-    	}elseif($last_order_value >= 999 && $last_order_value <9999){
-    		$inc_value = ++$last_order_value;
-    		$autoid = "0000".$inc_value;
-    	}elseif($last_order_value >= 9999 && $last_order_value <99999){
-    		$inc_value = ++$last_order_value;
-    		$autoid = "000".$inc_value;
-    	}elseif($last_order_value >= 99999 && $last_order_value <999999){
-    		$inc_value = ++$last_order_value;
-    		$autoid = "00".$inc_value;
-    	}elseif($last_order_value >= 999999 && $last_order_value <9999999){
-    		$inc_value = ++$last_order_value;
-    		$autoid = "0".$inc_value;
-    	}elseif($last_order_value >= 9999999 && $last_order_value <99999999){
-    		$inc_value = ++$last_order_value;
-    		$autoid = $inc_value;
-    	}
-    	return $prefix.$autoid;
-    }
 	

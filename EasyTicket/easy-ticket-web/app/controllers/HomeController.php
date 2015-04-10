@@ -619,6 +619,7 @@ class HomeController extends \BaseController {
     		if(!$objsaleorder){return Redirect::to('/');}
     		$objsaleorder->orderdate=$orderdate;
     		$objsaleorder->agent_id=$agent_id;
+    		$objsaleorder->agent_code=Agent::whereid($agent_id)->pluck('code_no');
     		$objsaleorder->name=$buyer_name;
     		$objsaleorder->nrc_no=$nrc_no;
     		$objsaleorder->phone=$phone;
@@ -672,6 +673,7 @@ class HomeController extends \BaseController {
 					}
 					$objsaleitems->order_id 		=$sale_order_no;
 	    			$objsaleitems->agent_id 		=$agent_id;
+	    			$objsaleitems->agent_code 		=Agent::whereid($agent_id)->pluck('code_no');
 	    			$objsaleitems->seat_no			=$seatno;
 	    			$objsaleitems->name				=$buyer_name;
 	    			$objsaleitems->nrc_no			=$nrc_no;

@@ -79,13 +79,28 @@
                 android:text="ေရာင္းသူ"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
-            <com.smk.custom.view.CustomAutocompleteTextView
-                android:id="@+id/txt_agent"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:ems="10" >
-            </com.smk.custom.view.CustomAutocompleteTextView>
+                android:layout_height="wrap_content" >
+
+                <com.smk.custom.view.CustomAutocompleteTextView
+                    android:id="@+id/txt_agent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:drawableRight="@drawable/ic_action_refresh"
+                    android:ems="10" >
+
+                </com.smk.custom.view.CustomAutocompleteTextView>
+
+                <Button
+                    android:id="@+id/btn_refresh_agent"
+                    android:layout_width="80dp"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentRight="true"
+                    android:background="@android:color/transparent" />
+
+            </RelativeLayout>
 
             <LinearLayout
                 android:id="@+id/extra_city_container"

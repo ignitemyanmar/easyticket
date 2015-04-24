@@ -115,6 +115,7 @@ public class BusConfirmActivity extends BaseSherlockActivity {
 	private List<RadioButton> lst_rdo_free_spr = new ArrayList<RadioButton>();
 	private List<RadioGroup> lst_rdo_gp_free = new ArrayList<RadioGroup>();
 	private List<EditText> lst_ticket_no = new ArrayList<EditText>();
+	private Button btn_refresh_agent;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -174,6 +175,8 @@ public class BusConfirmActivity extends BaseSherlockActivity {
 		layout_remark = (LinearLayout) findViewById(R.id.layout_remark);
 		sp_remark_type = (Spinner) findViewById(R.id.sp_remark_type);
 		edt_remark = (EditText) findViewById(R.id.edt_remark);
+		btn_refresh_agent = (Button) findViewById(R.id.btn_refresh_agent);
+		btn_refresh_agent.setOnClickListener(clickListener);
 
 		edt_buyer.setText(Name);
 		edt_phone.setText(Phone);
@@ -848,10 +851,30 @@ public class BusConfirmActivity extends BaseSherlockActivity {
 			edt_phone.setError("Enter The Phone.");
 			return false;
 		}
+		
+		/*if (Integer.valueOf(AgentID) == 0 && auto_txt_agent.getText().toString().length() == 0) {
+			auto_txt_agent.setError("Please Choose Agent");
+			auto_txt_agent.setText("");
+			return false;
+		}*/
 
-		if (auto_txt_agent.getText().toString().length() == 0
-				&& Integer.valueOf(AgentID) == 0) {
-			auto_txt_agent.setError("Enter The Agent");
+		if (Integer.valueOf(AgentID) == 0 || auto_txt_agent.getText().toString().length() == 0) {
+			//auto_txt_agent.setError("Please Choose Agent");
+			auto_txt_agent.setText("");
+			alertDialog("Please Choose Agent", null, null);
+			return false;
+		}
+		boolean isExistAgent = false;
+		for (int i = 0; i < agentList.size(); i++) {
+			if (agentList.get(i).getName().equals(auto_txt_agent.getText().toString())) {
+				isExistAgent = true;
+				break;
+			}
+		}
+		
+		if(!isExistAgent){
+			auto_txt_agent.setText("");
+			alertDialog("Please Choose Agent", null, null);
 			return false;
 		}
 
@@ -871,6 +894,11 @@ public class BusConfirmActivity extends BaseSherlockActivity {
 		public void onClick(View v) {
 			if (v == actionBarBack) {
 				onBackPressed();
+			}
+			if( v == btn_refresh_agent){
+				dialog = ProgressDialog.show(BusConfirmActivity.this, "", " Please wait...", true);
+				dialog.setCancelable(true);
+				getAgent();
 			}
 
 			if (v == actionBarNoti) {
@@ -928,13 +956,14 @@ public class BusConfirmActivity extends BaseSherlockActivity {
 											AdapterView<?> arg0, View arg1,
 											int arg2, long arg3) {
 										// TODO Auto-generated method stub
-										Log.i("", "Hello Selected Agent ID = "
-												+ ((Agent) arg0.getAdapter()
-														.getItem(arg2)).getId());
 										AgentID = ((Agent) arg0.getAdapter()
 												.getItem(arg2)).getId();
 									}
 								});
+						
+						if(dialog != null){
+							dialog.dismiss();
+						}
 
 					}
 				});

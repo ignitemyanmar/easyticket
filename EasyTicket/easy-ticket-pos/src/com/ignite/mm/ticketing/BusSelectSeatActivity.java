@@ -94,10 +94,10 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
 	private LinearLayout mNoConnection;
 	protected ReturnComfrim returnComfirm;
 	private String AgentID = "0";
-	private String CustName = "-";
-	private String CustPhone = "-";
+	private String CustName = "";
+	private String CustPhone = "";
 	private int RemarkType = 0;
-	private String Remark = "-";
+	private String Remark = "";
 	private String OperatorID;
 	private String FromCity;
 	private String ToCity;

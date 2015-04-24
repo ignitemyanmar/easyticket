@@ -335,6 +335,7 @@ public class BusSelectSeatActivity extends BaseSherlockActivity{
 						AppLoginUser.getLoginUserID(),
 						DeviceUtil.getInstance(this).getID(), isBooking
 								.toString()));
+		Log.i("","Hello param : "+ param);
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
 		params.add(new BasicNameValuePair("param", param));
 		final Handler handler = new Handler() {

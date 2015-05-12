@@ -837,7 +837,7 @@ public class BusConfirmActivity extends BaseSherlockActivity {
 			}
 		};
 		HttpConnection lt = new HttpConnection(handler, "POST",
-				"http://192.168.1.101/sale/comfirm", params);
+				"http://192.168.1.241/sale/comfirm", params);
 		lt.execute();
 	}
 

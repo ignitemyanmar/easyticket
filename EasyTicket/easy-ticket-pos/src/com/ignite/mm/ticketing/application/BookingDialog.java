@@ -12,6 +12,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -42,6 +43,8 @@ public class BookingDialog extends Dialog {
 		// TODO Auto-generated constructor stub
 		agentList = list;
 		ctx = context;
+		getWindow().setSoftInputMode(
+			    WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 		setContentView(R.layout.dialog_booking);
 		edt_name = (EditText) findViewById(R.id.edt_name);
 		edt_phone = (EditText) findViewById(R.id.edt_phone);

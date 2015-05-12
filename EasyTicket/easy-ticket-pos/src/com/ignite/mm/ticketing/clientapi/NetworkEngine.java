@@ -14,7 +14,7 @@ public class NetworkEngine {
 	public static INetworkEngine getInstance() {
 		if (instance==null) {
 			RestAdapter adapter = new RestAdapter.Builder()
-					.setEndpoint("http://192.168.1.101")
+					.setEndpoint("http://192.168.1.241")
 					//.setRequestInterceptor(requestInterceptor)
 					.setLogLevel(RestAdapter.LogLevel.FULL)
 					.setErrorHandler(new MyErrorHandler()).build();

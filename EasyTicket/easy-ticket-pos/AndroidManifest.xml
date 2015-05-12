@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ignite.mm.ticketing"
-    android:versionCode="9"
-    android:versionName="1.9" >
+    android:versionCode="10"
+    android:versionName="2.0" >
 
     <uses-sdk
         android:minSdkVersion="10"
@@ -39,7 +39,7 @@
         <activity android:name=".SelectDateActivity" android:screenOrientation="portrait"></activity>
         <activity android:name=".TravelAgentsActivity" android:screenOrientation="portrait"></activity>
         <activity android:name=".DeperatureTimeActivity" android:screenOrientation="portrait"></activity>
-         <activity android:name=".BusSelectSeatActivity" android:screenOrientation="portrait"></activity>
+         <activity android:name=".BusSelectSeatActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateHidden|adjustResize"></activity>
           <activity android:name=".Bus_Info_Activity" android:screenOrientation="portrait"></activity>
          <activity android:name=".PDFBusActivity" android:screenOrientation="portrait"></activity>
         <activity android:name=".TicketPriceActivity" android:screenOrientation="portrait"></activity>

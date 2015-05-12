@@ -16,26 +16,6 @@
             <!-- BEGIN PAGE HEADER-->
                <div class="row-fluid">
                   <div class="span12">
-                     <!-- BEGIN STYLE CUSTOMIZER -->
-                     <div class="color-panel hidden-phone">
-                        <div class="color-mode-icons icon-color"></div>
-                        <div class="color-mode-icons icon-color-close"></div>
-                        <div class="color-mode">
-                           <p>THEME COLOR</p>
-                           <ul class="inline">
-                              <li class="color-black current color-default" data-style="default"></li>
-                              <li class="color-blue" data-style="blue"></li>
-                              <li class="color-brown" data-style="brown"></li>
-                              <li class="color-purple" data-style="purple"></li>
-                              <li class="color-white color-light" data-style="light"></li>
-                           </ul>
-                           <label class="hidden-phone">
-                           <input type="checkbox" class="header" checked value="" />
-                           <span class="color-mode-label">Fixed Header</span>
-                           </label>                   
-                        </div>
-                     </div>
-                     <!-- END BEGIN STYLE CUSTOMIZER -->    
                      <!-- BEGIN PAGE TITLE & BREADCRUMB-->        
                      <h3 class="page-title">
                         Synchronization            
@@ -44,7 +24,7 @@
                      <ul class="breadcrumb">
                         <li>
                            <i class="icon-home"></i>
-                           <a href="/">Home</a> 
+                           <a href="#">Home</a> 
                            <i class="icon-angle-right"></i>
                         </li>
                         <li><a href="/sync">Sync</a></li>
@@ -59,7 +39,7 @@
                   <div class="row-fluid">
                      <div>
                         <!-- BEGIN EXAMPLE TABLE PORTLET-->
-                        <div class="portlet box blue">
+                        <div class="portlet">
                            <div class="portlet-title">
                               <h4><i class="icon-edit"></i>Synchronization</h4>
                            </div>
@@ -70,6 +50,22 @@
                                     <button class="close" data-dismiss="alert"></button>
                                  </div>
 
+                                 <div id="myModal2" class="modal hide fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="false">
+                                    <form action="/import_saleorder" method="post" enctype="multipart/form-data">
+                                    <div class="modal-header">
+                                       <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                                       <h3>Import Sale Order</h3>
+                                    </div>
+                                    <div class="modal-body">
+                                       <h5>Select file to upload:</h5>
+                                       <input type="file" name="file" required>
+                                    </div>
+                                    <div class="modal-footer">
+                                       <input class="btn green" type="submit" value="Upload" />
+                                       <!-- <button class="btn red" data-dismiss="modal" aria-hidden="true" id="close-dialog">Close</button> -->
+                                    </div>
+                                    </form>
+                                 </div>
                                  
                                  <div id="myModal1" class="modal hide fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="false">
                                     <div class="modal-header">
@@ -78,31 +74,35 @@
                                        <h5>Please wait, we are transferring your data...</h5>
                                     </div>
                                     <div class="modal-body">
+                                       <div id="message_list" style="display:none;">
+                                          
+                                       </div>
                                        <div id="upload_list" style="display:none;">
                                           <p class="alert" id="up_pg_trip"><strong>3.Message:</strong> <span id="message-up_pg_trip">Wainting for connect to Server...</span></p>
-                                          <p class="alert" id="up_pg_delsaleorder"><strong>3.Message:</strong> <span id="message-up_pg_delsaleorder">Wainting for connect to Server...</span></p>
+                                          <p class="alert" id="up_pg_extradestination"><strong>3.Message:</strong> <span id="message-up_pg_extradestination">Wainting for connect to Server...</span></p>
+                                          <!-- <p class="alert" id="up_pg_delsaleorder"><strong>3.Message:</strong> <span id="message-up_pg_delsaleorder">Wainting for connect to Server...</span></p> -->
                                           <p class="alert" id="up_pg_sale_order"><strong>1.Message:</strong> <span id="message-up_pg_sale_order">Wainting for connect to Server...</span></p>
                                           <p class="alert" id="up_pg_payment"><strong>2.Message:</strong> <span id="message-up_pg_payment">Wainting for connect to Server...</span></p>
                                        </div>
                                        <div id="download_list" style="display:none;">
-                                          <p class="alert" id="pg_trip"><strong>1.Message:</strong> <span id="message-pg_trip">Wainting for connect to Server...</span></p>
-                                          <p class="alert" id="pg_del_trip"><strong>2.Message:</strong> <span id="message-pg_del_trip">Wainting for connect to Server...</span></p>
-                                          <p class="alert" id="pg_seating_plan"><strong>3.Message:</strong> <span id="message-pg_seating_plan">Wainting for connect to Server...</span></p>
+                                          <!-- <p class="alert" id="pg_trip"><strong>1.Message:</strong> <span id="message-pg_trip">Wainting for connect to Server...</span></p> -->
+                                          <!-- <p class="alert" id="pg_del_trip"><strong>2.Message:</strong> <span id="message-pg_del_trip">Wainting for connect to Server...</span></p> -->
+                                          <!-- <p class="alert" id="pg_seating_plan"><strong>3.Message:</strong> <span id="message-pg_seating_plan">Wainting for connect to Server...</span></p> -->
                                           <p class="alert" id="pg_agent"><strong>4.Message:</strong> <span id="message-pg_agent">Wainting for connect to Server...</span></p>
                                           <p class="alert" id="pg_agent_group"><strong>5.Message:</strong> <span id="message-pg_agent_group">Wainting for connect to Server...</span></p>
-                                          <p class="alert" id="pg_city"><strong>6.Message:</strong> <span id="message-pg_city">Wainting for connect to Server...</span></p>
-                                          <p class="alert" id="pg_extra_destination"><strong>7.Message:</strong> <span id="message-pg_extra_destination">Wainting for connect to Server...</span></p>
-                                          <p class="alert" id="pg_classes"><strong>8.Message:</strong> <span id="message-pg_classes">Wainting for connect to Server...</span></p>
-                                          <p class="alert" id="pg_agent_commission"><strong>9.Message:</strong> <span id="message-pg_agent_commission">Wainting for connect to Server...</span></p>
-                                          <p class="alert" id="pg_cls_seatinfo"><strong>10.Message:</strong> <span id="message-pg_cls_seatinfo">Wainting for connect to Server...</span></p>
-                                          <p class="alert" id="pg_commission_type"><strong>11.Message:</strong> <span id="message-pg_commission_type">Wainting for connect to Server...</span></p>
-                                          <p class="alert" id="pg_op_group"><strong>12.Message:</strong> <span id="message-pg_op_group">Wainting for connect to Server...</span></p>
-                                          <p class="alert" id="pg_opg_user"><strong>13.Message:</strong> <span id="message-pg_opg_user">Wainting for connect to Server...</span></p>
-                                          <p class="alert" id="pg_user"><strong>14.Message:</strong> <span id="message-pg_user">Wainting for connect to Server...</span></p>
-                                          <p class="alert" id="pg_operator"><strong>15.Message:</strong> <span id="message-pg_operator">Wainting for connect to Server...</span></p>
-                                          <p class="alert" id="pg_seat_info"><strong>16.Message:</strong> <span id="message-pg_seat_info">Wainting for connect to Server...</span></p>
+                                          <!-- <p class="alert" id="pg_city"><strong>6.Message:</strong> <span id="message-pg_city">Wainting for connect to Server...</span></p> -->
+                                          <!-- <p class="alert" id="pg_extra_destination"><strong>7.Message:</strong> <span id="message-pg_extra_destination">Wainting for connect to Server...</span></p> -->
+                                          <!-- <p class="alert" id="pg_classes"><strong>8.Message:</strong> <span id="message-pg_classes">Wainting for connect to Server...</span></p> -->
+                                          <!-- <p class="alert" id="pg_agent_commission"><strong>9.Message:</strong> <span id="message-pg_agent_commission">Wainting for connect to Server...</span></p> -->
+                                          <!-- <p class="alert" id="pg_cls_seatinfo"><strong>10.Message:</strong> <span id="message-pg_cls_seatinfo">Wainting for connect to Server...</span></p> -->
+                                          <!-- <p class="alert" id="pg_commission_type"><strong>11.Message:</strong> <span id="message-pg_commission_type">Wainting for connect to Server...</span></p> -->
+                                          <!-- <p class="alert" id="pg_op_group"><strong>12.Message:</strong> <span id="message-pg_op_group">Wainting for connect to Server...</span></p> -->
+                                          <!-- <p class="alert" id="pg_opg_user"><strong>13.Message:</strong> <span id="message-pg_opg_user">Wainting for connect to Server...</span></p> -->
+                                          <!-- <p class="alert" id="pg_user"><strong>14.Message:</strong> <span id="message-pg_user">Wainting for connect to Server...</span></p> -->
+                                          <!-- <p class="alert" id="pg_operator"><strong>15.Message:</strong> <span id="message-pg_operator">Wainting for connect to Server...</span></p> -->
+                                          <!-- <p class="alert" id="pg_seat_info"><strong>16.Message:</strong> <span id="message-pg_seat_info">Wainting for connect to Server...</span></p> -->
                                           <p class="alert" id="pg_saleorder"><strong>17.Message:</strong> <span id="message-pg_saleorder">Wainting for connect to Server...</span></p>
-                                          <p class="alert" id="pg_del_saleorder"><strong>18.Message:</strong> <span id="message-pg_del_saleorder">Wainting for connect to Server...</span></p>
+                                          <!-- <p class="alert" id="pg_del_saleorder"><strong>18.Message:</strong> <span id="message-pg_del_saleorder">Wainting for connect to Server...</span></p> -->
                                        </div>
                                        
                                     </div>
@@ -113,9 +113,10 @@
                                              <div style="width: 0%;" class="bar"></div>
                                           </div>
                                        </div>
-                                       <button class="btn red" data-dismiss="modal" aria-hidden="true">Close</button>
+                                       <button class="btn red" data-dismiss="modal" aria-hidden="true" id="close-dialog">Close</button>
                                     </div>
                                  </div>
+
                                  <div class="control-group">
                                     <div class="controls">
                                        <span class="help-inline">Please click to Sync "Today Sale Order" button.</span>
@@ -123,121 +124,40 @@
                                           <a  href="#myModal1" role="button" data-toggle="modal" class="btn green big" id="sync_to_server">Sync Today Sale Order <i class="m-icon-big-swapup m-icon-white"></i></a></div>
                                        </p>
                                     </div>
-                                    <div class="controls">
+                                    <!-- <div class="controls">
                                        <span class="help-inline">Please click to Sync "Sync from Server" button.</span>
                                        <p>
                                           <a  href="#myModal1" role="button" data-toggle="modal" class="btn yellow big" id="sync_from_server">Sync from Server <i class="m-icon-big-swapdown m-icon-white"></i></a></div>
                                        </p>
-                                    </div>
-                                    <div class="controls" style="display:none;">
-                                       <span class="help-inline">Please click to Sync "Sync Trip" button.</span>
+                                    </div> -->
+                                    <br>
+                                    @if(Session::has('message'))
+                                       <?php $message=Session::get('message'); ?>
+                                       <div class="alert alert-error">
+                                          <span>{{$message}}</span>
+                                          <button class="close" data-dismiss="alert"></button>
+                                       </div>
+                                    @endif
+                                    <div class="controls">
+                                       <span class="help-inline">Backup Sale Order</span>
                                        <p>
-                                          <a href="#myModal1" role="button" data-toggle="modal" class="btn blue big" id="sync_trip_from_server">Sync Trip <i class="m-icon-big-swapdown m-icon-white"></i></a>
+                                          <a  href="#" role="button" data-toggle="modal" class="btn yellow big" id="backup">Backup Sale Order <i class="m-icon-big-swapdown m-icon-white"></i></a></div>
+                                       </p>
+                                       <br>
+                                       @if(Session::has('import_message'))
+                                          <?php $import_message = Session::get('import_message'); ?>
+                                          <div class="alert alert-success">
+                                             <span>{{$import_message}}</span>
+                                             <button class="close" data-dismiss="alert"></button>
+                                          </div>
+                                       @endif
+                                    
+                                       <span class="help-inline">Import Sale Order</span>
+                                       <p>
+                                          <a  href="#myModal2" role="button" data-toggle="modal" class="btn blue big" id="import_saleorder">Import Sale Order <i class="m-icon-big-swapup m-icon-white"></i></a></div>
                                        </p>
                                     </div>
-                                    <div class="controls" style="display:none;">
-                                       <span class="help-inline">Please click to Sync "Sync Deleted Trip" button.</span>
-                                       <p>
-                                          <a href="#myModal1" role="button" data-toggle="modal" class="btn blue big" id="sync_del_trip_from_server">Sync Deleted Trip <i class="m-icon-big-swapdown m-icon-white"></i></a>
-                                       </p>
-                                    </div>
-                                    <div class="controls" style="display:none;">
-                                       <span class="help-inline">Please click to Sync "Sync Seating Plan" button.</span>
-                                       <p>
-                                          <a href="#myModal1" role="button" data-toggle="modal" class="btn blue big" id="sync_seatingplan_from_server">Sync Seating Plan<i class="m-icon-big-swapdown m-icon-white"></i></a>
-                                       </p>
-                                    </div>
-                                    <div class="controls" style="display:none;">
-                                       <span class="help-inline">Please click to Sync "Sync Agent" button.</span>
-                                       <p>
-                                          <a href="#myModal1" role="button" data-toggle="modal" class="btn blue big" id="sync_agent_from_server">Sync Agent<i class="m-icon-big-swapdown m-icon-white"></i></a>
-                                       </p>
-                                    </div>
-                                    <div class="controls" style="display:none;">
-                                       <span class="help-inline">Please click to Sync "Sync Agent Group" button.</span>
-                                       <p>
-                                          <a href="#myModal1" role="button" data-toggle="modal" class="btn blue big" id="sync_agentgroup_from_server">Sync Agent Group<i class="m-icon-big-swapdown m-icon-white"></i></a>
-                                       </p>
-                                    </div>
-                                    <div class="controls" style="display:none;">
-                                       <span class="help-inline">Please click to Sync "Sync City" button.</span>
-                                       <p>
-                                          <a href="#myModal1" role="button" data-toggle="modal" class="btn blue big" id="sync_city_from_server">Sync City<i class="m-icon-big-swapdown m-icon-white"></i></a>
-                                       </p>
-                                    </div>
-                                    <div class="controls" style="display:none;">
-                                       <span class="help-inline">Please click to Sync "Sync Extra Destination" button.</span>
-                                       <p>
-                                          <a href="#myModal1" role="button" data-toggle="modal" class="btn blue big" id="sync_extradestination_from_server">Sync Extra Destination<i class="m-icon-big-swapdown m-icon-white"></i></a>
-                                       </p>
-                                    </div>
-                                    <div class="controls" style="display:none;">
-                                       <span class="help-inline">Please click to Sync "Sync Bus Classes" button.</span>
-                                       <p>
-                                          <a href="#myModal1" role="button" data-toggle="modal" class="btn blue big" id="sync_classes_from_server">Sync Bus Classes <i class="m-icon-big-swapdown m-icon-white"></i></a>
-                                       </p>
-                                    </div>
-                                    <div class="controls" style="display:none;">
-                                       <span class="help-inline">Please click to Sync "Sync Agent Commission" button.</span>
-                                       <p>
-                                          <a href="#myModal1" role="button" data-toggle="modal" class="btn blue big" id="sync_agentcommission_from_server">Sync Agent Commission <i class="m-icon-big-swapdown m-icon-white"></i></a>
-                                       </p>
-                                    </div>
-                                    <div class="controls" style="display:none;">
-                                       <span class="help-inline">Please click to Sync "Sync Close Seat Info" button.</span>
-                                       <p>
-                                          <a href="#myModal1" role="button" data-toggle="modal" class="btn blue big" id="sync_closeseatinfo_from_server">Sync Close Seat Info <i class="m-icon-big-swapdown m-icon-white"></i></a>
-                                       </p>
-                                    </div>
-                                    <div class="controls" style="display:none;">
-                                       <span class="help-inline">Please click to Sync "Sync Commission Type" button.</span>
-                                       <p>
-                                          <a href="#myModal1" role="button" data-toggle="modal" class="btn blue big" id="sync_commissiontype_from_server">Sync Commission Type <i class="m-icon-big-swapdown m-icon-white"></i></a>
-                                       </p>
-                                    </div>
-                                    <div class="controls" style="display:none;">
-                                       <span class="help-inline">Please click to Sync "Sync Operator Group" button.</span>
-                                       <p>
-                                          <a href="#myModal1" role="button" data-toggle="modal" class="btn blue big" id="sync_operatorgroup_from_server">Sync Operator Group <i class="m-icon-big-swapdown m-icon-white"></i></a>
-                                       </p>
-                                    </div>
-                                    <div class="controls" style="display:none;">
-                                       <span class="help-inline">Please click to Sync "Sync Operator Group User" button.</span>
-                                       <p>
-                                          <a href="#myModal1" role="button" data-toggle="modal" class="btn blue big" id="sync_operatorgroupuser_from_server">Sync Operator Group User <i class="m-icon-big-swapdown m-icon-white"></i></a>
-                                       </p>
-                                    </div>
-                                    <div class="controls" style="display:none;">
-                                       <span class="help-inline">Please click to Sync "Sync User" button.</span>
-                                       <p>
-                                          <a href="#myModal1" role="button" data-toggle="modal" class="btn blue big" id="sync_user_from_server">Sync User <i class="m-icon-big-swapdown m-icon-white"></i></a>
-                                       </p>
-                                    </div>
-                                    <div class="controls" style="display:none;">
-                                       <span class="help-inline">Please click to Sync "Sync Operator" button.</span>
-                                       <p>
-                                          <a href="#myModal1" role="button" data-toggle="modal" class="btn blue big" id="sync_operator_from_server">Sync Operator <i class="m-icon-big-swapdown m-icon-white"></i></a>
-                                       </p>
-                                    </div>
-                                    <div class="controls" style="display:none;">
-                                       <span class="help-inline">Please click to Sync "Sync Seat Info" button.</span>
-                                       <p>
-                                          <a href="#myModal1" role="button" data-toggle="modal" class="btn blue big" id="sync_seatinfo_from_server">Sync Seat Info <i class="m-icon-big-swapdown m-icon-white"></i></a>
-                                       </p>
-                                    </div>
-                                    <div class="controls" style="display:none;">
-                                       <span class="help-inline">Please click to Sync "Sync Sale Order" button.</span>
-                                       <p>
-                                          <a href="#myModal1" role="button" data-toggle="modal" class="btn blue big" id="sync_saleorder_from_server">Sync Sale Order <i class="m-icon-big-swapdown m-icon-white"></i></a>
-                                       </p>
-                                    </div>
-                                    <div class="controls" style="display:none;">
-                                       <span class="help-inline">Please click to Sync "Sync Deleted Sale Order" button.</span>
-                                       <p>
-                                          <a href="#myModal1" role="button" data-toggle="modal" class="btn blue big" id="sync_del_saleorder_from_server">Sync Deleted Sale Order <i class="m-icon-big-swapdown m-icon-white"></i></a>
-                                       </p>
-                                    </div>
-                                 </div>
+                                 </div>                                    
                               
                            </div>
                            
@@ -246,8 +166,8 @@
                      </div>
                   </div>
                   
-               <!-- END PAGE -->
-               
+               <!-- END PAGE -->               
+
             </div>
          </div>
          <!-- END PAGE CONTAINER-->    
@@ -298,7 +218,29 @@
       .done(function( response ) {
 
          jqxhrUploadResponse(response, that, 'Trip');
-         syncDelSaleOrderToServer('up_pg_delsaleorder');
+         syncExtraDestinationToServer('up_pg_extradestination');
+         
+      });
+
+      progressUploadCallback(sync_id);
+   }
+
+   var syncExtraDestinationToServer = function(sync_id){
+      var that = sync_id;
+      $('#'+that).addClass('alert-info');
+      $('.progress-striped').addClass('active');
+      $('#message').html('Connecting to server...');
+      $('#file').html('');
+      $.ajax({
+        type: "GET",
+        url: "/uploadextradestinationjson/"+sync_id,
+        data: null
+      })
+      .done(function( response ) {
+
+         jqxhrUploadResponse(response, that, 'ExtraDestination');
+         //syncDelSaleOrderToServer('up_pg_delsaleorder');
+         syncSaleOrderToServer('up_pg_sale_order');
          
       });
 
@@ -337,8 +279,14 @@
       })
       .done(function( response ) {
          jqxhrUploadResponse(response, that, 'Sale Order');
-         if(response.status_code == 0){
-            alert(response.message);
+         if(response.status_code === -1){
+            var result = "";
+            for (var i = 0; i <response.agents.length; i++) {
+               result += '<p class="alert alert-error"><strong>'+i+'.Message: </strong><span>Please defind agent ['+response.agents[i].name+']\'s code.</span></p>';
+            };
+            $('#message_list').html(result);
+            $('#message_list').show();
+            $('#upload_list').hide();
             return false;
          }
          syncPaymantToServer('up_pg_payment');
@@ -358,7 +306,6 @@
         data: null
       })
       .done(function( response ) {
-          
          $('.progress-striped').removeClass('active');
          
          if(response.status_code === 1){
@@ -393,7 +340,11 @@
       $('.progress-striped').addClass('active');
       $('#download_list').show();
       $('#upload_list').hide();     
-      syncTrip('pg_trip'); 
+      syncAgent('pg_agent');
+   });
+
+   $('#backup').click(function(){
+      window.location.href="/backup_saleorder";
    });
 
    /*
@@ -413,8 +364,7 @@
    }
    
    $('#sync_trip_from_server').click(function(){
-      //syncTrip('pg_trip');  
-      syncSaleOrder('pg_saleorder');    
+      syncTrip('pg_trip');  
    });
    var syncTrip = function(sync_id){
       var that = sync_id;
@@ -494,7 +444,7 @@
       })
       .done(function( response ) {
          jqxhrResponse(response, that, 'Agent Group'); 
-         syncCity('pg_city');        
+         syncSaleOrder('pg_saleorder'); 
       });
       progressDownloadCallback(sync_id);
    }
@@ -812,6 +762,10 @@
 
       }, 300);
    }
+
+   $('#close-dialog').click(function(){
+      location.reload();
+   });
 
 
    </script>

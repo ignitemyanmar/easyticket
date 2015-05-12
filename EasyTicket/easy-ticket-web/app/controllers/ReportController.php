@@ -1430,7 +1430,7 @@ class ReportController extends BaseController
 
 	}
 
-	//Trip report by order date detail
+	// Trip report by order date detail
 	// Agent report by order date detail
 	// '@/triplist/{date}/daily'
 	public function getTripsSellingReportbyDaily($date)
@@ -1795,14 +1795,24 @@ class ReportController extends BaseController
 		    	if($agentrp){
 		    		foreach ($sorted AS $arr) {
 					  $tripandclassgroup[$arr['agent_name']][] = $arr;
-					}	
+					}
 		    	}
 		    	else{
 		    		foreach ($sorted AS $arr) {
 					  $tripandclassgroup[$arr['from_to']][] = $arr;
 					}
 		    	}
-				
+		    	// Calculate Agent Total	
+					foreach ($tripandclassgroup as $key => $value) {
+						$total_amount = 0;
+						foreach ($value as $key2 => $value2) {
+							$total_amount += $value2['total_amount'];
+						}
+						foreach ($value as $key2 => $value2) {
+							$tripandclassgroup[$key][$key2]['subtotal_amount'] = $total_amount;
+						}
+					}
+
 		    	// sorting
 				ksort($tripandclassgroup);
 
@@ -1835,33 +1845,144 @@ class ReportController extends BaseController
 	    		return View::make('busreport.operatortripticketsolddaily', array('response'=>$tripandclassgroup,'trip_id'=>$trip_id,'search'=>$search));	
 
 	}
-	//Trip report by order date detail
-	// Agent report by order date detail
+
+	public function Pagination($page,$lastpage)
+	{
+		$lpm1 = $lastpage - 1;	
+		$prevs= $page - 1;							
+		$nexts = $page + 1;	
+		$adjacents = 3;
+		$pagination = "";
+		$url = URL::full();
+		$pattern     = '/__PgNo__=[^&]+(.*)/';
+		$replacement = "$1";
+		$url = preg_replace($pattern, $replacement, $url);
+
+		if($lastpage > 1)
+		{	
+			//$pagination .= "<div class='pagination'>";
+			if ($page > 1) 
+				$pagination.= "<li><a href='$url&__PgNo__=$prevs'>«</a></li>";
+			else
+				$pagination.= "<li class='disabled'><a href >«</a></li>";	
+		
+			//pages	
+			if ($lastpage < 7 + ($adjacents * 2))	//not enough pages to bother breaking it up
+			{	
+				for ($counter = 1; $counter <= $lastpage; $counter++)
+				{
+					if ($counter == $page)
+						$pagination.= "<li class='active'><a href=''>$counter</a></li>";
+					else
+						$pagination.= "<li><a href='$url&__PgNo__=$counter'>$counter</a></li>";					
+				}
+			}
+			elseif($lastpage > 5 + ($adjacents * 2))
+			{
+				if($page < 1 + ($adjacents * 2))		
+				{
+					for ($counter = 1; $counter < 4 + ($adjacents * 2); $counter++)
+					{
+						if ($counter == $page)
+							$pagination.= "<li class='active'><a href=''>$counter</a></li>";
+						else
+							$pagination.= "<li><a href='$url&__PgNo__=$counter'>$counter</a></li>";					
+					}
+					$pagination.= "<li><a href=''>...</a></li>";
+					$pagination.= "<li><a href='$url&__PgNo__=$lpm1'>$lpm1</a></li>";
+					$pagination.= "<li><a href='$url&__PgNo__=$lastpage'>$lastpage</a></li>";		
+				}
+				
+				elseif($lastpage - ($adjacents * 2) > $page && $page > ($adjacents * 2))
+				{
+					$pagination.= "<li><a href='$url&__PgNo__=1'>1</a></li>";
+					$pagination.= "<li><a href='$url&__PgNo__=2'>2</a></li>";
+					$pagination.= "<li><a href=''>...</a><li>";
+					for ($counter = $page - $adjacents; $counter <= $page + $adjacents; $counter++)
+					{
+						if ($counter == $page)
+							$pagination.= "<li class='active'><a href=''>$counter</a></li>";
+						else
+							$pagination.= "<li><a href='$url&__PgNo__=$counter'>$counter</a></li>";					
+					}
+					$pagination.= "<li><a href=''>...</a><li>";
+					$pagination.= "<li><a href='$url&__PgNo__=$lpm1'>$lpm1</a></li>";
+					$pagination.= "<li><a href='$url&__PgNo__=$lastpage'>$lastpage</a></li>";		
+				}
+				else
+				{
+					$pagination.= "<li><a href='$url&__PgNo__=1'>1</a></li>";
+					$pagination.= "<li><a href='$url&__PgNo__=2'>2</a></li>";
+					$pagination.= "<li><a href=''>...</a></li>";
+					for ($counter = $lastpage - (2 + ($adjacents * 2)); $counter <= $lastpage; $counter++)
+					{
+						if ($counter == $page)
+							$pagination.= "<li  class='active'><a href=''>$counter</a></li>";
+						else
+							$pagination.= "<li><a href='$url&__PgNo__=$counter'>$counter</a></li>";					
+					}
+				}
+			}
+		
+			if ($page < $counter - 1) 
+				$pagination.= "<li><a href='$url&__PgNo__=$nexts'>» </a></li>";
+			else
+				$pagination.= "<li class='disabled'><a href=''>» </a></li>";
+			//$pagination.= "</div>\n";		
+		}
+		return $pagination; 
+	}
+	//****************** Developer SMK ******************
+	// Grouping Report by Trip
 	// '@/report/bytrip'
 	public function getReportbyTrip(){
+		$print 					=Input::get('print');
 		$operator_id 			=Input::get('operator_id');
 		$from  					=Input::get('from');
 		$to  					=Input::get('to');
-		$start_date  			=Input::get('start_date') ? Input::get('start_date') : $this->getDate();
-		$end_date  				=Input::get('end_date') ? Input::get('end_date') : $this->getDate();
+		$start_date  			=Input::get('start_date') ? Input::get('start_date') : date('Y-m-', strtotime($this->getDate())).'01';
+		$end_date  				=Input::get('end_date') ? Input::get('end_date') : date('Y-m-t', strtotime($this->getDate()));
 		$start_date				=date('Y-m-d', strtotime($start_date));
 		$end_date				=date('Y-m-d', strtotime($end_date));
 		$departure_time  		=Input::get('departure_time');
 		$departure_time			=str_replace('-', ' ', $departure_time);
+
+		if($print != 1){
+			$offset					= Input::get('__PgNo__') ? Input::get('__PgNo__') : 1;
+			$limit 					= Input::get('limit') ? Input::get('limit') : 10;
+			$start 					= ($offset-1) * $limit;
+		}else{
+			$start = 0;
+			$limit 	= 999999;
+		}
+		
+
 		$sale_order = array();
-		if($from && $to){
+		if($from != 'all' && $to != 'all'){
+			$total_records = TripsReport:: whereoperator_id($operator_id)->wherefrom($from)->whereto($to)
+										->where('departure_date','>=',$start_date)
+										->where('departure_date','<=',$end_date)
+										->where('time','LIKE',$departure_time.'%')
+										->orderBy('booking_expired','asc')->count();
 			$sale_order = TripsReport:: whereoperator_id($operator_id)->wherefrom($from)->whereto($to)
 										->where('departure_date','>=',$start_date)
 										->where('departure_date','<=',$end_date)
 										->where('time','LIKE',$departure_time.'%')
 										->orderBy('booking_expired','asc')
+										->offset($start)->limit($limit)
 										->get();
 		}else{
+			$total_records = TripsReport:: whereoperator_id($operator_id)
+										->where('departure_date','>=',$start_date)
+										->where('departure_date','<=',$end_date)
+										->where('time','LIKE',$departure_time.'%')
+										->orderBy('booking_expired','asc')->count();
 			$sale_order = TripsReport:: whereoperator_id($operator_id)
 										->where('departure_date','>=',$start_date)
 										->where('departure_date','<=',$end_date)
 										->where('time','LIKE',$departure_time.'%')
 										->orderBy('booking_expired','asc')
+										->offset($start)->limit($limit)
 										->get();
 		}
 
@@ -1901,6 +2022,10 @@ class ReportController extends BaseController
 			$lists[] = $list;
 		}
 
+	// Calculate Pagination
+		$lastpage = ceil($total_records/$limit);
+		$paginater = $this->Pagination($offset,$lastpage);
+
 
     	$cities=array();
     	$cities=$this->getCitiesByoperatorId($operator_id);
@@ -1914,9 +2039,45 @@ class ReportController extends BaseController
 		$search['time']=$departure_time;
 		$search['start_date']=$start_date;
 		$search['end_date']=$end_date;
+		$search['paginater']=$paginater;
+
 
 		// sorting result
 		$response=$this->msort($lists,array("time_unit"), $sort_flags=SORT_REGULAR,$order=SORT_ASC);
+		// To print
+		if($print == true){
+			$rows = array();
+			$row['from_to'] = "ခရီးစဥ္";
+			$row['departure_date'] = "ထြက္ခြာမည့္ေန ့ရက္";
+			$row['time'] = "အခ်ိန္";
+			$row['class_name'] = "ကားအမ်ိဴးအစား";
+			$row['sold_seat'] = "ခုံအေရ အတြက္";
+			$row['free_ticket'] = "အခမဲ႕ လက္မွတ္ ";
+			$row['discount'] = "Discount ";
+			$row['local_price'] = "ေစ်းႏုန္း";
+			$row['total_amount'] = "စုုစုုေပါင္း";
+			$row['commission_amount'] = "% ႏုတ္ျပီး စုုစုုေပါင္း";				
+			$rows[]  = $row;
+			foreach ($lists as $key => $value) {
+				$row['from_to'] = $value['from_to'];
+				$row['departure_date'] = date('d/m/Y',strtotime($value['departure_date']));
+				$row['time'] = $value['time'];
+				$row['class_name'] = $value['class_name'];
+				$row['sold_seat'] = $value['sold_seat'];
+				$row['free_ticket'] = $value['free_ticket'];
+				$row['discount'] = $value['discount'];
+				$row['local_price'] = $value['local_price'];
+				$row['total_amount'] = $value['total_amount'];
+				$row['commission_amount'] = $value['total_amount'] - $value['commission_amount'];				
+				$rows[]  = $row;
+			  
+			}
+			// generate file (constructor parameters are optional)
+			$xls = new Excel('UTF-8', false, 'Workflow Management');
+			$xls->addArray($rows);
+			$xls->generateXML($start_date.'-'.$end_date.'-Reports');
+		  	exit;
+		}
 		$tripandorderdategroup = array();
 		foreach ($response AS $arr) {
 		  $tripandorderdategroup[$arr['from_to_class']][] = $arr;
@@ -1926,30 +2087,53 @@ class ReportController extends BaseController
 		return View::make('busreport.trip_report.trip_report', array('response'=>$tripandorderdategroup, 'search'=>$search));
 	}
 
-	//Trip report by order date detail
+	// Trip report by order date detail
 	// Agent report by order date detail
 	// '@/report/{date}/tripdetail'
 	public function getReportbyTripDetail($date){
-		// $date = explode(',', $date);
-		$start_date = Input::get('start_date');
-		$end_date 	= Input::get('end_date');
+		$print 		= Input::get('print');
+		$date 		= explode(',', $date);
+		$start_date = $date[0];
+		$end_date 	= count($date) > 1 ? $date[1] : $date[0];
 		$operator_id= Input::get('operator_id');
-		$from 		= Input::get('from');
-		$to 		= Input::get('to');
+		$from 		= Input::get('f');
+		$to 		= Input::get('t');
 		$time 		= Input::get('time');
 
-		if($from && $to){
+		if($print != true){
+			$offset					= Input::get('__PgNo__') ? Input::get('__PgNo__') : 1;
+			$limit 					= Input::get('limit') ? Input::get('limit') : 50;
+			$offset 				= ($offset-1) * $limit;
+		}else{
+			$offset = 0;
+			$limit 	= 999999;
+		}
+
+		if($from != 'all' && $to != 'all'){
+			$total_records = SaleOrderReport::whereoperator_id($operator_id)->wherefrom($from)->whereto($to)->where('time','Like',$time.'%')
+											->where('departure_date','>=',$start_date)
+											->where('departure_date','<=',$end_date)
+											->orderBy('booking_expired', 'asc')
+											->count();
 			$sale_order = SaleOrderReport::whereoperator_id($operator_id)->wherefrom($from)->whereto($to)->where('time','Like',$time.'%')
 											->where('departure_date','>=',$start_date)
 											->where('departure_date','<=',$end_date)
 											->orderBy('booking_expired', 'asc')
+											->offset($offset)->limit($limit)
 											->get();
 		}else{
+			$total_records = SaleOrderReport::whereoperator_id($operator_id)
+											->where('departure_date','>=',$start_date)
+											->where('departure_date','<=',$end_date)
+											->where('time','Like',$time.'%')
+											->orderBy('booking_expired', 'asc')
+											->count();
 			$sale_order = SaleOrderReport::whereoperator_id($operator_id)
 											->where('departure_date','>=',$start_date)
 											->where('departure_date','<=',$end_date)
 											->where('time','Like',$time.'%')
 											->orderBy('booking_expired', 'asc')
+											->offset($offset)->limit($limit)
 											->get();
 		}
 
@@ -2030,16 +2214,73 @@ class ReportController extends BaseController
 	    			
 	    	}	
 	    }
+
     	// SORTING AND GROUP BY TRIP AND BUSCLASS 
 	    	// group
 	    	$tripandclassgroup = array();
 	    	$sorted = $this->msort($lists,array("time_unit"), $sort_flags=SORT_REGULAR,$order=SORT_ASC);
+
+	    	// To print
+	    	if($print == true){
+				$rows = array();
+				$row['ticket_no'] = "လက္မွတ္ No";
+               	$row['seat_no'] = "ခုံနံပါတ္ ";
+               	$row['from_to'] = "ခရီးစဥ္";
+               	$row['departure_date'] = "ထြက္ခြာ မည့္ ေန့ရက္ / အခ်ိန္";
+               	$row['classes'] = "ကားအမ်ုိဳး အစား";
+               	$row['agent_name'] = "အေရာင္း ကုိယ္စားလွယ္";
+               	$row['buyer_name'] = "ဝယ္သူ";
+               	$row['order_date'] = "ဝယ္ယူ သည့္ေန႔";
+               	$row['sold_seat'] = "ခုံအေရ အတြက္";
+               	$row['free_ticket'] = "အခမဲ႕ လက္မွတ္ ";
+               	$row['discount'] = "Discount ";
+               	$row['price'] = "ေစ်းႏုန္း";
+               	$row['price_1'] = "ရွင္းႏႈန္း";
+               	$row['total_amount'] = "စုုစုုေပါင္း";		
+				$rows[]  = $row;
+				foreach ($lists as $key => $result) {
+					$row['ticket_no'] = $result['ticket_no'];
+					$row['seat_no'] = $result['seat_no'];
+					$row['from_to'] = $result['from_to'];
+					$row['departure_date'] = date('d/m/Y',strtotime($result['departure_date'])) ."(".$result['time'].")";
+					$row['classes'] = $result['classes'];
+					$row['agent_name'] = $result['agent_name'];
+					$row['buyer_name'] = $result['buyer_name'];
+					$row['order_date'] = date('d/m/Y',strtotime($result['order_date']));
+					$row['sold_seat'] = $result['sold_seat'];
+					$row['free_ticket'] = $result['free_ticket'];
+					$row['discount'] = $result['discount'];
+					if($result['foreign_person'] > 0)
+						$row['price'] = $result['foreign_price'];
+					else
+						$row['price'] = $result['price'];
+					if($result['foreign_person'] > 0){
+						$price_1 = $result['foreign_person']-$result['commission'];
+						$row['price_1'] =$price_1 ." (".$result['commission'].")";
+					}
+					else{
+						$price_1 = $result['price']-$result['commission'];
+						$row['price_1'] = $price_1 ." (".$result['commission'].")";
+					}
+					$row['total_amount'] = $result['total_amount'];				
+					$rows[]  = $row;
+				}
+				// generate file (constructor parameters are optional)
+				$xls = new Excel('UTF-8', false, 'Workflow Management');
+				$xls->addArray($rows);
+				$xls->generateXML($start_date.'-'.$end_date.'-Reports');
+			  	exit;
+			}
 	    	
 	    	foreach ($sorted AS $arr) {
 				$tripandclassgroup[$arr['from_to']][] = $arr;
 			}
 	    	// sorting
 			ksort($tripandclassgroup);
+
+		// Calculate Pagination
+			$lastpage = ceil($total_records/$limit);
+			$paginater = $this->Pagination($offset,$lastpage);
 
 	    	//return Response::json($tripandclassgroup);
 			$search=array();
@@ -2048,6 +2289,7 @@ class ReportController extends BaseController
 			$search['back_url']=$backurl;
 			$search['start_date']=$start_date;
 			$search['end_date']=$end_date;
+			$search['paginater']=$paginater;
 
 			return View::make('busreport.trip_report.trip_detail_report', array('response'=>$tripandclassgroup,'search'=>$search));	
 
@@ -2482,154 +2724,6 @@ class ReportController extends BaseController
     	return $cities;
     }
     
-	/*public function getSeatOccupiedReportByBus($operator_id, $agent_id, $from, $to, $date, $time, $bus_id, $offset, $limit){
-    	$offset=$offset !=null ? $offset : 1;
-    	$limit=$limit !=null ? $limit : 12;
-    	$offset=($offset -1) * $limit;
-    	$objbusoccuranceids=array();
-    	if(!$bus_id && $time){
-	    		$objbusoccuranceids =	BusOccurance::wherefrom($from)
-    									->whereoperator_id($operator_id)
-    									->whereto($to)
-    									->wheredeparture_date($date)
-    									->wheredeparture_time($time)
-    									->lists('id');	
-    	}elseif(!$bus_id && !$time){
-    		$objbusoccuranceids =	BusOccurance::wherefrom($from)
-    									->whereto($to)
-    									->wheredeparture_date($date)
-    									->lists('id');	
-    	}else{
-    		$objbusoccuranceids[]=(int) $bus_id;
-    	}
-    	$response =array();
-    	if($objbusoccuranceids){
-    		$temp['operator_id']	=$operator_id;
-    		$temp['operator_name']	=Operator::whereid($operator_id)->pluck('name');
-    		
-    		$seattingplan=array();
-    		$seatplan=array();
-    			foreach ($objbusoccuranceids as $busid) {
-    				$objbus=BusOccurance::whereid($busid)->first();
-    				if($objbus){
-    				$tmp_seatplan['bus_id']=$busid;
-		    		$tmp_seatplan['bus_no']=$objbus->bus_no;
-		    		$objseatplan=SeatingPlan::whereid($objbus->seat_plan_id)->first();
-		    		$tmp_seatplan['row']=$objseatplan->row;
-		    		$tmp_seatplan['column']=$objseatplan->column;
-		    		$tmp_seatplan['classes']=$objbus->classes;
-
-		    		if($bus_id){
-		    			$seatlist=array();
-		    			$objseatinfo=SeatInfo::whereseat_plan_id($objbus->seat_plan_id)->get();
-		    			if($objseatinfo){
-		    				foreach ($objseatinfo as $seats) {
-		    					$tmp_seatlist['id']=$seats['id'];
-		    					$tmp_seatlist['seat_no']=$seats['seat_no'];
-					    		$tmp_seatlist['price']=$objbus->price;
-		    					if($seats['status']==0){
-		    						$tmp_seatlist['seat_no']='xxx';
-					    			$tmp_seatlist['price']='xxx';
-		    					}
-					    		
-					    		$tmp_seatlist['status']=$seats['status'];
-					    		$checkbuy	=SaleItem::wherebusoccurance_id($objbus->id)->whereseat_no($seats['seat_no'])->first();
-					    		$customer=array();
-					    		if($checkbuy){
-					    			$tmp_seatlist['status']=2;
-					    			$customer['id']=000;
-					    			$customer['name']=$checkbuy->name != '' ? $checkbuy->name : '-';
-					    			$customer['nrc']=$checkbuy->nrc != '' ? $checkbuy->nrc : '-';
-					    		}
-					    		$tmp_seatlist['customer']=$customer;
-
-					    		$seatlist[]=$tmp_seatlist;
-		    				}
-		    			}
-			    		
-		    			$tmp_seatplan['seat_list']=$seatlist;
-		    		}
-		    		
-		    		
-		    		$seattingplan=$tmp_seatplan;
-
-		    		$seatplan[]=$seattingplan;
-    					
-    				}
-    					
-    			}
-	    		
-				$temp['seat_plan']=$seatplan;
-			$response=$temp;
-    	}
-    	return $response;
-    }*/
-
-   /* public function getdailyreportbyagentoroperator($operator_id, $agent_id, $from, $to, $date, $departure_time){
-    	$report_info 			=array();
-		
-		if(!$from || !$to || !$date){
-			$response['message']='Required fields are operator_id, from, to, date and departure_time';
-			return Response::json($response);
-		}
-				
-
-		if($departure_time){
-			$busoccurance_id=BusOccurance::wherefrom($from)
-										->whereto($to)
-										->wheredeparture_time($departure_time)
-										->lists('id');
-		}else{
-			$busoccurance_id=BusOccurance::wherefrom($from)
-										->whereto($to)
-										->lists('id');
-		}
-		// return Response::json($busoccurance_id);
-
-		if($busoccurance_id){
-			$orderidsbyoccuranceid 		=SaleItem::wherein('busoccurance_id', $busoccurance_id)->groupBy('order_id')->lists('order_id');
-			// $orderidsbyoccuranceid=SaleOrder::whereorderdate($date)->wherein('id',$sorder)->lists('id');
-			if($orderidsbyoccuranceid && !$agent_id){
-				$filterorderidsbydate  	=SaleOrder::wherein('id', $orderidsbyoccuranceid)->whereorderdate($date)->lists('id');
-			}elseif($orderidsbyoccuranceid){
-				$agentids = Agent::whereagentgroup_id($agent_id)->lists('id');
-				$filterorderidsbydate  	=SaleOrder::wherein('id', $orderidsbyoccuranceid)->wherein('agent_id', $agentids)->whereorderdate($date)->lists('id');
-			}else{
-				$filterorderidsbydate=array();
-			}
-
-		}
-		$response=array();
-		if(isset($filterorderidsbydate) && count($filterorderidsbydate)>0){
-			$busoccurance_ids=SaleItem::wherein('order_id', $filterorderidsbydate)->groupBy('busoccurance_id')->lists('busoccurance_id');
-			if($busoccurance_ids){
-				$from_city =City::whereid($from)->pluck('name');
-				$to_city =City::whereid($to)->pluck('name');
-				$temp['purchased_total_seat']=0;
-				$temp['total_amout']=0;
-				foreach ($busoccurance_ids as $occuranceid) {
-					if($departure_time){
-						$objbusoccurance=BusOccurance::whereid($occuranceid)->wheredeparture_time($departure_time)->first();
-					}else{
-						$objbusoccurance=BusOccurance::whereid($occuranceid)->first();
-					}
-					$temp['bus_id']					=$objbusoccurance->id;
-					$temp['bus_no']					=$objbusoccurance->bus_no;
-					$temp['from']					=$from_city;
-					$temp['to']						=$to_city;
-					$temp['departure_date']			=$objbusoccurance->departure_date;
-					$temp['time']					=$objbusoccurance->departure_time;
-					$seat_plan_id					=$objbusoccurance->seat_plan_id;
-					$temp['total_seat']				=SeatInfo::whereseat_plan_id($seat_plan_id)->where('status','!=',0)->count('id');
-					$temp['purchased_total_seat']	=SaleItem::wherebusoccurance_id($occuranceid)->wherein('order_id',$filterorderidsbydate)->count();
-					$temp['total_amout']			=$temp['purchased_total_seat'] * $objbusoccurance->price;
-					$response[]						=$temp;
-				} 
-			}
-		}
-    return $response;
-		
-    }*/
 
     /** 
 	 *Daily and daily advance sale reports

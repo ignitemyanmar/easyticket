@@ -162,6 +162,7 @@
                                        <th>ေစ်းႏုန္း</th>
                                        <th>ရွင္းႏႈန္း</th>
                                        <th>စုုစုုေပါင္း</th>
+                                       <th>Subtotal</th>
                                     </tr>
                                  </thead>
                                   @if($response)
@@ -216,6 +217,7 @@
                                                    <td>{{$result['price']-$result['commission']}} ({{$result['commission']}})</td>
                                                    @endif
                                                    <td>{{$result['total_amount']}}</td>
+                                                   <td>{{$result['agent_name']}} [ Subtotal Amount: {{$result['subtotal_amount']}} ]</td>
                                                 </tr>
                                                 
                                              @endforeach
@@ -237,7 +239,7 @@
                                         <th colspan="2">: {{$Org_totalamount}}</th>
                                         <th >&nbsp;</th>
                                         <th colspan="2" class="text-right">% ႏုတ္ျပီး စုစုေပါင္း = </th>
-                                        <th colspan="2" style="text-align:left;">: {{$G_totalamount}}</th>
+                                        <th colspan="3" style="text-align:left;">: {{$G_totalamount}}</th>
                                       </tr>
                                     </tfoot>
                                   @endif
@@ -260,18 +262,19 @@
    <script type="text/javascript">
       $(document).ready(function() {
           var table = $('#tblExport').DataTable({
-             /* "columnDefs": [
-                  { "visible": false, "targets": 2 }
-              ],*/
+              "columnDefs": [
+                  { "visible": false, "targets": 14 }
+              ],
               "order": [[ 5, 'asc' ]],
               "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+              "autoWidth":false,
               "pagingType": "full_numbers",
               "drawCallback": function ( settings ) {
                   var api = this.api();
                   var rows = api.rows( {page:'current'} ).nodes();
                   var last=null;
        
-                  api.column(5, {page:'current'} ).data().each( function ( group, i ) {
+                  api.column(14, {page:'current'} ).data().each( function ( group, i ) {
                       if ( last !== group ) {
                           $(rows).eq( i ).before(
                               '<tr class="group"><th colspan="9">'+group+'</th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th></tr>'

@@ -411,7 +411,7 @@ class HomeController extends \BaseController {
     		 */
     			$datetime = $departure_date." ".substr($departure_time, 0, 8);
     			$strdate  = strtotime($datetime);
-    			$strdate  = $strdate - (60*60);
+    			$strdate  = $strdate - (60*10);
     			$booking_expired = date("Y-m-d H:i:s", $strdate);
 
     		$objseatinfo=SeatInfo::whereseat_plan_id($seat_plan_id)->whereseat_no(MCrypt::decrypt($rows->seat_no))->first();
@@ -450,6 +450,7 @@ class HomeController extends \BaseController {
 	    		$objsaleorder->phone 	 		= $phone_no;
 	    		$objsaleorder->operator_id 		=$operator_id;
 	    		$objsaleorder->agent_id 		=$agent_id ? $agent_id : 0;
+	    		$objsaleorder->agent_code 		= 0;
 	    		$objsaleorder->booking 			=$booking ? $booking : 0;
 	    		$objsaleorder->expired_at 		=$expired_date;
 	    		$objsaleorder->device_id 		=$device_id;
@@ -473,6 +474,8 @@ class HomeController extends \BaseController {
 		    			$objsaleitems->name				=$customer_name;
 		    			$objsaleitems->phone			=$phone_no;
 		    			$objsaleitems->operator			=$operator_id;
+		    			$objsaleitems->agent_id 		= $agent_id ? $agent_id : 0;
+		    			$objsaleitems->agent_code 		= 0;
 		    			if($objtrip){
 		    				$objsaleitems->trip_id			=$objtrip->id;
 		    				$objsaleitems->price			=$objtrip->price;

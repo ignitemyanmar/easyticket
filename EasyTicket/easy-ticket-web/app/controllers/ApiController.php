@@ -139,7 +139,7 @@ class ApiController extends BaseController
 	}
 
 	public function getAllAgent(){
-		$input = json_decode(MCrypt::decrypt(Input::get('operator_id')));
+		$input = json_decode(MCrypt::decrypt(Input::get('param')));
 		$operator_id = isset($input->operator_id) ? $input->operator_id : null;
 		if($operator_id){
 			$objagent=Agent::whereoperator_id($operator_id)->orderBy('name', 'asc')->get();
@@ -812,7 +812,9 @@ class ApiController extends BaseController
     	}
     	return $prefix.$autoid;
     }
-
+    /**
+     * Note: This function was worked that Not Confirm by User;
+     */
     public function deleteSaleOrder($id){
     	if(!$id){
     		$response['message']='sale_order_no is null.';
@@ -842,7 +844,7 @@ class ApiController extends BaseController
     	$nationality	=isset($input->nationality) ? $input->nationality : null;
     	$device_id		=isset($input->device_id) ? $input->device_id : 0;
     	$booking		=isset($input->booking) ? $input->booking : 0;
-    	$extra_dest_id  =isset($input->extra_destination_id) ? $input->extra_destination_id : 0;
+    	$extra_dest_id  =isset($input->extra_dest_id) ? $input->extra_dest_id : 0;
     	$remark_type 	=isset($input->remark_type) ? $input->remark_type : 0;
 		$remark 		=isset($input->remark) ? $input->remark : null;
 		$order_date 	=isset($input->order_date) ? $input->order_date : null;
@@ -1240,18 +1242,42 @@ class ApiController extends BaseController
     }
 
     public function postDeleteCreditSaleOrderNo($order_id){
-    	$order_id = MCrypt::decrypt($order_id);
+    	$order_id 	= MCrypt::decrypt($order_id);
+    	$input 		= json_decode(MCrypt::decrypt(Input::get('param')));
+    	$user_id	= isset($input->user_id) ? $input->user_id : null;
     	$objorder=SaleOrder::whereid($order_id)->first();
     	if($objorder){
-    		$objorder->delete();
-    		SaleItem::whereorder_id($order_id)->delete();
-    		$response['status']=1;
+    		$check = DeleteSaleOrder::whereid($order_id)->first();
+			if(!$check){
+				$objorder->remark = 'Booking Not Confirmed by User';
+				if($user_id)
+					$objorder->user_id = $user_id;
+				$deletedSaleOrder = DeleteSaleOrder::create($objorder->toarray());
+				
+			}
+			SaleOrder::whereid($order_id)->delete();
+			
+			$saleItem = SaleItem::whereorder_id($order_id)->get();
+			
+			if($saleItem){
+				foreach ($saleItem as $rows) {
+					$check = DeleteSaleItem::whereid($rows->id)->first();
+					if(!$check){
+						$deletedSaleitem = DeleteSaleItem::create($rows->toarray());
+					}
+					SaleItem::whereorder_id($order_id)->delete();
+				}
+			}
+
+			$response['status']=1;
     		$response['message']='Successfully delete credit order.';
+    		
     	}else{
     		$response['status']=0;
     		$response['message']='There is no credit order with this order no .';	 
     	}
     	return Response::json($response);
+    	
     }
 
     public function postCancelCreditSaleTicket(){
@@ -2038,10 +2064,20 @@ class ApiController extends BaseController
 
 			$price 		= $objsaleitem->price -$commission;
 			$deleted 	= $this->del_orderticket_history_trans($objsaleitem,$objsaleorder,$price,$user_id);
+
 			$objsaleitem->delete();
+
 			$saleitems=SaleItem::whereorder_id($orderid)->count();
 			if($saleitems ==0){
-				SaleOrder::whereid($orderid)->delete();
+				$objorder = SaleOrder::whereid($orderid)->first();
+				$check = DeleteSaleOrder::whereid($orderid)->first();
+				if(!$check){
+					$objorder->remark = 'Deleted by User';
+					if($user_id)
+						$objorder->user_id = $user_id;
+					DeleteSaleOrder::create($objorder->toarray());
+					SaleOrder::whereid($orderid)->delete();
+				}
 			}
 			$response['message']="Successfully delete ticket.";
 			return Response::json($response);

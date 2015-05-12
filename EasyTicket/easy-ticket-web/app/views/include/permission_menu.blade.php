@@ -44,6 +44,14 @@ $menulist['အေရာင္းကုိယ္စားလွယ္ႏွင္
                                                     </a>
                                                 </li>";
 
+$menulist['"လ" အလုိက္အေရာင္းစာရင္းမ်ား']="<li if($currentroute=='rep')class=''
+                                                        >
+                                                    <a href='/report/bytrip?access_token=".Auth::user()->access_token."&operator_id=$operator_id&from=all&to=all'>
+                                                    <i class='icon-th-list'></i> 
+                                                    <span class='title'>\"လ\" အလုိက်အေရာင်းစာရင်းများ</span>
+                                                    </a>
+                                                </li>";
+
 $menulist['Online အေရာင္းကုိယ္စားလွယ္ႏွင့္ အေရာင္းစာရင္း']="<li if($currentroute=='rep')class=''
                                                         >
                                                     <a href='/report/operator/trip/daterangesbycode?access_token=".Auth::user()->access_token."&operator_id=$operator_id&&&agent_id=All'>

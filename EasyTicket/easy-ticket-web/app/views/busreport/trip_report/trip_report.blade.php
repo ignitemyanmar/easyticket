@@ -26,7 +26,7 @@
                         $V_operator_id=Session::get('operator_id');
                      ?>
                      <h3 class="page-title">
-                        ခရီးစဥ္အလုိက္ အေရာင္းစာရင္းမ်ား
+                        "လ" အလုိက္ အေရာင္းစာရင္းမ်ား
                         <!-- <small>form wizard sample</small> -->
                      </h3>
                      <ul class="breadcrumb">
@@ -37,7 +37,7 @@
                         </li>
                         <li>
                            <a href="#">
-                           ခရီးစဥ္အလုိက္ အေရာင္းစာရင္းမ်ား
+                           "လ" အလုိက္ အေရာင္းစာရင္းမ်ား
                            </a>
                         </li>
                      </ul>
@@ -51,7 +51,7 @@
                      <div class="portlet box light-grey">
                         <div class="portlet-title">
                            <h4><i class="icon-user"></i>
-                              ခရီးစဥ္အလုိက္ အေရာင္းစာရင္းမ်ား
+                              "လ" အလုိက္ အေရာင္းစာရင္းမ်ား
                            </h4>
                            <div class="actions">
                            </div>
@@ -65,8 +65,7 @@
                                     <button class="btn green dropdown-toggle" data-toggle="dropdown">Tools (Print) <i class="icon-angle-down"></i>
                                     </button>
                                     <ul class="dropdown-menu">
-                                       <li><a href="#" class="print">Print</a></li>
-                                       <li><a href="#" id="btnExportExcel">Export to Excel</a></li>
+                                       <li><a href="{{URL::full()}}&print=true" id="">Export to Excel</a></li>
                                     </ul>
                                  </div>
                               </div>
@@ -154,9 +153,9 @@
                            <table class="table table-striped table-bordered table-advance table-hover" id="sample_editable_1">
                               <thead>
                                  <tr>
-                                    <th>ဝယ္ယူသည့္ေန႔</th>
                                     <th>ခရီးစဥ္</th>
-                                    <th>ထြက္ခြာမည့္ေန ့ရက္ / အခ်ိန္</th>
+                                    <th>ထြက္ခြာမည့္ေန ့ရက္</th>
+                                    <th>အခ်ိန္</th>
                                     <th>ကားအမ်ိဴးအစား</th>
                                     <th>ခုံအေရ အတြက္</th>
                                     <th>အခမဲ႕ လက္မွတ္ </th>
@@ -164,7 +163,7 @@
                                     <th>ေစ်းႏုန္း</th>
                                     <th>စုုစုုေပါင္း</th>
                                     <th>% ႏုတ္ျပီး စုုစုုေပါင္း</th>
-                                    <th style="width:0;"><a class="btn small green blue-stripe imagechange" id="" href="/triplist/{{$search['start_date'].','.$search['end_date']}}/daily?access_token={{Auth::user()->access_token}}&f={{$search['from']}}&t={{$search['to']}}&time={{$search['time']}}">အေသးစိတ္(All)</a></th>
+                                    <th style="width:0;"><a class="btn small green blue-stripe imagechange" id="" href="/report/{{$search['start_date'].','.$search['end_date']}}/tripdetail?access_token={{Auth::user()->access_token}}&operator_id={{$search['operator_id']}}&f={{$search['from']}}&t={{$search['to']}}&time={{$search['time']}}">အေသးစိတ္(All)</a></th>
                                  </tr>
                               </thead>
                                  @if($response)
@@ -176,9 +175,9 @@
                                           @if(count($rows)>0)
                                              @foreach($rows as $result)
                                                 <tr>
-                                                   <td>{{date('d/m/Y',strtotime($result['order_date']))}}</td>
                                                    <td>{{$result['from_to']}}</td>
-                                                   <td>{{date('d/m/Y',strtotime($result['departure_date']))}} ({{$result['time']}})</td>
+                                                   <td>{{date('d/m/Y',strtotime($result['departure_date']))}}</td>
+                                                   <td>{{$result['time']}}</td>
                                                    <td>{{$result['class_name']}}</td>
                                                    <td>{{$result['sold_seat']}}</td>
                                                    <td>{{$result['free_ticket']}}</td>
@@ -187,7 +186,7 @@
                                                    <td>{{$result['total_amount']}}</td>
                                                    <td>{{$result['total_amount'] - $result['commission_amount']}}</td>
                                                    <td>
-                                                      <a class="btn mini green-stripe imagechange" id="" href="/triplist/{{$result['departure_date']}}/daily?access_token={{Auth::user()->access_token}}&trip_id={{$result['id']}}">အေသးစိတ္ၾကည့္ရန္</a>
+                                                      <a class="btn mini green-stripe imagechange" id="" href="/report/{{$result['departure_date']}}/tripdetail?access_token={{Auth::user()->access_token}}&operator_id={{$search['operator_id']}}&f={{$result['from_id']}}&t={{$result['to_id']}}&time={{$result['time']}}">အေသးစိတ္ၾကည့္ရန္</a>
                                                    </td>
                                                 </tr>
                                                 <?php 
@@ -216,6 +215,11 @@
                                     </tfoot>
                                  @endif
                            </table>
+                           <div class="pagination pagination-large text-right">
+                              <ul>
+                                 {{$search['paginater']}}
+                              </ul>
+                           </div>
                         </div>
                      </div>
                   </div>
@@ -249,7 +253,7 @@
                   var rows = api.rows( {page:'current'} ).nodes();
                   var last=null;
        
-                  api.column(1, {page:'current'} ).data().each( function ( group, i ) {
+                  api.column(0, {page:'current'} ).data().each( function ( group, i ) {
                       if ( last !== group ) {
                           $(rows).eq( i ).before(
                               '<tr class="group"><th colspan="12">'+group+'</th></tr>'

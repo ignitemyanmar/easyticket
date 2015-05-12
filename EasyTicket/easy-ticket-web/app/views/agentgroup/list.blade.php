@@ -3,6 +3,40 @@
    <link rel="stylesheet" href="../../../../css/jquery.dataTables.v1.10.4.css" />
    <link rel="shortcut icon" href="favicon.ico" />
    <!-- BEGIN PAGE -->
+      <form class="horizontal-form" action="#" id="codenoform">
+         <div id="portlet-agentcodeform" class="modal hide">
+            <div class="modal-header">
+               <button data-dismiss="modal" class="close" type="button"></button>
+               <h3>Create / Update Code No</h3>
+            </div>
+            <div class="modal-body">
+               <input type="hidden" value="" name="agentgroup_id" id="agentgroup_id">
+               <input type="hidden" value="" id="hdcodeid">
+               <input type="hidden" value="{{$myApp->v_access_token}}" id="access_token">
+               <div class="control-group">
+                  <label class="control-label">Code No</label>
+                  <div class="controls">
+                     <input type="text" class="span6" name="code_no" id="code_no">
+                  </div>
+               </div>
+               <br>
+               <div class="control-group">
+                  <!-- <div class="btn-group"> -->
+                   <button type="button" class="btn green pull-left" id="btnupdate">
+                       Save <i class='m-icon-swapright m-icon-white'></i>
+                   </button>
+                   <div class="span4">
+                     <div class="loader hide"></div>
+                   </div>
+                     <!-- <input type="submit" class="btn green" value="Save"> -->
+                       <!-- <i class="icon-bullhorn"></i>  -->
+                     <!-- </button> -->
+                  <!-- </div> -->
+               </div>
+            </div>
+         </div>
+      </form>
+
       <div class="page-content">
          <!-- BEGIN PAGE CONTAINER-->
          <div class="container-fluid">
@@ -64,8 +98,8 @@
                               <table class="table table-striped table-hover table-bordered" id="sample_editable_1">
                                  <thead>
                                     <tr>
-                                       <th class="span10">Name</th>
-                                       <!-- <th class="span3">Phone</th> -->
+                                       <th class="span6">Name</th>
+                                       <th class="span2">Code No</th>
                                        <!-- <th class="span3">Address</th> -->
                                        <th class="span3">Branches</th>
                                        <!-- <th class="span1">Edit</th> -->
@@ -82,6 +116,11 @@
                                     @foreach($response as $agent)
                                                 <tr>
                                                    <td>{{$agent['name']}} @if(Auth::user()->role==3 || Auth::user()->role==9) @if($agent->operator) [ {{$agent->operator->name}} ] @endif @endif</td>
+                                                   <td>
+                                                      <div id="{{$agent['id']}}">
+                                                         {{$agent['code_no']}}
+                                                      </div>
+                                                   </td>
                                                    <td><a href="/agentgroupchildlist/{{ $agent['id'] }}?access_token={{Auth::user()->access_token}}"  class="btn blue button-submit">View Branches <i class="m-icon-swapright m-icon-white"></i></a><br><br></td>
                                                    <td>
                                                          <div class="btn-group">
@@ -91,6 +130,11 @@
                                                             </a>
                                                             <ul class="dropdown-menu"> 
                                                                <li><a href="/agentgroup-update/{{ $agent['id'] }}?access_token={{Auth::user()->access_token}}"><i class="icon-pencil"></i> Edit</a></li>
+                                                               <li>
+                                                                  <a href="#portlet-agentcodeform" data-toggle="modal" class="config btnagentupdate" data-agentid="{{$agent['id']}}" data-codeid="{{$agent['code_no']}}">
+                                                                     <i class="icon-edit"></i> &nbsp;Code No 
+                                                                  </a>
+                                                               </li>
                                                                <li><a href="/agentgroup-actions/{{ $agent['id'] }}?access_token={{Auth::user()->access_token}}"><i class="icon-plus"></i> Entry Payments</a></li>
                                                                <li><a href="/deleteagentgroup/{{ $agent['id'] }}?access_token={{Auth::user()->access_token}}"><i class="icon-remove"></i> Delete</a></li>
                                                                <li class="divider"></li>
@@ -125,7 +169,7 @@
    <script type="text/javascript" src="../../../../js/jquery.dataTables.v1.10.4.min.js"></script>
    <script type="text/javascript">
       $(document).ready(function() {
-          var table = $('.table').DataTable({
+         var table = $('.table').DataTable({
               "columnDefs": [
                   // { "visible": false, "targets": 0 }
               ],
@@ -137,7 +181,38 @@
                   var rows = api.rows( {page:'current'} ).nodes();
                   var last=null;
               }
-          } );
+         } );
+
+         $('.btnagentupdate').click(function(){
+           var agentgroup_id=$(this).data('agentid');
+           var code_id=$(this).data('codeid');
+           $('#agentgroup_id').val(agentgroup_id);
+           $('#hdcodeid').val(code_id);
+           $('#code_no').val(code_id);
+         });
+
+         $('#btnupdate').click(function(){
+           $('.loader').removeClass('hide');
+           var agentgroup_id    =$('#agentgroup_id').val();
+           var code_no     =$('#code_no').val();
+           var codeid     =$('#hdcodeid').val();
+           var access_token=$('#access_token').val();
+           var status=1;
+           $.ajax({
+             type:'POST',
+             url:'/updateagentgroup/'+agentgroup_id,
+             data:{access_token:access_token, code_no: code_no, status:status }
+           }).done(function(result){
+             if(result=="Successfully update."){
+               $('#'+agentgroup_id).html(code_no);
+               $('#portlet-agentcodeform').modal('hide');
+               $('.loader').addClass('hide');
+             }else{
+               alert(result);
+             }
+           });
+         });
+
       } );
    </script>
 @stop

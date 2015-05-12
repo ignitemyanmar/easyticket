@@ -163,7 +163,8 @@
 
 	Route::post('user-login',          		'ApiController@postLogin');
 	Route::post('user-register',          	'ApiController@postUserRegister');
-
+	Route::get('backup_saleorder', 			'SyncDatabaseController@backUpAll');
+	Route::post('import_saleorder', 		'SyncDatabaseController@importBackup');
 	Route::post('oauth/access_token', function()
 	{
 	    $response = AuthorizationServer::performAccessTokenFlow();
@@ -255,7 +256,7 @@
 			Route::get('report/operator/trip/daterangesbycode',   'ReportController@getTripslistreportOperatorCode');
 			Route::get('triplist/{date}/agentdetailreportbycode', 'ReportController@getTripsSellingReportbyDailyCode');
 
-			Route::get('report/bytrip',							'ReportController@getReportbyTrip');
+			Route::get('report/bytrip',						'ReportController@getReportbyTrip');
 			Route::get('report/{date}/tripdetail',			'ReportController@getReportbyTripDetail');
 
 			//agent report
@@ -786,11 +787,13 @@
 
 		Route::get('writetodatabase/{fname}',						'SyncDatabaseController@writeJsonToDatabase');
 		Route::get('writetripjson/{fname}',							'SyncDatabaseController@writeTripJsonToDatabase');
+		Route::get('writeextradestinationjson/{fname}',				'SyncDatabaseController@writeExtraDestinationJsonToDatabase');
 		Route::get('writepaymentjson/{fname}',						'SyncDatabaseController@writePaymentJsonToDatabase');
 		Route::get('writedelsaleorderjson/{fname}',					'SyncDatabaseController@writeDelSaleOrderJsonToDatabase');
 		
 		Route::get('uploadjson/{sync_id}', 								'SyncDatabaseController@pushJsonToServer');
 		Route::get('uploadtripjson/{sync_id}', 							'SyncDatabaseController@pushTripJsonToServer');
+		Route::get('uploadextradestinationjson/{sync_id}',				'SyncDatabaseController@pushExtraDestinationJsonToServer');
 		Route::get('uploadpaymentjson/{sync_id}', 						'SyncDatabaseController@pushPaymentJsonToServer');
 		Route::get('uploaddelsaleorderjson/{sync_id}', 					'SyncDatabaseController@pushDeleteSaleOrderJsonToServer');
 		
@@ -894,7 +897,7 @@
 		});
 
 		Route::get('/update_commission', function(){
-			$saleitem = SaleItem::all();
+			$saleitem = SaleItem::wherecommission(0)->get();
 			foreach ($saleitem as $key => $value) {
 				$agent_commission = AgentCommission::whereagent_id($value->agent_id)->wheretrip_id($value->trip_id)->first();
 				if($agent_commission){
@@ -906,6 +909,16 @@
 				}
 			}
 			return 'success';
+		});
+
+		Route::get('/delete_notexist_trip_id', function(){
+			$trip_id = Trip::lists('id');
+			$deletedSaleItem = DeleteSaleItem::whereNotIn('trip_id',$trip_id)->delete();
+			$extra_destination = ExtraDestination::whereNotIn('trip_id',$trip_id)->delete();
+			$saleitem = SaleItem::whereNotIn('trip_id',$trip_id)->delete();
+			echo $deletedSaleItem.'<br>';
+			echo $extra_destination.'<br>';
+			echo $saleitem.'<br>';
 		});
 
 		Route::get('/update_tripid', function(){
@@ -920,11 +933,15 @@
 				}else{
 					$day = 'DAT';
 				}
-
-				$newId = $value->operator_id.$value->from.$value->to.$value->class_id.$day.(str_replace(' ','',str_replace(':', '', $value->time)));
-				$trip[$key]->id = $newId;
-				$trip[$key]->update();
-				echo $newId.'<br>';
+				$number = strlen(substr($value->time, 9));
+				if($number > 0){
+					$value->time = substr($value->time, 0, 9). $number;
+					$newId = $value->operator_id.$value->from.$value->to.$value->class_id.$day.(str_replace(' ','',str_replace(':', '', $value->time)));
+					$trip[$key]->id = $newId;
+					$trip[$key]->update();
+					echo $newId.'<br>';
+				}
+				
 			}
 		});
 
@@ -947,5 +964,53 @@
 				$agent[$key]->update();
 				echo $agent[$key]->code_no .'<br>';
 			}
+		});
+		Route::get('/update_agent_code_saleorder', function(){
+			$saleOrder = SaleOrder::where('agent_id','!=',0)->whereagent_code("")->get();
+			foreach ($saleOrder as $key => $value) {
+				$saleOrder[$key]->agent_code = $value->agent_id;
+				$saleOrder[$key]->update();
+			}
+			echo 'Success';
+		});
+		Route::get('/update_agent_code_saleitem', function(){
+			$saleItem = SaleItem::where('agent_id','!=',0)->whereagent_code("")->get();
+			foreach ($saleItem as $key => $value) {
+				$saleItem[$key]->agent_code = $value->agent_id;
+				$saleItem[$key]->update();
+			}
+			echo 'Success';
+		});
+
+		Route::get('/changerome/{number}', function($integer){
+			$table = array('M'=>1000, 'CM'=>900, 'D'=>500, 'CD'=>400, 'C'=>100, 'XC'=>90, 'L'=>50, 'XL'=>40, 'X'=>10, 'IX'=>9, 'V'=>5, 'IV'=>4, 'I'=>1); 
+		    $return = ''; 
+		    while($integer > 0) 
+		    { 
+		        foreach($table as $rom=>$arb) 
+		        { 
+		            if($integer >= $arb) 
+		            { 
+		                $integer -= $arb; 
+		                $return .= $rom; 
+		                break; 
+		            } 
+		        } 
+		    } 
+
+		    echo $return;
+		});
+
+		Route::get('/changenumber/{rome}', function($roman){
+			$romans = array('M' => 1000,'CM' => 900,'D' => 500,'CD' => 400,'C' => 100,'XC' => 90,'L' => 50,'XL' => 40,'X' => 10,'IX' => 9,'V' => 5,'IV' => 4,'I' => 1);
+			$result = 0;
+
+			foreach ($romans as $key => $value) {
+			    while (strpos($roman, $key) === 0) {
+			        $result += $value;
+			        $roman = substr($roman, strlen($key));
+			    }
+			}
+			echo $result;
 		});
 	

@@ -50,7 +50,7 @@ class UserController extends BaseController
       $username = Input::get('username');
       $password = Input::get('password');
       
-      $http = new Uri('http://192.168.1.101');
+      $http = new Uri('http://easyticket.dev');
       $params = array(
           'client_id'     => '721689',
           'client_secret' => 'onlineSale@EasyTickeTadmiM',
@@ -116,7 +116,7 @@ class UserController extends BaseController
       $username = Input::get('username');
       $password = Input::get('password');
       
-      $http = new Uri('http://192.168.1.101');
+      $http = new Uri('http://easyticket.dev');
       $params = array(
           'client_id'     => '721685',
           'client_secret' => 'IgniteAdmin721685',

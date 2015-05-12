@@ -109,26 +109,26 @@ class TripController extends \BaseController {
 		}
 		$objtrip			=new Trip();
 		$checkobjtrip		=Trip::whereoperator_id($operator_id)
+									//->where('id','LIKE','%'.$Id_Day.'%')
 									->wherefrom($from)
 									->whereto($to)
 									->whereclass_id($class_id)
 									->where('time','like',$time.'%')
-									->orderBy('id','desc')->first();
+									->orderBy('created_at','desc')->first();
 		$tmp_time='';
 		if($checkobjtrip){
-			$tmp_time=$checkobjtrip->time;
-			$substrs=substr($tmp_time, 8);
-			$stringlen=strlen($tmp_time);
-			$tmp_time=$tmp_time.'I';
-			$time=$tmp_time;
+			$tmp_time	= $checkobjtrip->time;
+			$number 	= substr($tmp_time, 9);
+			$time 		= substr($tmp_time, 0, 9). ($number + 1);
 		}else{
-			$time=$time.' I';
+			$time=$time.' 1';
 		}
 		$newId = $operator_id.$from.$to.$class_id.$Id_Day.(str_replace(' ','',str_replace(':', '', $time)));
 		$existedId = Trip::whereid($newId)->first();
 		if($existedId){
 			return Response::json('This trip is already exist.');
 		}
+		//dd($newId);
 		$objtrip->id 			=$newId;
 		$objtrip->operator_id 	=$operator_id;
 		$objtrip->from 			=$from;
@@ -145,7 +145,7 @@ class TripController extends \BaseController {
 		$trip_id=$objtrip->id;
 		if($extendcity !=0){
 			$objextendcity=new ExtraDestination();
-			$objextendcity->trip_id=$trip_id;
+			$objextendcity->trip_id=$newId;
 			$objextendcity->city_id=$extendcity;
 			$objextendcity->local_price=$extend_price;
 			$objextendcity->foreign_price=$extend_foreign_price;
@@ -163,6 +163,39 @@ class TripController extends \BaseController {
 			return $this->postBusOccuranceAutoCreateCustom($operator_id, $trip_id, $availableDays);
 		}*/		
 	}
+
+	public function romanic_number($integer) 
+	{ 
+	    $table = array('M'=>1000, 'CM'=>900, 'D'=>500, 'CD'=>400, 'C'=>100, 'XC'=>90, 'L'=>50, 'XL'=>40, 'X'=>10, 'IX'=>9, 'V'=>5, 'IV'=>4, 'I'=>1); 
+	    $return = ''; 
+	    while($integer > 0) 
+	    { 
+	        foreach($table as $rom=>$arb) 
+	        { 
+	            if($integer >= $arb) 
+	            { 
+	                $integer -= $arb; 
+	                $return .= $rom; 
+	                break; 
+	            } 
+	        } 
+	    } 
+
+	    return $return; 
+	}
+
+	public function number_romanic($roman){
+		$romans = array('M' => 1000,'CM' => 900,'D' => 500,'CD' => 400,'C' => 100,'XC' => 90,'L' => 50,'XL' => 40,'X' => 10,'IX' => 9,'V' => 5,'IV' => 4,'I' => 1);
+		$result = 0;
+
+		foreach ($romans as $key => $value) {
+		    while (strpos($roman, $key) === 0) {
+		        $result += $value;
+		        $roman = substr($roman, strlen($key));
+		    }
+		}
+		return $result;
+	} 
 
 	/**
 	 * Display the specified resource.

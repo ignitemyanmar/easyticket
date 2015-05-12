@@ -73,9 +73,29 @@ class AgentGroupController extends BaseController
       // return View::make('agentgroup.gropuactions');
     }
 
-    public function postEditAgentgroup($id)
+    /*public function postEditAgentgroup($id)
     {
       AgentGroup::where('id','=',$id)->update(array('name'=>Input::get('name')));
+      $message['status']=1;
+      $message['info']="Successfully update one record.";
+      return Redirect::to('agentgrouplist?'.$this->myGlob->access_token)->with('message', $message);
+    }*/
+
+    public function postEditAgentgroup($id)
+    {
+      $name     =Input::get('name');
+      $code_no  =Input::get('code_no');
+      $status  =Input::get('status'); //check for code_no update
+      $objagentgroup=AgentGroup::where('id','=',$id)->first();
+      if($name)
+        $objagentgroup->name=$name;
+      if($code_no)
+        $objagentgroup->code_no=$code_no;
+      $objagentgroup->update();
+
+      if($status==1){
+        return "Successfully update.";
+      }
       $message['status']=1;
       $message['info']="Successfully update one record.";
       return Redirect::to('agentgrouplist?'.$this->myGlob->access_token)->with('message', $message);

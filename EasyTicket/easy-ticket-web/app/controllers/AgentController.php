@@ -134,8 +134,30 @@ class AgentController extends BaseController
         return View::make('agent.edit', array('response'=> $response,'agentgroup'=>$agentgroup));
     }
    
+    /*public function postEditAgent($id)
+    {
+      $affectedRow = Agent::where('id','=',$id)->update(array(
+                    'agentgroup_id' => Input::get('agentgroup_id'),
+                    'name'=>Input::get('name'),
+                    'phone'=>Input::get('phone'),
+                    'address'=>Input::get('address'),
+                    'commission_id'=>Input::get('comissiontype'),
+                    'commission' =>Input::get('comission'),
+                    'owner'      =>Input::get('owner'),
+                    ));
+      return Redirect::to('/agentlist?access_token='.Auth::user()->access_token);
+    }*/
+
     public function postEditAgent($id)
     {
+      $status =Input::get('status');// check only updae code_no or not
+      if($status==1){
+        $objagent=Agent::whereid($id)->first();
+        $objagent->code_no=Input::get('code_no');
+        $objagent->update();
+        return "Successfully update.";
+      } 
+      
       $affectedRow = Agent::where('id','=',$id)->update(array(
                     'agentgroup_id' => Input::get('agentgroup_id'),
                     'name'=>Input::get('name'),

@@ -41,9 +41,9 @@
                      ?>
                      <?php $pagetitle=""; ?>
                         <h3 class="page-title">
-                           &nbsp;ခရီးစဥ္အလုိက္ အေရာင္းစာရင္းမ်ား အေသးစိတ္
+                           &nbsp;"လ" အလုိက္ အေရာင္းစာရင္းမ်ား
                         </h3>
-                        <?php $pagetitle="ခရီးစဥ္အလုိက္ အေရာင္းစာရင္းမ်ား"; ?>
+                        <?php $pagetitle="\"လ\" အလုိက္ အေရာင္းစာရင္းမ်ား"; ?>
 
 
                      <div id="filename" style="display:none;">{{$orderdate}} Sales</div>
@@ -82,9 +82,10 @@
                                        <ul class="dropdown-menu">
                                           <li>
                                              <!-- <a class="print-preview">Print this page</a> -->
-                                             <a href="#" class="print">Print</a></li>
+                                             <!-- <a href="#" class="print">Print</a></li> -->
                                           <!-- <li><a href="#">Save as PDF</a></li> -->
-                                          <li><a href="#" id="btnExportExcel">Export to Excel</a></li>
+                                          <!-- <li><a href="#" id="btnExportExcel">Export to Excel</a></li> -->
+                                          <li><a href="{{URL::full()}}&print=true">Export to Excel</a></li>
                                        </ul>
                                     </div>
                                  </div>
@@ -211,6 +212,11 @@
                                     </tfoot>
                                   @endif
                               </table>
+                              <div class="pagination pagination-large text-right">
+                                <ul>
+                                   {{$search['paginater']}}
+                                </ul>
+                             </div>
                            </div>
                         </div>
                      </div>

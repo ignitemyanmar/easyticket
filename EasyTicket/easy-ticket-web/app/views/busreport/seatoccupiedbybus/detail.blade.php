@@ -20,7 +20,7 @@
    }
    .zawgyi-one, h4{font-family: "Zawgyi-One";}  
    .fit-a{padding-top: 9px;}
- .check-a label{height: 175px;}
+ .check-a label{height: 195px;}
  .colorbox{width:24px; height:24px;float:left;margin-right:8px;}
  .booking{background:  #470203;}
  .rm_typeframe{border:1px solid #eee;min-height:200px !important;background: rgba(231, 241, 246, 1);}
@@ -205,23 +205,10 @@
                                                       <div class="span2">
                                                          <label>
                                                             <span></span>
-                                                            <div class="fit-a {{$taken}} zawgyi-one" title="{{$rows['agent_name']}}" id="{{$rows['seat_no']}}">Seat No : {{$rows['seat_no']}} <br>{{$rows['customer']['name']}}<br> <span class="small">Ph : {{$rows['customer']['phone']}}<br>TNo : {{$rows['ticket_no']}}<br> {{$rows['customer']['nrc_no']}}</span><br> &nbsp;</div>
+                                                            <div class="fit-a {{$taken}} zawgyi-one" title="{{$rows['agent_name']}}" id="{{$rows['seat_no']}}">Seat No : {{$rows['seat_no']}} <br>{{$rows['customer']['name']}}<br> <span class="small">Ph : {{$rows['customer']['phone']}}<br>TNo : {{$rows['ticket_no']}}<br>{{$rows['customer']['nrc_no']}} <br> Agent : {{$rows['agent_name']}}</span><br> &nbsp;</div>
                                                          </label>
                                                       </div>
-                                                      <!-- 
-                                                      <div class="span2 grid cs-style-3">
-                                                         <div class="list">
-                                                            <figure>
-                                                               <div class="checkboxframe">
-                                                                  <label>
-                                                                     <span></span>
-                                                                     <div class="fit-a {{$taken}} zawgyi-one" title="{{$rows['agent_name']}}" id="{{$rows['seat_no']}}">{{$rows['customer']['name']}}<br> <span class="small">Ph : {{$rows['customer']['phone']}}<br>TNo : {{$rows['ticket_no']}}<br> {{$rows['customer']['nrc_no']}}</span><br> &nbsp;<span class="small">{{$rows['agent_name']}}</span></div>
-                                                                  </label>
-                                                               </div>
-                                                            </figure>
-                                                         </div>
-                                                      </div>
- -->
+                                                      
                                                    @else
                                                       <div class="span2">
                                                          <label>

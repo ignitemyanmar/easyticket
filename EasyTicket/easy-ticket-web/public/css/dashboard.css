@@ -60,14 +60,14 @@ h3, th{font-family: "Georgia";}
         .clear-fix{display: none;}
         label, span, div{font-size: 8px !important;}
         .hide-for-print{display: none !important;}
-        .checkboxframe{height: 93px;overflow: hidden; min-width: 108px;}
-        .check-a label{height: 101px;}
+        .checkboxframe{height: 143px;overflow: hidden; min-width: 108px;}
+        .check-a label{height: 141px;}
         .check-a label > .fit-a {
             display: block;
             position: relative;
             z-index: 1;
             min-width: 108px;
-            height: 93px;
+            height: 143px;
             cursor: pointer;
         }
         .fit-a {
